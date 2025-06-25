@@ -9,13 +9,13 @@
 
         public function __construct(){
             parent::__construct();
-             $this->callback = base_url().'/authen/index/12/';
+            $this->blade = new PhpBlade($this->views, $this->cache);
+             $this->callback = $_ENV['APP_HOST'].'/form/authen/index/99/';
+             $GLOBALS['version'] = $_ENV['STATE'] == 'development' ? time() : $_ENV['VERSION'];
             //$this->callback = 'https://' . $_SERVER['HTTP_HOST'].'/wsd';
             //$this->session_expire();
-            $this->blade = new PhpBlade($this->views, $this->cache);
-            $GLOBALS['version'] = $_ENV['STATE'] == 'development' ? time() : $_ENV['VERSION'];
-            $this->load->database();
-            $this->load->library('mail');
+            // $this->load->database();
+            // $this->load->library('mail');
         }
 
         public function views($view_name, $data = array()){
@@ -33,6 +33,8 @@
                     exit;
                 }
             }
+
+            return;
         }
 
         public function isAjaxRequest() {
@@ -41,37 +43,5 @@
 
         public function _servername(){
             return strtolower(preg_replace('/\d+/u', '', gethostname()));
-        }
-
-        /** 
-         * Send email
-         */
-        public function sendMail(){
-            $data = $this->input->post('data');
-            if (empty($data)) {
-                echo json_encode(['status' => 'error', 'message' => 'No data provided for sending email.']);
-                return;
-            }
-            $this->mail->sendmail($data);
-        }
-
-         /**
-         * convert date to database format
-         * @param string $date
-         */
-        public function conVdateToDB($date){
-            return date('j/n/Y',strtotime($date));
-        }
-
-        /**
-         * Convert image to base64
-         * @param string $pathFile
-         */
-        public function conVBase64($pathFile){
-            $mimeType = 'image/png';
-            $baseURL = '';
-            if(!file_exists($pathFile)) return $baseURL;
-            $baseURL = 'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($pathFile));
-            return $baseURL;
         }
     }

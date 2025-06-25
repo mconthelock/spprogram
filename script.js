@@ -34,44 +34,4 @@
         );
     });
   }
-
-  //   async function subscribeUserToPush() {
-  //     const registration = await navigator.serviceWorker.ready;
-  //     // Use your VAPID public key
-  //     const publicVapidKey =
-  //       "BOCGvyaUPTptKO8nFbN8ik4JdygDGatYnEwOkajTCLKmR_kg28Q6kr8Tcxq6JOuf8G6cBIHhvsqkC5I2pfd6T9Y";
-  //     const subscription = await registration.pushManager.subscribe({
-  //       userVisibleOnly: true,
-  //       applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-  //     });
-
-  //     // Send this subscription object to your server
-  //     await fetch(`${host}notification/subscribe`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(subscription),
-  //     });
-  //   }
-
-  //   async function unsubscribePush() {
-  //     const registration = await navigator.serviceWorker.ready;
-  //     const subscription = await registration.pushManager.getSubscription();
-  //     if (subscription) {
-  //       await subscription.unsubscribe();
-  //       console.log("Old subscription removed.");
-  //     }
-  //   }
-
-  //   function urlBase64ToUint8Array(base64String) {
-  //     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  //     const base64 = (base64String + padding)
-  //       .replace(/\-/g, "+")
-  //       .replace(/_/g, "/");
-  //     const rawData = window.atob(base64);
-  //     const outputArray = new Uint8Array(rawData.length);
-  //     for (let i = 0; i < rawData.length; ++i) {
-  //       outputArray[i] = rawData.charCodeAt(i);
-  //     }
-  //     return outputArray;
-  //   }
 })();
