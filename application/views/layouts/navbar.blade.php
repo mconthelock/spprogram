@@ -1,6 +1,6 @@
-<div class="navbar bg-base-100 shadow-xs z-10 fixed top-0 left-0 w-full lg:hidden">
+<div class="navbar bg-base-100 shadow-xs z-10 fixed top-0 left-0 w-full md:hidden">
     <div class="flex-1 flex">
-        <label class="btn btn-circle swap swap-rotate lg:hidden" id="mastermenu-toggle" for="mastermenu">
+        <label class="btn btn-circle swap swap-rotate md:hidden" id="mastermenu-toggle" for="mastermenu">
             <!-- this hidden checkbox controls the state -->
             <input type="checkbox" id="mastermenu-icon" />
             <!-- hamburger icon -->

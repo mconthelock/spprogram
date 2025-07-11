@@ -1,8 +1,8 @@
-<div class="side-wrap flex flex-col w-full h-full">
+<div class="side-wrap flex flex-col w-full h-full relative">
     <label for="mastermenu" aria-label="close sidebar" class="drawer-overlay bg-transparent!"></label>
     <div class="banner w-full h-16 flex items-center md:justify-center pt-3">
-        <a href="{{ base_url() }}" class="flex-1 ps-3">
-            <img src="{{ $_ENV['APP_IMG'] }}/brand1.png" class="h-[55px]">
+        <a href="{{ base_url() }}" class="flex-1">
+            <img src="{{ $_ENV['APP_IMG'] }}/brand2.png" class="h-[45px]">
         </a>
         <div class="flex-none p-3 md:hidden" id="mastermenu-close">
             <i class="icofont-circled-left text-white text-2xl"></i>
@@ -10,19 +10,11 @@
     </div>
 
     <div class="flex-1 w-full" id="mastermenu-list">
-        <ul
-            class="menu bg-primary gap-3 w-full pt-4 px-8 md:w-64 lg:w-80 min-h-full text-base-100 text-base flex-nowrap">
+        <ul class="menu gap-3 w-full pt-4 min-h-full text-base-100 text-base flex-nowrap">
             <li class="nav-home">
                 <a href="{{ base_url() }}">
                     <img src="{{ $_ENV['APP_IMG'] }}/sidebar/home.svg" alt="" class="text-white filter invert">
-                    <span class="font-semibold">Home</span>
-                </a>
-            </li>
-            <li class="nav-star">
-                <a href="{{ base_url() }}webform/form/index/1/">
-                    <img src="{{ $_ENV['APP_IMG'] }}/sidebar/star.svg" alt="" class="text-white filter invert">
-                    <span class="font-semibold">Wait for approval</span>
-                    <div class="badge badge-sm badge-secondary">+99</div>
+                    <span class="font-semibold">Inquiry</span>
                 </a>
             </li>
             <li class="mainmenu nav-form">
@@ -124,22 +116,6 @@
             </li>
         </ul>
     </div>
-
-    <ul class="px-6 py-8 mb-5 mx-3 flex-none flex flex-col gap-3 border-y  border-white">
-        <li class="nav-doc">
-            <a href="{{ base_url() }}docs" target="_blank" class="flex gap-3">
-                <img src="{{ $_ENV['APP_IMG'] }}/sidebar/help.svg" alt="" class="text-white filter invert">
-                <span class="text-white">Manual</span>
-            </a>
-        </li>
-        <li class="nav-setting">
-            <a href="{{ base_url() }}setting" class="flex gap-3">
-                <img src="{{ $_ENV['APP_IMG'] }}/sidebar/setting.svg" alt=""
-                    class="text-white filter invert">
-                <span class="text-white">Settings</span>
-            </a>
-        </li>
-    </ul>
 
     <ul class="px-4 pb-4 flex-none">
         <li class="">

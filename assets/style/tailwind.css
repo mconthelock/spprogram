@@ -112,6 +112,7 @@
 
   body {
     @apply font-sans;
+    background: #f5f5f9;
   }
 
   .input {
@@ -165,10 +166,6 @@
   div.dt-container thead > tr:last-child > th:not(.row2) {
     border-bottom: 1px solid #d1d5db !important;
   }
-
-  /* div.dt-container thead > tr > th:not(.text-center) {
-    text-align: left !important;
-  } */
 
   div.dt-container tbody > tr > td {
     border-bottom: 1px solid #d1d5db !important;
@@ -230,7 +227,7 @@
   }
 
   .dt-type-numeric {
-    text-align: center /*!important*/;
+    text-align: center;
   }
 
   /* join */
@@ -245,10 +242,6 @@
     border: 1px solid #d1d5db !important;
     border-radius: 0 10px 10px 0 !important;
   }
-
-  /* .dt-input{
-    @apply !input !input-bordered;
-}  */
 
   /* vertical text*/
   .write-vertical-lr .dt-column-title {
@@ -469,5 +462,52 @@
 
   .text-center {
     text-align: center !important;
+  }
+
+  /* Sidebar Collaped */
+  .drawer-side {
+    transition: width 0.7s ease !important;
+  }
+
+  .drawer-side .menu span,
+  .drawer-side summary span,
+  .drawer-side .badge,
+  .drawer-side ul ul,
+  .drawer-side .text-md,
+  .drawer-side .text-xs {
+    transition: opacity 0.5s ease, visibility 0.5s ease !important;
+  }
+
+  .sidebar-collapsed .drawer-side {
+    width: 4rem !important;
+  }
+
+  .sidebar-collapsed .drawer-side .menu span,
+  .sidebar-collapsed .drawer-side summary span,
+  .sidebar-collapsed .drawer-side .badge,
+  .sidebar-collapsed .drawer-side ul ul,
+  .sidebar-collapsed .drawer-side .text-md,
+  .sidebar-collapsed .drawer-side .text-xs,
+  .sidebar-collapsed .drawer-side summary::after {
+    display: none !important;
+  }
+
+  .sidebar-collapsed .drawer-side img {
+    margin: 0 auto;
+  }
+
+  #sidebar-toggle-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: -1.5rem;
+    background-color: #1e293b;
+    border-radius: 9999px;
+    color: white;
+    z-index: 50;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

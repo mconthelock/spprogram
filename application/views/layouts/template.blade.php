@@ -23,9 +23,8 @@
 </head>
 
 <body class="flex flex-col min-h-screen">
-    <div class="drawer lg:drawer-open">
+    <div class="drawer md:drawer-open md:sidebar-collapsed" id="drawer-wrapper">
         <input id="mastermenu" type="checkbox" class="drawer-toggle" />
-
         <div class="drawer-content flex flex-col items-center justify-start w-full h-full">
             <!-- Navbar -->
             @include('layouts.navbar')
@@ -36,7 +35,7 @@
             <!-- Footer -->
             {{-- @include('layouts.footer') --}}
         </div>
-        <div class="drawer-side lg:shadow-lg bg-primary">
+        <div class="drawer-side shadow-lg bg-white">
             @include('layouts.sidebar')
         </div>
     </div>
@@ -65,7 +64,7 @@
         </div>
     </dialog>
 
-    {{-- <script src="{{ $_ENV['APP_JS'] }}/apps.js?ver={{ $GLOBALS['version'] }}"></script> --}}
+    <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script>
     @yield('scripts')
 </body>
 
