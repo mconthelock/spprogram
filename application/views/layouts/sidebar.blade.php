@@ -11,29 +11,23 @@
 
     <div class="flex-1 w-full" id="mastermenu-list">
         <ul class="menu gap-3 w-full pt-4 min-h-full text-base-100 text-base flex-nowrap">
-            <li class="nav-home">
-                <a href="{{ base_url() }}">
-                    <img src="{{ $_ENV['APP_IMG'] }}/sidebar/home.svg" alt="" class="text-white filter invert">
-                    <span class="font-semibold">Inquiry</span>
-                </a>
-            </li>
             <li class="mainmenu nav-form">
-                <details>
-                    <summary class="font-semibold text-base !bg-none active:bg-none active:!bg-transparent">
-                        <img src="{{ $_ENV['APP_IMG'] }}/sidebar/layer.svg" class="text-white filter invert">
-                        <span>Electronic Form</span>
+                <details open>
+                    <summary class="font-semibold text-gray-500 !bg-none active:bg-none active:!bg-transparent">
+                        <i class="icofont-learn text-2xl"></i>
+                        <span>Inquiry</span>
                     </summary>
                     <ul class="text-sm list-disc">
                         <li class="py-1">
-                            <a href="{{ base_url() }}webform/form/create/">
-                                <img src="{{ $_ENV['APP_IMG'] }}/sidebar/create.svg" class="text-white filter invert">
+                            <a href="{{ base_url() }}mar/inquiry/create/" class="text-gray-500">
+                                <i class="icofont-list text-2xl"></i>
                                 <span>Create</span>
                             </a>
                         </li>
                         <li class="py-1">
-                            <a href="{{ base_url() }}webform/form/index/1/">
-                                <img src="{{ $_ENV['APP_IMG'] }}/sidebar/waiting.svg" class="text-white filter invert">
-                                <span>Wait for approve</span>
+                            <a href="{{ base_url() }}mar/inquiry/" class="text-gray-500">
+                                <i class="icofont-star text-2xl"></i>
+                                <span>On Process</span>
                             </a>
                         </li>
                         <li class="py-1">
@@ -122,7 +116,7 @@
             <div class="flex gap-3">
                 <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                     <div class="w-10 rounded-full">
-                        <img alt="" id="login-profile" src="{{ base_url() }}/assets/images/Avatar.png" />
+                        <img alt="" id="login-profile" src="{{ $_ENV['APP_IMG'] }}/Avatar.png" />
                     </div>
                 </div>
                 <div class="block">
@@ -135,8 +129,7 @@
                     <input type="hidden" id="login-id">
                 </div>
                 <div class="ms-auto flex">
-                    <a tabindex="1" role="button" class="btn btn-ghost btn-circle" href="#"
-                        id="signout">
+                    <a tabindex="1" role="button" class="btn btn-ghost btn-circle" href="#" id="signout">
                         <i class="icofont-logout text-2xl text-white"></i>
                     </a>
                 </div>

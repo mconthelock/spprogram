@@ -5,20 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="base_url" content="{{ base_url() }}">
-    <meta name="base_uri" content="{{ $_ENV['APP_HOST'] }}">
-    <meta name="root_url" content="{{ root_url() }}">
+    <meta name="base_url" content="{{ $_ENV['APP_HOST'] }}">
     <meta name="appname" content="{{ $_ENV['APP_NAME'] }}">
-    <link rel="manifest" href="{{ base_url() }}manifest.json">
+    <link rel="manifest" href="{{ $_ENV['APP_HOST'] }}manifest.json">
     <meta name="theme-color" content="#C0C0C0">
-    <link rel="shortcut icon" href="{{ base_url() }}assets/images/favicon.ico">
-    <link rel="apple-touch-icon" href="{{ base_url() }}assets/images/favicon.ico">
-    <link rel="apple-touch-startup-image" href="{{ base_url() }}assets/images/icon_512.png">
+    <link rel="shortcut icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
+    <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/icon_512.png">
     <title>SP Program</title>
 
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/icofont.min.css">
-    <link rel="stylesheet" href="{{ base_url() }}assets/dist/css/tailwind.css?ver={{ $GLOBALS['version'] }}">
-    <script src="{{ base_url() }}script.js"></script>
+    <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">
+    <script src="{{ $_ENV['APP_HOST'] }}script.js"></script>
     @yield('styles')
 </head>
 
@@ -64,7 +62,7 @@
         </div>
     </dialog>
 
-    <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script>
+    {{-- <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script> --}}
     @yield('scripts')
 </body>
 

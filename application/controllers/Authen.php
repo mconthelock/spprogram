@@ -5,9 +5,11 @@ class Authen extends MY_Controller {
     }
 
     public function index(){
-        if(!isset($_SESSION['user'])){
-            $this->session_expire();
-        }
+        // if(!isset($_SESSION['user'])){
+        //     $this->session_expire();
+        // }
+        $this->views('home/index');
+        //echo "xxx";
     }
 
 

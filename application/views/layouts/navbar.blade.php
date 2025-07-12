@@ -17,7 +17,7 @@
             </svg>
         </label>
         <h1 class="lg:hidden" id="brand">
-            <a href="{{ base_url() }}">
+            <a href="{{ $_ENV['APP_HOST'] }}">
                 <img src="{{ $_ENV['APP_IMG'] }}/brand2.png" class="h-[40px] ms-2">
             </a>
         </h1>
