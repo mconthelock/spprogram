@@ -1,8 +1,15 @@
 <div class="side-wrap flex flex-col w-full h-full relative">
     <label for="mastermenu" aria-label="close sidebar" class="drawer-overlay bg-transparent!"></label>
     <div class="banner w-full h-16 flex items-center md:justify-center pt-3">
-        <a href="{{ base_url() }}" class="flex-1">
-            <img src="{{ $_ENV['APP_IMG'] }}/brand2.png" class="h-[45px]">
+        <a href="{{ base_url() }}" class="flex-1 flex items-center gap-3 p-3">
+            <div class="bg-gray-700 p-2 rounded-md ">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+            </div>
+            <div class="font-mono font-extrabold text-2xl">SP PROGRAM</div>
         </a>
         <div class="flex-none p-3 md:hidden" id="mastermenu-close">
             <i class="icofont-circled-left text-white text-2xl"></i>
@@ -129,7 +136,8 @@
                     <input type="hidden" id="login-id">
                 </div>
                 <div class="ms-auto flex">
-                    <a tabindex="1" role="button" class="btn btn-ghost btn-circle" href="#" id="signout">
+                    <a tabindex="1" role="button" class="btn btn-ghost btn-circle" href="#"
+                        id="signout">
                         <i class="icofont-logout text-2xl text-white"></i>
                     </a>
                 </div>

@@ -7,6 +7,8 @@ module.exports = {
   entry: {
     authen: "./assets/script/authen.js",
     app: "./assets/script/app.js",
+    //Inquiry
+    mar_inqdetail: "./assets/script/inquiry/mardetail.js",
   },
   output: {
     filename: "[name].js",
@@ -41,14 +43,16 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
+      datatables: "DataTables",
     }),
   ],
-  externals: {
-    datatables: "DataTables",
-  },
+  //   externals: {
+  //     datatables: "DataTables",
+  //   },
   resolve: {
     alias: {
       "@root": path.resolve(__dirname, "../form/assets/script"),
+      "@public": path.resolve(__dirname, "../form/assets/script/public/v1.0.2"),
     },
   },
 };

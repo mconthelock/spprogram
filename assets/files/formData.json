@@ -1,0 +1,52 @@
+[
+    {
+        "id": "prj",
+        "title": "Original Project",
+        "fields": [
+            { "label": "Project No", "id": "project-no", "type": "readonly" },
+            { "label": "Project Name", "id": "project-name", "type": "readonly" },
+            { "label": "Shop Order", "id": "shop-order", "type": "readonly" },
+            { "label": "Series", "id": "series", "type": "readonly" },
+            { "label": "Operation", "id": "operation", "type": "readonly" },
+            { "label": "Spec", "id": "spec", "type": "readonly" },
+            { "label": "Schedule", "id": "schedule", "type": "readonly" }
+        ]
+    },
+    {
+        "id": "info",
+        "title": "Inquiry Information",
+        "fields": [
+            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text" },
+            { "label": "Revision", "id": "revision", "type": "text" },
+            { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "value": "2025-07-12" },
+            { "label": "Trader", "id": "trader", "type": "select",  "source": "getTraders"  },
+            { "label": "Agent", "id": "agent", "type": "text" },
+            { "label": "Country", "id": "country", "type": "select", "source": "getCountries"  },
+            { "label": "Status", "id": "status", "type": "status", "value": "New" }
+        ]
+    },
+    {
+        "id": "mar",
+        "title": "Marketing Information",
+        "fields": [
+            { "label": "MAR. In-charge", "id":"mar-incharge", "type": "staticText", "value": "CHALERMSAK SAWANAM" },
+            { "label": "Weight Require", "id": "weight-require", "type": "radio", "options": ["Yes", "No"], "value": "No" },
+            { "label": "Quotation type", "id": "quotation-type", "type": "select", "options": ["Order Part Supply", "Type B"] },
+            { "label": "Delivery Term", "id": "delivery-term", "type": "select", "options": ["FOT", "CIF", "FOB"] },
+            { "label": "Delivery Method", "id": "delivery-method", "type": "select", "options": ["TRUCK", "AIR", "SEA"] },
+            { "label": "Lead Time", "id": "inq-leadtime","type": "staticText", "value": "60 Days after receiving P/O" },
+            { "label": "Remark", "id": "remark", "type": "text" },
+            { "label": "Currency", "id": "currency", "type": "select", "options": ["", "THB", "USD", "JPY"] }
+        ]
+    },
+    {
+        "id": "des",
+        "title": "Designer Information",
+        "fields": [
+            { "label": "Design Class", "id":"des-class", "type": "select", "options": ["", "A", "B", "C", "D", "E"] },
+            { "label": "Assigner", "id":"des-leader", "type": "text", "value": "CHALERMSAK SAWANAM" },
+            { "label": "Designer", "id":"des-incharge", "type": "text", "value": "CHALERMSAK SAWANAM" },
+            { "label": "Checker", "id":"des-checker", "type": "text", "value": "CHALERMSAK SAWANAM" }
+        ]
+    }
+]
