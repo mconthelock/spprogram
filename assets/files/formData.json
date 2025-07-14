@@ -3,7 +3,7 @@
         "id": "prj",
         "title": "Original Project",
         "fields": [
-            { "label": "Project No", "id": "project-no", "type": "readonly" },
+            { "label": "Project No", "id": "project-no", "type": "readonly" , "class": "uppercase"},
             { "label": "Project Name", "id": "project-name", "type": "readonly" },
             { "label": "Shop Order", "id": "shop-order", "type": "readonly" },
             { "label": "Series", "id": "series", "type": "readonly" },
@@ -16,7 +16,7 @@
         "id": "info",
         "title": "Inquiry Information",
         "fields": [
-            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text" },
+            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase" },
             { "label": "Revision", "id": "revision", "type": "text" },
             { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "value": "2025-07-12" },
             { "label": "Trader", "id": "trader", "type": "select",  "source": "getTraders"  },
@@ -35,8 +35,8 @@
             { "label": "Delivery Term", "id": "delivery-term", "type": "select", "options": ["FOT", "CIF", "FOB"] },
             { "label": "Delivery Method", "id": "delivery-method", "type": "select", "options": ["TRUCK", "AIR", "SEA"] },
             { "label": "Lead Time", "id": "inq-leadtime","type": "staticText", "value": "60 Days after receiving P/O" },
-            { "label": "Remark", "id": "remark", "type": "text" },
-            { "label": "Currency", "id": "currency", "type": "select", "options": ["", "THB", "USD", "JPY"] }
+            { "label": "Currency", "id": "currency", "type": "select", "options": ["", "THB", "USD", "JPY"] },
+            { "label": "Remark", "id": "remark", "type": "textarea" }
         ]
     },
     {

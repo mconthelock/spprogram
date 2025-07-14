@@ -1,4 +1,4 @@
-var pin = sessionStorage.getItem("pin");
+// var pin = sessionStorage.getItem("pin");
 // $(document).on(
 //   "mouseover",
 //   "#drawer-wrapper.sidebar-collapsed .drawer-side",
@@ -15,25 +15,25 @@ var pin = sessionStorage.getItem("pin");
 //   //$("#drawer-wrapper").removeClass("d-none");
 // });
 
-export function pinOn() {
-  $("#sidebar").addClass("pin");
-  $("#sidebar").removeClass("active");
-  $("#content").removeClass("active");
-  $("#navbar_top").removeClass("active");
-  $("#sidebarCollapse").removeClass("d-none");
-  $("#sidebarCollapsePin").addClass("d-none");
-  sessionStorage.setItem("pin", true);
-}
+// export function pinOn() {
+//   $("#sidebar").addClass("pin");
+//   $("#sidebar").removeClass("active");
+//   $("#content").removeClass("active");
+//   $("#navbar_top").removeClass("active");
+//   $("#sidebarCollapse").removeClass("d-none");
+//   $("#sidebarCollapsePin").addClass("d-none");
+//   sessionStorage.setItem("pin", true);
+// }
 
-export function pinOff() {
-  $("#sidebar").removeClass("pin");
-  $("#sidebar").addClass("active");
-  $("#content").addClass("active");
-  $("#navbar_top").addClass("active");
-  $("#sidebarCollapse").addClass("d-none");
-  $("#sidebarCollapsePin").addClass("d-none");
-  sessionStorage.setItem("pin", false);
-}
+// export function pinOff() {
+//   $("#sidebar").removeClass("pin");
+//   $("#sidebar").addClass("active");
+//   $("#content").addClass("active");
+//   $("#navbar_top").addClass("active");
+//   $("#sidebarCollapse").addClass("d-none");
+//   $("#sidebarCollapsePin").addClass("d-none");
+//   sessionStorage.setItem("pin", false);
+// }
 
 // document.addEventListener("DOMContentLoaded", () => {
 //   const toggleBtn = document.getElementById("sidebar-toggle-btn");

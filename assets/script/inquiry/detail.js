@@ -14,13 +14,27 @@ export async function createFieldInput(field) {
       const input = document.createElement("input");
       input.type = field.type === "readonly" ? "text" : field.type;
       input.id = field.id;
-      input.className = "w-full border border-gray-300 rounded-md p-2";
+      input.className = "w-full border border-gray-300 rounded-md p-2 text-sm";
       if (field.type === "readonly") {
         input.readOnly = true;
         input.classList.add("form-input-readonly");
       }
       if (field.value) input.value = field.value;
+      if (field.class !== undefined) {
+        input.classList.add(field.class);
+      }
+
       inputContainer.appendChild(input);
+      break;
+    case "textarea":
+      const textarea = document.createElement("textarea");
+      textarea.id = field.id;
+      textarea.className =
+        "w-full border border-gray-300 rounded-md p-2 text-xs";
+      if (field.class !== undefined) {
+        textarea.classList.add(field.class);
+      }
+      inputContainer.appendChild(textarea);
       break;
 
     case "select":
@@ -69,7 +83,7 @@ export async function createFieldInput(field) {
         radioInput.type = "radio";
         radioInput.name = field.id;
         radioInput.value = opt;
-        radioInput.className = "form-radio text-teal-600";
+        radioInput.className = "radio radio-sm radio-primary text-primary";
         if (opt === field.value) {
           radioInput.checked = true;
         }
@@ -124,6 +138,9 @@ export async function createFieldInput(field) {
       const defaultInput = document.createElement("input");
       defaultInput.type = "text";
       defaultInput.id = field.id;
+      if (field.class !== undefined) {
+        defaultInput.classList.add(field.class);
+      }
       inputContainer.appendChild(defaultInput);
   }
   return inputContainer;
@@ -134,7 +151,7 @@ export async function createFormCard(cardData) {
   card.className = "bg-white rounded-lg shadow overflow-hidden";
 
   const header = document.createElement("div");
-  header.className = "bg-teal-600 text-white p-3 font-semibold";
+  header.className = "bg-primary text-white p-3 font-semibold";
   header.textContent = cardData.title;
   card.appendChild(header);
 

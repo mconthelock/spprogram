@@ -62,7 +62,7 @@
         </div>
     </dialog>
 
-    {{-- <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script> --}}
+    <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script>
     {{-- <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script> --}}
     @yield('scripts')
 </body>

@@ -53,6 +53,7 @@ module.exports = {
     alias: {
       "@root": path.resolve(__dirname, "../form/assets/script"),
       "@public": path.resolve(__dirname, "../form/assets/script/public/v1.0.2"),
+      "@styles": path.resolve(__dirname, "../form/assets/dist/css"),
     },
   },
 };
