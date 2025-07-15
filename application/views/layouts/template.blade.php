@@ -15,6 +15,8 @@
     <title>SP Program</title>
 
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/icofont.min.css">
+    <link rel="stylesheet"
+        href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}">
     <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">
     <script src="{{ $_ENV['APP_HOST'] }}script.js"></script>
     @yield('styles')
@@ -25,7 +27,8 @@
         <input id="mastermenu" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col items-center justify-start w-full h-full">
             <!-- Navbar -->
-            @include('layouts.navbar')
+            {{-- @include('layouts.navbar') --}}
+            <div id="navbar"></div>
             <!-- Page content here -->
             <div class="flex-1 flex flex-col w-full px-4 md:px-8 lg:mt-5">
                 @yield('contents')
@@ -34,7 +37,8 @@
             {{-- @include('layouts.footer') --}}
         </div>
         <div class="drawer-side shadow-lg bg-white">
-            @include('layouts.sidebar')
+            {{-- @include('layouts.sidebar') --}}
+            <div id="sidebar"></div>
         </div>
     </div>
 

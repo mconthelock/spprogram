@@ -3,10 +3,12 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/dataTable.min.css";
 import "@styles/select2.min.css";
 
+import { showMessage, showLoader, intVal, digits } from "@root/utils.js";
 import { createTable } from "@public/_dataTable.js";
 import formData from "../../files/formData.json";
 import { createFormCard } from "./detail.js";
 import { dataSourceFunctions } from "./dataSourceFunctions.js";
+import { validateDrawingNo } from "../drawing.js";
 
 var table;
 $(document).ready(async () => {
@@ -48,38 +50,33 @@ async function setupTable() {
   opt.data = mockupData;
   opt.paging = false;
   opt.info = false;
-  opt.ordering = false;
+  //   opt.ordering = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex mb-3"<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll my-5"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 hidden "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
-      data: "no",
+      data: "id",
       title: "",
       className: "hidden",
-      render: function (data, type, row, meta) {
-        if (type === "display") {
-          return `<button class="btn btn-sm btn-circle btn-ghost"><i class="icofont-plus"></i></button>
-          <button class="btn btn-sm btn-circle btn-ghost"><i class="icofont-error text-error text-lg"></i></button>`;
-        }
-        return data;
-      },
     },
     {
-      data: "id",
+      data: "INQD_ID",
       title: `<div class="text-center"><i class='icofont-settings text-lg text-white'></i></div>`,
       className: "text-center text-nowrap sticky-column px-1",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<button class="btn btn-sm btn-circle btn-ghost"><i class="icofont-plus"></i></button>
+          return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><i class="icofont-plus"></i></div>
           <button class="btn btn-sm btn-circle btn-ghost"><i class="icofont-error text-error text-lg"></i></button>`;
         }
         return data;
       },
     },
     {
-      data: "id",
+      data: "INQD_SEQ",
       title: `<div class="text-center text-white">No</div>`,
       className: "sticky-column !px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[50px] cell-input" value="${data}">`;
@@ -88,9 +85,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_CAR",
       title: `<div class="text-center text-white">CAR</div>`,
       className: "sticky-column !px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[55px] cell-input" value="${data}">`;
@@ -99,9 +97,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_MFGORDER",
       title: `<div class="text-center text-white">MFG No.</div>`,
       className: "sticky-column !px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[150px] cell-input" value="${data}">`;
@@ -110,9 +109,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_ITEM",
       title: `<div class="text-center text-white">Item</div>`,
       className: "!px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[75px] cell-input" value="${data}">`;
@@ -121,9 +121,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_PARTNAME",
       title: `<div class="text-center text-white">Part Name</div>`,
       className: "!px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[200px] cell-input" value="${data}">`;
@@ -132,9 +133,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_DRAWING",
       title: `<div class="text-center text-white">Drawing No.</div>`,
       className: "!px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[225px] cell-input" value="${data}">`;
@@ -143,9 +145,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_VARIABLE",
       title: `<div class="text-center text-white">Variable</div>`,
       className: "!px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[200px] cell-input" value="${data}">`;
@@ -154,9 +157,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_QTY",
       title: `<div class="text-center text-white">Qty</div>`,
       className: "!px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="number" min="1" class="!w-[50px] cell-input" value="${
@@ -167,9 +171,10 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_UM",
       title: `<div class="text-center text-white">U/M</div>`,
       className: "!px-[3px]",
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="type" class="!w-[75px] cell-input" value="${
@@ -180,8 +185,9 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_SUPPLIER",
       title: `<div class="text-center text-white">Supplier</div>`,
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<select class="!w-[100px] select select-sm">
@@ -195,8 +201,9 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_SENDPART",
       title: `<div class="text-center text-white">2<sup>nd</sup></div>`,
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black" />`;
@@ -205,8 +212,9 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_UNREPLY",
       title: `<div class="text-center text-white">U/N</div>`,
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black" />`;
@@ -215,8 +223,9 @@ async function setupTable() {
       },
     },
     {
-      data: "id",
+      data: "INQD_MAR_REMARK",
       title: `<div class="text-center text-white">Remark</div>`,
+      sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="text" class="!w-[250px] cell-input" value="${data}">`;
@@ -226,13 +235,68 @@ async function setupTable() {
     },
   ];
   opt.initComplete = function (settings, json) {
-    $(".table-page").append(
-      `<button id="addRowBtn" class="btn btn-primary btn-sm btn-square"><i class="icofont-plus text-2xl text-white"></i></button>
-      <button id="showRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-newspaper text-2xl text-white"></i></button>`
-    );
+    $(".table-page").append(`<div class="flex gap-2">
+      <div class="tooltip" data-tip="Add line">
+        <button id="addRowBtn" class="btn btn-primary btn-sm btn-square" type="button"><i class="icofont-plus text-xl text-white"></i></button>
+      </div>
+
+      <div class="tooltip" data-tip="Upload inquiry">
+        <button id="addRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-upload-alt text-xl text-white"></i></button>
+      </div>
+
+      <div class="tooltip" data-tip="Download template">
+        <button id="showRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-download text-xl text-white"></i></button>
+      </div>
+    </div>`);
   };
   return opt;
 }
+
+async function initRow(id) {
+  return {
+    id: id,
+    INQD_ID: "",
+    INQD_SEQ: id,
+    INQD_RUNNO: "",
+    INQD_MFGORDER: "",
+    INQD_ITEM: "",
+    INQD_CAR: "",
+    INQD_PARTNAME: "",
+    INQD_DRAWING: "",
+    INQD_VARIABLE: "",
+    INQD_QTY: 1,
+    INQD_UM: "PC",
+    INQD_SUPPLIER: "",
+    INQD_SENDPART: "",
+    INQD_UNREPLY: "",
+    INQD_FC_COST: "",
+    INQD_TC_COST: "",
+    INQD_UNIT_PRICE: "",
+    INQD_FC_BASE: "",
+    INQD_TC_BASE: "",
+    INQD_MAR_REMARK: "",
+    INQD_DES_REMARK: "",
+    INQD_FIN_REMARK: "",
+    INQD_LATEST: "",
+    INQD_OWNER: "",
+  };
+}
+
+$(document).on("click", "#addRowBtn", async function (e) {
+  e.preventDefault();
+  const lastRow = table.row(":not(.d-none):last").data();
+  let id = lastRow === undefined ? 1 : lastRow.id + 1;
+  const newRow = await initRow(digits(id, 0));
+  table.row.add(newRow).draw();
+});
+
+$(document).on("click", ".add-sub-line", async function (e) {
+  e.preventDefault();
+  const data = table.row($(this).parents("tr")).data();
+  const id = digits(intVal(data.INQD_SEQ) + 0.01, 2);
+  const newRow = await initRow(id);
+  table.row.add(newRow).draw();
+});
 
 $(document).on("change", "#table tbody input", function () {
   const cell = table.cell($(this).closest("td"));
@@ -244,75 +308,13 @@ $(document).on("change", "#table tbody input", function () {
   console.log("Cell updated:", cell.data());
 });
 
-$(document).on("click", "#addRowBtn", function () {
-  const lastRow = table.row(":not(.d-none):last").data();
-  let id = lastRow === undefined ? 1 : lastRow.id + 1;
-  const newRow = {
-    no: id,
-    id: id,
-    name: "",
-  };
-  table.row.add(newRow).draw();
-});
-
-$(document).on("click", ".add-sub-line", async function (e) {
-  e.preventDefault();
-  // Find index value of row to insert after
-  const createNewRow = (data, seq) => {
-    const taval = {
-      INQD_RUNNO: intVal(data.INQD_RUNNO) + 1,
-      INQD_SEQ: seq,
-      INQD_CAR: data.INQD_CAR,
-      INQD_MFGORDER: data.INQD_MFGORDER,
-      INQD_ITEM: "",
-      INQD_PARTNAME: "",
-      INQD_DRAWING: "",
-      INQD_VARIABLE: "",
-      INQD_QTY: "1",
-      INQD_UM: "PC",
-      INQD_SUPPLIER: "",
-      INQD_SENDPART: "",
-      INQD_UNREPLY: "",
-      INQD_MAR_REMARK: "",
-      INQD_ID: "",
-      INQD_OWNER_GROUP: $("#logingroup").val(),
-      TEST_MESSAGE: null,
-      TEST_FLAG: null,
-    };
-    const newrow = tabledetail.row.add(taval).draw();
-    const node = newrow.node();
-    $(node).find(".item").focus();
-    return seq;
-  };
-
-  const increaseIndex = (inx) => {
-    tabledetail.rows().every(function (rw) {
-      const data = this.data();
-      const node = this.node();
-      if (intVal(data.INQD_SEQ) >= inx) {
-        this.data({ ...data, INQD_RUNNO: intVal(data.INQD_RUNNO) + 1 }).draw();
-        $(node).attr("rowid", intVal(data.INQD_RUNNO) + 1);
-        if ($(node).hasClass("child-row")) {
-          const int = Math.floor(intVal(data.INQD_SEQ));
-          if (int == Math.floor(intVal(inx))) {
-            this.data({
-              ...data,
-              INQD_SEQ: digits(intVal(data.INQD_SEQ) + 0.01, 2),
-            }).draw();
-          }
-        }
-      }
-    });
-  };
-
-  const row = tabledetail.row($(this).parents("tr"));
-  const data = row.data();
-  const seq = digits(intVal(data.INQD_SEQ) + 0.01, 2);
-  await increaseIndex(seq);
-  await createNewRow(data, seq);
-});
-
 $(document).on("click", "#showRowBtn", function () {
   const data = table.rows().data();
   console.log("Current Table Data:", data.toArray());
 });
+
+async function tset() {
+  const test = "LHC-1220AG01";
+  //   const test = "YA129C137  G01";
+  console.log("DWG: ", validateDrawingNo(test));
+}

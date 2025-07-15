@@ -148,10 +148,10 @@ export async function createFieldInput(field) {
 
 export async function createFormCard(cardData) {
   const card = document.createElement("div");
-  card.className = "bg-white rounded-lg shadow overflow-hidden";
+  card.className = "bg-white rounded-lg shadow overflow-hidden px-6 pt-3";
 
   const header = document.createElement("div");
-  header.className = "bg-primary text-white p-3 font-semibold";
+  header.className = "text-primary p-3 font-semibold";
   header.textContent = cardData.title;
   card.appendChild(header);
 

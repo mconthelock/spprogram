@@ -5,7 +5,7 @@ class Inquiry extends MY_Controller {
     }
 
     public function index(){
-
+        $this->views('mar/inquiry/index');
     }
 
     public function create(){
