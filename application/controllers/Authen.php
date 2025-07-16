@@ -9,7 +9,6 @@ class Authen extends MY_Controller {
         //     $this->session_expire();
         // }
         $this->views('home/index');
-        //echo "xxx";
     }
 
 
