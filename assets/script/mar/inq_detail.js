@@ -6,8 +6,7 @@ import "@styles/select2.min.css";
 import { showMessage, showLoader, intVal, digits } from "@root/utils.js";
 import { createTable } from "@public/_dataTable.js";
 import formData from "../../files/formData.json";
-import { createFormCard } from "./detail.js";
-import { dataSourceFunctions } from "./dataSourceFunctions.js";
+import { createFormCard } from "../inquiry/detail.js";
 import { validateDrawingNo } from "../drawing.js";
 
 var table;
@@ -31,11 +30,11 @@ async function setupCard() {
         resolve(cardElement);
       } else {
         console.error(`Card data for ID ${cardId} not found.`);
-        resolve(null); // Resolve with null if card data not found
+        resolve(null);
       }
     });
   });
-  // Wait for all cards to be created and append them in order
+
   const cardElements = await Promise.all(cardPromises);
   cardElements.forEach((element) => {
     if (element) {
@@ -287,7 +286,8 @@ $(document).on("click", "#addRowBtn", async function (e) {
   const lastRow = table.row(":not(.d-none):last").data();
   let id = lastRow === undefined ? 1 : lastRow.id + 1;
   const newRow = await initRow(digits(id, 0));
-  table.row.add(newRow).draw();
+  const row = table.row.add(newRow).draw();
+  $(row.node()).find("td:eq(3) input").focus();
 });
 
 $(document).on("click", ".add-sub-line", async function (e) {
@@ -295,7 +295,8 @@ $(document).on("click", ".add-sub-line", async function (e) {
   const data = table.row($(this).parents("tr")).data();
   const id = digits(intVal(data.INQD_SEQ) + 0.01, 2);
   const newRow = await initRow(id);
-  table.row.add(newRow).draw();
+  const row = table.row.add(newRow).draw();
+  $(row.node()).find("td:eq(3) input").focus();
 });
 
 $(document).on("change", "#table tbody input", function () {

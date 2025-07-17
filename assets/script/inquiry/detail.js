@@ -1,11 +1,12 @@
 import "select2/dist/css/select2.min.css";
 import "select2";
 
-import { dataSourceFunctions } from "./dataSourceFunctions.js";
+import { dataSourceFunctions, eventHandlers } from "./dataSourceFunctions.js";
 
 export async function createFieldInput(field) {
   const inputContainer = document.createElement("div");
   inputContainer.className = "col-span-2";
+  let elementToListen;
 
   switch (field.type) {
     case "readonly":
@@ -25,6 +26,7 @@ export async function createFieldInput(field) {
       }
 
       inputContainer.appendChild(input);
+      elementToListen = input;
       break;
     case "textarea":
       const textarea = document.createElement("textarea");
@@ -64,11 +66,15 @@ export async function createFieldInput(field) {
 
       if (field.value) selectInput.value = field.value;
       inputContainer.appendChild(selectInput);
+      elementToListen = selectInput;
 
       setTimeout(() => {
-        $(`#${field.id}`).select2({
-          width: "100%", // Ensure it takes full width of the container
-        });
+        const jQueryElement = $(`#${field.id}`);
+        jQueryElement.select2({ width: "100%" });
+
+        if (field.onChange && eventHandlers[field.onChange]) {
+          jQueryElement.on("change", eventHandlers[field.onChange]);
+        }
       }, 0);
       break;
 
@@ -142,6 +148,11 @@ export async function createFieldInput(field) {
         defaultInput.classList.add(field.class);
       }
       inputContainer.appendChild(defaultInput);
+  }
+
+  if (elementToListen && field.onChange && eventHandlers[field.onChange]) {
+    console.log(elementToListen);
+    elementToListen.addEventListener("change", eventHandlers[field.onChange]);
   }
   return inputContainer;
 }

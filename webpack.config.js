@@ -7,8 +7,8 @@ module.exports = {
   entry: {
     authen: "./assets/script/authen.js",
     app: "./assets/script/app.js",
-    //Inquiry
-    mar_inqdetail: "./assets/script/inquiry/mardetail.js",
+    //MAR User
+    mar_inqdetail: "./assets/script/mar/inq_detail.js",
   },
   output: {
     filename: "[name].js",

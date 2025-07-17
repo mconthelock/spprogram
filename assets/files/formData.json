@@ -3,13 +3,13 @@
         "id": "prj",
         "title": "Original Project",
         "fields": [
-            { "label": "Project No", "id": "project-no", "type": "readonly" , "class": "uppercase"},
-            { "label": "Project Name", "id": "project-name", "type": "readonly" },
-            { "label": "Shop Order", "id": "shop-order", "type": "readonly" },
-            { "label": "Series", "id": "series", "type": "readonly" },
-            { "label": "Operation", "id": "operation", "type": "readonly" },
-            { "label": "Spec", "id": "spec", "type": "readonly" },
-            { "label": "Schedule", "id": "schedule", "type": "readonly" }
+            { "label": "Project No", "id": "project-no", "type": "text" , "class": "uppercase", "onChange": "handleProjectChange"},
+            { "label": "Project Name", "id": "project-name", "type": "text" },
+            { "label": "Shop Order", "id": "shop-order", "type": "text" },
+            { "label": "Series", "id": "series", "type": "text" },
+            { "label": "Operation", "id": "operation", "type": "text" },
+            { "label": "Spec", "id": "spec", "type": "text" },
+            { "label": "Schedule", "id": "schedule", "type": "text" }
         ]
     },
     {
@@ -17,11 +17,11 @@
         "title": "Inquiry Information",
         "fields": [
             { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase" },
-            { "label": "Revision", "id": "revision", "type": "text" },
+            { "label": "Revision", "id": "revision", "type": "readonly" },
             { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "value": "2025-07-12" },
             { "label": "Trader", "id": "trader", "type": "select",  "source": "getTraders"  },
-            { "label": "Agent", "id": "agent", "type": "text" },
-            { "label": "Country", "id": "country", "type": "select", "source": "getCountries"  },
+            { "label": "Agent", "id": "agent", "type": "select", "option": [] },
+            { "label": "Country", "id": "country", "type": "select", "source": "getCountries", "onChange": "handleCountryChange"  },
             { "label": "Status", "id": "status", "type": "status", "value": "New" }
         ]
     },
