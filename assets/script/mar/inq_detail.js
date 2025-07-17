@@ -1,6 +1,6 @@
-import "datatables.net-dt/css/dataTables.dataTables.min.css";
+// import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/dataTable.min.css";
+// import "@styles/dataTable.min.css";
 import "@styles/select2.min.css";
 
 import { showMessage, showLoader, intVal, digits } from "@root/utils.js";
