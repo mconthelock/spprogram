@@ -7,26 +7,22 @@ export async function createFieldInput(field) {
   const inputContainer = document.createElement("div");
   inputContainer.className = "col-span-2";
   let elementToListen;
-
+  const loader = document.createElement("span");
+  loader.className = "loading loading-spinner";
   switch (field.type) {
     case "readonly":
     case "text":
     case "date":
-      const input = document.createElement("input");
-      input.type = field.type === "readonly" ? "text" : field.type;
-      input.id = field.id;
-      input.className = "w-full border border-gray-300 rounded-md p-2 text-sm";
-      if (field.type === "readonly") {
-        input.readOnly = true;
-        input.classList.add("form-input-readonly");
-      }
-      if (field.value) input.value = field.value;
-      if (field.class !== undefined) {
-        input.classList.add(field.class);
-      }
-
-      inputContainer.appendChild(input);
-      elementToListen = input;
+      const inputLabel = `<label class="input bg-white">
+            <input type="${field.type}" id="${field.id}"
+                class="form-input-readonly  ${
+                  field.class !== undefined ? field.class : ""
+                }"
+                value="${field.value === undefined ? "" : field.value}"/>
+            <span class="loading loading-spinner text-primary  hidden"></span>
+        </label>`;
+      inputContainer.innerHTML = inputLabel;
+      elementToListen = inputContainer.querySelector(`#${field.id}`);
       break;
     case "textarea":
       const textarea = document.createElement("textarea");
@@ -113,6 +109,7 @@ export async function createFieldInput(field) {
         "bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full";
       statusBadge.textContent = field.value;
       inputContainer.appendChild(statusBadge);
+
       const hiddenStatus = document.createElement("input");
       hiddenStatus.type = "text";
       hiddenStatus.id = field.id;
@@ -151,7 +148,6 @@ export async function createFieldInput(field) {
   }
 
   if (elementToListen && field.onChange && eventHandlers[field.onChange]) {
-    console.log(elementToListen);
     elementToListen.addEventListener("change", eventHandlers[field.onChange]);
   }
   return inputContainer;

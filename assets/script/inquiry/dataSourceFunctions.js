@@ -10,10 +10,13 @@ export const dataSourceFunctions = {
 };
 
 export const eventHandlers = {
-  handleProjectChange: (event) => {
-    const selectedProject = event.target.value;
-    const data = fn.getProject(selectedProject);
-    console.log(data);
+  handleProjectChange: async (e) => {
+    const obj = e.target;
+    const loader = $(obj).closest(".input").find(".loading");
+    loader.removeClass("hidden");
+    const data = await fn.getProject(obj.value);
+    console.log(data, `handleProjectChange`);
+    loader.addClass("hidden");
   },
   handleInquiryChange: (event) => {},
   handleRatioChange: (event) => {},

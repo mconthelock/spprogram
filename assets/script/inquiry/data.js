@@ -1,5 +1,5 @@
 export function getProject(data) {
-  /*return new Promise((resolve) => {
+  return new Promise((resolve) => {
     $.ajax({
       url: `${process.env.APP_API}/sp/project`,
       type: "POST",
@@ -9,6 +9,5 @@ export function getProject(data) {
         resolve(response);
       },
     });
-  });*/
-  return { id: data };
+  });
 }
