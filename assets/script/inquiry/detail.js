@@ -43,7 +43,6 @@ export async function createFieldInput(field) {
 
       let options = [];
       if (field.source) {
-        // ** CHANGED **: เรียกใช้ฟังก์ชันจาก object ที่เก็บฟังก์ชันโดยตรง
         if (dataSourceFunctions[field.source]) {
           options = await dataSourceFunctions[field.source]();
         } else {

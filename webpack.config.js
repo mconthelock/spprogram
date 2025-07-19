@@ -10,6 +10,7 @@ module.exports = {
     //MAR User
     mar_inquiry: "./assets/script/mar/inquiry.js",
     mar_inqdetail: "./assets/script/mar/inq_detail.js",
+    priceratio: "./assets/script/mar/priceratio.js",
   },
   output: {
     filename: "[name].js",

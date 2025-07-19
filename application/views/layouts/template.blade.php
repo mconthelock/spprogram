@@ -14,7 +14,8 @@
     <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/icon_512.png">
     <title>SP Program</title>
 
-    <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/icofont.min.css">
+    <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/v2025/icofont.min.css">
+    <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css">
     <link rel="stylesheet"
         href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}">
     <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">

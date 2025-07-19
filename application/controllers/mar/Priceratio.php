@@ -1,10 +1,10 @@
 <?php
-class Rate extends MY_Controller {
+class Priceratio extends MY_Controller {
     public function __construct(){
         parent::__construct();
     }
 
     public function index(){
-        $this->views('mar/items/index');
+        $this->views('mar/priceratio/index');
     }
 }
