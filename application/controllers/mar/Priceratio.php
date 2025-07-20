@@ -5,6 +5,6 @@ class Priceratio extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/priceratio/index');
+        $this->views('mar/master/priceratio');
     }
 }

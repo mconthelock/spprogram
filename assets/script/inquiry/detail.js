@@ -39,14 +39,12 @@ export async function createFieldInput(field) {
       const selectInput = document.createElement("select");
       selectInput.id = field.id;
       selectInput.className =
-        "w-full border border-gray-300 rounded-md p-2 bg-white";
+        "w-full border border-gray-300 rounded-md p-2 bg-white select2";
 
       let options = [];
       if (field.source) {
         if (dataSourceFunctions[field.source]) {
           options = await dataSourceFunctions[field.source]();
-        } else {
-          console.error(`Data source function ${field.source} not found.`);
         }
       } else if (field.options) {
         options = field.options;
@@ -54,8 +52,8 @@ export async function createFieldInput(field) {
 
       options.forEach((opt) => {
         const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
+        option.value = opt.id;
+        option.textContent = opt.text;
         selectInput.appendChild(option);
       });
 
@@ -64,13 +62,14 @@ export async function createFieldInput(field) {
       elementToListen = selectInput;
 
       setTimeout(() => {
+        console.log(`#${field.id}`);
         const jQueryElement = $(`#${field.id}`);
         jQueryElement.select2({ width: "100%" });
 
         if (field.onChange && eventHandlers[field.onChange]) {
           jQueryElement.on("change", eventHandlers[field.onChange]);
         }
-      }, 0);
+      }, 1000);
       break;
 
     case "radio":
@@ -176,7 +175,6 @@ export async function createFormCard(cardData) {
 
     // รอให้ field สร้างเสร็จก่อน (เผื่อต้อง fetch data)
     const inputElement = await createFieldInput(field);
-
     fieldWrapper.appendChild(label);
     fieldWrapper.appendChild(inputElement);
     body.appendChild(fieldWrapper);

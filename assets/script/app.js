@@ -8,3 +8,10 @@ $(function () {
   });
   //   initAuthen();
 });
+
+$(document).on("click", ".msg-close", function () {
+  $(".toast-message").addClass("fade-out-element");
+  setTimeout(function () {
+    $(".toast-message").remove();
+  }, 1000);
+});

@@ -5,6 +5,6 @@ class Currency extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/items/index');
+        $this->views('mar/master/currency');
     }
 }
