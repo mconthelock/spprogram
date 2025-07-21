@@ -1,0 +1,86 @@
+[
+    {
+        "menu_id": 1,
+        "menu_class":"nav-inquiry",
+        "menu_icon": "<i class='icofont-chart-histogram'></i>",
+        "menu_link": "",
+        "menu_name": "Inquiry",
+        "menu_order": 1,
+        "menu_tname": "",
+        "menu_top": "",
+        "submenu": [
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry/create",
+                "menu_name": "Add new inquiry",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "",
+                "menu_name": "Add stock part inquiry",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "",
+                "menu_name": "Pending Pre BM inquiry",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry",
+                "menu_name": "On process inquiry",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            }
+        ]
+    },
+    {
+        "menu_id": 2,
+        "menu_class":"nav-master",
+        "menu_icon": "<i class='icofont-chart-histogram'></i>",
+        "menu_link": "",
+        "menu_name": "Master",
+        "menu_order": 2,
+        "menu_tname": "",
+        "menu_top": "",
+        "submenu": [
+            {
+                "menu_id": 1,
+                "menu_class":"nav-master",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/priceratio",
+                "menu_name": "Price Ratio",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-master",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/currency",
+                "menu_name": "Currency",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            }
+        ]
+    }
+]

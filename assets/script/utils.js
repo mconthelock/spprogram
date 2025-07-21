@@ -1,3 +1,4 @@
+import moment from "moment";
 export function showMessage(msg, type = "error") {
   const prop = [
     {
@@ -114,4 +115,22 @@ export const digits = function (n, digit) {
     var fstr = str.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
   }
   return fstr;
+};
+
+export const amecschdule = (data) => {
+  const schd = [
+    { id: "05", val: "X" },
+    { id: "10", val: "A" },
+    { id: "15`", val: "Y" },
+    { id: "20", val: "B" },
+    { id: "25", val: "Z" },
+    { id: "28", val: "Z" },
+    { id: "29", val: "Z" },
+    { id: "30", val: "Z" },
+    { id: "31", val: "Z" },
+  ];
+  const fd = moment(data).format("YYYYMM");
+  const dd = moment(data).format("DD");
+  const letter = schd.find((x) => x.id == dd);
+  return `${fd}${letter.val}`;
 };

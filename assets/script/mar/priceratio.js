@@ -15,7 +15,7 @@ import {
   statusPriceRatio,
   getQuotationType,
   createQuotationType,
-} from "../service/priceratio.js";
+} from "../service/master.js";
 var table;
 $(document).ready(async () => {
   const data = await getPriceRatio();

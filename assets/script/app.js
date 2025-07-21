@@ -1,12 +1,20 @@
 // import { initAuthen } from "@public/authen.js";
-import { initSidebar } from "@public/component/sidebar.js";
+import mockupmenu from "../files/mockup_menu.json";
+import { initSidebar, setSidebarMenu } from "@public/component/sidebar.js";
+import { initNavbar } from "@public/component/navbar.js";
 
 $(function () {
   initSidebar({
     icon: `${process.env.APP_ENV}/assets/images/cube.png`,
     programName: "SP PROGRAM",
   });
-  //   initAuthen();
+
+  initNavbar({
+    icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+    programName: "SP PROGRAM",
+    toggleId: "mastermenu",
+  });
+  setSidebarMenu(mockupmenu, null);
 });
 
 $(document).on("click", ".msg-close", function () {

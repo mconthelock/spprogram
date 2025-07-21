@@ -1,10 +1,10 @@
-// import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-// import "@styles/dataTable.min.css";
 import "@styles/select2.min.css";
 import { createTable } from "@public/_dataTable.js";
 var table;
 $(document).ready(async () => {
+  $(".mainmenu").find("details").attr("open", false);
+  $(".mainmenu.nav-inquiry").find("details").attr("open", true);
   const data = [];
   const opt = await tableOpt(data);
   table = await createTable(opt);

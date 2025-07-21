@@ -9,9 +9,11 @@ import {
   digits,
 } from "../utils.js";
 import { createTable } from "@public/_dataTable.js";
-import { getCurrency, updateCurrency } from "../service/currency.js";
+import { getCurrency, updateCurrency } from "../service/master.js";
 var table;
 $(document).ready(async () => {
+  $(".mainmenu").find("details").attr("open", false);
+  $(".mainmenu.nav-master").find("details").attr("open", true);
   const data = await getCurrency();
   const opt = await tableOpt(data);
   table = await createTable(opt);

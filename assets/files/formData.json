@@ -3,25 +3,25 @@
         "id": "prj",
         "title": "Original Project",
         "fields": [
-            { "label": "Project No", "id": "project-no", "type": "text" , "class": "uppercase", "onChange": "handleProjectChange"},
-            { "label": "Project Name", "id": "project-name", "type": "text" },
-            { "label": "Shop Order", "id": "shop-order", "type": "text" },
-            { "label": "Series", "id": "series", "type": "text" },
-            { "label": "Operation", "id": "operation", "type": "text" },
-            { "label": "Spec", "id": "spec", "type": "text" },
-            { "label": "Schedule", "id": "schedule", "type": "text" }
+            { "label": "Project No", "id": "project-no", "type": "text" , "class": "uppercase", "onChange": "handleProjectChange", "mapping": "PRJ_NO"},
+            { "label": "Project Name", "id": "project-name", "type": "text" , "mapping": "PRJ_NAME"},
+            { "label": "Shop Order", "id": "shop-order", "type": "text" , "mapping": "ORDER_NO"},
+            { "label": "Series", "id": "series", "type": "select", "source": "getSeries" , "mapping": "SERIES"},
+            { "label": "Operation", "id": "operation", "type": "text" , "mapping": "OPERATION"},
+            { "label": "Spec", "id": "spec", "type": "text" , "mapping": "SPEC"},
+            { "label": "Schedule", "id": "schedule", "type": "text" , "mapping": "AMEC_SCHDL"}
         ]
     },
     {
         "id": "info",
         "title": "Inquiry Information",
         "fields": [
-            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase" },
-            { "label": "Revision", "id": "revision", "type": "readonly" },
+            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase", "onChange": "handleInquiryChange"},
+            { "label": "Revision", "id": "revision", "type": "readonly", "value": "*" },
             { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "value": "2025-07-12" },
             { "label": "Trader", "id": "trader", "type": "select",  "source": "getTraders"  },
-            { "label": "Agent", "id": "agent", "type": "select", "source": "getAgent" },
-            { "label": "Country", "id": "country", "type": "select", "source": "getCountries", "onChange": "handleCountryChange"  },
+            { "label": "Agent", "id": "agent", "type": "select", "source": "getAgent", "mapping": "AGENT" },
+            { "label": "Country", "id": "country", "type": "select", "source": "getCountries", "mapping": "DSTN" },
             { "label": "Status", "id": "status", "type": "status", "value": "New" }
         ]
     },
@@ -33,7 +33,7 @@
             { "label": "Weight Require", "id": "weight-require", "type": "radio", "options": ["Yes", "No"], "value": "No" },
             { "label": "Quotation type", "id": "quotation-type", "type": "select", "source": "getQuoType" },
             { "label": "Delivery Term", "id": "delivery-term", "type": "select", "source": "getDeliveryTerm" },
-            { "label": "Delivery Method", "id": "delivery-method", "type": "select", "options": ["TRUCK", "AIR", "SEA"] },
+            { "label": "Delivery Method", "id": "delivery-method", "type": "select", "source": "getMethod" },
             { "label": "Lead Time", "id": "inq-leadtime","type": "select", "source": "getShipment" },
             { "label": "Currency", "id": "currency", "type": "select", "source": "getCurrency"},
             { "label": "Remark", "id": "remark", "type": "textarea" }

@@ -9,7 +9,7 @@ module.exports = {
     app: "./assets/script/app.js",
     //MAR User
     mar_inquiry: "./assets/script/mar/inquiry.js",
-    mar_inqdetail: "./assets/script/mar/inq_detail.js",
+    mar_inqdetail: "./assets/script/mar/inqdetail.js",
     priceratio: "./assets/script/mar/priceratio.js",
     currency: "./assets/script/mar/currency.js",
   },

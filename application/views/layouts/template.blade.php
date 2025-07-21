@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/v2025/icofont.min.css">
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css">
     <link rel="stylesheet"
-        href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}">
+        href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/tailwind.css?ver={{ $GLOBALS['version'] }}">
     <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">
     <script src="{{ $_ENV['APP_HOST'] }}script.js"></script>
     @yield('styles')

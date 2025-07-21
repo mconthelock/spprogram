@@ -13,31 +13,30 @@ export async function createFieldInput(field) {
     case "readonly":
     case "text":
     case "date":
-      const inputLabel = `<label class="input bg-white">
+      const inputLabel = `<label class="input bg-white w-full">
             <input type="${field.type}" id="${field.id}"
-                class="form-input-readonly  ${
-                  field.class !== undefined ? field.class : ""
-                }"
-                value="${field.value === undefined ? "" : field.value}"/>
+                class="w-full   ${field.class !== undefined ? field.class : ""}"
+                value="${field.value === undefined ? "" : field.value}" ${
+        field.type == "readonly" ? "readonly" : ""
+      }  data-mapping="${field.mapping}"/>
             <span class="loading loading-spinner text-primary  hidden"></span>
         </label>`;
       inputContainer.innerHTML = inputLabel;
       elementToListen = inputContainer.querySelector(`#${field.id}`);
       break;
     case "textarea":
-      const textarea = document.createElement("textarea");
-      textarea.id = field.id;
-      textarea.className =
-        "w-full border border-gray-300 rounded-md p-2 text-xs";
-      if (field.class !== undefined) {
-        textarea.classList.add(field.class);
-      }
-      inputContainer.appendChild(textarea);
+      const textarea = `<textarea class="textarea ${
+        field.class !== undefined ? field.class : ""
+      }" id="${field.id}" name="${field.id}" data-mapping="${
+        field.mapping
+      }"></textarea>`;
+      inputContainer.innerHTML = textarea;
       break;
 
     case "select":
       const selectInput = document.createElement("select");
       selectInput.id = field.id;
+      selectInput.setAttribute("data-mapping", field.mapping);
       selectInput.className =
         "w-full border border-gray-300 rounded-md p-2 bg-white select2";
 
@@ -62,7 +61,6 @@ export async function createFieldInput(field) {
       elementToListen = selectInput;
 
       setTimeout(() => {
-        console.log(`#${field.id}`);
         const jQueryElement = $(`#${field.id}`);
         jQueryElement.select2({ width: "100%" });
 
