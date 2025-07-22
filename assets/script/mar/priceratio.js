@@ -1,4 +1,7 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "@styles/select2.min.css";
+import "@styles/datatable.min.css";
+
 import "select2";
 import {
   showMessage,
@@ -18,6 +21,9 @@ import {
 } from "../service/master.js";
 var table;
 $(document).ready(async () => {
+  $(".mainmenu").find("details").attr("open", false);
+  $(".mainmenu.navmenu-admin").find("details").attr("open", true);
+
   const data = await getPriceRatio();
   const opt = await tableOpt(data);
   table = await createTable(opt);
@@ -145,17 +151,27 @@ async function tableOpt(data) {
       render: function (data, type, row) {
         return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
         <div class="flex items-center justify-center gap-2">
+
             <button class="btn btn-sm btn-ghost btn-circle save-row ${
               row.isNew === undefined ? "hidden" : ""
             }" data-id="${data}"><i class="icofont-save text-lg"></i></button>
+
+            <button class="btn btn-sm btn-ghost btn-circle ignore-row ${
+              row.isNew === undefined ? "hidden" : ""
+            }" data-id="${data}"><i class="icofont-close text-lg text-red-500"></i></button>
 
             <button class="btn btn-sm btn-ghost btn-circle edit-row ${
               row.isNew !== undefined ? "hidden" : ""
             }" data-id="${data}"><i class="icofont-pencil-alt-5 text-lg"></i></button>
 
-            <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
-              row.STATUS === 0 ? "hidden" : ""
-            }" data-id="${data}" data-value="0"><i class="icofont-trash text-lg text-red-500"></i></button>
+            <button class="btn btn-sm btn-ghost btn-circle toggle-status
+                ${row.STATUS === 0 ? "hidden" : ""}
+                ${row.isNew !== undefined ? "hidden" : ""}"
+                data-id="${data}" data-value="0">
+                <i class="icofont-trash text-lg text-red-500"></i>
+            </button>
+
+
 
             <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
               row.STATUS === 1 ? "hidden" : ""
@@ -321,6 +337,19 @@ $(document).on("click", ".toggle-status", async function (e) {
   const data = table.row($(this).parents("tr")).data();
   const row = table.row($(this).parents("tr"));
   const res = await statusPriceRatio({ id, status });
+  row.data(res[0]);
+  row.draw(false);
+});
+
+$(document).on("click", ".ignore-row", async function (e) {
+  e.preventDefault();
+  const row = table.row($(this).parents("tr"));
+  const data = row.data();
+  const res = await findPriceRatio({
+    TRADER: data.TRADER,
+    SUPPLIER: data.SUPPLIER,
+    QUOTATION: data.quoText,
+  });
   row.data(res[0]);
   row.draw(false);
 });

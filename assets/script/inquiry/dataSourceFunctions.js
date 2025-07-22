@@ -124,7 +124,7 @@ export const eventHandlers = {
     const loader = $(obj).closest(".input").find(".loading");
     loader.removeClass("hidden");
 
-    const q = { PRJ_NO: obj.value };
+    const q = { PRJ_NO: obj.value.toUpperCase() };
     const data = await mkt.getMainProject(q);
     if (data.length > 0) {
       const values = data[0];
@@ -158,7 +158,11 @@ export const eventHandlers = {
 
   handleInquiryChange: async (e) => {
     const settting = (val) => {
-      console.log(val);
+      $("#trader").val(val.CNT_TRADER).trigger("change");
+      $("#quotation-type").val(val.CNT_QUOTATION).trigger("change");
+      $("#delivery-method").val(val.CNT_METHOD).trigger("change");
+      $("#delivery-term").val(val.CNT_TERM).trigger("change");
+      $("#inq-leadtime").val("1").trigger("change");
     };
 
     const obj = e.target;
@@ -181,16 +185,18 @@ export const eventHandlers = {
 
     const controller = await mst.getControl();
     const prefix = controller.find(
-      (clt) => clt.CNT_PREFIX == values.substring(0, 5)
+      (clt) => clt.CNT_PREFIX == values.substring(0, 5).toUpperCase()
     );
+    console.log(prefix);
+
     if (prefix !== undefined) {
+      await settting(prefix);
     } else {
       const agent = $("#agent").val().split("(")[0].trim();
       const anyprefix = controller.find(
         (clt) => clt.CNT_AGENT == agent && clt.CNT_PREFIX == "Any"
       );
-
-      settting(anyprefix);
+      await settting(anyprefix);
     }
 
     loader.addClass("hidden");

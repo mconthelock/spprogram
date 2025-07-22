@@ -1,8 +1,8 @@
 [
     {
         "menu_id": 1,
-        "menu_class":"nav-inquiry",
-        "menu_icon": "<i class='icofont-chart-histogram'></i>",
+        "menu_class":"navmenu-newinq",
+        "menu_icon": "<i class='icofont-paper-plane'></i>",
         "menu_link": "",
         "menu_name": "Inquiry",
         "menu_order": 1,
@@ -20,7 +20,7 @@
                 "menu_top": ""
             },
             {
-                "menu_id": 1,
+                "menu_id": 2,
                 "menu_class":"nav-inquiry",
                 "menu_icon": "<i class='icofont-chart-histogram'></i>",
                 "menu_link": "",
@@ -30,7 +30,7 @@
                 "menu_top": ""
             },
             {
-                "menu_id": 1,
+                "menu_id": 3,
                 "menu_class":"nav-inquiry",
                 "menu_icon": "<i class='icofont-chart-histogram'></i>",
                 "menu_link": "",
@@ -40,11 +40,21 @@
                 "menu_top": ""
             },
             {
-                "menu_id": 1,
+                "menu_id": 4,
                 "menu_class":"nav-inquiry",
                 "menu_icon": "<i class='icofont-chart-histogram'></i>",
                 "menu_link": "mar/inquiry",
                 "menu_name": "On process inquiry",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 5,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry",
+                "menu_name": "Report",
                 "menu_order": 1,
                 "menu_tname": "",
                 "menu_top": ""
@@ -53,8 +63,80 @@
     },
     {
         "menu_id": 2,
-        "menu_class":"nav-master",
-        "menu_icon": "<i class='icofont-chart-histogram'></i>",
+        "menu_class":"navmenu-quotation",
+        "menu_icon": "<i class='icofont-newspaper'></i>",
+        "menu_link": "",
+        "menu_name": "Quotation",
+        "menu_order": 2,
+        "menu_tname": "",
+        "menu_top": "",
+        "submenu": [
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry",
+                "menu_name": "Issue Quotation",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry",
+                "menu_name": "Pending Weight",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry",
+                "menu_name": "Quotation Released",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-inquiry",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/inquiry",
+                "menu_name": "Add Out to out quotation",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            }
+        ]
+    },
+    {
+        "menu_id": 3,
+        "menu_class":"navmenu-orders",
+        "menu_icon": "<i class='icofont-cart'></i>",
+        "menu_link": "",
+        "menu_name": "Orders",
+        "menu_order": 3,
+        "menu_tname": "",
+        "menu_top": ""
+    },
+    {
+        "menu_id": 5,
+        "menu_class":"navmenu-price",
+        "menu_icon": "<i class='icofont-notepad'></i>",
+        "menu_link": "",
+        "menu_name": "Price List",
+        "menu_order": 4,
+        "menu_tname": "",
+        "menu_top": ""
+    },
+    {
+        "menu_id": 6,
+        "menu_class":"navmenu-admin",
+        "menu_icon": "<i class='icofont-options'></i>",
         "menu_link": "",
         "menu_name": "Master",
         "menu_order": 2,
@@ -77,6 +159,16 @@
                 "menu_icon": "<i class='icofont-chart-histogram'></i>",
                 "menu_link": "mar/currency",
                 "menu_name": "Currency",
+                "menu_order": 1,
+                "menu_tname": "",
+                "menu_top": ""
+            },
+            {
+                "menu_id": 1,
+                "menu_class":"nav-master",
+                "menu_icon": "<i class='icofont-chart-histogram'></i>",
+                "menu_link": "mar/control",
+                "menu_name": "Default Inquiry Setting",
                 "menu_order": 1,
                 "menu_tname": "",
                 "menu_top": ""

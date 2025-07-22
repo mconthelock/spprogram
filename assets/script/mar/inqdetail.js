@@ -1,5 +1,6 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
+import "@styles/datatable.min.css";
 
 import { showMessage, showLoader, intVal, digits } from "@root/utils.js";
 import { createTable } from "@public/_dataTable.js";
@@ -10,7 +11,8 @@ import { validateDrawingNo } from "../drawing.js";
 var table;
 $(document).ready(async () => {
   $(".mainmenu").find("details").attr("open", false);
-  $(".mainmenu.nav-inquiry").find("details").attr("open", true);
+  $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
+
   const cards = await setupCard();
   const tableContainer = await setupTable();
   table = await createTable(tableContainer);
