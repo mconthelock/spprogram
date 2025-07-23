@@ -2,10 +2,16 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 
-import { showMessage, showLoader, intVal, digits } from "@root/utils.js";
 import { createTable } from "@public/_dataTable.js";
+import {
+  showMessage,
+  errorMessage,
+  showLoader,
+  intVal,
+  digits,
+} from "../utils.js";
 import formData from "../../files/formData.json";
-import { createFormCard } from "../inquiry/detail.js";
+import { createFormCard, createReasonModal } from "../inquiry/detail.js";
 import { validateDrawingNo } from "../drawing.js";
 
 var table;
@@ -16,6 +22,7 @@ $(document).ready(async () => {
   const cards = await setupCard();
   const tableContainer = await setupTable();
   table = await createTable(tableContainer);
+  const reason = await createReasonModal();
 });
 
 async function setupCard() {
@@ -41,6 +48,9 @@ async function setupCard() {
   cardElements.forEach((element) => {
     if (element) {
       form.append(element);
+      if ($(element).find("#currency").length > 0) {
+        $(element).find("#currency").closest(".grid").addClass("hidden");
+      }
     }
   });
 }
@@ -51,7 +61,6 @@ async function setupTable() {
   opt.data = mockupData;
   opt.paging = false;
   opt.info = false;
-  //   opt.ordering = false;
   opt.orderFixed = [0, "asc"];
   opt.dom = `<"flex"<"table-search flex flex-1 gap-5 hidden "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
@@ -92,7 +101,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[55px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[55px] cell-input carno" value="${data}">`;
         }
         return data;
       },
@@ -191,7 +200,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<select class="!w-[100px] select select-sm">
+          return `<select class="!w-[100px] select select-sm supplier">
             <option value=""></option>
             <option value="AMEC">AMEC</option>
             <option value="MELINA">MELINA</option>
@@ -204,6 +213,7 @@ async function setupTable() {
     {
       data: "INQD_SENDPART",
       title: `<div class="text-center text-white">2<sup>nd</sup></div>`,
+      className: "text-center",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -215,10 +225,12 @@ async function setupTable() {
     {
       data: "INQD_UNREPLY",
       title: `<div class="text-center text-white">U/N</div>`,
+      className: "text-center",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black" />`;
+          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply"
+           ${data != "" ? "checked" : ""}/>`;
         }
         return data;
       },
@@ -236,19 +248,18 @@ async function setupTable() {
     },
   ];
   opt.initComplete = function (settings, json) {
-    $(".table-page").append(`<div class="flex gap-2">
+    const btn = `<div class="flex gap-2">
       <div class="tooltip" data-tip="Add line">
         <button id="addRowBtn" class="btn btn-primary btn-sm btn-square" type="button"><i class="icofont-plus text-xl text-white"></i></button>
       </div>
-
       <div class="tooltip" data-tip="Upload inquiry">
         <button id="addRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-upload-alt text-xl text-white"></i></button>
       </div>
-
       <div class="tooltip" data-tip="Download template">
         <button id="showRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-download text-xl text-white"></i></button>
       </div>
-    </div>`);
+    </div>`;
+    $(".table-page").append(btn);
   };
   return opt;
 }
@@ -286,7 +297,7 @@ async function initRow(id) {
 $(document).on("click", "#addRowBtn", async function (e) {
   e.preventDefault();
   const lastRow = table.row(":not(.d-none):last").data();
-  let id = lastRow === undefined ? 1 : lastRow.id + 1;
+  let id = lastRow === undefined ? 1 : intVal(lastRow.id) + 1;
   const newRow = await initRow(digits(id, 0));
   const row = table.row.add(newRow).draw();
   $(row.node()).find("td:eq(3) input").focus();
@@ -308,7 +319,7 @@ $(document).on("change", "#table tbody input", function () {
     newValue = newValue.replace(/-/g, "/");
   }
   cell.data(newValue);
-  console.log("Cell updated:", cell.data());
+  console.log("data updated:", cell.data());
 });
 
 $(document).on("click", "#showRowBtn", function () {
@@ -316,8 +327,13 @@ $(document).on("click", "#showRowBtn", function () {
   console.log("Current Table Data:", data.toArray());
 });
 
+$(document).on("change", ".carno", function () {});
+$(document).on("change", ".supplier", function () {});
+$(document).on("click", ".unreply", async function () {
+  $("#modal-reason").click();
+});
+
 async function tset() {
   const test = "LHC-1220AG01";
-  //   const test = "YA129C137  G01";
   console.log("DWG: ", validateDrawingNo(test));
 }

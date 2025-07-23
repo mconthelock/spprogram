@@ -2,6 +2,7 @@ import "select2/dist/css/select2.min.css";
 import "select2";
 
 import { dataSourceFunctions, eventHandlers } from "./dataSourceFunctions.js";
+import { digits } from "../service/master.js";
 
 export async function createFieldInput(field) {
   const inputContainer = document.createElement("div");
@@ -180,4 +181,19 @@ export async function createFormCard(cardData) {
 
   card.appendChild(body);
   return card;
+}
+
+export async function createReasonModal() {
+  const modal = `<input type="checkbox" id="modal-reason" class="modal-toggle" />
+        <div class="modal" role="dialog">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold">Hello!</h3>
+                <p class="py-4">This modal works with a hidden checkbox!</p>
+                <div class="modal-action">
+                    <label for="modal-reason" class="btn">Close!</label>
+                </div>
+            </div>
+        </div>
+    `;
+  $("body").append(modal);
 }

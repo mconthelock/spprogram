@@ -73,7 +73,7 @@ export const errorMessage = async function (error) {
   }
 };
 
-export const showLoader = (val) => {
+export const showLoader = (val = true) => {
   $("#loading-box").prop("checked", val);
 };
 
