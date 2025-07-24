@@ -12,6 +12,7 @@ module.exports = {
   mode: "jit",
   content: [
     "./application/views/**/*.php",
+    "./assets/script/*.js",
     "./assets/script/**/*.js",
     "./assets/style/*.css",
   ],

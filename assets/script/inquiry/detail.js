@@ -1,8 +1,9 @@
 import "select2/dist/css/select2.min.css";
 import "select2";
 
-import { dataSourceFunctions, eventHandlers } from "./dataSourceFunctions.js";
-import { digits } from "../service/master.js";
+import { dataSourceFunctions, eventHandlers } from "./dataSourceFunctions";
+import { getReason } from "../service/master";
+import { creatBtn } from "../utils";
 
 export async function createFieldInput(field) {
   const inputContainer = document.createElement("div");
@@ -184,16 +185,69 @@ export async function createFormCard(cardData) {
 }
 
 export async function createReasonModal() {
+  const reason = await getReason();
+  let str = ``;
+  reason.map((item) => {
+    if (item.REASON_ID == 99) {
+      str += `<li class="flex flex-col gap-2">
+        <div>
+            <input type="radio" name="reason"
+                class="radio radio-sm radio-neutral me-2 reason-code"
+                id="reason-${item.REASON_ID}"
+                value="${item.REASON_ID}" />
+            <span>${item.REASON_DESC}</span>
+        </div>
+        <div>
+            <fieldset class="fieldset">
+                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other"></textarea>
+                <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
+                <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
+            </fieldset>
+        </div>
+      </li>`;
+    } else {
+      str += `<li>
+        <input type="radio" name="reason"
+            class="radio radio-sm radio-neutral me-2 reason-code"
+            id="reason-${item.REASON_ID}" value="${item.REASON_ID}"/>
+        <input type="hidden" class="text-comment" value="${item.REASON_DESC}"/>
+        <span>${item.REASON_DESC}</span>
+      </li>`;
+    }
+  });
+
+  const btnSave = await creatBtn({
+    id: "save-reason",
+    className: "btn-outline  btn-primary  text-primary hover:text-white",
+  });
+  const btnCancel = await creatBtn({
+    id: "cancel-reason",
+    title: "Cancel",
+    icon: "icofont-close text-2xl",
+    className: "btn-outline  btn-neutral  text-neutral hover:text-white",
+  });
+
   const modal = `<input type="checkbox" id="modal-reason" class="modal-toggle" />
         <div class="modal" role="dialog">
-            <div class="modal-box">
-                <h3 class="text-lg font-bold">Hello!</h3>
-                <p class="py-4">This modal works with a hidden checkbox!</p>
-                <div class="modal-action">
-                    <label for="modal-reason" class="btn">Close!</label>
-                </div>
+            <div class="modal-box p-8">
+                <h3 class="text-lg font-bold mb-3">Unable to reply reason</h3>
+                <div class="divider"></div>
+                <ul class="flex flex-col gap-3">${str}</ul>
+                <input type="hidden" id="reason-target"/>
+                <div class="flex gap-2">${btnSave}${btnCancel}</div>
             </div>
         </div>
     `;
   $("body").append(modal);
+}
+
+export async function elmesTable() {
+  const str = `<input type="checkbox" id="showElmes" class="modal-toggle" />
+        <div class="modal" role="dialog">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold">Hello!</h3>
+                <p class="py-4">This modal works with a hidden checkbox!</p>
+            </div>
+        </div>`;
+  $("body").append(str);
 }

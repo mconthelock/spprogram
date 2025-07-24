@@ -95,6 +95,34 @@ export const showConfirm = (
   }
 };
 
+export const creatBtn = async (option = {}) => {
+  const opt = {
+    id: "btn-save",
+    title: "Save Changes",
+    icon: "icofont-save text-xl",
+    className: "btn-primary",
+    ...option,
+  };
+
+  if (opt.type == "link") {
+    return `<a class="btn rounded-none transition delay-100 duration-300 ease-in-out ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
+            <div class="loading loading-spinner hidden"></div>
+            <div class="flex items-center gap-2">
+                <i class="${opt.icon}"></i>
+                <div>${opt.title}</div>
+            </div>
+        </a>`;
+  }
+
+  return `<button class="btn rounded-none transition delay-100 duration-300 ease-in-out ${opt.className}" type="button" id="${opt.id}">
+            <div class="loading loading-spinner hidden"></div>
+            <div class="flex items-center gap-2">
+                <i class="${opt.icon}"></i>
+                <div>${opt.title}</div>
+            </div>
+        </button>`;
+};
+
 export const intVal = function (i) {
   return typeof i === "string"
     ? i.replace(/[\$,]/g, "") * 1

@@ -3,16 +3,22 @@ import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 
 import { createTable } from "@public/_dataTable.js";
+import formData from "../../files/formData.json";
+import { getMainProject } from "../service/mkt.js";
+import { validateDrawingNo } from "../drawing.js";
 import {
   showMessage,
   errorMessage,
   showLoader,
   intVal,
   digits,
+  creatBtn,
 } from "../utils.js";
-import formData from "../../files/formData.json";
-import { createFormCard, createReasonModal } from "../inquiry/detail.js";
-import { validateDrawingNo } from "../drawing.js";
+import {
+  createFormCard,
+  createReasonModal,
+  elmesTable,
+} from "../inquiry/detail.js";
 
 var table;
 $(document).ready(async () => {
@@ -23,6 +29,8 @@ $(document).ready(async () => {
   const tableContainer = await setupTable();
   table = await createTable(tableContainer);
   const reason = await createReasonModal();
+  const btn = await setupButton();
+  const elmes = await elmesTable();
 });
 
 async function setupCard() {
@@ -89,7 +97,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[50px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[50px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -113,7 +121,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[150px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[150px] cell-input mfgno elmes-input" value="${data}">`;
         }
         return data;
       },
@@ -125,7 +133,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[75px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[75px] cell-input item elmes-input" value="${data}">`;
         }
         return data;
       },
@@ -137,7 +145,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[200px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[200px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -149,7 +157,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[225px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[225px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -161,7 +169,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[200px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[200px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -173,7 +181,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="number" min="1" class="!w-[50px] cell-input" value="${
+          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${
             data == "" ? 1 : data
           }">`;
         }
@@ -187,7 +195,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="type" class="!w-[75px] cell-input" value="${
+          return `<input type="type" class="!w-[75px] cell-input edit-input" value="${
             data == "" ? "PC" : data
           }">`;
         }
@@ -200,7 +208,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<select class="!w-[100px] select select-sm supplier">
+          return `<select class="!w-[100px] select select-sm supplier edit-input">
             <option value=""></option>
             <option value="AMEC">AMEC</option>
             <option value="MELINA">MELINA</option>
@@ -241,7 +249,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[250px] cell-input" value="${data}">`;
+          return `<input type="text" class="!w-[250px] cell-input remark edit-input" value="${data}">`;
         }
         return data;
       },
@@ -294,6 +302,38 @@ async function initRow(id) {
   };
 }
 
+async function setupButton() {
+  const sendDE = await creatBtn({
+    id: "send-de",
+    title: "Send to Design",
+    className: "btn-primary text-white",
+  });
+
+  const sendIS = await creatBtn({
+    id: "send-bm",
+    title: "Send to Pre-BM",
+    icon: "icofont-console text-2xl",
+    className: "btn-neutral text-white",
+  });
+
+  const draft = await creatBtn({
+    id: "draft",
+    title: "Send draft",
+    icon: "icofont-attachment text-2xl",
+    className: "btn-neutral text-white",
+  });
+
+  const back = await creatBtn({
+    id: "goback",
+    title: "Back",
+    type: "link",
+    href: `${process.env.APP_ENV}/mar/inquiry`,
+    icon: "icofont-arrow-left text-2xl",
+    className: "btn-outline btn-neutral text-neutral hover:text-white",
+  });
+  $("#btn-container").append(sendDE, sendIS, draft, back);
+}
+
 $(document).on("click", "#addRowBtn", async function (e) {
   e.preventDefault();
   const lastRow = table.row(":not(.d-none):last").data();
@@ -312,28 +352,118 @@ $(document).on("click", ".add-sub-line", async function (e) {
   $(row.node()).find("td:eq(3) input").focus();
 });
 
-$(document).on("change", "#table tbody input", function () {
+$(document).on("change", ".edit-input", function () {
   const cell = table.cell($(this).closest("td"));
   let newValue = $(this).val();
   if ($(this).attr("type") === "date") {
     newValue = newValue.replace(/-/g, "/");
   }
   cell.data(newValue);
-  console.log("data updated:", cell.data());
 });
 
-$(document).on("click", "#showRowBtn", function () {
-  const data = table.rows().data();
-  console.log("Current Table Data:", data.toArray());
+$(document).on("change", ".carno", async function (e) {
+  e.preventDefault();
+  const row = table.row($(this).closest("tr"));
+  const data = row.data();
+  const prjno = $("#project-no").val();
+  if (prjno == "") return;
+
+  const carno = $(this).val();
+  const orders = await getMainProject({
+    PRJ_NO: prjno,
+    CAR_NO: carno,
+  });
+
+  if (orders.length > 0) {
+    const newData = {
+      ...data,
+      INQD_CAR: carno,
+      INQD_MFGORDER: orders[0].MFGNO,
+    };
+    row.data(newData);
+    row.draw(false);
+    $(row.node()).find(".item").focus();
+  }
 });
 
-$(document).on("change", ".carno", function () {});
-$(document).on("change", ".supplier", function () {});
+$(document).on("change", ".elmes-input", function (e) {
+  e.preventDefault();
+  const row = table.row($(this).closest("tr"));
+  const data = row.data();
+  const mfgno = $(row.node()).find(".mfgno").val();
+  const item = $(row.node()).find(".item").val();
+});
+
+//Unable to reply checkbox
 $(document).on("click", ".unreply", async function () {
+  const row = table.rows($(this).parents("tr"));
+  const data = row.data();
+  if (data.INQD_UNREPLY != "") {
+    $(`#reason-${data.INQD_UNREPLY}`).prop("checked", true);
+    if (data.INQD_UNREPLY == 99)
+      $("#text-comment-other").val(data.INQD_MAR_REMARK);
+  } else {
+    $(`.reason-code:first`).prop("checked", true);
+  }
+  $("#reason-target").val(row.index());
   $("#modal-reason").click();
 });
 
-async function tset() {
-  const test = "LHC-1220AG01";
-  console.log("DWG: ", validateDrawingNo(test));
-}
+$(document).on("click", "#cancel-reason", async function () {
+  const target = $("#reason-target").val();
+  $(table.row(target).node()).find(".unreply").prop("checked", false);
+  $(table.row(target).node()).find(".remark").val("");
+  $("#text-comment-other").val(``);
+  $("#text-count").html("0");
+  $("#modal-reason").prop("checked", false);
+});
+
+$(document).on("click", "#save-reason", async function () {
+  const target = $("#reason-target").val();
+  const row = table.row(target);
+  const selected = $(".reason-code:checked");
+  const remark = selected.closest("li").find(".text-comment").val();
+  if (remark == "" || selected.val() == undefined) {
+    $(".text-comment").addClass("border-red-500");
+    $(".text-comment-err").html(
+      `Please explain reason, Why you can't reply this line.`
+    );
+    return;
+  }
+
+  $(table.row(target).node()).find(".unreply").prop("checked", true);
+  $(table.row(target).node()).find(".unreply").val(selected.val());
+  $(table.row(target).node()).find(".remark").val(remark);
+  $("#reason-target").val(selected.val());
+
+  const data = row.data();
+  const newData = {
+    ...data,
+    INQD_UNREPLY: selected.val(),
+    INQD_MAR_REMARK: remark,
+  };
+
+  table.row(target).data(newData);
+  $("#text-comment-other").val(``);
+  $("#text-count").html("0");
+  $("#modal-reason").prop("checked", false);
+});
+
+$(document).on("keyup", ".text-comment", async function () {
+  $(this).removeClass("border-red-500");
+  $(this).closest("li").find(".text-comment-err").html("");
+  $("#text-count").removeClass("text-red-500");
+  const txt = $(this).val();
+  let cnt = $(this).val().length;
+  if (cnt > 100) {
+    $("#text-count").addClass("text-red-500");
+    $(this).val(txt.substring(0, 100));
+    $(this).addClass("border-red-500");
+    $(this)
+      .closest("li")
+      .find(".text-comment-err")
+      .html(`Maximun is 100 charactors.`);
+    return;
+  }
+  $("#text-count").html(cnt);
+});
