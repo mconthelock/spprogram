@@ -110,6 +110,7 @@
     --color-body: 229, 231, 235;
     --bgcolor-dataTable-thead: var(--color-primary);
     --bgcolor-dataTable-tbody: #fff;
+    --color-dataTable-thead: #fff;
   }
 
   body {
@@ -177,6 +178,14 @@
     border-bottom: #3b82f6 1px solid;
     background-color: #eff6ff;
     cursor: pointer;
+  }
+
+  #select-dt-rows-all {
+    @apply !checkbox-neutral !text-neutral;
+  }
+
+  .select-dt-row {
+    @apply !text-white;
   }
 
   /* Overwrite Select2 */

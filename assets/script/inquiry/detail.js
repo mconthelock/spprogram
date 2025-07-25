@@ -241,13 +241,51 @@ export async function createReasonModal() {
   $("body").append(modal);
 }
 
-export async function elmesTable() {
+export async function elmesComponent() {
+  const confirmBtn = await creatBtn({
+    id: "elmes-confirm",
+    title: "Confirm",
+    icon: "",
+    className: "btn-primary btn-outline text-primary hover:text-white",
+  });
+  const cancelBtn = await creatBtn({
+    id: "elmes-cancel",
+    title: "Cancel",
+    icon: "icofont-close text-2xl",
+    className: "btn-neutral btn-outline text-neutral hover:text-white",
+  });
+
   const str = `<input type="checkbox" id="showElmes" class="modal-toggle" />
-        <div class="modal" role="dialog">
-            <div class="modal-box">
-                <h3 class="text-lg font-bold">Hello!</h3>
-                <p class="py-4">This modal works with a hidden checkbox!</p>
-            </div>
-        </div>`;
+    <div class="modal" role="dialog">
+        <div class="modal-box w-[100vw] max-w-[100vw] h-[100vh] overflow-y-scroll">
+            <h3 class="text-lg font-bold">Part List</h3>
+            <table id="tableElmes" class="table w-full"></table>
+            <input type="text" id="elmes-target"/>
+            <div class="flex gap-2">${confirmBtn}${cancelBtn}</div>
+        </div>
+    </div>`;
   $("body").append(str);
+}
+
+export async function elmesTable(data) {
+  const opt = {};
+  opt.data = data;
+  opt.columns = [
+    { data: "orderno", title: "MFG No." },
+    { data: "carno", title: "Car" },
+    { data: "itemno", title: "Item" },
+    { data: "partname", title: "Part Name" },
+    { data: "drawing", title: "Drawing No." },
+    { data: "variable", title: "Variable" },
+    { data: "qty", title: "Qty" },
+    {
+      data: "supply",
+      title: "Supply",
+      render: (data) => {
+        return `AMEC`;
+      },
+    },
+    { data: "scndpart", title: `2<sup>nd</sup>` },
+  ];
+  return opt;
 }

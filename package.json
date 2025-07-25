@@ -20,6 +20,7 @@
     "crypto-js": "^4.2.0",
     "datatables.net-dt": "^2.1.8",
     "datatables.net-responsive-dt": "^3.0.3",
+    "datatables.net-select": "^3.0.1",
     "dayjs": "^1.11.13",
     "exceljs": "^4.4.0",
     "flatpickr": "^4.6.13",

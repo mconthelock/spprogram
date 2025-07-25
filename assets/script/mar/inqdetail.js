@@ -1,10 +1,13 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
+import "datatables.net-select";
 
-import { createTable } from "@public/_dataTable.js";
+import { createTable, destroyTable } from "@public/_dataTable.js";
+import { readInput } from "@public/_excel.js";
 import formData from "../../files/formData.json";
 import { getMainProject } from "../service/mkt.js";
+import { getElmesItem } from "../service/elmes.js";
 import { validateDrawingNo } from "../drawing.js";
 import {
   showMessage,
@@ -17,20 +20,22 @@ import {
 import {
   createFormCard,
   createReasonModal,
+  elmesComponent,
   elmesTable,
 } from "../inquiry/detail.js";
 
 var table;
+var tableElmes;
 $(document).ready(async () => {
   $(".mainmenu").find("details").attr("open", false);
   $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
 
+  const reason = await createReasonModal();
+  const btn = await setupButton();
+  const elmes = await elmesComponent();
   const cards = await setupCard();
   const tableContainer = await setupTable();
   table = await createTable(tableContainer);
-  const reason = await createReasonModal();
-  const btn = await setupButton();
-  const elmes = await elmesTable();
 });
 
 async function setupCard() {
@@ -133,7 +138,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[75px] cell-input item elmes-input" value="${data}">`;
+          return `<input type="text" class="!w-[75px] cell-input itemno elmes-input" value="${data}">`;
         }
         return data;
       },
@@ -145,7 +150,7 @@ async function setupTable() {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[200px] cell-input edit-input" value="${data}">`;
+          return `<input type="text" class="!w-[200px] cell-input edit-input partname" value="${data}">`;
         }
         return data;
       },
@@ -261,10 +266,11 @@ async function setupTable() {
         <button id="addRowBtn" class="btn btn-primary btn-sm btn-square" type="button"><i class="icofont-plus text-xl text-white"></i></button>
       </div>
       <div class="tooltip" data-tip="Upload inquiry">
-        <button id="addRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-upload-alt text-xl text-white"></i></button>
+        <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-upload-alt text-xl text-white"></i></button>
+        <input type="file" id="import-tsv" class="hidden" />
       </div>
       <div class="tooltip" data-tip="Download template">
-        <button id="showRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-download text-xl text-white"></i></button>
+        <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-download text-xl text-white"></i></button>
       </div>
     </div>`;
     $(".table-page").append(btn);
@@ -382,16 +388,79 @@ $(document).on("change", ".carno", async function (e) {
     };
     row.data(newData);
     row.draw(false);
-    $(row.node()).find(".item").focus();
+    $(row.node()).find(".itemno").focus();
   }
 });
 
-$(document).on("change", ".elmes-input", function (e) {
+//Elmes Table
+$(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   const data = row.data();
   const mfgno = $(row.node()).find(".mfgno").val();
-  const item = $(row.node()).find(".item").val();
+  const item = $(row.node()).find(".itemno").val();
+  const elmes = await getElmesItem(mfgno, item);
+  if (elmes.length > 0) {
+    const setting = await elmesTable(elmes);
+    tableElmes = await createTable(setting, {
+      id: "#tableElmes",
+      columnSelect: { status: true },
+    });
+    $("#elmes-target").val(row.index());
+    $("#showElmes").click();
+  } else {
+    const newData = {
+      ...data,
+      INQD_MFGORDER: mfgno,
+      INQD_ITEM: item,
+    };
+    row.data(newData);
+    row.draw(false);
+  }
+});
+
+$(document).on("click", "#elmes-confirm", async function () {
+  const increse = 1;
+  const elmesData = tableElmes.rows().data();
+  const rowid = $("#elmes-target").val();
+  const data = table.row(rowid).data();
+  //Delete current row first
+  table.rows(rowid).remove().draw();
+  //Insert rows
+  let i = 0;
+  let id = intVal(data.INQD_SEQ);
+  elmesData.map((val) => {
+    const newRow = {
+      ...data,
+      id: id + i,
+      INQD_SEQ: id + i,
+      INQD_CAR: val.carno,
+      INQD_MFGORDER: val.orderno,
+      INQD_ITEM: val.itemno,
+      INQD_PARTNAME: val.partname,
+      INQD_DRAWING: val.drawing,
+      INQD_VARIABLE: val.variable,
+      INQD_QTY: val.qty,
+      INQD_SUPPLIER: val.supply,
+      INQD_SENDPART: val.scndpart,
+    };
+    table.row.add(newRow).draw(false);
+    i++;
+  });
+
+  await destroyTable("#tableElmes");
+  $("#tableElmes").html("");
+  $("#elmes-target").val("");
+  $("#showElmes").click();
+});
+
+$(document).on("click", "#elmes-cancel", async function () {
+  await destroyTable("#tableElmes");
+  const inx = $("#elmes-target").val();
+  $("#tableElmes").html("");
+  $("#elmes-target").val("");
+  $("#showElmes").click();
+  const row = $(table.row(inx).node()).find(".partname").focus();
 });
 
 //Unable to reply checkbox
@@ -466,4 +535,31 @@ $(document).on("keyup", ".text-comment", async function () {
     return;
   }
   $("#text-count").html(cnt);
+});
+
+//Import TSV File
+$(document).on("click", "#uploadRowBtn", async function (e) {
+  $("#import-tsv").click();
+});
+$(document).on("change", "#import-tsv", async function (e) {
+  const file = e.target.files[0];
+  const data = await readInput(file, {
+    startRow: 2,
+    endCol: 9,
+    headerName: [
+      "Inquiry No",
+      "Seq. no",
+      "Drawing No",
+      "Part Name",
+      "Qty",
+      "Unit",
+      "Variable",
+      "Original MFG No",
+      "Original Car No",
+      "Item",
+    ],
+    customSheet: false,
+  });
+
+  console.log(data);
 });
