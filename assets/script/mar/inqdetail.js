@@ -9,6 +9,7 @@ import formData from "../../files/formData.json";
 import { getMainProject } from "../service/mkt.js";
 import { getElmesItem } from "../service/elmes.js";
 import { validateDrawingNo } from "../drawing.js";
+import { eventHandlers } from "../inquiry/dataSourceFunctions.js";
 import {
   showMessage,
   errorMessage,
@@ -543,7 +544,7 @@ $(document).on("click", "#uploadRowBtn", async function (e) {
 });
 $(document).on("change", "#import-tsv", async function (e) {
   const file = e.target.files[0];
-  const data = await readInput(file, {
+  const excelData = await readInput(file, {
     startRow: 2,
     endCol: 9,
     headerName: [
@@ -558,8 +559,15 @@ $(document).on("change", "#import-tsv", async function (e) {
       "Original Car No",
       "Item",
     ],
-    customSheet: false,
   });
 
-  console.log(data);
+  if (excelData.length > 0) {
+    const prj = await getMainProject({ MFGNO: excelData[7] });
+    eventHandlers.handleProjectChange({
+      target: { value: prj[0].PRJ_NO },
+    });
+  } else {
+    await showMessage(`Can't read data content, Please try again.`);
+    $(this).val(null);
+  }
 });
