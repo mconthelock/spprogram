@@ -118,6 +118,10 @@
     background: #eeeeee;
   }
 
+  #sidebar {
+    @apply !shadow-xl/20;
+  }
+
   .input {
     &:focus,
     &:focus-within {

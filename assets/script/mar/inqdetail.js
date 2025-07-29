@@ -216,9 +216,15 @@ async function setupTable() {
         if (type === "display") {
           return `<select class="!w-[100px] select select-sm supplier edit-input">
             <option value=""></option>
-            <option value="AMEC">AMEC</option>
-            <option value="MELINA">MELINA</option>
-            <option value="LOCAL">LOCAL</option>
+            <option value="AMEC" ${
+              data == "AMEC" ? "selected" : ""
+            }>AMEC</option>
+            <option value="MELINA" ${
+              data == "MELINA" ? "selected" : ""
+            }>MELINA</option>
+            <option value="LOCAL" ${
+              data == "LOCAL" ? "selected" : ""
+            }>LOCAL</option>
           </select>`;
         }
         return data;
@@ -542,11 +548,12 @@ $(document).on("keyup", ".text-comment", async function () {
 $(document).on("click", "#uploadRowBtn", async function (e) {
   $("#import-tsv").click();
 });
+
 $(document).on("change", "#import-tsv", async function (e) {
   const file = e.target.files[0];
   const excelData = await readInput(file, {
     startRow: 2,
-    endCol: 9,
+    endCol: 10,
     headerName: [
       "Inquiry No",
       "Seq. no",
@@ -562,12 +569,62 @@ $(document).on("change", "#import-tsv", async function (e) {
   });
 
   if (excelData.length > 0) {
-    const prj = await getMainProject({ MFGNO: excelData[7] });
-    eventHandlers.handleProjectChange({
-      target: { value: prj[0].PRJ_NO },
+    const prj = await getMainProject({ MFGNO: excelData[1][7] });
+    if (prj.length > 0) {
+      const projectNo = document.querySelector("#project-no");
+      projectNo.value = prj[0].PRJ_NO;
+      projectNo.dispatchEvent(new Event("change"));
+    }
+
+    const inqno = document.querySelector("#inquiry-no");
+    inqno.value = excelData[1][0];
+    inqno.dispatchEvent(new Event("change"));
+
+    excelData.map(async (el) => {
+      const init = await initRow(el[1]);
+      console.log(el);
+
+      const newRow = {
+        ...init,
+        INQD_CAR: el[8],
+        INQD_MFGORDER: el[7],
+        INQD_ITEM: el[9],
+        INQD_PARTNAME: el[3],
+        INQD_DRAWING: el[2],
+        INQD_VARIABLE: el[6],
+        INQD_QTY: el[4],
+        INQD_UM: el[5],
+        INQD_SUPPLIER: "AMEC",
+        INQD_OWNER: "MAR",
+      };
+      const row = table.row.add(newRow).draw();
     });
   } else {
     await showMessage(`Can't read data content, Please try again.`);
     $(this).val(null);
   }
+});
+
+//Download template
+$(document).on("click", "#downloadTemplateBtn", async function (e) {
+  e.preventDefault();
+  const link = document.createElement("a");
+  link.href = `${process.env.APP_ENV}/assets/files/export/Import_inquiry_template.xlsx`;
+  link.download = "Import_inquiry_template.xlsx";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
+//Submit Form
+$(document).on("click", "#send-de", async function (e) {
+  e.preventDefault();
+});
+
+$(document).on("click", "#send-bm", async function (e) {
+  e.preventDefault();
+});
+
+$(document).on("click", "#draft", async function (e) {
+  e.preventDefault();
 });

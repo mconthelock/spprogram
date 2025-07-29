@@ -12,7 +12,7 @@
     <link rel="shortcut icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/icon_512.png">
-    <title>SP Program</title>
+    <title>SPARE PART 🚀 DIRECT SALE PART [2025 Version]</title>
 
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/v2025/icofont.min.css">
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css">

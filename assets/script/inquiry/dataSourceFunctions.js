@@ -120,6 +120,7 @@ export const dataSourceFunctions = {
 export const eventHandlers = {
   //Original Project
   handleProjectChange: async (e) => {
+    console.log("Project Change");
     const obj = e.target;
     const loader = $(obj).closest(".input").find(".loading");
     loader.removeClass("hidden");
@@ -187,18 +188,18 @@ export const eventHandlers = {
     const prefix = controller.find(
       (clt) => clt.CNT_PREFIX == values.substring(0, 5).toUpperCase()
     );
-    console.log(prefix);
 
     if (prefix !== undefined) {
       await settting(prefix);
     } else {
-      const agent = $("#agent").val().split("(")[0].trim();
-      const anyprefix = controller.find(
-        (clt) => clt.CNT_AGENT == agent && clt.CNT_PREFIX == "Any"
-      );
-      await settting(anyprefix);
+      if ($("#agent").val() !== null) {
+        const agent = $("#agent").val().split("(")[0].trim();
+        const anyprefix = controller.find(
+          (clt) => clt.CNT_AGENT == agent && clt.CNT_PREFIX == "Any"
+        );
+        await settting(anyprefix);
+      }
     }
-
     loader.addClass("hidden");
   },
   handleRatioChange: (event) => {},
