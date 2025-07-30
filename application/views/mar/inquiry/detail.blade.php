@@ -6,6 +6,14 @@
     <div class="bg-white p-3 sm:p-4 rounded-xl shadow-lg my-5">
         <table id="table" class="table table-zebra table-edit display text-xs"></table>
     </div>
+    <div class="flex gap-4 mb-6">
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-xl flex-1">
+            <table id="history"></table>
+        </div>
+        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-xl flex-1">
+            <table id="attachment"></table>
+        </div>
+    </div>
     <div class="flex gap-2 mb-6" id="btn-container"></div>
 @endsection
 
