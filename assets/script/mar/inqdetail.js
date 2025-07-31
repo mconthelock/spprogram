@@ -45,6 +45,9 @@ $(document).ready(async () => {
 
   const history = await setupTableHistory();
   await createTable(history, { id: "#history" });
+
+  const attachment = await setupTableAttachment();
+  await createTable(attachment, { id: "#attachment" });
 });
 
 async function setupCard() {
@@ -666,16 +669,32 @@ $(document).on("click", "#draft", async function (e) {
 
 async function setupTableHistory(data = []) {
   const opt = {};
+  opt.dom = '<"history-title"lfrtip>';
   opt.data = data;
   opt.info = false;
-  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 hidden "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.searching = false;
+  opt.lengthChange = false;
   opt.columns = [
-    {
-      data: "id",
-      title: "",
-    },
+    { data: "INQH_DATE", title: "Date" },
+    { data: "INQH_NAME", title: "User" },
+    { data: "INQ_STATUS", title: "Action" },
   ];
+  opt.initComplete = function (settings, json) {
+    $(".history-title").append(`dddd`);
+  };
   return opt;
 }
 
-async function setupTableAttachment() {}
+async function setupTableAttachment(data = []) {
+  const opt = {};
+  opt.data = data;
+  opt.info = false;
+  opt.searching = false;
+  opt.lengthChange = false;
+  opt.columns = [
+    { data: "INQH_DATE", title: "File Name" },
+    { data: "INQH_NAME", title: "Owner" },
+    { data: "INQ_STATUS", title: "File Date" },
+  ];
+  return opt;
+}
