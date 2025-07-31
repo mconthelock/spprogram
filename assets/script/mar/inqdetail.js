@@ -6,10 +6,15 @@ import "datatables.net-select";
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { readInput } from "@public/_excel.js";
 import formData from "../../files/formData.json";
+import { validateDrawingNo } from "../drawing.js";
 import { getMainProject } from "../service/mkt.js";
 import { getElmesItem } from "../service/elmes.js";
-import { validateDrawingNo } from "../drawing.js";
-import { eventHandlers } from "../inquiry/dataSourceFunctions.js";
+import {
+  createInquiry,
+  createInquiryGroup,
+  createInquiryDetail,
+  getInquiryGroup,
+} from "../service/inquiry.js";
 import {
   showMessage,
   errorMessage,
@@ -37,6 +42,9 @@ $(document).ready(async () => {
   const cards = await setupCard();
   const tableContainer = await setupTable();
   table = await createTable(tableContainer);
+
+  const history = await setupTableHistory();
+  await createTable(history, { id: "#history" });
 });
 
 async function setupCard() {
@@ -69,10 +77,9 @@ async function setupCard() {
   });
 }
 
-async function setupTable() {
-  const mockupData = [];
+async function setupTable(data = []) {
   const opt = {};
-  opt.data = mockupData;
+  opt.data = data;
   opt.paging = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
@@ -582,8 +589,6 @@ $(document).on("change", "#import-tsv", async function (e) {
 
     excelData.map(async (el) => {
       const init = await initRow(el[1]);
-      console.log(el);
-
       const newRow = {
         ...init,
         INQD_CAR: el[8],
@@ -619,6 +624,36 @@ $(document).on("click", "#downloadTemplateBtn", async function (e) {
 //Submit Form
 $(document).on("click", "#send-de", async function (e) {
   e.preventDefault();
+  const obj = $("#form-container").find("input, select, textarea");
+  const header = {};
+  obj.map((i, el) => {
+    if ($(el).attr("name") === "INQ_PKC_REQ") {
+      header.INQ_PKC_REQ = $('input[name="INQ_PKC_REQ"]:checked').val();
+    } else if ($(el).attr("name") === "INQ_AGENT") {
+      header.INQ_AGENT = $(el).val().split("(")[0].trim();
+    } else {
+      header[$(el).attr("name")] = $(el).val();
+    }
+  });
+  const inquiry = await createInquiry(header);
+  const details = table.rows().data().toArray();
+  const items = details.map((el) => Math.floor(el.INQD_ITEM / 100));
+  const groups = [...new Set(items)];
+  groups.map(async (group) => {
+    const grp = {
+      INQ_ID: inquiry.INQ_ID,
+      INQG_GROUP: group,
+    };
+    const res = await createInquiryGroup(grp);
+  });
+
+  const inquiry_group = await getInquiryGroup({ INQ_ID: inquiry.INQ_ID });
+  details.map(async (el, i) => {
+    const grp = Math.floor(el.INQD_ITEM / 100);
+    const grpid = inquiry_group.find((g) => g.INQG_GROUP === grp);
+    const data = { ...el, INQG_GROUP: grpid.INQG_ID, INQD_RUNNO: i + 1 };
+    const response = await createInquiryDetail(data);
+  });
 });
 
 $(document).on("click", "#send-bm", async function (e) {
@@ -628,3 +663,19 @@ $(document).on("click", "#send-bm", async function (e) {
 $(document).on("click", "#draft", async function (e) {
   e.preventDefault();
 });
+
+async function setupTableHistory(data = []) {
+  const opt = {};
+  opt.data = data;
+  opt.info = false;
+  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 hidden "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.columns = [
+    {
+      data: "id",
+      title: "",
+    },
+  ];
+  return opt;
+}
+
+async function setupTableAttachment() {}

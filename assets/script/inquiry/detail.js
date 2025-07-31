@@ -17,27 +17,30 @@ export async function createFieldInput(field) {
     case "date":
       const inputLabel = `<label class="input bg-white w-full">
             <input type="${field.type}" id="${field.id}"
+                name="${field.name !== undefined ? field.name : field.id}"
                 class="w-full   ${field.class !== undefined ? field.class : ""}"
-                value="${field.value === undefined ? "" : field.value}" ${
-        field.type == "readonly" ? "readonly" : ""
-      }  data-mapping="${field.mapping}"/>
+                value="${field.value === undefined ? "" : field.value}"
+                ${field.type == "readonly" ? "readonly" : ""}
+                data-mapping="${field.mapping}"/>
             <span class="loading loading-spinner text-primary  hidden"></span>
         </label>`;
       inputContainer.innerHTML = inputLabel;
       elementToListen = inputContainer.querySelector(`#${field.id}`);
       break;
     case "textarea":
-      const textarea = `<textarea class="textarea ${
-        field.class !== undefined ? field.class : ""
-      }" id="${field.id}" name="${field.id}" data-mapping="${
-        field.mapping
-      }"></textarea>`;
+      const textarea = `<textarea name="${field.name}"
+        id="${field.id}"
+        class="textarea
+        ${field.class !== undefined ? field.class : ""}"
+        data-mapping="${field.mapping}"
+        ></textarea>`;
       inputContainer.innerHTML = textarea;
       break;
 
     case "select":
       const selectInput = document.createElement("select");
       selectInput.id = field.id;
+      selectInput.name = field.name;
       selectInput.setAttribute("data-mapping", field.mapping);
       selectInput.className =
         "w-full border border-gray-300 rounded-md p-2 bg-white select2";
@@ -81,8 +84,9 @@ export async function createFieldInput(field) {
 
         const radioInput = document.createElement("input");
         radioInput.type = "radio";
-        radioInput.name = field.id;
-        radioInput.value = opt;
+        radioInput.name = field.name;
+        radioInput.value = opt == "Yes" ? "1" : "0"; // Assuming Yes/No options
+        radioInput.checked = true;
         radioInput.className = "radio radio-sm radio-primary text-primary";
         if (opt === field.value) {
           radioInput.checked = true;
@@ -93,25 +97,20 @@ export async function createFieldInput(field) {
         radioGroup.appendChild(label);
       });
       inputContainer.appendChild(radioGroup);
-      const hiddenRadio = document.createElement("input");
-      hiddenRadio.type = "text";
-      hiddenRadio.id = field.id;
-      hiddenRadio.value = field.value;
-      hiddenRadio.className = "hidden";
-      inputContainer.appendChild(hiddenRadio);
       break;
 
     case "status":
       const statusBadge = document.createElement("span");
       statusBadge.className =
         "bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full";
-      statusBadge.textContent = field.value;
+      statusBadge.textContent = field.display;
       inputContainer.appendChild(statusBadge);
 
       const hiddenStatus = document.createElement("input");
       hiddenStatus.type = "text";
       hiddenStatus.id = field.id;
       hiddenStatus.value = field.value;
+      hiddenStatus.name = field.name;
       hiddenStatus.className = "hidden";
       inputContainer.appendChild(hiddenStatus);
       break;
@@ -119,17 +118,19 @@ export async function createFieldInput(field) {
       const hiddenInput = document.createElement("input");
       hiddenInput.type = "hidden";
       hiddenInput.id = field.id;
+      hiddenInput.name = field.name;
       hiddenInput.value = field.value;
       inputContainer.appendChild(hiddenInput);
       break;
     case "staticText":
       const staticText = document.createElement("p");
       staticText.className = "text-sm h-full flex items-center text-gray-700";
-      staticText.textContent = field.value;
+      staticText.textContent = field.display;
       inputContainer.appendChild(staticText);
       const hiddenText = document.createElement("input");
       hiddenText.type = "text";
       hiddenText.id = field.id;
+      hiddenText.name = field.name;
       hiddenText.value = field.value;
       hiddenText.className = "hidden";
       inputContainer.appendChild(hiddenText);
@@ -139,6 +140,7 @@ export async function createFieldInput(field) {
       const defaultInput = document.createElement("input");
       defaultInput.type = "text";
       defaultInput.id = field.id;
+      defaultInput.name = field.name;
       if (field.class !== undefined) {
         defaultInput.classList.add(field.class);
       }
