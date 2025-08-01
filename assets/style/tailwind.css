@@ -147,6 +147,11 @@
   }
 
   /* Edit Table */
+  .table-edit > thead > tr,
+  #history > thead > tr,
+  #attachment > thead > tr {
+    @apply !bg-gray-300 !text-gray-600 !text-xs;
+  }
   div.dt-container .dt-search input,
   div.dt-container .dt-length select {
     margin: 0 !important;

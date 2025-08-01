@@ -5,29 +5,18 @@
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="prj|info|mar"></main>
 
     <div class="mt-6">
-        <table id="table" class="table table-zebra table-edit display text-xs"></table>
+        <table id="table" class="table table-zebra table-edit display text-sm"></table>
     </div>
+
     <div class="flex gap-4 mt-6">
         <div class="flex-1">
-            <table id="history" class="table table-zebra display text-xs"></table>
+            <table id="history" class="table table-zebra display text-sm"></table>
         </div>
         <div class="flex-1">
-            <table id="attachment" class="table table-zebra display text-xs"></table>
+            <table id="attachment" class="table table-zebra display text-sm"></table>
         </div>
     </div>
-    {{-- <div class="bg-white p-3 sm:p-4 rounded-xl shadow-lg my-5">
-        <table id="table" class="table table-zebra table-edit display text-xs"></table>
-    </div>
-    <div class="flex gap-4 mb-6">
-        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-xl flex-1">
-            <h1 class="text-primary px-3 font-semibold">History</h1>
-            <table id="history" class="table table-zebra display text-xs"></table>
-        </div>
-        <div class="bg-white p-3 sm:p-4 rounded-xl shadow-xl flex-1">
-            <h1 class="text-primary px-3 font-semibold">Attachment</h1>
-            <table id="attachment" class="table table-zebra display text-xs"></table>
-        </div>
-    </div> --}}
+
     <div class="flex gap-2 my-6" id="btn-container"></div>
 @endsection
 

@@ -32,6 +32,7 @@ import {
 
 var table;
 var tableElmes;
+var tableAttach;
 $(document).ready(async () => {
   $(".mainmenu").find("details").attr("open", false);
   $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
@@ -47,7 +48,7 @@ $(document).ready(async () => {
   await createTable(history, { id: "#history" });
 
   const attachment = await setupTableAttachment();
-  await createTable(attachment, { id: "#attachment" });
+  tableAttach = await createTable(attachment, { id: "#attachment" });
 });
 
 async function setupCard() {
@@ -84,9 +85,10 @@ async function setupTable(data = []) {
   const opt = {};
   opt.data = data;
   opt.paging = false;
+  opt.searching = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 hidden "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "id",
@@ -95,7 +97,7 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_ID",
-      title: `<div class="text-center"><i class='icofont-settings text-lg text-white'></i></div>`,
+      title: "<i class='icofont-settings text-lg'></i>", //`<div class="text-center"><i class='icofont-settings text-lg text-white'></i></div>`,
       className: "text-center text-nowrap sticky-column px-1",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -108,7 +110,7 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_SEQ",
-      title: `<div class="text-center text-white">No</div>`,
+      title: "No", //`<div class="text-center text-white">No</div>`,
       className: "sticky-column !px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -120,7 +122,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_CAR",
-      title: `<div class="text-center text-white">CAR</div>`,
+      //title: `<div class="text-center text-white">CAR</div>`,
+      title: "CAR",
       className: "sticky-column !px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -132,7 +135,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_MFGORDER",
-      title: `<div class="text-center text-white">MFG No.</div>`,
+      //   title: `<div class="text-center text-white">MFG No.</div>`,
+      title: "MFG No.",
       className: "sticky-column !px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -144,7 +148,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_ITEM",
-      title: `<div class="text-center text-white">Item</div>`,
+      //   title: `<div class="text-center text-white">Item</div>`,
+      title: "Item",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -156,7 +161,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_PARTNAME",
-      title: `<div class="text-center text-white">Part Name</div>`,
+      //   title: `<div class="text-center text-white">Part Name</div>`,
+      title: "Part Name",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -168,7 +174,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_DRAWING",
-      title: `<div class="text-center text-white">Drawing No.</div>`,
+      //   title: `<div class="text-center text-white">Drawing No.</div>`,
+      title: "Drawing No.",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -180,7 +187,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_VARIABLE",
-      title: `<div class="text-center text-white">Variable</div>`,
+      //   title: `<div class="text-center text-white">Variable</div>`,
+      title: "Variable",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -192,7 +200,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_QTY",
-      title: `<div class="text-center text-white">Qty</div>`,
+      //   title: `<div class="text-center text-white">Qty</div>`,
+      title: "Qty.",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -206,7 +215,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_UM",
-      title: `<div class="text-center text-white">U/M</div>`,
+      //   title: `<div class="text-center text-white">U/M</div>`,
+      title: "U/M",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -220,7 +230,9 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_SUPPLIER",
-      title: `<div class="text-center text-white">Supplier</div>`,
+      //   title: `<div class="text-center text-white">Supplier</div>`,
+      title: "Supplier",
+      className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -242,7 +254,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_SENDPART",
-      title: `<div class="text-center text-white">2<sup>nd</sup></div>`,
+      //   title: `<div class="text-center text-white">2<sup>nd</sup></div>`,
+      title: `2<sup>nd</sup>`,
       className: "text-center",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -254,7 +267,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_UNREPLY",
-      title: `<div class="text-center text-white">U/N</div>`,
+      //   title: `<div class="text-center text-white">U/N</div>`,
+      title: "U/N",
       className: "text-center",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -267,7 +281,8 @@ async function setupTable(data = []) {
     },
     {
       data: "INQD_MAR_REMARK",
-      title: `<div class="text-center text-white">Remark</div>`,
+      //   title: `<div class="text-center text-white">Remark</div>`,
+      title: "Remark",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -290,7 +305,13 @@ async function setupTable(data = []) {
         <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-download text-xl text-white"></i></button>
       </div>
     </div>`;
-    $(".table-page").append(btn);
+    $("#table").closest(".dt-container").find(".table-page").append(btn);
+    $("#table")
+      .closest(".dt-container")
+      .find(".table-search")
+      .append(
+        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Detail</h1>`
+      );
   };
   return opt;
 }
@@ -669,10 +690,9 @@ $(document).on("click", "#draft", async function (e) {
 
 async function setupTableHistory(data = []) {
   const opt = {};
-  opt.dom = '<"history-title"lfrtip>';
   opt.data = data;
+  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex flex-none gap-5"i>>`;
   opt.info = false;
-  opt.searching = false;
   opt.lengthChange = false;
   opt.columns = [
     { data: "INQH_DATE", title: "Date" },
@@ -680,7 +700,12 @@ async function setupTableHistory(data = []) {
     { data: "INQ_STATUS", title: "Action" },
   ];
   opt.initComplete = function (settings, json) {
-    $(".history-title").append(`dddd`);
+    $("#history")
+      .closest(".dt-container")
+      .find(".table-search")
+      .append(
+        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">History</h1>`
+      );
   };
   return opt;
 }
@@ -688,13 +713,100 @@ async function setupTableHistory(data = []) {
 async function setupTableAttachment(data = []) {
   const opt = {};
   opt.data = data;
+  opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
-  opt.searching = false;
-  opt.lengthChange = false;
   opt.columns = [
-    { data: "INQH_DATE", title: "File Name" },
-    { data: "INQH_NAME", title: "Owner" },
-    { data: "INQ_STATUS", title: "File Date" },
+    { data: "FILE_ORIGINAL_NAME", title: "File Name" },
+    { data: "FILE_SIZE", title: "Owner" },
+    {
+      data: "FILE_DATE",
+      title: "File Date",
+      render: (data) => {
+        return new Date(data).toLocaleDateString("en-US", {});
+      },
+    },
   ];
+  opt.initComplete = function (settings, json) {
+    $("#attachment")
+      .closest(".dt-container")
+      .find(".table-search")
+      .append(
+        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Attachment</h1>`
+      );
+
+    $("#attachment").closest(".dt-container").find(".table-option")
+      .append(`<button class="btn btn-outline btn-neutral btn-sm btn-circle text-neutral hover:!text-white" id="add-attachment">
+            <span class="loading loading-spinner hidden"></span>
+            <span class="icofont-ui-clip text-xl"></span>
+        </button>
+        <input type="file" id="attachment-file" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt" />`);
+
+    $("#attachment")
+      .closest(".dt-container")
+      .find(".dt-length")
+      .addClass("hidden");
+  };
   return opt;
 }
+
+$(document).on("click", "#add-attachment", async function (e) {
+  e.preventDefault();
+  $("#attachment-file").click();
+});
+
+$(document).on("change", "#attachment-file", async function (e) {
+  const file = e.target.files[0];
+  if (!file) {
+    showMessage("Please select a file to upload.");
+    return;
+  }
+
+  const fileName = file.name;
+  let fileExtension = "";
+  const dotIndex = fileName.lastIndexOf(".");
+  if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
+    fileExtension = fileName.substring(dotIndex + 1);
+  } else {
+    showMessage("File has no extension or the name is invalid.");
+    return;
+  }
+
+  console.log(fileExtension);
+
+  const fs = {
+    FILE_ORIGINAL_NAME: file.name,
+    FILE_SIZE: file.size,
+    FILE_OWNER: file.type,
+    FILE_DATE: new Date().toISOString(),
+    file: e.target.files[0],
+  };
+  tableAttach.row.add(fs).draw();
+
+  /*const form = $("#form-container");
+  const inqno = form.find("#inquiry-no").val();
+  const prjno = form.find("#project-no").val();
+  if (file && inqno && prjno) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("INQ_NO", inqno);
+    formData.append("PRJ_NO", prjno);
+    const response = await fetch(
+      `${process.env.APP_ENV}/mar/inquiry/attachment`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    if (response.ok) {
+      showMessage("File uploaded successfully.");
+      $("#attachment-file").val("");
+      // Optionally, refresh the attachment table here
+    } else {
+      errorMessage("Failed to upload file.");
+    }
+  } else {
+    errorMessage(
+      "Please select a file and ensure inquiry and project numbers are set."
+    );
+  }*/
+});
