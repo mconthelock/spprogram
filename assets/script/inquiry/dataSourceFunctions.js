@@ -159,6 +159,7 @@ export const eventHandlers = {
 
   handleInquiryChange: async (e) => {
     const settting = (val) => {
+      if (val == undefined) return;
       $("#trader").val(val.CNT_TRADER).trigger("change");
       $("#quotation-type").val(val.CNT_QUOTATION).trigger("change");
       $("#delivery-method").val(val.CNT_METHOD).trigger("change");
@@ -176,14 +177,6 @@ export const eventHandlers = {
       .replaceAll(" ", "")
       .toUpperCase();
 
-    const inquiry = await inq.getInquiry({ INQ_NO: values });
-    if (inquiry.length > 0) {
-      showMessage(`Inquiry ${values} is already exist!`);
-      $("#inquiry-no").focus().select();
-      loader.addClass("hidden");
-      return;
-    }
-
     const controller = await mst.getControl();
     const prefix = controller.find(
       (clt) => clt.CNT_PREFIX == values.substring(0, 5).toUpperCase()
@@ -199,6 +192,14 @@ export const eventHandlers = {
         );
         await settting(anyprefix);
       }
+    }
+
+    const inquiry = await inq.getInquiry({ INQ_NO: values });
+    if (inquiry.length > 0) {
+      showMessage(`Inquiry ${values} is already exist!`);
+      $("#inquiry-no").focus().select();
+      loader.addClass("hidden");
+      return;
     }
     loader.addClass("hidden");
   },

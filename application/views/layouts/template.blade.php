@@ -31,7 +31,7 @@
             {{-- @include('layouts.navbar') --}}
             <div id="navbar" class=""></div>
             <!-- Page content here -->
-            <div class="flex-1 flex flex-col w-full px-4 md:px-8 lg:mt-5">
+            <div class="flex-1 flex flex-col w-full px-4 md:px-8 mt-20 md:mt-4">
                 @yield('contents')
             </div>
             <!-- Footer -->

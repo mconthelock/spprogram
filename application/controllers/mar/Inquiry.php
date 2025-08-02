@@ -11,4 +11,12 @@ class Inquiry extends MY_Controller {
     public function create(){
         $this->views('mar/inquiry/detail');
     }
+
+    public function view($id){
+        $this->views('mar/inquiry/view', array('id' => $id));
+    }
+
+    public function edit($id){
+        $this->views('mar/inquiry/detail');
+    }
 }

@@ -2,7 +2,7 @@
 
 @section('contents')
     <h1 class="text-3xl font-sans font-[900] uppercase mb-5 text-gray-700">On-Process Inquiry</h1>
-    <table id="table" class="table table-zebra table-edit display text-xs"></table>
+    <table id="table" class="table table-zebra display text-xs"></table>
 @endsection
 
 @section('scripts')

@@ -162,3 +162,12 @@ export const amecschdule = (data) => {
   const letter = schd.find((x) => x.id == dd);
   return `${fd}${letter.val}`;
 };
+
+export const fileExtension = (fileName) => {
+  const dotIndex = fileName.lastIndexOf(".");
+  if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
+    return fileName.substring(dotIndex + 1);
+  } else {
+    return null;
+  }
+};

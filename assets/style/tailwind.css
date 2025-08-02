@@ -17,8 +17,8 @@
   /* --color-secondary: oklch(80% 0.114 19.571); */
   --color-secondary: oklch(0.7876 0.165783 75.5064);
   --color-secondary-content: oklch(25% 0.092 26.042);
-  --color-accent: oklch(84% 0.143 164.978);
-  --color-accent-content: oklch(26% 0.051 172.552);
+  --color-accent: oklch(0.2997 0.0749 267.29);
+  --color-accent-content: oklch(0.2997 0.0719 267.29)
   --color-neutral: oklch(37% 0.044 257.287);
   --color-neutral-content: oklch(98% 0.003 247.858);
   --color-info: oklch(54% 0.245 262.881);
@@ -102,12 +102,6 @@
   :root {
     --font-sans: "LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
       "LINE Seed TH Bold", "LINE Seed JP", "LINE Seed JP Bold", sans-serif;
-    --color-primary: 1, 71, 178;
-    --color-secondary: 107, 114, 128;
-    --color-accent: 232, 159, 2;
-    --color-card: 255, 255, 255;
-    --color-border: 216, 218, 223;
-    --color-body: 229, 231, 235;
     --bgcolor-dataTable-thead: var(--color-primary);
     --bgcolor-dataTable-tbody: #fff;
     --color-dataTable-thead: #fff;
@@ -133,6 +127,7 @@
   .dark {
     --color-primary: 255, 0, 0;
     --color-secondary: 107, 114, 128;
+    --color-navy: #1d2b53;
     --color-accent: 232, 159, 2;
     --color-card: 0, 0, 0;
     --color-border: 216, 218, 223;
@@ -147,6 +142,10 @@
   }
 
   /* Edit Table */
+  table > thead > tr > th {
+    @apply !text-center;
+  }
+
   .table-edit > thead > tr,
   #history > thead > tr,
   #attachment > thead > tr {
@@ -195,6 +194,30 @@
 
   .select-dt-row {
     @apply !text-white;
+  }
+
+  .dt-orderable-asc,
+  .dt-orderable-desc {
+    @apply !cursor-pointer relative;
+  }
+
+  .dt-orderable-asc::after,
+  .dt-orderable-desc::after {
+    font-family: IcoFont !important;
+    font-size: 1.2rem;
+    color: var(--color-white);
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .dt-ordering-asc::after {
+    content: "\eab2";
+  }
+
+  .dt-ordering-desc::after {
+    content: "\eab9";
   }
 
   /* Overwrite Select2 */

@@ -4,31 +4,17 @@ import "@styles/datatable.min.css";
 import "datatables.net-select";
 
 import { createTable, destroyTable } from "@public/_dataTable.js";
-import { readInput } from "@public/_excel.js";
-import formData from "../../files/formData.json";
 import { validateDrawingNo } from "../drawing.js";
-import { getMainProject } from "../service/mkt.js";
 import { getElmesItem } from "../service/elmes.js";
+import { getMainProject } from "../service/mkt.js";
 import {
   createInquiry,
   createInquiryGroup,
   createInquiryDetail,
   getInquiryGroup,
 } from "../service/inquiry.js";
-import {
-  showMessage,
-  errorMessage,
-  showLoader,
-  intVal,
-  digits,
-  creatBtn,
-} from "../utils.js";
-import {
-  createFormCard,
-  createReasonModal,
-  elmesComponent,
-  elmesTable,
-} from "../inquiry/detail.js";
+import * as utils from "../utils.js";
+import * as inqs from "../inquiry/detail.js";
 
 var table;
 var tableElmes;
@@ -37,10 +23,10 @@ $(document).ready(async () => {
   $(".mainmenu").find("details").attr("open", false);
   $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
 
-  const reason = await createReasonModal();
+  const reason = await inqs.createReasonModal();
   const btn = await setupButton();
-  const elmes = await elmesComponent();
-  const cards = await setupCard();
+  const elmes = await inqs.elmesComponent();
+  const cards = await inqs.setupCard();
   const tableContainer = await setupTable();
   table = await createTable(tableContainer);
 
@@ -50,36 +36,6 @@ $(document).ready(async () => {
   const attachment = await setupTableAttachment();
   tableAttach = await createTable(attachment, { id: "#attachment" });
 });
-
-async function setupCard() {
-  const form = $("#form-container");
-  const carddata = form.attr("data");
-  const cardIds = carddata.split("|");
-
-  // Create an array to hold promises for card creation
-  const cardPromises = cardIds.map(async (cardId) => {
-    return new Promise(async (resolve) => {
-      const cardData = formData.find((item) => item.id === cardId);
-      if (cardData) {
-        const cardElement = await createFormCard(cardData);
-        resolve(cardElement);
-      } else {
-        console.error(`Card data for ID ${cardId} not found.`);
-        resolve(null);
-      }
-    });
-  });
-
-  const cardElements = await Promise.all(cardPromises);
-  cardElements.forEach((element) => {
-    if (element) {
-      form.append(element);
-      if ($(element).find("#currency").length > 0) {
-        $(element).find("#currency").closest(".grid").addClass("hidden");
-      }
-    }
-  });
-}
 
 async function setupTable(data = []) {
   const opt = {};
@@ -316,58 +272,28 @@ async function setupTable(data = []) {
   return opt;
 }
 
-async function initRow(id) {
-  return {
-    id: id,
-    INQD_ID: "",
-    INQD_SEQ: id,
-    INQD_RUNNO: "",
-    INQD_MFGORDER: "",
-    INQD_ITEM: "",
-    INQD_CAR: "",
-    INQD_PARTNAME: "",
-    INQD_DRAWING: "",
-    INQD_VARIABLE: "",
-    INQD_QTY: 1,
-    INQD_UM: "PC",
-    INQD_SUPPLIER: "",
-    INQD_SENDPART: "",
-    INQD_UNREPLY: "",
-    INQD_FC_COST: "",
-    INQD_TC_COST: "",
-    INQD_UNIT_PRICE: "",
-    INQD_FC_BASE: "",
-    INQD_TC_BASE: "",
-    INQD_MAR_REMARK: "",
-    INQD_DES_REMARK: "",
-    INQD_FIN_REMARK: "",
-    INQD_LATEST: "",
-    INQD_OWNER: "",
-  };
-}
-
 async function setupButton() {
-  const sendDE = await creatBtn({
+  const sendDE = await utils.creatBtn({
     id: "send-de",
     title: "Send to Design",
     className: "btn-primary text-white",
   });
 
-  const sendIS = await creatBtn({
+  const sendIS = await utils.creatBtn({
     id: "send-bm",
     title: "Send to Pre-BM",
     icon: "icofont-console text-2xl",
     className: "btn-neutral text-white",
   });
 
-  const draft = await creatBtn({
+  const draft = await utils.creatBtn({
     id: "draft",
     title: "Send draft",
     icon: "icofont-attachment text-2xl",
     className: "btn-neutral text-white",
   });
 
-  const back = await creatBtn({
+  const back = await utils.creatBtn({
     id: "goback",
     title: "Back",
     type: "link",
@@ -381,8 +307,8 @@ async function setupButton() {
 $(document).on("click", "#addRowBtn", async function (e) {
   e.preventDefault();
   const lastRow = table.row(":not(.d-none):last").data();
-  let id = lastRow === undefined ? 1 : intVal(lastRow.id) + 1;
-  const newRow = await initRow(digits(id, 0));
+  let id = lastRow === undefined ? 1 : utils.intVal(lastRow.id) + 1;
+  const newRow = await inqs.initRow(utils.digits(id, 0));
   const row = table.row.add(newRow).draw();
   $(row.node()).find("td:eq(3) input").focus();
 });
@@ -390,8 +316,8 @@ $(document).on("click", "#addRowBtn", async function (e) {
 $(document).on("click", ".add-sub-line", async function (e) {
   e.preventDefault();
   const data = table.row($(this).parents("tr")).data();
-  const id = digits(intVal(data.INQD_SEQ) + 0.01, 2);
-  const newRow = await initRow(id);
+  const id = utils.digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
+  const newRow = await inqs.initRow(id);
   const row = table.row.add(newRow).draw();
   $(row.node()).find("td:eq(3) input").focus();
 });
@@ -439,7 +365,7 @@ $(document).on("change", ".elmes-input", async function (e) {
   const item = $(row.node()).find(".itemno").val();
   const elmes = await getElmesItem(mfgno, item);
   if (elmes.length > 0) {
-    const setting = await elmesTable(elmes);
+    const setting = await inqs.elmesTable(elmes);
     tableElmes = await createTable(setting, {
       id: "#tableElmes",
       columnSelect: { status: true },
@@ -466,7 +392,7 @@ $(document).on("click", "#elmes-confirm", async function () {
   table.rows(rowid).remove().draw();
   //Insert rows
   let i = 0;
-  let id = intVal(data.INQD_SEQ);
+  let id = utils.intVal(data.INQD_SEQ);
   elmesData.map((val) => {
     const newRow = {
       ...data,
@@ -582,56 +508,31 @@ $(document).on("click", "#uploadRowBtn", async function (e) {
 
 $(document).on("change", "#import-tsv", async function (e) {
   const file = e.target.files[0];
-  const excelData = await readInput(file, {
-    startRow: 2,
-    endCol: 10,
-    headerName: [
-      "Inquiry No",
-      "Seq. no",
-      "Drawing No",
-      "Part Name",
-      "Qty",
-      "Unit",
-      "Variable",
-      "Original MFG No",
-      "Original Car No",
-      "Item",
-    ],
-  });
-
-  if (excelData.length > 0) {
-    const prj = await getMainProject({ MFGNO: excelData[1][7] });
-    if (prj.length > 0) {
-      const projectNo = document.querySelector("#project-no");
-      projectNo.value = prj[0].PRJ_NO;
-      projectNo.dispatchEvent(new Event("change"));
-    }
-
-    const inqno = document.querySelector("#inquiry-no");
-    inqno.value = excelData[1][0];
-    inqno.dispatchEvent(new Event("change"));
-
-    excelData.map(async (el) => {
-      const init = await initRow(el[1]);
-      const newRow = {
-        ...init,
-        INQD_CAR: el[8],
-        INQD_MFGORDER: el[7],
-        INQD_ITEM: el[9],
-        INQD_PARTNAME: el[3],
-        INQD_DRAWING: el[2],
-        INQD_VARIABLE: el[6],
-        INQD_QTY: el[4],
-        INQD_UM: el[5],
-        INQD_SUPPLIER: "AMEC",
-        INQD_OWNER: "MAR",
-      };
-      const row = table.row.add(newRow).draw();
-    });
-  } else {
-    await showMessage(`Can't read data content, Please try again.`);
-    $(this).val(null);
+  const ext = utils.fileExtension(file.name);
+  const allow = ["xlsx", "tsv", "txt"];
+  if (!allow.includes(ext)) {
+    const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
+      ", "
+    )}`;
+    utils.showMessage(msg);
+    return;
   }
+
+  var newdata = null;
+  if (ext === "xlsx") {
+    newdata = await inqs.importExcel(file);
+  } else {
+    newdata = await inqs.importText(file);
+  }
+
+  if (newdata == null) {
+    utils.showMessage("No data found in the file.");
+    return;
+  }
+
+  newdata.forEach(async function (row) {
+    table.row.add(row).draw();
+  });
 });
 
 //Download template
@@ -757,7 +658,7 @@ $(document).on("click", "#add-attachment", async function (e) {
 $(document).on("change", "#attachment-file", async function (e) {
   const file = e.target.files[0];
   if (!file) {
-    showMessage("Please select a file to upload.");
+    utils.showMessage("Please select a file to upload.");
     return;
   }
 
@@ -767,7 +668,7 @@ $(document).on("change", "#attachment-file", async function (e) {
   if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
     fileExtension = fileName.substring(dotIndex + 1);
   } else {
-    showMessage("File has no extension or the name is invalid.");
+    utils.showMessage("File has no extension or the name is invalid.");
     return;
   }
 
@@ -781,32 +682,4 @@ $(document).on("change", "#attachment-file", async function (e) {
     file: e.target.files[0],
   };
   tableAttach.row.add(fs).draw();
-
-  /*const form = $("#form-container");
-  const inqno = form.find("#inquiry-no").val();
-  const prjno = form.find("#project-no").val();
-  if (file && inqno && prjno) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("INQ_NO", inqno);
-    formData.append("PRJ_NO", prjno);
-    const response = await fetch(
-      `${process.env.APP_ENV}/mar/inquiry/attachment`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-    if (response.ok) {
-      showMessage("File uploaded successfully.");
-      $("#attachment-file").val("");
-      // Optionally, refresh the attachment table here
-    } else {
-      errorMessage("Failed to upload file.");
-    }
-  } else {
-    errorMessage(
-      "Please select a file and ensure inquiry and project numbers are set."
-    );
-  }*/
 });

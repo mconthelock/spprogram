@@ -1,9 +1,26 @@
 import "select2/dist/css/select2.min.css";
 import "select2";
+import moment from "moment";
 
+import { readInput } from "@public/_excel.js";
 import { dataSourceFunctions, eventHandlers } from "./dataSourceFunctions";
+import formData from "../../files/formData.json";
 import { getReason } from "../service/master";
+import { getMainProject } from "../service/mkt.js";
 import { creatBtn } from "../utils";
+
+export const statusColors = () => {
+  return [
+    { id: 1, color: "bg-gray-500 text-white" }, //Draft
+    { id: 19, color: "bg-indigo-500" }, //MAR Pre process
+    { id: 29, color: "bg-sky-500" }, //SE
+    { id: 39, color: "bg-amber-500" }, //DE
+    { id: 49, color: "bg-slate-500" }, //IS
+    { id: 59, color: "bg-pink-500 text-white" }, //FIN
+    { id: 98, color: "bg-red-900" }, //MAR Post process
+    { id: 99, color: "bg-emerald-500" }, //Fihish
+  ];
+};
 
 export async function createFieldInput(field) {
   const inputContainer = document.createElement("div");
@@ -30,7 +47,7 @@ export async function createFieldInput(field) {
     case "textarea":
       const textarea = `<textarea name="${field.name}"
         id="${field.id}"
-        class="textarea
+        class="textarea w-full
         ${field.class !== undefined ? field.class : ""}"
         data-mapping="${field.mapping}"
         ></textarea>`;
@@ -101,9 +118,9 @@ export async function createFieldInput(field) {
 
     case "status":
       const statusBadge = document.createElement("span");
-      statusBadge.className =
-        "bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full";
+      statusBadge.className = field.class;
       statusBadge.textContent = field.display;
+      statusBadge.id = "status-badge";
       inputContainer.appendChild(statusBadge);
 
       const hiddenStatus = document.createElement("input");
@@ -124,9 +141,12 @@ export async function createFieldInput(field) {
       break;
     case "staticText":
       const staticText = document.createElement("p");
-      staticText.className = "text-sm h-full flex items-center text-gray-700";
+      staticText.className =
+        "text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 view-data";
       staticText.textContent = field.display;
+      staticText.setAttribute("data-mapping", field.mapping);
       inputContainer.appendChild(staticText);
+
       const hiddenText = document.createElement("input");
       hiddenText.type = "text";
       hiddenText.id = field.id;
@@ -290,4 +310,192 @@ export async function elmesTable(data) {
     { data: "scndpart", title: `2<sup>nd</sup>` },
   ];
   return opt;
+}
+
+export async function importExcel(file) {
+  const excelData = await readInput(file, {
+    startRow: 2,
+    endCol: 10,
+    headerName: [
+      "Inquiry No",
+      "Seq. no",
+      "Drawing No",
+      "Part Name",
+      "Qty",
+      "Unit",
+      "Variable",
+      "Original MFG No",
+      "Original Car No",
+      "Item",
+    ],
+  });
+
+  if (excelData.length > 0) {
+    await importHeader({ mfgno: excelData[1][7], inquiryno: excelData[1][0] });
+    const readdata = excelData.map(async (el, i) => {
+      const init = await initRow(el[1]);
+      const newRow = {
+        ...init,
+        INQD_CAR: el[8],
+        INQD_MFGORDER: el[7],
+        INQD_ITEM: el[9],
+        INQD_PARTNAME: el[3],
+        INQD_DRAWING: el[2],
+        INQD_VARIABLE: el[6],
+        INQD_QTY: el[4],
+        INQD_UM: el[5],
+        INQD_SUPPLIER: "AMEC",
+        INQD_OWNER: "MAR",
+        INQ_NO: el[0],
+      };
+      return newRow;
+    });
+    //convert to array
+    const result = await Promise.all(readdata);
+    return result;
+  } else {
+    return null;
+  }
+}
+
+export async function importText(file) {
+  const readFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(e.target.result);
+      };
+      reader.onerror = (e) => {
+        reject(e);
+      };
+      reader.readAsText(file);
+    });
+  };
+  const contents = await readFile(file);
+  const lines = contents.split("\n").filter((line) => line.trim() !== "");
+  if (lines.length == 0) return null;
+
+  const cols = lines[0].split("\t");
+  if (cols.length !== 10) return;
+
+  const readdata = [];
+  lines.forEach(function (row) {
+    const el = row.split("\t");
+    const init = initRow(el[1]);
+    const newRow = {
+      ...init,
+      INQD_CAR: el[8],
+      INQD_MFGORDER: el[7].replaceAll("-", ""),
+      INQD_ITEM: el[9].substring(0, 3),
+      INQD_PARTNAME: el[3],
+      INQD_DRAWING: el[2],
+      INQD_VARIABLE: el[6],
+      INQD_QTY: el[4],
+      INQD_UM: el[5],
+      INQD_SUPPLIER: "AMEC",
+      INQD_OWNER: "MAR",
+      INQ_NO: el[0],
+    };
+    readdata.push(newRow);
+  });
+  await importHeader({
+    mfgno: readdata[0].INQD_MFGORDER,
+    inquiryno: readdata[0].INQ_NO,
+  });
+  return readdata;
+}
+
+export async function importHeader(data) {
+  const prj = await getMainProject({ MFGNO: data.mfgno });
+  if (prj.length > 0) {
+    const projectNo = document.querySelector("#project-no");
+    projectNo.value = prj[0].PRJ_NO;
+    projectNo.dispatchEvent(new Event("change"));
+  }
+
+  const inqno = document.querySelector("#inquiry-no");
+  inqno.value = data.inquiryno;
+  inqno.dispatchEvent(new Event("change"));
+}
+
+export function initRow(id) {
+  return {
+    id: id,
+    INQD_ID: "",
+    INQD_SEQ: id,
+    INQD_RUNNO: "",
+    INQD_MFGORDER: "",
+    INQD_ITEM: "",
+    INQD_CAR: "",
+    INQD_PARTNAME: "",
+    INQD_DRAWING: "",
+    INQD_VARIABLE: "",
+    INQD_QTY: 1,
+    INQD_UM: "PC",
+    INQD_SUPPLIER: "",
+    INQD_SENDPART: "",
+    INQD_UNREPLY: "",
+    INQD_FC_COST: "",
+    INQD_TC_COST: "",
+    INQD_UNIT_PRICE: "",
+    INQD_FC_BASE: "",
+    INQD_TC_BASE: "",
+    INQD_MAR_REMARK: "",
+    INQD_DES_REMARK: "",
+    INQD_FIN_REMARK: "",
+    INQD_LATEST: "",
+    INQD_OWNER: "",
+  };
+}
+
+export async function setupCard() {
+  const form = $("#form-container");
+  const carddata = form.attr("data");
+  const cardIds = carddata.split("|");
+
+  // Create an array to hold promises for card creation
+  const cardPromises = cardIds.map(async (cardId) => {
+    return new Promise(async (resolve) => {
+      const cardData = formData.find((item) => item.id === cardId);
+      if (cardData) {
+        const cardElement = await createFormCard(cardData);
+        resolve(cardElement);
+      } else {
+        console.error(`Card data for ID ${cardId} not found.`);
+        resolve(null);
+      }
+    });
+  });
+
+  const cardElements = await Promise.all(cardPromises);
+  cardElements.forEach((element) => {
+    if (element) {
+      form.append(element);
+      if ($(element).find("#currency").length > 0) {
+        $(element).find("#currency").closest(".grid").addClass("hidden");
+      }
+    }
+  });
+}
+
+export async function applyValueCard(data) {
+  const form = $("#form-container");
+  form.find(".view-data").map((i, el) => {
+    const mapping = $(el).attr("data-mapping");
+    if (mapping) {
+      Object.keys(data).forEach((key) => {
+        if (mapping == key) {
+          let value = data[key];
+          if (key === "INQ_DATE") value = moment(value).format("YYYY-MM-DD");
+          $(el).text(value);
+        }
+      });
+    }
+  });
+
+  //Display Status
+  const colors = await statusColors();
+  const cls = colors.find((item) => item.id >= data.INQ_STATUS);
+  $("#status-badge").addClass(cls.color);
+  $("#status-badge").text(data.status.STATUS_DESC);
 }
