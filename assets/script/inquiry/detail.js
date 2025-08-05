@@ -644,7 +644,6 @@ export async function elmesConform(elmesData, increse, table) {
         INQD_SUPPLIER: supplier,
         INQD_SENDPART: secound,
       };
-      //   console.log(newRow);
       table.row.add(newRow).draw(false);
       i++;
     }
