@@ -141,7 +141,7 @@
     animation: l4 2s infinite;
   }
 
-  /* Edit Table */
+
   table > thead > tr > th {
     @apply !text-center;
   }
@@ -158,17 +158,28 @@
   div.dt-container .dt-search input {
     @apply !w-64;
   }
+
+  .table tbody > tr > td:not(.dt-empty),
   .table-edit tbody > tr > td:not(.dt-empty) {
-    border: 1px solid var(--color-gray-300) !important;
-    padding: 3px !important;
+     border: 1px solid var(--color-gray-300) !important;
   }
 
+  .table tbody > tr > td:nth-child(2),
   .table-edit tbody > tr > td:nth-child(2) {
     border-left: none !important;
   }
+
+  .table tbody > tr > td:last-child,
   .table-edit tbody > tr > td:last-child {
     border-right: none !important;
   }
+
+  /* Edit Table */
+  .table-edit tbody > tr > td:not(.dt-empty) {
+    padding: 3px !important;
+  }
+
+
   .cell-input {
     width: 100%;
     /* border: 1px solid #aeaeae; */

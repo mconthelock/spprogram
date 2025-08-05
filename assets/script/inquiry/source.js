@@ -3,7 +3,7 @@ import * as mkt from "../service/mkt.js";
 import * as inq from "../service/inquiry.js";
 import { amecschdule, showMessage } from "../utils.js";
 
-export const dataSourceFunctions = {
+export const init = {
   getTraders: async function () {
     const data = await mst.getPriceRatio();
     const traders = data.map((item) => item.TRADER);
@@ -117,7 +117,7 @@ export const dataSourceFunctions = {
   },
 };
 
-export const eventHandlers = {
+export const events = {
   //Original Project
   handleProjectChange: async (e) => {
     console.log("Project Change");

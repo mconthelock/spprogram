@@ -1,13 +1,19 @@
 import "select2/dist/css/select2.min.css";
+import "@styles/datatable.min.css";
 import "select2";
 import moment from "moment";
-
-import { readInput } from "@public/_excel.js";
-import { dataSourceFunctions, eventHandlers } from "./dataSourceFunctions";
 import formData from "../../files/formData.json";
-import { getReason } from "../service/master";
-import { getMainProject } from "../service/mkt.js";
+
+import { createTable, destroyTable } from "@public/_dataTable.js";
+import { readInput } from "@public/_excel.js";
 import { creatBtn } from "../utils";
+import { elmesTable } from "../inquiry/table.js";
+import { init, events } from "./source";
+import { getReason } from "../service/master";
+import { getElmesItem } from "../service/elmes.js";
+import { getMainProject } from "../service/mkt.js";
+import * as service from "../service/inquiry.js";
+import * as utils from "../utils.js";
 
 export const statusColors = () => {
   return [
@@ -64,8 +70,8 @@ export async function createFieldInput(field) {
 
       let options = [];
       if (field.source) {
-        if (dataSourceFunctions[field.source]) {
-          options = await dataSourceFunctions[field.source]();
+        if (init[field.source]) {
+          options = await init[field.source]();
         }
       } else if (field.options) {
         options = field.options;
@@ -141,8 +147,9 @@ export async function createFieldInput(field) {
       break;
     case "staticText":
       const staticText = document.createElement("p");
-      staticText.className =
-        "text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 view-data";
+      staticText.className = `text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
+        field.class !== undefined ? field.class : ""
+      }`;
       staticText.textContent = field.display;
       staticText.setAttribute("data-mapping", field.mapping);
       inputContainer.appendChild(staticText);
@@ -167,8 +174,8 @@ export async function createFieldInput(field) {
       inputContainer.appendChild(defaultInput);
   }
 
-  if (elementToListen && field.onChange && eventHandlers[field.onChange]) {
-    elementToListen.addEventListener("change", eventHandlers[field.onChange]);
+  if (elementToListen && field.onChange && events[field.onChange]) {
+    elementToListen.addEventListener("change", events[field.onChange]);
   }
   return inputContainer;
 }
@@ -204,112 +211,6 @@ export async function createFormCard(cardData) {
 
   card.appendChild(body);
   return card;
-}
-
-export async function createReasonModal() {
-  const reason = await getReason();
-  let str = ``;
-  reason.map((item) => {
-    if (item.REASON_ID == 99) {
-      str += `<li class="flex flex-col gap-2">
-        <div>
-            <input type="radio" name="reason"
-                class="radio radio-sm radio-neutral me-2 reason-code"
-                id="reason-${item.REASON_ID}"
-                value="${item.REASON_ID}" />
-            <span>${item.REASON_DESC}</span>
-        </div>
-        <div>
-            <fieldset class="fieldset">
-                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other"></textarea>
-                <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
-                <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
-            </fieldset>
-        </div>
-      </li>`;
-    } else {
-      str += `<li>
-        <input type="radio" name="reason"
-            class="radio radio-sm radio-neutral me-2 reason-code"
-            id="reason-${item.REASON_ID}" value="${item.REASON_ID}"/>
-        <input type="hidden" class="text-comment" value="${item.REASON_DESC}"/>
-        <span>${item.REASON_DESC}</span>
-      </li>`;
-    }
-  });
-
-  const btnSave = await creatBtn({
-    id: "save-reason",
-    className: "btn-outline  btn-primary  text-primary hover:text-white",
-  });
-  const btnCancel = await creatBtn({
-    id: "cancel-reason",
-    title: "Cancel",
-    icon: "icofont-close text-2xl",
-    className: "btn-outline  btn-neutral  text-neutral hover:text-white",
-  });
-
-  const modal = `<input type="checkbox" id="modal-reason" class="modal-toggle" />
-        <div class="modal" role="dialog">
-            <div class="modal-box p-8">
-                <h3 class="text-lg font-bold mb-3">Unable to reply reason</h3>
-                <div class="divider"></div>
-                <ul class="flex flex-col gap-3">${str}</ul>
-                <input type="hidden" id="reason-target"/>
-                <div class="flex gap-2">${btnSave}${btnCancel}</div>
-            </div>
-        </div>
-    `;
-  $("body").append(modal);
-}
-
-export async function elmesComponent() {
-  const confirmBtn = await creatBtn({
-    id: "elmes-confirm",
-    title: "Confirm",
-    icon: "",
-    className: "btn-primary btn-outline text-primary hover:text-white",
-  });
-  const cancelBtn = await creatBtn({
-    id: "elmes-cancel",
-    title: "Cancel",
-    icon: "icofont-close text-2xl",
-    className: "btn-neutral btn-outline text-neutral hover:text-white",
-  });
-
-  const str = `<input type="checkbox" id="showElmes" class="modal-toggle" />
-    <div class="modal" role="dialog">
-        <div class="modal-box w-[100vw] max-w-[100vw] h-[100vh] overflow-y-scroll">
-            <h3 class="text-lg font-bold">Part List</h3>
-            <table id="tableElmes" class="table w-full"></table>
-            <input type="text" id="elmes-target"/>
-            <div class="flex gap-2">${confirmBtn}${cancelBtn}</div>
-        </div>
-    </div>`;
-  $("body").append(str);
-}
-
-export async function elmesTable(data) {
-  const opt = {};
-  opt.data = data;
-  opt.columns = [
-    { data: "orderno", title: "MFG No." },
-    { data: "carno", title: "Car" },
-    { data: "itemno", title: "Item" },
-    { data: "partname", title: "Part Name" },
-    { data: "drawing", title: "Drawing No." },
-    { data: "variable", title: "Variable" },
-    { data: "qty", title: "Qty" },
-    {
-      data: "supply",
-      title: "Supply",
-      render: (data) => {
-        return `AMEC`;
-      },
-    },
-    { data: "scndpart", title: `2<sup>nd</sup>` },
-  ];
-  return opt;
 }
 
 export async function importExcel(file) {
@@ -480,6 +381,22 @@ export async function setupCard() {
 
 export async function applyValueCard(data) {
   const form = $("#form-container");
+  const applyWeight = (data) => {
+    form.find(".weight").text(`${data == 1 ? "Yes" : "No"}`);
+  };
+  const applyQuotation = (data) => {
+    form.find(".quotype").text(`${data.QUOTYPE_DESC}`);
+  };
+  const applyTerm = (data) => {
+    form.find(".delivery").text(`${data.TERM_DESC}`);
+  };
+  const applyMethod = (data) => {
+    form.find(".method").text(`${data.METHOD_DESC}`);
+  };
+  const applyShipment = (data) => {
+    form.find(".shipment").text(`${data.SHIPMENT_DESC}`);
+  };
+
   form.find(".view-data").map((i, el) => {
     const mapping = $(el).attr("data-mapping");
     if (mapping) {
@@ -493,9 +410,251 @@ export async function applyValueCard(data) {
     }
   });
 
+  await applyWeight(data.INQ_PKC_REQ);
+  await applyQuotation(data.quotype);
+  await applyTerm(data.term);
+  await applyMethod(data.method);
+  await applyShipment(data.shipment);
+
   //Display Status
   const colors = await statusColors();
   const cls = colors.find((item) => item.id >= data.INQ_STATUS);
   $("#status-badge").addClass(cls.color);
   $("#status-badge").text(data.status.STATUS_DESC);
 }
+
+//Start: Unreply
+export async function createReasonModal() {
+  const reason = await getReason();
+  let str = ``;
+  reason.map((item) => {
+    if (item.REASON_ID == 99) {
+      str += `<li class="flex flex-col gap-2">
+        <div>
+            <input type="radio" name="reason"
+                class="radio radio-sm radio-neutral me-2 reason-code"
+                id="reason-${item.REASON_ID}"
+                value="${item.REASON_ID}" />
+            <span>${item.REASON_DESC}</span>
+        </div>
+        <div>
+            <fieldset class="fieldset">
+                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other"></textarea>
+                <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
+                <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
+            </fieldset>
+        </div>
+      </li>`;
+    } else {
+      str += `<li>
+        <input type="radio" name="reason"
+            class="radio radio-sm radio-neutral me-2 reason-code"
+            id="reason-${item.REASON_ID}" value="${item.REASON_ID}"/>
+        <input type="hidden" class="text-comment" value="${item.REASON_DESC}"/>
+        <span>${item.REASON_DESC}</span>
+      </li>`;
+    }
+  });
+
+  const btnSave = await creatBtn({
+    id: "save-reason",
+    className: "btn-outline  btn-primary  text-primary hover:text-white",
+  });
+  const btnCancel = await creatBtn({
+    id: "cancel-reason",
+    title: "Cancel",
+    icon: "icofont-close text-2xl",
+    className: "btn-outline  btn-neutral  text-neutral hover:text-white",
+  });
+
+  const modal = `<input type="checkbox" id="modal-reason" class="modal-toggle" />
+        <div class="modal" role="dialog">
+            <div class="modal-box p-8">
+                <h3 class="text-lg font-bold mb-3">Unable to reply reason</h3>
+                <div class="divider"></div>
+                <ul class="flex flex-col gap-3">${str}</ul>
+                <input type="hidden" id="reason-target"/>
+                <div class="flex gap-2">${btnSave}${btnCancel}</div>
+            </div>
+        </div>
+    `;
+  $("body").append(modal);
+}
+
+export async function clickUnreply(row) {
+  //   const row = table.row($(this).parents("tr"));
+  const data = row.data();
+  if (data.INQD_UNREPLY != "") {
+    $(`#reason-${data.INQD_UNREPLY}`).prop("checked", true);
+    if (data.INQD_UNREPLY == 99)
+      $("#text-comment-other").val(data.INQD_MAR_REMARK);
+  } else {
+    $(`.reason-code:first`).prop("checked", true);
+  }
+  $("#reason-target").val(row.index());
+  $("#modal-reason").click();
+}
+
+export async function countReason(obj) {
+  $(obj).removeClass("border-red-500");
+  $(obj).closest("li").find(".text-comment-err").html("");
+  $("#text-count").removeClass("text-red-500");
+  const txt = $(obj).val();
+  let cnt = $(obj).val().length;
+  if (cnt > 100) {
+    $("#text-count").addClass("text-red-500");
+    $(obj).val(txt.substring(0, 100));
+    $(obj).addClass("border-red-500");
+    $(obj)
+      .closest("li")
+      .find(".text-comment-err")
+      .html(`Maximun is 100 charactors.`);
+    return;
+  }
+  $("#text-count").html(cnt);
+}
+
+export async function resetUnreply(row) {
+  const target = $("#reason-target").val();
+  $(row).find(".unreply").prop("checked", false);
+  $(row).find(".remark").val(``);
+  $("#text-comment-other").val(``);
+  $("#text-count").html(`0`);
+  $("#modal-reason").prop("checked", false);
+}
+
+export async function saveUnreply(table) {
+  const target = $("#reason-target").val();
+  const row = table.row(target);
+  const selected = $(".reason-code:checked");
+  const remark = selected.closest("li").find(".text-comment").val();
+  if (remark == "" || selected.val() == undefined) {
+    $(".text-comment").addClass("border-red-500");
+    $(".text-comment-err").html(
+      `Please explain reason, Why you can't reply this line.`
+    );
+    return;
+  }
+
+  $(table.row(target).node()).find(".unreply").prop("checked", true);
+  $(table.row(target).node()).find(".unreply").val(selected.val());
+  $(table.row(target).node()).find(".remark").val(remark);
+  $("#reason-target").val(selected.val());
+
+  const data = row.data();
+  const newData = {
+    ...data,
+    INQD_UNREPLY: selected.val(),
+    INQD_MAR_REMARK: remark,
+  };
+
+  table.row(target).data(newData);
+  $("#text-comment-other").val(``);
+  $("#text-count").html("0");
+  $("#modal-reason").prop("checked", false);
+}
+//End: Unreply
+
+//Start: Elmes
+export async function elmesComponent() {
+  const confirmBtn = await creatBtn({
+    id: "elmes-confirm",
+    title: "Confirm",
+    icon: "",
+    className: "btn-primary btn-outline text-primary hover:text-white",
+  });
+  const cancelBtn = await creatBtn({
+    id: "elmes-cancel",
+    title: "Cancel",
+    icon: "icofont-close text-2xl",
+    className: "btn-neutral btn-outline text-neutral hover:text-white",
+  });
+
+  const str = `<input type="checkbox" id="showElmes" class="modal-toggle" />
+    <div class="modal" role="dialog">
+        <div class="modal-box w-[100vw] max-w-[100vw] h-[100vh] overflow-y-scroll">
+            <table id="tableElmes" class="table w-full"></table>
+            <input type="hidden" id="elmes-target"/>
+            <div class="flex gap-2 mt-3">${confirmBtn}${cancelBtn}</div>
+        </div>
+    </div>`;
+  $("body").append(str);
+}
+
+export async function elmesSetup(row) {
+  let tableElmes;
+  const data = row.data();
+  const mfgno = $(row.node()).find(".mfgno").val();
+  const item = $(row.node()).find(".itemno").val();
+  if (mfgno.length === 0 || item.length < 3) return;
+
+  const elmes = await getElmesItem(mfgno, item);
+  if (elmes.length > 0) {
+    const setting = await elmesTable(elmes);
+    tableElmes = await createTable(setting, {
+      id: "#tableElmes",
+      columnSelect: { status: true },
+    });
+    $("#elmes-target").val(row.index());
+    $("#showElmes").click();
+  } else {
+    const newData = {
+      ...data,
+      INQD_MFGORDER: mfgno,
+      INQD_ITEM: item,
+    };
+    row.data(newData);
+    row.draw(false);
+    tableElmes = null;
+  }
+  return tableElmes;
+}
+
+export async function elmesConform(elmesData, increse, table) {
+  console.log(elmesData);
+  const rowid = $("#elmes-target").val();
+  const data = table.row(rowid).data();
+  //Delete current row first
+  table.rows(rowid).remove().draw();
+  //Insert rows
+  let i = 0;
+  let id = utils.intVal(data.INQD_SEQ);
+  elmesData.map((val) => {
+    if (val.selected !== undefined) {
+      let supplier = `AMEC`;
+      if (val.supply === "R") supplier = `LOCAL`;
+      if (val.supply === "J") supplier = `MELINA`;
+      if (val.supply === "U") supplier = ``;
+
+      let secound = `0`;
+      if (val.scndpart != null && val.scndpart.toUpperCase() == "X")
+        secound = `1`;
+
+      const newRow = {
+        ...data,
+        id: id + i,
+        INQD_SEQ: id + i,
+        INQD_CAR: val.carno,
+        INQD_MFGORDER: val.orderno,
+        INQD_ITEM: val.itemno,
+        INQD_PARTNAME: val.partname,
+        INQD_DRAWING: val.drawing,
+        INQD_VARIABLE: val.variable,
+        INQD_QTY: val.qty,
+        INQD_SUPPLIER: supplier,
+        INQD_SENDPART: secound,
+      };
+      //   console.log(newRow);
+      table.row.add(newRow).draw(false);
+      i++;
+    }
+  });
+
+  await destroyTable("#tableElmes");
+  $("#tableElmes").html("");
+  $("#elmes-target").val("");
+  $("#showElmes").click();
+}
+
+export async function elmesCancel() {}
+//End: Unreply

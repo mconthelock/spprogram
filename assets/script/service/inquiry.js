@@ -15,6 +15,22 @@ export const getInquiry = async (data) => {
   });
 };
 
+export const getInquiryID = async (id) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/inquiry/${id}/`,
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 export const createInquiry = async (data) => {
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -74,6 +90,23 @@ export const createInquiryDetail = async (data) => {
       type: "POST",
       dataType: "json",
       data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+//History
+export const getInquiryHistory = async (id) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/history/${id}/`,
+      type: "GET",
+      dataType: "json",
       success: function (response) {
         resolve(response);
       },
