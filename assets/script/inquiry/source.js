@@ -203,5 +203,12 @@ export const events = {
     }
     loader.addClass("hidden");
   },
+
   handleRatioChange: (event) => {},
+
+  setCurrentDate: () => {
+    console.log("Set Current Date");
+
+    $("#inquiry-date").val(moment().format("YYYY-MM-DD")).trigger("change");
+  },
 };

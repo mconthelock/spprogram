@@ -3,7 +3,15 @@
         "id": "prj",
         "title": "Original Project",
         "fields": [
-            { "label": "Project No", "id": "project-no", "type": "text" , "class": "uppercase", "onChange": "handleProjectChange", "mapping": "PRJ_NO", "name": "INQ_PRJNO"},
+            {
+                "label": "Project No",
+                "id": "project-no",
+                "type": "text" ,
+                "class": "uppercase",
+                "onChange": "handleProjectChange",
+                "mapping": "PRJ_NO",
+                "name": "INQ_PRJNO"
+            },
             { "label": "Project Name", "id": "project-name", "type": "text" , "mapping": "PRJ_NAME", "name": "INQ_PRJNAME"},
             { "label": "Shop Order", "id": "shop-order", "type": "text" , "mapping": "ORDER_NO", "name": "INQ_SHOPORDER"},
             { "label": "Series", "id": "series", "type": "select", "source": "getSeries" , "mapping": "SERIES", "name": "INQ_SERIES"},
@@ -16,9 +24,9 @@
         "id": "info",
         "title": "Inquiry Information",
         "fields": [
-            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase", "onChange": "handleInquiryChange", "name": "INQ_NO"},
-            { "label": "Revision", "id": "revision", "type": "readonly", "value": "*", "name": "INQ_REV" },
-            { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "value": "2025-07-12" , "name": "INQ_DATE"},
+            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase req-1 req-2", "onChange": "handleInquiryChange", "name": "INQ_NO"},
+            { "label": "Revision", "id": "revision", "type": "readonly", "class": "uppercase req-1 req-2", "value": "*", "name": "INQ_REV" },
+            { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "onLoad": "setCurrentDate" , "name": "INQ_DATE"},
             { "label": "Trader", "id": "trader", "type": "select",  "source": "getTraders" , "name": "INQ_TRADER" },
             { "label": "Agent", "id": "agent", "type": "select", "source": "getAgent", "mapping": "AGENT", "name": "INQ_AGENT" },
             { "label": "Country", "id": "country", "type": "select", "source": "getCountries", "mapping": "DSTN" , "name": "INQ_COUNTRY"},
@@ -29,8 +37,20 @@
         "id": "mar",
         "title": "Marketing Information",
         "fields": [
-            { "label": "MAR. In-charge", "id":"mar-incharge", "type": "staticText", "display": "CHALERMSAK SAWANAM" , "value": "12069", "name": "INQ_MAR_PIC"},
-            { "label": "Weight Require", "id": "weight-require", "type": "radio", "options": ["Yes", "No"],  "name": "INQ_PKC_REQ"},
+            {
+                "label": "MAR. In-charge",
+                "id":"mar-incharge",
+                "type": "staticText",
+                "name": "INQ_MAR_PIC",
+                "class": "displayname"
+            },
+            {
+                "label": "Weight Require",
+                "id": "weight-require",
+                "type": "radio",
+                "options": [{"value": "1", "text":"Yes"}, {"value": "0", "text":"No"}],
+                "name": "INQ_PKC_REQ"
+            },
             { "label": "Quotation type", "id": "quotation-type", "type": "select", "source": "getQuoType" , "name": "INQ_QUOTATION_TYPE"},
             { "label": "Delivery Term", "id": "delivery-term", "type": "select", "source": "getDeliveryTerm", "name": "INQ_DELIVERY_TERM" },
             { "label": "Delivery Method", "id": "delivery-method", "type": "select", "source": "getMethod" , "name": "INQ_DELIVERY_METHOD"},
@@ -69,12 +89,58 @@
         "id": "viewmar",
         "title": "Marketing Information",
         "fields": [
-            { "label": "MAR. In-charge", "id":"mar-incharge", "type": "staticText", "class": "maruser","mapping":"INQ_MAR_PIC", "name": "INQ_MAR_PIC"},
-            { "label": "Weight Require", "id": "weight-require", "type": "staticText", "class": "weight", "mapping":"INQ_PKC_REQ","name": "INQ_PKC_REQ"},
-            { "label": "Quotation type", "id": "quotation-type", "type": "staticText", "class": "quotype", "mapping":"INQ_QUOTATION_TYPE","name": "INQ_QUOTATION_TYPE"},
-            { "label": "Delivery Term", "id": "delivery-term", "type": "staticText", "class": "delivery",  "mapping":"INQ_DELIVERY_TERM","name": "INQ_DELIVERY_TERM" },
-            { "label": "Delivery Method", "id": "delivery-method", "type": "staticText", "class": "method", "mapping":"INQ_DELIVERY_METHOD", "name": "INQ_DELIVERY_METHOD"},
-            { "label": "Lead Time", "id": "inq-leadtime","type": "staticText", "class": "shipment", "mapping":"INQ_SHIPMENT", "name": "INQ_SHIPMENT"}
+            {
+                "label": "MAR. In-charge",
+                "id":"mar-incharge",
+                "type": "staticText",
+                "class": "displayname",
+                "mapping":"INQ_MAR_PIC",
+                "name": "INQ_MAR_PIC"
+            },
+            {
+                "label": "Weight Require",
+                "id": "weight-require",
+                "type": "staticText",
+                "class": "weight",
+                "mapping":"INQ_PKC_REQ",
+                "name": "INQ_PKC_REQ"
+            },
+            {
+                "label": "Quotation type",
+                "id": "quotation-type",
+                "type": "staticText",
+                "class": "nesting",
+                "name": "INQ_QUOTATION_TYPE",
+                "topic": "quotype",
+                "mapping": "QUOTYPE_DESC"
+            },
+            {
+                "label": "Delivery Term",
+                "id": "delivery-term",
+                "type": "staticText",
+                "class": "nesting",
+                "name": "INQ_DELIVERY_TERM" ,
+                "topic": "term",
+                "mapping":"TERM_DESC"
+            },
+            {
+                "label": "Delivery Method",
+                "id": "delivery-method",
+                "type": "staticText",
+                "class": "nesting",
+                "name": "INQ_DELIVERY_METHOD",
+                "topic": "method",
+                "mapping":"METHOD_DESC"
+            },
+            {
+                "label": "Lead Time",
+                "id": "inq-leadtime",
+                "type": "staticText",
+                "class": "nesting",
+                "name": "INQ_SHIPMENT",
+                "topic": "shipment",
+                "mapping":"SHIPMENT_DESC"
+            }
         ]
     },
     {

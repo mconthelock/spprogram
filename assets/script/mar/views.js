@@ -10,8 +10,8 @@ $(document).ready(async () => {
   $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
 
   const inquiry = await service.getInquiryID($("#inquiry-id").val());
-  const cards = await inqs.setupCard();
-  const cardsData = await inqs.applyValueCard(inquiry);
+  const cards = await inqs.setupCard(inquiry);
+  //   const cardsData = await inqs.applyValueCard(inquiry);
   const detail = await tb.setupTableDetailView(inquiry.details);
   table = await createTable(detail);
 

@@ -3,17 +3,15 @@ import "@styles/datatable.min.css";
 import "select2";
 import moment from "moment";
 import formData from "../../files/formData.json";
-
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { readInput } from "@public/_excel.js";
-import { creatBtn } from "../utils";
-import { elmesTable } from "../inquiry/table.js";
-import { init, events } from "./source";
 import { getReason } from "../service/master";
 import { getElmesItem } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
+import * as source from "./source";
+import * as tb from "./table.js";
 
 export const statusColors = () => {
   return [
@@ -28,6 +26,103 @@ export const statusColors = () => {
   ];
 };
 
+// Create card
+export async function setupCard(data) {
+  const form = $("#form-container");
+  const carddata = form.attr("data");
+  const cardIds = carddata.split("|");
+  const cardPromises = cardIds.map(async (cardId) => {
+    return new Promise(async (resolve) => {
+      const cardData = formData.find((item) => item.id === cardId);
+      if (cardData) {
+        const cardElement = await createFormCard(cardData, data);
+        resolve(cardElement);
+      } else {
+        console.error(`Card data for ID ${cardId} not found.`);
+        resolve(null);
+      }
+    });
+  });
+
+  const cardElements = await Promise.all(cardPromises);
+  cardElements.forEach((element) => {
+    if (element) {
+      form.append(element);
+      if ($(element).find("#currency").length > 0) {
+        $(element).find("#currency").closest(".grid").addClass("hidden");
+      }
+    }
+  });
+}
+export async function setFieldValue(field, data = {}) {
+  const dspName = () => {
+    return `ddddd`;
+  };
+
+  const dspDetail = (data, topic, cols) => {
+    return data[topic][cols];
+  };
+
+  const dspStatus = async (data, field) => {
+    const colors = await statusColors();
+    const cls = colors.find((item) => item.id >= data.INQ_STATUS);
+    field.class = cls.color;
+    field.display = data.status.STATUS_DESC;
+    return field;
+  };
+
+  // Start hear
+  field.value = data[field.name];
+  if (field.name == "INQ_DATE")
+    field.value = moment(field.value).format("YYYY-MM-DD");
+
+  if (field.name == "INQ_AGENT")
+    field.value = `${data["INQ_AGENT"]} (${data["INQ_COUNTRY"]})`;
+
+  if (field.name == "INQ_PKC_REQ")
+    field.display = data["INQ_PKC_REQ"] == 1 ? "Yes" : "No";
+
+  if (field.class == "displayname") field.display = dspName("12069");
+  if (field.class == "nesting")
+    field.display = dspDetail(data, field.topic, field.mapping);
+
+  if (field.type == "status") field = dspStatus(data, field);
+  return field;
+}
+
+export async function createFormCard(cardData, data = {}) {
+  const card = document.createElement("div");
+  card.className = "bg-white rounded-lg shadow overflow-hidden px-6 pt-3";
+
+  const header = document.createElement("div");
+  header.className = "text-primary p-3 font-semibold";
+  header.textContent = cardData.title;
+  card.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "p-4 space-y-4";
+  // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
+  for (let field of cardData.fields) {
+    const fieldWrapper = document.createElement("div");
+    fieldWrapper.className = "grid grid-cols-3 items-center gap-2 min-h-[42px]";
+    const label = document.createElement("label");
+    label.htmlFor = field.id || "";
+    label.className = "text-sm font-medium text-gray-600 col-span-1";
+    label.textContent = field.label;
+
+    // รอให้ field สร้างเสร็จก่อน (เผื่อต้อง fetch data)
+    if (Object.keys(data).length !== 0)
+      field = await setFieldValue(field, data);
+    const inputElement = await createFieldInput(field);
+    fieldWrapper.appendChild(label);
+    fieldWrapper.appendChild(inputElement);
+    body.appendChild(fieldWrapper);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
 export async function createFieldInput(field) {
   const inputContainer = document.createElement("div");
   inputContainer.className = "col-span-2";
@@ -35,33 +130,35 @@ export async function createFieldInput(field) {
   const loader = document.createElement("span");
   loader.className = "loading loading-spinner";
   switch (field.type) {
-    case "readonly":
-    case "text":
-    case "date":
-      const inputLabel = `<label class="input bg-white w-full">
-            <input type="${field.type}" id="${field.id}"
-                name="${field.name !== undefined ? field.name : field.id}"
-                class="w-full   ${field.class !== undefined ? field.class : ""}"
-                value="${field.value === undefined ? "" : field.value}"
-                ${field.type == "readonly" ? "readonly" : ""}
-                data-mapping="${field.mapping}"/>
-            <span class="loading loading-spinner text-primary  hidden"></span>
-        </label>`;
-      inputContainer.innerHTML = inputLabel;
-      elementToListen = inputContainer.querySelector(`#${field.id}`);
-      break;
+    // case "readonly":
+    // case "text":
+    // case "date":
+    //   const inputLabel = `<label class="input bg-white w-full">
+    //         <input type="${field.type}" id="${field.id}"
+    //             name="${field.name !== undefined ? field.name : field.id}"
+    //             class="w-full   ${field.class !== undefined ? field.class : ""}"
+    //             value="${field.value === undefined ? "" : field.value}"
+    //             maxlength="${
+    //               field.maxlength !== undefined ? field.maxlength : ""
+    //             }"
+    //             ${field.type == "readonly" ? "readonly" : ""}
+    //             data-mapping="${field.mapping}"/>
+    //         <span class="loading loading-spinner text-primary  hidden"></span>
+    //     </label>`;
+    //   inputContainer.innerHTML = inputLabel;
+    //   elementToListen = inputContainer.querySelector(`#${field.id}`);
+    //   break;
     case "textarea":
       const textarea = `<textarea name="${field.name}"
-        id="${field.id}"
-        class="textarea w-full
-        ${field.class !== undefined ? field.class : ""}"
-        data-mapping="${field.mapping}"
-        ></textarea>`;
+        id="${field.id}" class="textarea w-full ${
+        field.class !== undefined ? field.class : ""
+      }" data-mapping="${field.mapping}"></textarea>`;
       inputContainer.innerHTML = textarea;
       break;
 
     case "select":
-      const selectInput = document.createElement("select");
+      const selectInput = `<select></select>`;
+      /*const selectInput = document.createElement("select");
       selectInput.id = field.id;
       selectInput.name = field.name;
       selectInput.setAttribute("data-mapping", field.mapping);
@@ -70,8 +167,8 @@ export async function createFieldInput(field) {
 
       let options = [];
       if (field.source) {
-        if (init[field.source]) {
-          options = await init[field.source]();
+        if (source.init[field.source]) {
+          options = await source.init[field.source]();
         }
       } else if (field.options) {
         options = field.options;
@@ -95,122 +192,71 @@ export async function createFieldInput(field) {
         if (field.onChange && eventHandlers[field.onChange]) {
           jQueryElement.on("change", eventHandlers[field.onChange]);
         }
-      }, 1000);
+      }, 1000);*/
       break;
 
     case "radio":
-      const radioGroup = document.createElement("div");
-      radioGroup.className = "flex items-center gap-4 h-full";
+      let optionstr = ``;
+      const value = field.value ? field.value : "0";
       field.options.forEach((opt) => {
-        const label = document.createElement("label");
-        label.className = "flex items-center gap-1";
-
-        const radioInput = document.createElement("input");
-        radioInput.type = "radio";
-        radioInput.name = field.name;
-        radioInput.value = opt == "Yes" ? "1" : "0"; // Assuming Yes/No options
-        radioInput.checked = true;
-        radioInput.className = "radio radio-sm radio-primary text-primary";
-        if (opt === field.value) {
-          radioInput.checked = true;
-        }
-
-        label.appendChild(radioInput);
-        label.append(` ${opt}`);
-        radioGroup.appendChild(label);
+        optionstr += `<label class="flex items-center gap-2 text-sm">
+            <input type="radio" name="radio-4" class="radio radio-primary" ${
+              opt.value == value ? "checked" : ""
+            } /> ${opt.text}
+        </label>`;
       });
-      inputContainer.appendChild(radioGroup);
+      const radioGroup = `<div class="flex items-center gap-4 h-full">${optionstr}</div>`;
+      inputContainer.innerHTML = radioGroup;
       break;
 
     case "status":
-      const statusBadge = document.createElement("span");
-      statusBadge.className = field.class;
-      statusBadge.textContent = field.display;
-      statusBadge.id = "status-badge";
-      inputContainer.appendChild(statusBadge);
-
-      const hiddenStatus = document.createElement("input");
-      hiddenStatus.type = "text";
-      hiddenStatus.id = field.id;
-      hiddenStatus.value = field.value;
-      hiddenStatus.name = field.name;
-      hiddenStatus.className = "hidden";
-      inputContainer.appendChild(hiddenStatus);
+      const statusBadge = `<div class="badge ${field.class}">${field.display}</div><input type="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
+      inputContainer.innerHTML = statusBadge;
       break;
+
     case "hidden":
-      const hiddenInput = document.createElement("input");
-      hiddenInput.type = "hidden";
-      hiddenInput.id = field.id;
-      hiddenInput.name = field.name;
-      hiddenInput.value = field.value;
-      inputContainer.appendChild(hiddenInput);
+      inputContainer.innerHTML(
+        `<input type="hidden" class="${field.class ? field.class : ""}" id="${
+          field.id ? field.id : ""
+        }" name="${field.name ? field.name : ""}" value="${
+          field.value ? field.value : ""
+        }"/>`
+      );
       break;
-    case "staticText":
-      const staticText = document.createElement("p");
-      staticText.className = `text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
-        field.class !== undefined ? field.class : ""
-      }`;
-      staticText.textContent = field.display;
-      staticText.setAttribute("data-mapping", field.mapping);
-      inputContainer.appendChild(staticText);
 
-      const hiddenText = document.createElement("input");
-      hiddenText.type = "text";
-      hiddenText.id = field.id;
-      hiddenText.name = field.name;
-      hiddenText.value = field.value;
-      hiddenText.className = "hidden";
-      inputContainer.appendChild(hiddenText);
+    case "staticText":
+      const staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
+        field.class !== undefined ? field.class : ""
+      }">${
+        !field.display ? field.value : field.display
+      }</p><input type="hidden" name="${field.name}" value="${
+        field.value
+      }" id="${field.id}"/>`;
+      inputContainer.innerHTML = staticText;
       break;
 
     default:
-      const defaultInput = document.createElement("input");
-      defaultInput.type = "text";
-      defaultInput.id = field.id;
-      defaultInput.name = field.name;
-      if (field.class !== undefined) {
-        defaultInput.classList.add(field.class);
-      }
-      inputContainer.appendChild(defaultInput);
+      const inputLabel = `<label class="input bg-white w-full">
+            <input type="${field.type}" id="${field.id}"
+                name="${field.name !== undefined ? field.name : field.id}"
+                class="w-full   ${field.class !== undefined ? field.class : ""}"
+                value="${field.value === undefined ? "" : field.value}"
+                maxlength="${
+                  field.maxlength !== undefined ? field.maxlength : ""
+                }"
+                ${field.type == "readonly" ? "readonly" : ""}
+                data-mapping="${field.mapping}"/>
+            <span class="loading loading-spinner text-primary  hidden"></span>
+        </label>`;
+      inputContainer.innerHTML = inputLabel;
+      elementToListen = inputContainer.querySelector(`#${field.id}`);
+      break;
   }
 
-  if (elementToListen && field.onChange && events[field.onChange]) {
-    elementToListen.addEventListener("change", events[field.onChange]);
+  if (elementToListen && field.onChange && source.events[field.onChange]) {
+    elementToListen.addEventListener("change", source.events[field.onChange]);
   }
   return inputContainer;
-}
-
-export async function createFormCard(cardData) {
-  const card = document.createElement("div");
-  card.className = "bg-white rounded-lg shadow overflow-hidden px-6 pt-3";
-
-  const header = document.createElement("div");
-  header.className = "text-primary p-3 font-semibold";
-  header.textContent = cardData.title;
-  card.appendChild(header);
-
-  const body = document.createElement("div");
-  body.className = "p-4 space-y-4";
-
-  // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
-  for (const field of cardData.fields) {
-    const fieldWrapper = document.createElement("div");
-    fieldWrapper.className = "grid grid-cols-3 items-center gap-2 min-h-[42px]";
-
-    const label = document.createElement("label");
-    label.htmlFor = field.id || "";
-    label.className = "text-sm font-medium text-gray-600 col-span-1";
-    label.textContent = field.label;
-
-    // รอให้ field สร้างเสร็จก่อน (เผื่อต้อง fetch data)
-    const inputElement = await createFieldInput(field);
-    fieldWrapper.appendChild(label);
-    fieldWrapper.appendChild(inputElement);
-    body.appendChild(fieldWrapper);
-  }
-
-  card.appendChild(body);
-  return card;
 }
 
 export async function importExcel(file) {
@@ -234,7 +280,7 @@ export async function importExcel(file) {
   if (excelData.length > 0) {
     await importHeader({ mfgno: excelData[1][7], inquiryno: excelData[1][0] });
     const readdata = excelData.map(async (el, i) => {
-      const init = await initRow(el[1]);
+      const init = await tb.initRow(el[1]);
       const newRow = {
         ...init,
         INQD_CAR: el[8],
@@ -282,7 +328,7 @@ export async function importText(file) {
   const readdata = [];
   lines.forEach(function (row) {
     const el = row.split("\t");
-    const init = initRow(el[1]);
+    const init = tb.initRow(el[1]);
     const newRow = {
       ...init,
       INQD_CAR: el[8],
@@ -317,66 +363,6 @@ export async function importHeader(data) {
   const inqno = document.querySelector("#inquiry-no");
   inqno.value = data.inquiryno;
   inqno.dispatchEvent(new Event("change"));
-}
-
-export function initRow(id) {
-  return {
-    id: id,
-    INQD_ID: "",
-    INQD_SEQ: id,
-    INQD_RUNNO: "",
-    INQD_MFGORDER: "",
-    INQD_ITEM: "",
-    INQD_CAR: "",
-    INQD_PARTNAME: "",
-    INQD_DRAWING: "",
-    INQD_VARIABLE: "",
-    INQD_QTY: 1,
-    INQD_UM: "PC",
-    INQD_SUPPLIER: "",
-    INQD_SENDPART: "",
-    INQD_UNREPLY: "",
-    INQD_FC_COST: "",
-    INQD_TC_COST: "",
-    INQD_UNIT_PRICE: "",
-    INQD_FC_BASE: "",
-    INQD_TC_BASE: "",
-    INQD_MAR_REMARK: "",
-    INQD_DES_REMARK: "",
-    INQD_FIN_REMARK: "",
-    INQD_LATEST: "",
-    INQD_OWNER: "",
-  };
-}
-
-export async function setupCard() {
-  const form = $("#form-container");
-  const carddata = form.attr("data");
-  const cardIds = carddata.split("|");
-
-  // Create an array to hold promises for card creation
-  const cardPromises = cardIds.map(async (cardId) => {
-    return new Promise(async (resolve) => {
-      const cardData = formData.find((item) => item.id === cardId);
-      if (cardData) {
-        const cardElement = await createFormCard(cardData);
-        resolve(cardElement);
-      } else {
-        console.error(`Card data for ID ${cardId} not found.`);
-        resolve(null);
-      }
-    });
-  });
-
-  const cardElements = await Promise.all(cardPromises);
-  cardElements.forEach((element) => {
-    if (element) {
-      form.append(element);
-      if ($(element).find("#currency").length > 0) {
-        $(element).find("#currency").closest(".grid").addClass("hidden");
-      }
-    }
-  });
 }
 
 export async function applyValueCard(data) {
@@ -456,11 +442,11 @@ export async function createReasonModal() {
     }
   });
 
-  const btnSave = await creatBtn({
+  const btnSave = await utils.creatBtn({
     id: "save-reason",
     className: "btn-outline  btn-primary  text-primary hover:text-white",
   });
-  const btnCancel = await creatBtn({
+  const btnCancel = await utils.creatBtn({
     id: "cancel-reason",
     title: "Cancel",
     icon: "icofont-close text-2xl",
@@ -557,13 +543,13 @@ export async function saveUnreply(table) {
 
 //Start: Elmes
 export async function elmesComponent() {
-  const confirmBtn = await creatBtn({
+  const confirmBtn = await utils.creatBtn({
     id: "elmes-confirm",
     title: "Confirm",
     icon: "",
     className: "btn-primary btn-outline text-primary hover:text-white",
   });
-  const cancelBtn = await creatBtn({
+  const cancelBtn = await utils.creatBtn({
     id: "elmes-cancel",
     title: "Cancel",
     icon: "icofont-close text-2xl",
@@ -590,7 +576,7 @@ export async function elmesSetup(row) {
 
   const elmes = await getElmesItem(mfgno, item);
   if (elmes.length > 0) {
-    const setting = await elmesTable(elmes);
+    const setting = await tb.elmesTable(elmes);
     tableElmes = await createTable(setting, {
       id: "#tableElmes",
       columnSelect: { status: true },
@@ -611,11 +597,9 @@ export async function elmesSetup(row) {
 }
 
 export async function elmesConform(elmesData, increse, table) {
-  console.log(elmesData);
   const rowid = $("#elmes-target").val();
   const data = table.row(rowid).data();
-  //Delete current row first
-  table.rows(rowid).remove().draw();
+  table.rows(rowid).remove().draw(); //Delete current row first
   //Insert rows
   let i = 0;
   let id = utils.intVal(data.INQD_SEQ);
@@ -626,9 +610,9 @@ export async function elmesConform(elmesData, increse, table) {
       if (val.supply === "J") supplier = `MELINA`;
       if (val.supply === "U") supplier = ``;
 
-      let secound = `0`;
-      if (val.scndpart != null && val.scndpart.toUpperCase() == "X")
-        secound = `1`;
+      let second = `0`;
+      if (val.scndpart != "" && val.scndpart.toUpperCase() !== "X")
+        second = `1`;
 
       const newRow = {
         ...data,
@@ -642,7 +626,7 @@ export async function elmesConform(elmesData, increse, table) {
         INQD_VARIABLE: val.variable,
         INQD_QTY: val.qty,
         INQD_SUPPLIER: supplier,
-        INQD_SENDPART: secound,
+        INQD_SENDPART: second,
       };
       table.row.add(newRow).draw(false);
       i++;
@@ -655,5 +639,16 @@ export async function elmesConform(elmesData, increse, table) {
   $("#showElmes").click();
 }
 
-export async function elmesCancel() {}
-//End: Unreply
+export async function elmesCancel(table) {
+  await destroyTable("#tableElmes");
+  const inx = $("#elmes-target").val();
+  $("#tableElmes").html("");
+  $("#elmes-target").val("");
+  $("#showElmes").click();
+  $(table.row(inx).node()).find(".partname").focus();
+}
+//End: Elmes
+
+//Start: Verify save form
+
+//End: Verify save form

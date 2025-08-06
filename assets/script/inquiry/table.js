@@ -1,5 +1,8 @@
 import moment from "moment";
+import { getMainProject } from "../service/mkt.js";
+import * as utils from "../utils.js";
 
+//Start Table detail
 export async function setupTableDetail(data = []) {
   const opt = {};
   opt.data = data;
@@ -46,7 +49,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[55px] cell-input carno" value="${data}">`;
+          return `<input type="text" maxlength="2" class="!w-[55px] uppercase cell-input carno" value="${data}">`;
         }
         return data;
       },
@@ -58,7 +61,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[150px] cell-input mfgno elmes-input" value="${data}">`;
+          return `<input type="text" maxlength="9" class="!w-[150px] uppercase cell-input mfgno elmes-input" value="${data}">`;
         }
         return data;
       },
@@ -70,7 +73,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[75px] cell-input itemno elmes-input" value="${data}">`;
+          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input itemno elmes-input" value="${data}">`;
         }
         return data;
       },
@@ -137,7 +140,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="type" class="!w-[75px] cell-input edit-input" value="${
+          return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${
             data == "" ? "PC" : data
           }">`;
         }
@@ -184,7 +187,6 @@ export async function setupTableDetail(data = []) {
     },
     {
       data: "INQD_UNREPLY",
-      //   title: `<div class="text-center text-white">U/N</div>`,
       title: "U/N",
       className: "text-center",
       sortable: false,
@@ -232,6 +234,75 @@ export async function setupTableDetail(data = []) {
   };
   return opt;
 }
+
+export function initRow(id) {
+  return {
+    id: id,
+    INQD_ID: "",
+    INQD_SEQ: id,
+    INQD_RUNNO: "",
+    INQD_MFGORDER: "",
+    INQD_ITEM: "",
+    INQD_CAR: "",
+    INQD_PARTNAME: "",
+    INQD_DRAWING: "",
+    INQD_VARIABLE: "",
+    INQD_QTY: 1,
+    INQD_UM: "PC",
+    INQD_SUPPLIER: "",
+    INQD_SENDPART: "",
+    INQD_UNREPLY: "",
+    INQD_FC_COST: "",
+    INQD_TC_COST: "",
+    INQD_UNIT_PRICE: "",
+    INQD_FC_BASE: "",
+    INQD_TC_BASE: "",
+    INQD_MAR_REMARK: "",
+    INQD_DES_REMARK: "",
+    INQD_FIN_REMARK: "",
+    INQD_LATEST: "",
+    INQD_OWNER: "",
+  };
+}
+
+export async function addRow(id, table) {
+  const newRow = await initRow(id);
+  const row = table.row.add(newRow).draw();
+  $(row.node()).find("td:eq(3) input").focus();
+}
+
+export async function changeCell(table, el) {
+  const cell = table.cell($(el).closest("td"));
+  let newValue = $(el).val();
+  if ($(el).attr("type") === "date") {
+    newValue = newValue.replace(/-/g, "/");
+  }
+  cell.data(newValue);
+}
+export async function changeCar(table, el) {
+  const row = table.row($(el).closest("tr"));
+  const data = row.data();
+  const prjno = $("#project-no").val();
+  if (prjno == "") return;
+
+  const carno = $(el).val();
+  const orders = await getMainProject({
+    PRJ_NO: prjno,
+    CAR_NO: carno,
+  });
+
+  if (orders.length > 0) {
+    const newData = {
+      ...data,
+      INQD_CAR: carno,
+      INQD_MFGORDER: orders[0].MFGNO,
+    };
+    row.data(newData);
+    row.draw(false);
+    $(row.node()).find(".itemno").focus();
+  }
+}
+//End Table detail
 
 export async function setupTableDetailView(data = []) {
   const opt = {};
