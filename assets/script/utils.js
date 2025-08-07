@@ -1,4 +1,5 @@
 import moment from "moment";
+
 export function showMessage(msg, type = "error") {
   const prop = [
     {
@@ -32,11 +33,13 @@ export function showMessage(msg, type = "error") {
   ];
 
   const dt = prop.find((x) => x.id == type);
-  const toast = `<div class="toast-message toast toast-end z-50 alert-message w-80 max-w-80 transition-all duration-1000">
-          <div class="alert flex flex-col gap-2 overflow-hidden relative ${dt.bg}">
+  const id = Math.floor(Math.random() * 100);
+  //   <div class="toast-message toast toast-end z-50 alert-message w-80 max-w-80 transition-all duration-100"></div>
+  const toast = `
+          <div class="alert flex flex-col gap-2 overflow-hidden relative ${dt.bg} toast-message w-80 max-w-80 transition-all duration-300">
               <div class="msg-title text-xl font-semibold block w-full text-left ${dt.text}">${dt.title}</div>
               <div class="msg-txt block w-full text-left max-w-80 text-wrap ${dt.text}">${msg}</div>
-              <div class="msg-close absolute top-2 right-5 z-10">
+              <div class="msg-close absolute top-2 right-5 z-10 cursor-pointer" id="msg-close-${id}">
                   <i class="icofont-ui-close"></i>
               </div>
               <div class="absolute right-[-30px] top-[-10px] text-[120px] z-0 opacity-20">
@@ -44,12 +47,11 @@ export function showMessage(msg, type = "error") {
               </div>
           </div>
       </div>
-  </div>
     `;
-  $(document.body).append(toast);
+  $(`#toast-alert`).append(toast);
   setTimeout(() => {
-    $(".msg-close").click();
-  }, 3000);
+    $(`#msg-close-${id}`).click();
+  }, 8325);
 }
 
 export const errorMessage = async function (error) {
@@ -62,7 +64,7 @@ export const errorMessage = async function (error) {
     let msg = ``;
     error.responseJSON.message.map((val) => {
       for (const [key, value] of Object.entries(val)) {
-        console.log(`${key}: ${value}`);
+        // console.log(`${key}: ${value}`);
         msg += `<li>${value}</li>`;
       }
     });
@@ -170,4 +172,12 @@ export const fileExtension = (fileName) => {
   } else {
     return null;
   }
+};
+
+export const setInquiryNo = (val) => {
+  return val
+    .trim()
+    .replace(/(\r\n|\n|\r)/g, "")
+    .replaceAll(" ", "")
+    .toUpperCase();
 };

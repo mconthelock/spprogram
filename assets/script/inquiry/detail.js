@@ -10,13 +10,14 @@ import { getElmesItem } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
+import * as dwg from "../drawing.js";
 import * as source from "./source";
 import * as tb from "./table.js";
 
 export const statusColors = () => {
   return [
     { id: 1, color: "bg-gray-500 text-white" }, //Draft
-    { id: 19, color: "bg-indigo-500" }, //MAR Pre process
+    { id: 19, color: "bg-indigo-500 text-white" }, //MAR Pre process
     { id: 29, color: "bg-sky-500" }, //SE
     { id: 39, color: "bg-amber-500" }, //DE
     { id: 49, color: "bg-slate-500" }, //IS
@@ -54,9 +55,12 @@ export async function setupCard(data) {
     }
   });
 }
+
 export async function setFieldValue(field, data = {}) {
-  const dspName = () => {
-    return `ddddd`;
+  const dspName = (data, field, key) => {
+    field.display = `xxxx`;
+    field.value = data[key];
+    return field;
   };
 
   const dspDetail = (data, topic, cols) => {
@@ -82,9 +86,10 @@ export async function setFieldValue(field, data = {}) {
   if (field.name == "INQ_PKC_REQ")
     field.display = data["INQ_PKC_REQ"] == 1 ? "Yes" : "No";
 
-  if (field.class == "displayname") field.display = dspName("12069");
   if (field.class == "nesting")
     field.display = dspDetail(data, field.topic, field.mapping);
+
+  if (field.class == "displayname") field = dspName(data, field, field.name);
 
   if (field.type == "status") field = dspStatus(data, field);
   return field;
@@ -102,6 +107,15 @@ export async function createFormCard(cardData, data = {}) {
   const body = document.createElement("div");
   body.className = "p-4 space-y-4";
   // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
+  if (Object.keys(data).length === 0)
+    data = {
+      ...data,
+      INQ_DATE: moment().format("YYYY-MM-DD"),
+      INQ_STATUS: 2,
+      status: { id: 2, STATUS_DESC: "New" },
+      INQ_MAR_PIC: `12069`,
+      INQ_REV: "*",
+    };
   for (let field of cardData.fields) {
     const fieldWrapper = document.createElement("div");
     fieldWrapper.className = "grid grid-cols-3 items-center gap-2 min-h-[42px]";
@@ -109,10 +123,7 @@ export async function createFormCard(cardData, data = {}) {
     label.htmlFor = field.id || "";
     label.className = "text-sm font-medium text-gray-600 col-span-1";
     label.textContent = field.label;
-
-    // รอให้ field สร้างเสร็จก่อน (เผื่อต้อง fetch data)
-    if (Object.keys(data).length !== 0)
-      field = await setFieldValue(field, data);
+    field = await setFieldValue(field, data);
     const inputElement = await createFieldInput(field);
     fieldWrapper.appendChild(label);
     fieldWrapper.appendChild(inputElement);
@@ -130,24 +141,6 @@ export async function createFieldInput(field) {
   const loader = document.createElement("span");
   loader.className = "loading loading-spinner";
   switch (field.type) {
-    // case "readonly":
-    // case "text":
-    // case "date":
-    //   const inputLabel = `<label class="input bg-white w-full">
-    //         <input type="${field.type}" id="${field.id}"
-    //             name="${field.name !== undefined ? field.name : field.id}"
-    //             class="w-full   ${field.class !== undefined ? field.class : ""}"
-    //             value="${field.value === undefined ? "" : field.value}"
-    //             maxlength="${
-    //               field.maxlength !== undefined ? field.maxlength : ""
-    //             }"
-    //             ${field.type == "readonly" ? "readonly" : ""}
-    //             data-mapping="${field.mapping}"/>
-    //         <span class="loading loading-spinner text-primary  hidden"></span>
-    //     </label>`;
-    //   inputContainer.innerHTML = inputLabel;
-    //   elementToListen = inputContainer.querySelector(`#${field.id}`);
-    //   break;
     case "textarea":
       const textarea = `<textarea name="${field.name}"
         id="${field.id}" class="textarea w-full ${
@@ -157,34 +150,26 @@ export async function createFieldInput(field) {
       break;
 
     case "select":
-      const selectInput = `<select></select>`;
-      /*const selectInput = document.createElement("select");
-      selectInput.id = field.id;
-      selectInput.name = field.name;
-      selectInput.setAttribute("data-mapping", field.mapping);
-      selectInput.className =
-        "w-full border border-gray-300 rounded-md p-2 bg-white select2";
-
       let options = [];
+      let optStr = "<option value=''></option>";
       if (field.source) {
-        if (source.init[field.source]) {
+        if (source.init[field.source])
           options = await source.init[field.source]();
-        }
-      } else if (field.options) {
-        options = field.options;
-      }
-
+      } else if (field.options) options = field.options;
       options.forEach((opt) => {
-        const option = document.createElement("option");
-        option.value = opt.id;
-        option.textContent = opt.text;
-        selectInput.appendChild(option);
+        optStr += `<option value="${opt.id}" ${
+          opt.id == field.value ? "selected" : ""
+        }>${opt.text}</option>`;
       });
-
-      if (field.value) selectInput.value = field.value;
-      inputContainer.appendChild(selectInput);
-      elementToListen = selectInput;
-
+      const selectInput = `<select name="${field.name}"
+        id="${
+          field.id
+        }" class="w-full border border-gray-300 rounded-md p-2 bg-white select2 ${
+        field.class !== undefined ? field.class : ""
+      }"
+        data-mapping="${field.mapping}">${optStr}</select>`;
+      inputContainer.innerHTML = selectInput;
+      elementToListen = inputContainer.querySelector(`#${field.id}`);
       setTimeout(() => {
         const jQueryElement = $(`#${field.id}`);
         jQueryElement.select2({ width: "100%" });
@@ -192,7 +177,7 @@ export async function createFieldInput(field) {
         if (field.onChange && eventHandlers[field.onChange]) {
           jQueryElement.on("change", eventHandlers[field.onChange]);
         }
-      }, 1000);*/
+      }, 1000);
       break;
 
     case "radio":
@@ -225,13 +210,11 @@ export async function createFieldInput(field) {
       break;
 
     case "staticText":
-      const staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
+      let staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
         field.class !== undefined ? field.class : ""
-      }">${
-        !field.display ? field.value : field.display
-      }</p><input type="hidden" name="${field.name}" value="${
-        field.value
-      }" id="${field.id}"/>`;
+      }">${!field.display ? field.value : field.display}</p>`;
+      if (field.input)
+        staticText += `<input type="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
       inputContainer.innerHTML = staticText;
       break;
 
@@ -280,6 +263,7 @@ export async function importExcel(file) {
   if (excelData.length > 0) {
     await importHeader({ mfgno: excelData[1][7], inquiryno: excelData[1][0] });
     const readdata = excelData.map(async (el, i) => {
+      const variavle = dwg.validateVariable(el[6]);
       const init = await tb.initRow(el[1]);
       const newRow = {
         ...init,
@@ -288,7 +272,8 @@ export async function importExcel(file) {
         INQD_ITEM: el[9],
         INQD_PARTNAME: el[3],
         INQD_DRAWING: el[2],
-        INQD_VARIABLE: el[6],
+        INQD_VARIABLE: variavle.isValid ? el[6] : "",
+        INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
         INQD_QTY: el[4],
         INQD_UM: el[5],
         INQD_SUPPLIER: "AMEC",
@@ -328,6 +313,7 @@ export async function importText(file) {
   const readdata = [];
   lines.forEach(function (row) {
     const el = row.split("\t");
+    const variavle = dwg.validateVariable(el[6]);
     const init = tb.initRow(el[1]);
     const newRow = {
       ...init,
@@ -336,15 +322,17 @@ export async function importText(file) {
       INQD_ITEM: el[9].substring(0, 3),
       INQD_PARTNAME: el[3],
       INQD_DRAWING: el[2],
-      INQD_VARIABLE: el[6],
       INQD_QTY: el[4],
       INQD_UM: el[5],
       INQD_SUPPLIER: "AMEC",
       INQD_OWNER: "MAR",
       INQ_NO: el[0],
+      INQD_VARIABLE: variavle.isValid ? el[6] : "",
+      INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
     };
     readdata.push(newRow);
   });
+
   await importHeader({
     mfgno: readdata[0].INQD_MFGORDER,
     inquiryno: readdata[0].INQ_NO,
@@ -353,60 +341,18 @@ export async function importText(file) {
 }
 
 export async function importHeader(data) {
-  const prj = await getMainProject({ MFGNO: data.mfgno });
+  const prj = await getMainProject({ SMFGNO: data.mfgno.substring(0, 8) });
   if (prj.length > 0) {
     const projectNo = document.querySelector("#project-no");
     projectNo.value = prj[0].PRJ_NO;
-    projectNo.dispatchEvent(new Event("change"));
+    if (source.events.handleProjectChange) {
+      await source.events.handleProjectChange({ target: projectNo });
+    }
   }
 
   const inqno = document.querySelector("#inquiry-no");
   inqno.value = data.inquiryno;
   inqno.dispatchEvent(new Event("change"));
-}
-
-export async function applyValueCard(data) {
-  const form = $("#form-container");
-  const applyWeight = (data) => {
-    form.find(".weight").text(`${data == 1 ? "Yes" : "No"}`);
-  };
-  const applyQuotation = (data) => {
-    form.find(".quotype").text(`${data.QUOTYPE_DESC}`);
-  };
-  const applyTerm = (data) => {
-    form.find(".delivery").text(`${data.TERM_DESC}`);
-  };
-  const applyMethod = (data) => {
-    form.find(".method").text(`${data.METHOD_DESC}`);
-  };
-  const applyShipment = (data) => {
-    form.find(".shipment").text(`${data.SHIPMENT_DESC}`);
-  };
-
-  form.find(".view-data").map((i, el) => {
-    const mapping = $(el).attr("data-mapping");
-    if (mapping) {
-      Object.keys(data).forEach((key) => {
-        if (mapping == key) {
-          let value = data[key];
-          if (key === "INQ_DATE") value = moment(value).format("YYYY-MM-DD");
-          $(el).text(value);
-        }
-      });
-    }
-  });
-
-  await applyWeight(data.INQ_PKC_REQ);
-  await applyQuotation(data.quotype);
-  await applyTerm(data.term);
-  await applyMethod(data.method);
-  await applyShipment(data.shipment);
-
-  //Display Status
-  const colors = await statusColors();
-  const cls = colors.find((item) => item.id >= data.INQ_STATUS);
-  $("#status-badge").addClass(cls.color);
-  $("#status-badge").text(data.status.STATUS_DESC);
 }
 
 //Start: Unreply
@@ -525,6 +471,7 @@ export async function saveUnreply(table) {
   $(table.row(target).node()).find(".unreply").prop("checked", true);
   $(table.row(target).node()).find(".unreply").val(selected.val());
   $(table.row(target).node()).find(".remark").val(remark);
+  $(table.row(target).node()).find(".supplier").val("").trigger("change");
   $("#reason-target").val(selected.val());
 
   const data = row.data();
@@ -650,5 +597,121 @@ export async function elmesCancel(table) {
 //End: Elmes
 
 //Start: Verify save form
+export async function getFormHeader() {
+  const obj = $("#form-container").find("input, select, textarea");
+  const header = {};
+  obj.map((i, el) => {
+    if ($(el).attr("name") === "INQ_NO") {
+      header.INQ_NO = utils.setInquiryNo($(el).val());
+    } else if ($(el).attr("name") === "INQ_PKC_REQ") {
+      header.INQ_PKC_REQ = $('input[name="INQ_PKC_REQ"]:checked').val();
+    } else if ($(el).attr("name") === "INQ_AGENT") {
+      header.INQ_AGENT =
+        $(el).val() == "" ? "" : $(el).val().split("(")[0].trim();
+    } else {
+      header[$(el).attr("name")] = $(el).val();
+    }
+  });
+  return header;
+}
+
+export async function verifyHeader(cls) {
+  let str = ``;
+  let check = true;
+  const obj = $("#form-container").find(`${cls}`);
+  obj.map(async (i, el) => {
+    if ($(el).val() == "") {
+      const label = $(el).closest(".grid").find("label").text();
+      str += str == "" ? label : `, ${label}`;
+      $(el).closest("label").addClass("border-red-500");
+      $(el).siblings(".select2").addClass("select2-error");
+      check = false;
+    }
+  });
+
+  setTimeout(() => {
+    obj.map((i, el) => {
+      $(el).closest("label").removeClass("border-red-500");
+      $(el).siblings(".select2").removeClass("select2-error");
+    });
+  }, 10000);
+
+  if (check == false) await utils.showMessage(`Please fill ${str}`);
+  return check;
+}
+
+export async function verifyDetail(table, data, issave) {
+  const errorEl = (obj) => {
+    obj.addClass("!bg-red-300");
+    setTimeout(() => {
+      obj.removeClass("!bg-red-300");
+    }, 5000);
+  };
+
+  let check = true;
+  let message = [];
+  const duplicates = [];
+  const seenKeys = new Set();
+  if (data.length == 0) throw new Error(`Please insert inquiry detail.`);
+  data.map((item, i) => {
+    const row = $(table.row(i).node());
+    const seq = item.INQD_SEQ;
+    if (seenKeys.has(item.INQD_SEQ)) {
+      check = false;
+      message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
+      errorEl(row.find(".seqno"));
+    } else {
+      seenKeys.add(item.INQD_SEQ);
+    }
+
+    if (utils.intVal(item.INQD_SEQ) <= 0) {
+      check = false;
+      row.find(".seqno").addClass("border-red-500");
+      message.push(`Please input seq no.`);
+    }
+    if (
+      utils.intVal(item.INQD_ITEM) < 100 ||
+      utils.intVal(item.INQD_ITEM) > 1000
+    ) {
+      check = false;
+      message.push(`Please input item no. or in range 100-999`);
+      errorEl(row.find(".item-no"));
+    }
+    if (item.INQD_PARTNAME == "") {
+      check = false;
+      message.push(`Please input Part name`);
+    }
+
+    //Save data to Database
+    if (issave) {
+      if (item.INQD_DRAWING == "") {
+        check = false;
+        row.find(".drawing-line").addClass("border-red-500");
+        message.push(`Please input Drawing no.`);
+      }
+
+      const dwgno = dwg.validateDrawingNo(item.INQD_DRAWING);
+      if (dwgno == null) {
+        check = false;
+        row.find(".drawing-line").addClass("border-red-500");
+        message.push(`Please check Drawing no. format.`);
+      }
+
+      if (item.INQD_UNREPLY == "" && item.INQD_SUPPLIER == "") {
+        check = false;
+        errorEl(row.find(".supplier-line"));
+        message.push(`Please select supplier.`);
+      }
+      if (item.INQD_UNREPLY != "" && row.find(".remark").val() == "") {
+        check = false;
+        errorEl(row.find(".remark-line"));
+        message.push(`Please input remark for unable to reply reason.`);
+      }
+    }
+  });
+
+  if (check == false) throw new Error(message);
+  return check;
+}
 
 //End: Verify save form

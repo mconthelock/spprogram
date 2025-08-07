@@ -1,7 +1,7 @@
 import * as mst from "../service/master.js";
 import * as mkt from "../service/mkt.js";
 import * as inq from "../service/inquiry.js";
-import { amecschdule, showMessage } from "../utils.js";
+import * as utils from "../utils.js";
 
 export const init = {
   getTraders: async function () {
@@ -14,7 +14,6 @@ export const init = {
         text: trader,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -26,7 +25,6 @@ export const init = {
         text: type.QUOTYPE_DESC,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -38,7 +36,6 @@ export const init = {
         text: shp.SHIPMENT_DESC,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -51,7 +48,6 @@ export const init = {
         text: cur.CURR_CODE,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -63,7 +59,6 @@ export const init = {
         text: term.TERM_DESC,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -75,7 +70,6 @@ export const init = {
         text: method.METHOD_DESC,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -88,7 +82,6 @@ export const init = {
         text: `${agent.AGENT} (${agent.country.CTNAME})`,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -100,7 +93,6 @@ export const init = {
         text: country.CTNAME,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 
@@ -112,7 +104,6 @@ export const init = {
         text: series.ABBREVIATION,
       };
     });
-    options.unshift({ id: "", text: "" });
     return options;
   },
 };
@@ -120,7 +111,6 @@ export const init = {
 export const events = {
   //Original Project
   handleProjectChange: async (e) => {
-    console.log("Project Change");
     const obj = e.target;
     const loader = $(obj).closest(".input").find(".loading");
     loader.removeClass("hidden");
@@ -129,11 +119,11 @@ export const events = {
     const data = await mkt.getMainProject(q);
     if (data.length > 0) {
       const values = data[0];
-      Object.keys(values).forEach(async (key) => {
+      for (const key in values) {
         if ($('input[data-mapping="' + key + '"]').length > 0) {
           const input = $('input[data-mapping="' + key + '"]');
           if (input.attr("id") == "schedule") {
-            const val = await amecschdule(values[key]);
+            const val = await utils.amecschdule(values[key]);
             input.val(val);
           } else {
             input.val(values[key]);
@@ -144,15 +134,46 @@ export const events = {
           let val = values[key];
           const selected = $('select[data-mapping="' + key + '"]');
           if (selected.attr("id") == "agent") {
+            const ops = new Set();
+            const agents = new Set();
+            const countries = new Set();
             val = `${values.AGENT} (${values.DSTN})`;
+            selected.find(`option`).map((i, op) => {
+              if ($(op).val() != "") {
+                ops.add($(op).val());
+                agents.add($(op).val().split("(")[0].trim());
+                countries.add($(op).val().split("(")[1].replace(")", ""));
+              }
+            });
+            if (ops.has(val)) {
+              $('select[data-mapping="' + key + '"]').val(val);
+              $('select[data-mapping="' + key + '"]').trigger("change");
+            } else {
+              const agentMaster = await mkt.getAgent();
+              if (agents.has(values.AGENT)) {
+                const agn = agentMaster.find((x) => x.AGENT == values.AGENT);
+                val = `${agn.AGENT} (${agn.country.CTNAME})`;
+                $('select[data-mapping="' + key + '"]').val(val);
+                $('select[data-mapping="' + key + '"]').trigger("change");
+              }
+
+              if (countries.has(values.DSTN)) {
+                const cnty = agentMaster.find(
+                  (x) => x.country.CTNAME == values.DSTN
+                );
+                val = `${cnty.AGENT} (${cnty.country.CTNAME})`;
+                $('select[data-mapping="' + key + '"]').val(val);
+                $('select[data-mapping="' + key + '"]').trigger("change");
+              }
+            }
+          } else {
+            $('select[data-mapping="' + key + '"]').val(val);
+            $('select[data-mapping="' + key + '"]').trigger("change");
           }
-
-          $('select[data-mapping="' + key + '"]').val(val);
-          $('select[data-mapping="' + key + '"]').trigger("change");
         }
-      });
+      }
     }
-
+    console.log($("#agent").val());
     $("#inquiry-no").focus().select();
     loader.addClass("hidden");
   },
@@ -170,12 +191,8 @@ export const events = {
     const obj = e.target;
     const loader = $(obj).closest(".input").find(".loading");
     loader.removeClass("hidden");
-
-    const values = obj.value
-      .trim()
-      .replace(/(\r\n|\n|\r)/g, "")
-      .replaceAll(" ", "")
-      .toUpperCase();
+    const values = await utils.setInquiryNo(obj.value);
+    obj.value = values;
 
     const controller = await mst.getControl();
     const prefix = controller.find(
@@ -196,7 +213,7 @@ export const events = {
 
     const inquiry = await inq.getInquiry({ INQ_NO: values });
     if (inquiry.length > 0) {
-      showMessage(`Inquiry ${values} is already exist!`);
+      utils.showMessage(`Inquiry ${values} is already exist!`);
       $("#inquiry-no").focus().select();
       loader.addClass("hidden");
       return;
@@ -205,10 +222,4 @@ export const events = {
   },
 
   handleRatioChange: (event) => {},
-
-  setCurrentDate: () => {
-    console.log("Set Current Date");
-
-    $("#inquiry-date").val(moment().format("YYYY-MM-DD")).trigger("change");
-  },
 };

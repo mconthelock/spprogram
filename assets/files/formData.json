@@ -24,13 +24,60 @@
         "id": "info",
         "title": "Inquiry Information",
         "fields": [
-            { "label": "Inquiry No.", "id": "inquiry-no", "type": "text", "class": "uppercase req-1 req-2", "onChange": "handleInquiryChange", "name": "INQ_NO"},
-            { "label": "Revision", "id": "revision", "type": "readonly", "class": "uppercase req-1 req-2", "value": "*", "name": "INQ_REV" },
-            { "label": "Inquiry Date", "id": "inquiry-date", "type": "date", "onLoad": "setCurrentDate" , "name": "INQ_DATE"},
-            { "label": "Trader", "id": "trader", "type": "select",  "source": "getTraders" , "name": "INQ_TRADER" },
-            { "label": "Agent", "id": "agent", "type": "select", "source": "getAgent", "mapping": "AGENT", "name": "INQ_AGENT" },
-            { "label": "Country", "id": "country", "type": "select", "source": "getCountries", "mapping": "DSTN" , "name": "INQ_COUNTRY"},
-            { "label": "Status", "id": "status", "type": "status", "display": "New", "value": "2" , "name": "INQ_STATUS", "class": "badge badge-primary text-white"}
+            {
+                "label": "Inquiry No.",
+                "id": "inquiry-no",
+                "type": "text",
+                "class": "uppercase req-1 req-2",
+                "name": "INQ_NO",
+                "onChange": "handleInquiryChange"
+            },
+            {
+                "label": "Revision",
+                "id": "revision",
+                "type": "readonly",
+                "class": "uppercase req-2",
+                "name": "INQ_REV"
+            },
+            {
+                "label": "Inquiry Date",
+                "id": "inquiry-date",
+                "type": "date",
+                "class": "req-2",
+                "name": "INQ_DATE"
+            },
+            {
+                "label": "Trader",
+                "id": "trader",
+                "type": "select",
+                "name": "INQ_TRADER",
+                "class": "req-2",
+                "source": "getTraders"
+            },
+            {
+                "label": "Agent",
+                "id": "agent",
+                "type": "select",
+                "source": "getAgent",
+                "mapping": "AGENT",
+                "name": "INQ_AGENT" ,
+                "class": "req-2"
+            },
+            {
+                "label": "Country",
+                "id": "country",
+                "type": "select",
+                "source": "getCountries",
+                "mapping": "DSTN" ,
+                "name": "INQ_COUNTRY",
+                "class": "req-2"
+            },
+            {
+                "label": "Status",
+                "id": "status",
+                "type": "status",
+                "name": "INQ_STATUS"
+            }
         ]
     },
     {
@@ -42,7 +89,8 @@
                 "id":"mar-incharge",
                 "type": "staticText",
                 "name": "INQ_MAR_PIC",
-                "class": "displayname"
+                "class": "displayname",
+                "input": true
             },
             {
                 "label": "Weight Require",
@@ -51,12 +99,51 @@
                 "options": [{"value": "1", "text":"Yes"}, {"value": "0", "text":"No"}],
                 "name": "INQ_PKC_REQ"
             },
-            { "label": "Quotation type", "id": "quotation-type", "type": "select", "source": "getQuoType" , "name": "INQ_QUOTATION_TYPE"},
-            { "label": "Delivery Term", "id": "delivery-term", "type": "select", "source": "getDeliveryTerm", "name": "INQ_DELIVERY_TERM" },
-            { "label": "Delivery Method", "id": "delivery-method", "type": "select", "source": "getMethod" , "name": "INQ_DELIVERY_METHOD"},
-            { "label": "Lead Time", "id": "inq-leadtime","type": "select", "source": "getShipment" , "name": "INQ_SHIPMENT"},
-            { "label": "Currency", "id": "currency", "type": "select", "source": "getCurrency", "name": "INQ_CUR"},
-            { "label": "Remark", "id": "remark", "type": "textarea" , "name": "INQ_REMARK"}
+            {
+                "label": "Quotation type",
+                "id": "quotation-type",
+                "type": "select",
+                "source": "getQuoType" ,
+                "name": "INQ_QUOTATION_TYPE",
+                "class": "req-2"
+            },
+            {
+                "label": "Delivery Term",
+                "id": "delivery-term",
+                "type": "select",
+                "source": "getDeliveryTerm",
+                "name": "INQ_DELIVERY_TERM" ,
+                "class": "req-2"
+            },
+            {
+                "label": "Delivery Method",
+                "id": "delivery-method",
+                "type": "select",
+                "source": "getMethod" ,
+                "name": "INQ_DELIVERY_METHOD",
+                "class": "req-2"
+            },
+            {
+                "label": "Lead Time",
+                "id": "inq-leadtime",
+                "type": "select",
+                "source": "getShipment" ,
+                "name": "INQ_SHIPMENT",
+                "class": "req-2"
+            },
+            {
+                "label": "Currency",
+                "id": "currency",
+                "type": "select",
+                "source": "getCurrency",
+                "name": "INQ_CUR"
+            },
+            {
+                "label": "Remark",
+                "id": "remark",
+                "type": "textarea" ,
+                "name": "INQ_REMARK"
+            }
         ]
     },
     {
@@ -82,7 +169,12 @@
             { "label": "Trader", "id": "trader", "type": "staticText", "class": "view-data",  "mapping": "INQ_TRADER","name": "INQ_TRADER" },
             { "label": "Agent", "id": "agent", "type": "staticText", "class": "view-data", "mapping": "INQ_AGENT", "name": "INQ_AGENT" },
             { "label": "Country", "id": "country", "type": "staticText", "class": "view-data", "mapping": "INQ_COUNTRY" , "name": "INQ_COUNTRY"},
-            { "label": "Status", "id": "status", "type": "status", "mapping": "INQ_STATUS", "name": "INQ_STATUS", "class":"badge text-sm"}
+            {
+                "label": "Status",
+                "id": "status",
+                "type": "status",
+                "name": "INQ_STATUS"
+            }
         ]
     },
     {

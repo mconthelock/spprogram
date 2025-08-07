@@ -237,6 +237,11 @@
     background-color: #fff !important;
   }
 
+  .select2-error.select2-container--default .select2-selection--single {
+    border: 1px solid var(--color-red-500) !important;
+    background-color: #fff !important;
+  }
+
   @keyframes l4 {
     0% {
       aspect-ratio: 1;

@@ -18,8 +18,9 @@ $(function () {
 });
 
 $(document).on("click", ".msg-close", function () {
-  $(".toast-message").addClass("fade-out-element");
+  const msgbox = $(this).closest(".toast-message");
+  msgbox.addClass("opacity-0");
   setTimeout(function () {
-    $(".toast-message").remove();
+    msgbox.remove();
   }, 1000);
 });

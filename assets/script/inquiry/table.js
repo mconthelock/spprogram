@@ -33,11 +33,11 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "sticky-column !px-[3px]",
+      className: "sticky-column !px-[3px] seqno",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[50px] cell-input edit-input" value="${data}">`;
+          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -69,7 +69,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_ITEM",
       title: "Item",
-      className: "!px-[3px]",
+      className: "!px-[3px] item-no",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -95,7 +95,7 @@ export async function setupTableDetail(data = []) {
       data: "INQD_DRAWING",
 
       title: "Drawing No.",
-      className: "!px-[3px]",
+      className: "!px-[3px] drawing-line",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -119,7 +119,6 @@ export async function setupTableDetail(data = []) {
     },
     {
       data: "INQD_QTY",
-
       title: "Qty.",
       className: "!px-[3px]",
       sortable: false,
@@ -149,9 +148,8 @@ export async function setupTableDetail(data = []) {
     },
     {
       data: "INQD_SUPPLIER",
-
       title: "Supplier",
-      className: "!px-[3px]",
+      className: "!px-[3px] supplier-line",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -200,7 +198,7 @@ export async function setupTableDetail(data = []) {
     },
     {
       data: "INQD_MAR_REMARK",
-      //   title: `<div class="text-center text-white">Remark</div>`,
+      className: "remark-line",
       title: "Remark",
       sortable: false,
       render: function (data, type, row, meta) {
@@ -277,8 +275,12 @@ export async function changeCell(table, el) {
   if ($(el).attr("type") === "date") {
     newValue = newValue.replace(/-/g, "/");
   }
+  if ($(el).attr("type") === "number") {
+    newValue = utils.intVal(newValue);
+  }
   cell.data(newValue);
 }
+
 export async function changeCar(table, el) {
   const row = table.row($(el).closest("tr"));
   const data = row.data();

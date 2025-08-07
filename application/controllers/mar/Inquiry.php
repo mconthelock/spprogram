@@ -17,6 +17,6 @@ class Inquiry extends MY_Controller {
     }
 
     public function edit($id){
-        $this->views('mar/inquiry/detail');
+        $this->views('mar/inquiry/edit');
     }
 }

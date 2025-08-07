@@ -40,7 +40,7 @@ export function validateDrawingNo(input) {
   return null; // ไม่ผ่านทุกเงื่อนไข
 }
 
-function formatDrawingNo(input) {
+export function formatDrawingNo(input) {
   const basePattern = /^([A-Z0-9\-]{8,9})\s*([G\-][0-9]{2})(.*)$/;
   const match = input.match(basePattern);
   if (!match) return input;
@@ -50,4 +50,72 @@ function formatDrawingNo(input) {
   const lno = match[3] || "";
   const lval = [...lno.matchAll(/L[0-9]{2,3}/g)].map((m) => m[0]);
   return [dwgno, gno, ...lval].join(" ");
+}
+
+export function validateVariable(inputString) {
+  if (inputString.endsWith(",")) {
+    inputString = inputString.slice(0, -1);
+  }
+  let cleanedString = inputString.replace(/\s/g, "");
+  console.log(cleanedString);
+
+  const pairRegex = /([^=,]{1,3})=((?:[^,]+|,(?![^=,]{1,3}=))+)/g;
+  let isValid = true;
+  const errors = [];
+  const parsedData = {};
+  let lastIndex = 0;
+  const matches = [...cleanedString.matchAll(pairRegex)];
+  if (matches.length === 0 && cleanedString.length > 0) {
+    isValid = false;
+    errors.push("รูปแบบสตริงไม่ถูกต้อง: ไม่พบรูปแบบ KEY=VALUE ที่ถูกต้อง.");
+    return { isValid, errors, parsedData };
+  }
+
+  for (const match of matches) {
+    const fullMatch = match[0];
+    const key = match[1];
+    const value = match[2];
+
+    if (match.index > lastIndex) {
+      const unparsedSegment = cleanedString.substring(lastIndex, match.index);
+      if (unparsedSegment !== ",") {
+        isValid = false;
+        errors.push(
+          `รูปแบบสตริงไม่ถูกต้อง: พบส่วนที่ไม่สามารถแยกวิเคราะห์ได้ '${unparsedSegment}' ก่อน '${fullMatch}'`
+        );
+        break;
+      }
+    }
+    lastIndex = match.index + fullMatch.length;
+    if (key.length < 1 || key.length > 3) {
+      isValid = false;
+      errors.push(
+        `ชื่อตัวแปร '${key}' มีความยาวไม่ถูกต้อง (ต้อง 1-3 ตัวอักษร).`
+      );
+    }
+
+    if (!value) {
+      isValid = false;
+      errors.push(`ค่าของตัวแปร '${key}' ว่างเปล่า.`);
+    } else {
+      if (!value.includes(",")) {
+        if (value.length > 9) {
+          isValid = false;
+          errors.push(
+            `ค่าตัวแปรทั่วไป '${key}=${value}' มีความยาวเกิน 9 ตัวอักษร.`
+          );
+        }
+      }
+    }
+    parsedData[key] = value;
+  }
+  if (lastIndex < cleanedString.length) {
+    const remaining = cleanedString.substring(lastIndex);
+    isValid = false;
+    errors.push(
+      `รูปแบบสตริงไม่ถูกต้อง: มีส่วนที่เหลือไม่สามารถแยกวิเคราะห์ได้ '${remaining}'.`
+    );
+  }
+
+  return { isValid, errors, parsedData };
 }

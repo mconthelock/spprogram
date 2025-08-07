@@ -16,6 +16,10 @@ class Authen extends MY_Controller {
         $this->views('layouts/move');
     }
 
+    public function error(){
+        throw new Exception("Division by zero is not allowed.");
+    }
+
     public function setSession(){
         $_SESSION['user']  = (object)$_POST['info'];
         $_SESSION['group']  = (object)$_POST['group'];

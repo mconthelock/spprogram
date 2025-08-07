@@ -67,8 +67,9 @@
         </div>
     </dialog>
 
+    <div class="toast toast-end z-50" id="toast-alert"></div>
+
     <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script>
-    {{-- <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script> --}}
     @yield('scripts')
 </body>
 

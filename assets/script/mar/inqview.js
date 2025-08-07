@@ -1,5 +1,6 @@
 import "@styles/datatable.min.css";
 import { createTable, destroyTable } from "@public/_dataTable.js";
+import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
 import * as service from "../service/inquiry.js";
@@ -21,4 +22,38 @@ $(document).ready(async () => {
 
   const attachment = await tb.setupTableAttachment();
   tableAttach = await createTable(attachment, { id: "#attachment" });
+
+  const btn = await setupButton();
 });
+
+async function setupButton() {
+  const sendDE = await utils.creatBtn({
+    id: "send-de",
+    title: "Send to Design",
+    className: "btn-primary text-white",
+  });
+
+  const sendIS = await utils.creatBtn({
+    id: "send-bm",
+    title: "Send to Pre-BM",
+    icon: "icofont-console text-2xl",
+    className: "btn-neutral text-white",
+  });
+
+  const draft = await utils.creatBtn({
+    id: "draft",
+    title: "Send draft",
+    icon: "icofont-attachment text-2xl",
+    className: "btn-neutral text-white",
+  });
+
+  const back = await utils.creatBtn({
+    id: "goback",
+    title: "Back",
+    type: "link",
+    href: `${process.env.APP_ENV}/mar/inquiry`,
+    icon: "icofont-arrow-left text-2xl",
+    className: "btn-outline btn-neutral text-neutral hover:text-white",
+  });
+  $("#btn-container").append(sendDE, sendIS, draft, back);
+}

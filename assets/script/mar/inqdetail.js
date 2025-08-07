@@ -4,7 +4,7 @@ import "@styles/datatable.min.css";
 
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { validateDrawingNo } from "../drawing.js";
-import { createInquiry, getInquiryID } from "../service/inquiry.js";
+import * as inqservice from "../service/inquiry.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
@@ -13,23 +13,26 @@ var table;
 var tableElmes;
 var tableAttach;
 $(document).ready(async () => {
-  $(".mainmenu").find("details").attr("open", false);
-  $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
+  try {
+    await utils.showLoader();
+    $(".mainmenu").find("details").attr("open", false);
+    $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
 
-  const reason = await inqs.createReasonModal();
-  const btn = await setupButton();
-  const elmes = await inqs.elmesComponent();
-  const inquiry = await getInquiryID(50);
-  const cards = await inqs.setupCard(inquiry);
-  //   const cards = await inqs.setupCard();
-  const tableContainer = await tb.setupTableDetail();
-  table = await createTable(tableContainer);
+    const btn = await setupButton();
+    const reason = await inqs.createReasonModal();
+    const elmes = await inqs.elmesComponent();
+    const cards = await inqs.setupCard();
+    const tableContainer = await tb.setupTableDetail();
+    table = await createTable(tableContainer);
 
-  const history = await tb.setupTableHistory();
-  await createTable(history, { id: "#history" });
+    const history = await tb.setupTableHistory();
+    await createTable(history, { id: "#history" });
 
-  const attachment = await tb.setupTableAttachment();
-  tableAttach = await createTable(attachment, { id: "#attachment" });
+    const attachment = await tb.setupTableAttachment();
+    tableAttach = await createTable(attachment, { id: "#attachment" });
+  } catch (error) {
+    window.location.href = `${process.env.APP_ENV}/authen/error/`;
+  }
 });
 
 async function setupButton() {
@@ -91,6 +94,7 @@ $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
+  await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -161,32 +165,69 @@ $(document).on("change", "#import-tsv", async function (e) {
 //End :Import date from File
 
 //Submit Form
-$(document).on("click", "#send-de", async function (e) {
+$(document).on("click", "#draft", async function (e) {
   e.preventDefault();
-  const obj = $("#form-container").find("input, select, textarea");
-  const header = {};
-  obj.map((i, el) => {
-    if ($(el).attr("name") === "INQ_PKC_REQ") {
-      header.INQ_PKC_REQ = $('input[name="INQ_PKC_REQ"]:checked').val();
-    } else if ($(el).attr("name") === "INQ_AGENT") {
-      header.INQ_AGENT = $(el).val().split("(")[0].trim();
-    } else {
-      header[$(el).attr("name")] = $(el).val();
-    }
-  });
+  const chkheader = await inqs.verifyHeader(".req-1");
+  if (!chkheader) return;
+
+  const header = await inqs.getFormHeader(); //Get header data
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO }); //Check inq no is not dupplicate
+  if (check_inq.length > 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+    $("#inquiry-no").focus().select();
+    return;
+  }
 
   const details = table.rows().data().toArray();
-  const fomdata = { header, details };
-  const inquiry = await createInquiry(fomdata);
-  console.log(inquiry);
+  try {
+    const checkdetail = await inqs.verifyDetail(table, details, false);
+    header.INQ_STATUS = 1;
+    const fomdata = { header, details };
+    const inquiry = await inqservice.createInquiry(fomdata);
+    window.location.href = `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`;
+  } catch (error) {
+    utils.errorMessage(error);
+    return;
+  }
+});
+
+$(document).on("click", "#send-de", async function (e) {
+  e.preventDefault();
+  const chkheader = await inqs.verifyHeader(".req-2");
+  if (!chkheader) return;
+  const header = await inqs.getFormHeader(); //Get header data
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO }); //Check inq no is not dupplicate
+  if (check_inq.length > 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+    $("#inquiry-no").focus().select();
+    return;
+  }
+  const details = table.rows().data().toArray();
+  try {
+    const checkdetail = await inqs.verifyDetail(table, details, true);
+    header.INQ_STATUS = 1;
+    const fomdata = { header, details };
+    const inquiry = await inqservice.createInquiry(fomdata);
+    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+  } catch (error) {
+    utils.errorMessage(error);
+    return;
+  }
 });
 
 $(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
-});
+  //Get header data
+  const header = await inqs.getFormHeader(); //Get header data
+  console.log(header);
 
-$(document).on("click", "#draft", async function (e) {
-  e.preventDefault();
+  //Get detail data
+  //Check inq no is not blank and not dupplicate
+  //Check table detail is not blank
+  //Check seq no is not dupplicate
+  //Check supplier is not blank
+  //Check drawing format
+  //Check variable format
 });
 
 $(document).on("click", "#add-attachment", async function (e) {
