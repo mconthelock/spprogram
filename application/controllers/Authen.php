@@ -17,7 +17,7 @@ class Authen extends MY_Controller {
     }
 
     public function error(){
-        throw new Exception("Division by zero is not allowed.");
+        throw new Exception("API Server is not ready to service 😒😒, <br/> Please contact Administrator.");
     }
 
     public function setSession(){

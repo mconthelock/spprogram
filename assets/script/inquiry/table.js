@@ -49,7 +49,8 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" maxlength="2" class="!w-[55px] uppercase cell-input carno" value="${data}">`;
+          //return `<input type="text" maxlength="2" class="!w-[55px] uppercase cell-input carno" value="${data}">`;
+          return `<textarea class="!w-[55px] uppercase cell-input carno" maxlength="2">${data}</textarea>`;
         }
         return data;
       },
@@ -61,7 +62,8 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" maxlength="9" class="!w-[150px] uppercase cell-input mfgno elmes-input" value="${data}">`;
+          //return `<input type="text" maxlength="9" class="!w-[150px] uppercase cell-input mfgno elmes-input" value="${data}">`;
+          return `<textarea class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9">${data}</textarea>`;
         }
         return data;
       },
@@ -73,46 +75,46 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input itemno elmes-input" value="${data}">`;
+          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input elmes-input itemno" value="${data}">`;
         }
         return data;
       },
     },
     {
       data: "INQD_PARTNAME",
-
       title: "Part Name",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[200px] cell-input edit-input partname" value="${data}">`;
+          //return `<input type="text" class="!w-[200px] cell-input edit-input partname" value="${data}">`;
+          return `<textarea class="!w-[250px] cell-input edit-input partname" maxlength="50">${data}</textarea>`;
         }
         return data;
       },
     },
     {
       data: "INQD_DRAWING",
-
       title: "Drawing No.",
       className: "!px-[3px] drawing-line",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[225px] cell-input edit-input" value="${data}">`;
+          //return `<input type="text" class="!w-[225px] cell-input edit-input" value="${data}">`;
+          return `<textarea class="!w-[225px] uppercase cell-input edit-input" maxlength="150">${data}</textarea>`;
         }
         return data;
       },
     },
     {
       data: "INQD_VARIABLE",
-
       title: "Variable",
       className: "!px-[3px]",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="text" class="!w-[200px] cell-input edit-input" value="${data}">`;
+          //return `<input type="text" class="!w-[200px] cell-input edit-input" value="${data}">`;
+          return `<textarea class="!w-[200px] uppercase cell-input edit-input" maxlength="250">${data}</textarea>`;
         }
         return data;
       },
@@ -122,26 +124,22 @@ export async function setupTableDetail(data = []) {
       title: "Qty.",
       className: "!px-[3px]",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${
-            data == "" ? 1 : data
-          }">`;
+          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
     },
     {
       data: "INQD_UM",
-
       title: "U/M",
       className: "!px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
+        data = data == "" ? "PC" : data;
         if (type === "display") {
-          return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${
-            data == "" ? "PC" : data
-          }">`;
+          return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -176,7 +174,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black" value="1" ${
+          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input" value="1" ${
             data == 1 ? "checked" : ""
           } />`;
         }
@@ -190,7 +188,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply"
+          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply edit-input"
            ${data != "" ? "checked" : ""}/>`;
         }
         return data;
@@ -203,7 +201,8 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="text" class="!w-[250px] cell-input remark edit-input" value="${data}">`;
+          //return `<input type="text" class="!w-[250px] cell-input remark edit-input" value="${data}">`;
+          return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${data}</textarea>`;
         }
         return data;
       },
@@ -266,7 +265,7 @@ export function initRow(id) {
 export async function addRow(id, table) {
   const newRow = await initRow(id);
   const row = table.row.add(newRow).draw();
-  $(row.node()).find("td:eq(3) input").focus();
+  $(row.node()).find("td:eq(3) textarea").focus();
 }
 
 export async function changeCell(table, el) {
@@ -285,7 +284,16 @@ export async function changeCar(table, el) {
   const row = table.row($(el).closest("tr"));
   const data = row.data();
   const prjno = $("#project-no").val();
-  if (prjno == "") return;
+  if (prjno == "") {
+    const newData = {
+      ...data,
+      INQD_CAR: $(el).val(),
+    };
+    row.data(newData);
+    row.draw(false);
+    $(row.node()).find(".mfgno").focus();
+    return;
+  }
 
   const carno = $(el).val();
   const orders = await getMainProject({
@@ -302,6 +310,14 @@ export async function changeCar(table, el) {
     row.data(newData);
     row.draw(false);
     $(row.node()).find(".itemno").focus();
+  } else {
+    const newData = {
+      ...data,
+      INQD_CAR: carno,
+    };
+    row.data(newData);
+    row.draw(false);
+    $(row.node()).find(".mfgno").addClass("bg-red-500");
   }
 }
 //End Table detail

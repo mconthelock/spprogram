@@ -181,3 +181,7 @@ export const setInquiryNo = (val) => {
     .replaceAll(" ", "")
     .toUpperCase();
 };
+
+export const foundError = () => {
+  window.location.href = `${process.env.APP_ENV}/authen/error/`;
+};

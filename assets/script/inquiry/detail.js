@@ -1,3 +1,11 @@
+/*
+Funtion contents
+001 - Card management
+002 - Import data from file
+003 - Unreply checkbox
+004 - Search Elmes data
+005 - Verify form before save
+*/
 import "select2/dist/css/select2.min.css";
 import "@styles/datatable.min.css";
 import "select2";
@@ -27,7 +35,7 @@ export const statusColors = () => {
   ];
 };
 
-// Create card
+// 001: Create card
 export async function setupCard(data) {
   const form = $("#form-container");
   const carddata = form.attr("data");
@@ -242,6 +250,7 @@ export async function createFieldInput(field) {
   return inputContainer;
 }
 
+// 002: Import data from file
 export async function importExcel(file) {
   const excelData = await readInput(file, {
     startRow: 2,
@@ -355,7 +364,7 @@ export async function importHeader(data) {
   inqno.dispatchEvent(new Event("change"));
 }
 
-//Start: Unreply
+//003: Unreply checkbox
 export async function createReasonModal() {
   const reason = await getReason();
   let str = ``;
@@ -371,7 +380,7 @@ export async function createReasonModal() {
         </div>
         <div>
             <fieldset class="fieldset">
-                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other"></textarea>
+                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other" maxlength="100"></textarea>
                 <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
                 <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
             </fieldset>
@@ -488,7 +497,7 @@ export async function saveUnreply(table) {
 }
 //End: Unreply
 
-//Start: Elmes
+//004: Search Elmes data
 export async function elmesComponent() {
   const confirmBtn = await utils.creatBtn({
     id: "elmes-confirm",
@@ -539,6 +548,7 @@ export async function elmesSetup(row) {
     row.data(newData);
     row.draw(false);
     tableElmes = null;
+    $(row.node()).find(".partname").focus();
   }
   return tableElmes;
 }
@@ -596,7 +606,7 @@ export async function elmesCancel(table) {
 }
 //End: Elmes
 
-//Start: Verify save form
+//005: Verify form before save
 export async function getFormHeader() {
   const obj = $("#form-container").find("input, select, textarea");
   const header = {};
@@ -713,5 +723,4 @@ export async function verifyDetail(table, data, issave) {
   if (check == false) throw new Error(message);
   return check;
 }
-
 //End: Verify save form

@@ -1,3 +1,14 @@
+/*
+Funtion contents
+001 - On load form
+002 - Add table detail rows
+003 - Show Elmes table
+004 - Unable to reply checkbox
+005 - Import data from file
+006 - Save Draft
+007 - Save and send to design
+008 - Save and send to AS400
+*/
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
@@ -9,6 +20,7 @@ import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
 
+//001: On load form
 var table;
 var tableElmes;
 var tableAttach;
@@ -31,7 +43,9 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment();
     tableAttach = await createTable(attachment, { id: "#attachment" });
   } catch (error) {
-    window.location.href = `${process.env.APP_ENV}/authen/error/`;
+    await utils.foundError();
+  } finally {
+    utils.showLoader(false);
   }
 });
 
@@ -67,6 +81,7 @@ async function setupButton() {
   $("#btn-container").append(sendDE, sendIS, draft, back);
 }
 
+//002: Add table detail rows
 $(document).on("click", "#addRowBtn", async function (e) {
   e.preventDefault();
   const lastRow = table.row(":not(.d-none):last").data();
@@ -89,12 +104,12 @@ $(document).on("change", ".carno", async function (e) {
   await tb.changeCar(table, this);
 });
 
-//Elmes Table
+//003: Show Elmes table
 $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
-  await tb.changeCell(table, this);
+  //   await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -107,7 +122,7 @@ $(document).on("click", "#elmes-cancel", async function () {
   await inqs.elmesCancel(table);
 });
 
-// START: Unable to reply checkbox
+//004: Unable to reply checkbox
 $(document).on("click", ".unreply", async function () {
   await inqs.clickUnreply(table.row($(this).parents("tr")));
 });
@@ -129,7 +144,7 @@ $(document).on("keyup", ".text-comment", async function () {
 });
 // END: Unable to reply checkbox
 
-//Start :Import date from File
+//005: Import data from file
 $(document).on("click", "#uploadRowBtn", async function (e) {
   $("#import-tsv").click();
 });
@@ -165,6 +180,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 //End :Import date from File
 
 //Submit Form
+//006: Save Draft
 $(document).on("click", "#draft", async function (e) {
   e.preventDefault();
   const chkheader = await inqs.verifyHeader(".req-1");
@@ -191,6 +207,7 @@ $(document).on("click", "#draft", async function (e) {
   }
 });
 
+//007: Save and send to design
 $(document).on("click", "#send-de", async function (e) {
   e.preventDefault();
   const chkheader = await inqs.verifyHeader(".req-2");
@@ -215,13 +232,14 @@ $(document).on("click", "#send-de", async function (e) {
   }
 });
 
+//008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
   //Get header data
-  const header = await inqs.getFormHeader(); //Get header data
-  console.log(header);
+  //const header = await inqs.getFormHeader(); //Get header data
+  //console.log(header);
 
-  //Get detail data
+  const details = table.rows().data().toArray(); //Get detail data
   //Check inq no is not blank and not dupplicate
   //Check table detail is not blank
   //Check seq no is not dupplicate

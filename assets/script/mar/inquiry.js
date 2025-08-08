@@ -6,13 +6,21 @@ import moment from "moment";
 import { createTable } from "@public/_dataTable.js";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
+import * as utils from "../utils.js";
 var table;
 $(document).ready(async () => {
-  $(".mainmenu").find("details").attr("open", false);
-  $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
-  const data = await service.getInquiry({});
-  const opt = await tableOpt(data);
-  table = await createTable(opt);
+  try {
+    utils.showLoader();
+    $(".mainmenu").find("details").attr("open", false);
+    $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
+    const data = await service.getInquiry({});
+    const opt = await tableOpt(data);
+    table = await createTable(opt);
+  } catch (error) {
+    await utils.foundError();
+  } finally {
+    utils.showLoader(false);
+  }
 });
 
 async function tableOpt(data) {
