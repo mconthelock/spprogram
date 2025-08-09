@@ -149,9 +149,11 @@ export async function setupTableDetail(data = []) {
       title: "Supplier",
       className: "!px-[3px] supplier-line",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type, row) {
         if (type === "display") {
-          return `<select class="!w-[100px] select select-sm supplier edit-input">
+          return `<select class="!w-[100px] select select-sm supplier edit-input" ${
+            row.INQD_UNREPLY !== "" ? "disabled" : ""
+          }>
             <option value=""></option>
             <option value="AMEC" ${
               data == "AMEC" ? "selected" : ""
@@ -271,12 +273,9 @@ export async function addRow(id, table) {
 export async function changeCell(table, el) {
   const cell = table.cell($(el).closest("td"));
   let newValue = $(el).val();
-  if ($(el).attr("type") === "date") {
-    newValue = newValue.replace(/-/g, "/");
-  }
-  if ($(el).attr("type") === "number") {
-    newValue = utils.intVal(newValue);
-  }
+  if ($(el).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
+  if ($(el).attr("type") === "number") newValue = utils.intVal(newValue);
+  if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();
   cell.data(newValue);
 }
 
@@ -430,7 +429,12 @@ export async function setupTableHistory(data = []) {
   opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex flex-none gap-5"i>>`;
   opt.info = false;
   opt.lengthChange = false;
+  opt.order = [1, "desc"];
   opt.columns = [
+    {
+      data: "INQH_REV",
+      title: "Rev.",
+    },
     {
       data: "INQH_DATE",
       title: "Date",
@@ -454,18 +458,44 @@ export async function setupTableHistory(data = []) {
 }
 
 export async function setupTableAttachment(data = []) {
+  const icons = await utils.fileIcons();
   const opt = {};
   opt.data = data;
   opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
   opt.columns = [
-    { data: "FILE_ORIGINAL_NAME", title: "File Name" },
-    { data: "FILE_SIZE", title: "Owner" },
+    {
+      data: "FILE_ORIGINAL_NAME",
+      title: "File Name",
+      className: "text-nowrap",
+      render: (data) => {
+        const ext = utils.fileExtension(data);
+        const icon = icons.find((x) => x.ext == ext);
+        const img = icon
+          ? icon.icon
+          : `${process.env.APP_IMG}/fileicon/photo-gallery.png`;
+        return `<div class="flex items-center gap-2">
+            <img src="${img}" class="w-6 h-6"/>
+            <div class="text-nowrap line-clamp-1">${data}</div>
+        </div>`;
+      },
+    },
+    { data: "FILE_CREATE_BY", title: "Owner" },
     {
       data: "FILE_DATE",
       title: "File Date",
       render: (data) => {
-        return new Date(data).toLocaleDateString("en-US", {});
+        return moment(data).format("YYYY-MM-DD HH:mm:ss");
+      },
+    },
+    {
+      data: "FILE_ORIGINAL_NAME",
+      title: `<i class="icofont-download text-xl"></i>`,
+      className: "w-[55px] max-w-[55px] text-center",
+      render: (data, type, row) => {
+        return `<a href="#" class="btn btn-ghost btn-sm btn-circle download-att-${
+          row.FILE_NAME ? "server" : "client"
+        }"><i class="icofont-download text-xl"></i></a>`;
       },
     },
   ];
@@ -482,7 +512,8 @@ export async function setupTableAttachment(data = []) {
             <span class="loading loading-spinner hidden"></span>
             <span class="icofont-ui-clip text-xl"></span>
         </button>
-        <input type="file" id="attachment-file" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt" />`);
+        <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt" />
+       `);
 
     $("#attachment")
       .closest(".dt-container")
@@ -491,6 +522,10 @@ export async function setupTableAttachment(data = []) {
   };
   return opt;
 }
+
+export async function downloadClientFile() {}
+
+export async function downloadServerFile() {}
 
 export async function elmesTable(data) {
   const opt = {};

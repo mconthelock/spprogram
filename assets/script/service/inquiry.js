@@ -116,3 +116,23 @@ export const getInquiryHistory = async (id) => {
     });
   });
 };
+
+//Attachment
+export const createInquiryFile = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/attachments/create/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      processData: false,
+      contentType: false,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};

@@ -128,7 +128,7 @@ $(document).on("click", ".unreply", async function () {
 });
 
 $(document).on("click", "#cancel-reason", async function () {
-  await inqs.resetUnreply(table.rows().nodes());
+  await inqs.resetUnreply(table);
 });
 
 $(document).on("click", "#save-reason", async function () {
@@ -240,6 +240,14 @@ $(document).on("click", "#send-bm", async function (e) {
   //console.log(header);
 
   const details = table.rows().data().toArray(); //Get detail data
+  const attachment = tableAttach.rows().data().toArray(); //Get attachment data
+  const attachment_form = new FormData();
+  attachment_form.append("INQ_NO", "ทดสอบ"); // append field ก่อน
+  const files = $("#attachment-file").prop("files"); // ดึง FileList
+  for (let i = 0; i < files.length; i++) {
+    attachment_form.append("files", files[i]); // append ทีละไฟล์
+  }
+  await inqservice.createInquiryFile(attachment_form);
   //Check inq no is not blank and not dupplicate
   //Check table detail is not blank
   //Check seq no is not dupplicate
@@ -254,30 +262,37 @@ $(document).on("click", "#add-attachment", async function (e) {
 });
 
 $(document).on("change", "#attachment-file", async function (e) {
-  const file = e.target.files[0];
+  const file = e.target.files;
   if (!file) {
     utils.showMessage("Please select a file to upload.");
     return;
   }
+  //   const fileName = file.name;
+  //   let fileExtension = "";
+  //   const dotIndex = fileName.lastIndexOf(".");
+  //   if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
+  //     fileExtension = fileName.substring(dotIndex + 1);
+  //   } else {
+  //     utils.showMessage("File has no extension or the name is invalid.");
+  //     return;
+  //   }
 
-  const fileName = file.name;
-  let fileExtension = "";
-  const dotIndex = fileName.lastIndexOf(".");
-  if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
-    fileExtension = fileName.substring(dotIndex + 1);
-  } else {
-    utils.showMessage("File has no extension or the name is invalid.");
-    return;
+  for (let i = 0; i < file.length; i++) {
+    const ext = utils.fileExtension(file[i].name);
+    const allow = ["pdf", "jpg", "jpeg", "png", "docx", "xlsx", "txt"];
+    if (allow.includes(ext)) {
+      const fs = {
+        FILE_ORIGINAL_NAME: file[i].name,
+        FILE_SIZE: file[i].size,
+        FILE_OWNER: file[i].type,
+        FILE_DATE: new Date().toISOString(),
+        FILE_CREATE_BY: "Chalormsak Sewanam",
+      };
+      tableAttach.row.add(fs).draw();
+    } else {
+      utils.showMessage(`${file[i].name} not allowed to upload.(${ext})`);
+    }
   }
-
-  const fs = {
-    FILE_ORIGINAL_NAME: file.name,
-    FILE_SIZE: file.size,
-    FILE_OWNER: file.type,
-    FILE_DATE: new Date().toISOString(),
-    file: e.target.files[0],
-  };
-  tableAttach.row.add(fs).draw();
 });
 
 //Download template

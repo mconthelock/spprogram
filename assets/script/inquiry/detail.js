@@ -455,18 +455,7 @@ export async function countReason(obj) {
   $("#text-count").html(cnt);
 }
 
-export async function resetUnreply(row) {
-  const target = $("#reason-target").val();
-  $(row).find(".unreply").prop("checked", false);
-  $(row).find(".remark").val(``);
-  $("#text-comment-other").val(``);
-  $("#text-count").html(`0`);
-  $("#modal-reason").prop("checked", false);
-}
-
 export async function saveUnreply(table) {
-  const target = $("#reason-target").val();
-  const row = table.row(target);
   const selected = $(".reason-code:checked");
   const remark = selected.closest("li").find(".text-comment").val();
   if (remark == "" || selected.val() == undefined) {
@@ -477,22 +466,35 @@ export async function saveUnreply(table) {
     return;
   }
 
-  $(table.row(target).node()).find(".unreply").prop("checked", true);
-  $(table.row(target).node()).find(".unreply").val(selected.val());
-  $(table.row(target).node()).find(".remark").val(remark);
-  $(table.row(target).node()).find(".supplier").val("").trigger("change");
-  $("#reason-target").val(selected.val());
-
+  const target = $("#reason-target").val();
+  const row = table.row(target);
   const data = row.data();
   const newData = {
     ...data,
     INQD_UNREPLY: selected.val(),
     INQD_MAR_REMARK: remark,
+    INQD_SUPPLIER: "",
   };
-
   table.row(target).data(newData);
+  await resetUnreplyForm();
+}
+
+export async function resetUnreply(table) {
+  const target = $("#reason-target").val();
+  const row = table.row(target);
+  const data = row.data();
+  const newData = {
+    ...data,
+    INQD_UNREPLY: ``,
+    INQD_MAR_REMARK: ``,
+  };
+  table.row(target).data(newData);
+  await resetUnreplyForm();
+}
+
+export async function resetUnreplyForm() {
   $("#text-comment-other").val(``);
-  $("#text-count").html("0");
+  $("#text-count").html(`0`);
   $("#modal-reason").prop("checked", false);
 }
 //End: Unreply

@@ -174,6 +174,21 @@ export const fileExtension = (fileName) => {
   }
 };
 
+export const fileIcons = () => {
+  return [
+    { ext: "xlsx", icon: `${process.env.APP_IMG}/fileicon/excel.png` },
+    { ext: "csv", icon: `${process.env.APP_IMG}/fileicon/excel.png` },
+    { ext: "docx", icon: `${process.env.APP_IMG}/fileicon/word.png` },
+    { ext: "pptx", icon: `${process.env.APP_IMG}/fileicon/powerpoint.png` },
+    { ext: "pdf", icon: `${process.env.APP_IMG}/fileicon/pdf.png` },
+    { ext: "txt", icon: `${process.env.APP_IMG}/fileicon/txt-file.png` },
+    { ext: "dwg", icon: `${process.env.APP_IMG}/fileicon/dwg-extension.png` },
+    { ext: "tiff", icon: `${process.env.APP_IMG}/fileicon/dwg-extension.png` },
+    { ext: "jpg", icon: `${process.env.APP_IMG}/fileicon/jpg.png` },
+    { ext: "png", icon: `${process.env.APP_IMG}/fileicon/png.png` },
+  ];
+};
+
 export const setInquiryNo = (val) => {
   return val
     .trim()
