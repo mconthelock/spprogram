@@ -652,7 +652,7 @@ export async function verifyHeader(cls) {
   return check;
 }
 
-export async function verifyDetail(table, data, issave) {
+export async function verifyDetail(table, data, savelevel = 0) {
   const errorEl = (obj) => {
     obj.addClass("!bg-red-300");
     setTimeout(() => {
@@ -672,6 +672,7 @@ export async function verifyDetail(table, data, issave) {
       check = false;
       message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
       errorEl(row.find(".seqno"));
+      return;
     } else {
       seenKeys.add(item.INQD_SEQ);
     }
@@ -680,14 +681,19 @@ export async function verifyDetail(table, data, issave) {
       check = false;
       row.find(".seqno").addClass("border-red-500");
       message.push(`Please input seq no.`);
+      return;
     }
+
     if (
       utils.intVal(item.INQD_ITEM) < 100 ||
       utils.intVal(item.INQD_ITEM) > 1000
     ) {
       check = false;
-      message.push(`Please input item no. or in range 100-999`);
+      message.push(
+        `Please input item no. or item no should be number in range 100-999`
+      );
       errorEl(row.find(".item-no"));
+      return;
     }
     if (item.INQD_PARTNAME == "") {
       check = false;
@@ -695,11 +701,24 @@ export async function verifyDetail(table, data, issave) {
     }
 
     //Save data to Database
-    if (issave) {
+    //MAR Send to Sale
+    // - If drawing is blank, Should attached image to reference part
+    if (savelevel == 1) {
+      const hasAtt = $("#attachment-file")[0].files.length;
+      if (item.INQD_DRAWING == "" && hasAtt == 0) {
+        check = false;
+        row.find(".drawing-line").addClass("border-red-500");
+        message.push(`Please input Drawing no.`);
+        return;
+      }
+    }
+
+    if (savelevel == 2) {
       if (item.INQD_DRAWING == "") {
         check = false;
         row.find(".drawing-line").addClass("border-red-500");
         message.push(`Please input Drawing no.`);
+        return;
       }
 
       const dwgno = dwg.validateDrawingNo(item.INQD_DRAWING);
@@ -707,17 +726,20 @@ export async function verifyDetail(table, data, issave) {
         check = false;
         row.find(".drawing-line").addClass("border-red-500");
         message.push(`Please check Drawing no. format.`);
+        return;
       }
 
       if (item.INQD_UNREPLY == "" && item.INQD_SUPPLIER == "") {
         check = false;
         errorEl(row.find(".supplier-line"));
         message.push(`Please select supplier.`);
+        return;
       }
       if (item.INQD_UNREPLY != "" && row.find(".remark").val() == "") {
         check = false;
         errorEl(row.find(".remark-line"));
         message.push(`Please input remark for unable to reply reason.`);
+        return;
       }
     }
   });

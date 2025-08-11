@@ -25,9 +25,19 @@
         }
 
         #container h1,
-        #container p {
+        #container p,
+        #container a {
             text-align: center;
             color: #697a8d;
+        }
+         #container div {
+            text-align: center;
+            color: #697a8d;
+         }
+         #container a {
+            text-decoration: none;
+            color: #697a8d;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -36,6 +46,9 @@
     <div id="container">
         <h1><?php echo get_class($exception); ?></h1>
         <p><?php echo $message; ?></p>
+        <div>
+            <a href="http://localhost:8080/spprogram/">🛬 Go back</a>
+        </div>
     </div>
 </body>
 

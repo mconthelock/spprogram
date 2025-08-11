@@ -426,13 +426,15 @@ export async function setupTableDetailView(data = []) {
 export async function setupTableHistory(data = []) {
   const opt = {};
   opt.data = data;
+  opt.pageLength = 5;
   opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex flex-none gap-5"i>>`;
   opt.info = false;
   opt.lengthChange = false;
   opt.order = [1, "desc"];
   opt.columns = [
     {
-      data: "INQH_REV",
+      data: "INQ_REV",
+      className: "text-center",
       title: "Rev.",
     },
     {
@@ -461,41 +463,54 @@ export async function setupTableAttachment(data = []) {
   const icons = await utils.fileIcons();
   const opt = {};
   opt.data = data;
+  opt.pageLength = 5;
   opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
   opt.columns = [
     {
       data: "FILE_ORIGINAL_NAME",
       title: "File Name",
-      className: "text-nowrap",
-      render: (data) => {
+      className: "text-xs py-[5px]",
+      render: (data, type, row) => {
         const ext = utils.fileExtension(data);
         const icon = icons.find((x) => x.ext == ext);
         const img = icon
           ? icon.icon
           : `${process.env.APP_IMG}/fileicon/photo-gallery.png`;
-        return `<div class="flex items-center gap-2">
+        return `<a href="#" class="flex items-center gap-1 download-att-${
+          row.FILE_NAME ? "server" : "client"
+        }">
             <img src="${img}" class="w-6 h-6"/>
-            <div class="text-nowrap line-clamp-1">${data}</div>
-        </div>`;
+            <div class="line-clamp-1">${data}</div>
+        </a>`;
       },
     },
-    { data: "FILE_CREATE_BY", title: "Owner" },
+    {
+      data: "FILE_CREATE_BY",
+      title: "Owner",
+      className: "text-xs py-[5px]",
+      render: (data) => {
+        return `<div class="line-clamp-1">${data}</div>`;
+      },
+    },
     {
       data: "FILE_DATE",
       title: "File Date",
+      className: "text-xs py-[5px]",
       render: (data) => {
-        return moment(data).format("YYYY-MM-DD HH:mm:ss");
+        return `<div class="line-clamp-1">${moment(data).format(
+          "YYYY-MM-DD HH:mm:ss"
+        )}</div>`;
       },
     },
     {
       data: "FILE_ORIGINAL_NAME",
-      title: `<i class="icofont-download text-xl"></i>`,
-      className: "w-[55px] max-w-[55px] text-center",
+      title: `<i class="icofont-ui-delete text-lg"></i>`,
+      className: "text-center px-1 py-[5px]",
       render: (data, type, row) => {
-        return `<a href="#" class="btn btn-ghost btn-sm btn-circle download-att-${
+        return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att-${
           row.FILE_NAME ? "server" : "client"
-        }"><i class="icofont-download text-xl"></i></a>`;
+        }"><i class="icofont-ui-delete text-sm text-red-500"></i></a>`;
       },
     },
   ];
@@ -512,7 +527,7 @@ export async function setupTableAttachment(data = []) {
             <span class="loading loading-spinner hidden"></span>
             <span class="icofont-ui-clip text-xl"></span>
         </button>
-        <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt" />
+        <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />
        `);
 
     $("#attachment")
@@ -523,7 +538,21 @@ export async function setupTableAttachment(data = []) {
   return opt;
 }
 
-export async function downloadClientFile() {}
+export async function downloadClientFile(selectedFiles, fileName) {
+  const fileToDownload = selectedFiles.get(fileName);
+  if (fileToDownload) {
+    const fileUrl = URL.createObjectURL(fileToDownload);
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileToDownload.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(fileUrl);
+  } else {
+    utils.showMessage(`File "${fileName}" not found for download.`);
+  }
+}
 
 export async function downloadServerFile() {}
 

@@ -24,6 +24,7 @@ import * as tb from "../inquiry/table.js";
 var table;
 var tableElmes;
 var tableAttach;
+let selectedFilesMap = new Map();
 $(document).ready(async () => {
   try {
     await utils.showLoader();
@@ -221,10 +222,18 @@ $(document).on("click", "#send-de", async function (e) {
   }
   const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, true);
-    header.INQ_STATUS = 1;
+    const checkdetail = await inqs.verifyDetail(table, details, 1);
+    header.INQ_STATUS = 2;
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
+    if (selectedFilesMap.size > 0) {
+      const attachment_form = new FormData();
+      attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      selectedFilesMap.forEach((file, fileName) => {
+        attachment_form.append("files", file, fileName);
+      });
+      await inqservice.createInquiryFile(attachment_form);
+    }
     window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
     utils.errorMessage(error);
@@ -235,19 +244,24 @@ $(document).on("click", "#send-de", async function (e) {
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
+
   //Get header data
   //const header = await inqs.getFormHeader(); //Get header data
   //console.log(header);
 
-  const details = table.rows().data().toArray(); //Get detail data
-  const attachment = tableAttach.rows().data().toArray(); //Get attachment data
-  const attachment_form = new FormData();
-  attachment_form.append("INQ_NO", "ทดสอบ"); // append field ก่อน
-  const files = $("#attachment-file").prop("files"); // ดึง FileList
-  for (let i = 0; i < files.length; i++) {
-    attachment_form.append("files", files[i]); // append ทีละไฟล์
-  }
-  await inqservice.createInquiryFile(attachment_form);
+  //   const details = table.rows().data().toArray(); //Get detail data
+  //   const attachment = tableAttach.rows().data().toArray(); //Get attachment data
+  //   const attachment_form = new FormData();
+  //   attachment_form.append("INQ_NO", "TEST-10110"); // append field ก่อน
+  //   const files = $("#attachment-file").prop("files"); // ดึง FileList
+  //   for (let i = 0; i < files.length; i++) {
+  //     attachment_form.append("files", files[i]); // append ทีละไฟล์
+  //   }
+  console.log(selectedFilesMap.size);
+  //   selectedFilesMap.forEach((file, fileName) => {
+  //     attachment_form.append("files", file, fileName);
+  //   });
+  //   await inqservice.createInquiryFile(attachment_form);
   //Check inq no is not blank and not dupplicate
   //Check table detail is not blank
   //Check seq no is not dupplicate
@@ -267,20 +281,12 @@ $(document).on("change", "#attachment-file", async function (e) {
     utils.showMessage("Please select a file to upload.");
     return;
   }
-  //   const fileName = file.name;
-  //   let fileExtension = "";
-  //   const dotIndex = fileName.lastIndexOf(".");
-  //   if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
-  //     fileExtension = fileName.substring(dotIndex + 1);
-  //   } else {
-  //     utils.showMessage("File has no extension or the name is invalid.");
-  //     return;
-  //   }
 
   for (let i = 0; i < file.length; i++) {
     const ext = utils.fileExtension(file[i].name);
-    const allow = ["pdf", "jpg", "jpeg", "png", "docx", "xlsx", "txt"];
+    const allow = ["pdf", "jpg", "png", "docx", "xlsx", "txt"];
     if (allow.includes(ext)) {
+      selectedFilesMap.set(file[i].name, file[i]);
       const fs = {
         FILE_ORIGINAL_NAME: file[i].name,
         FILE_SIZE: file[i].size,
@@ -293,6 +299,24 @@ $(document).on("change", "#attachment-file", async function (e) {
       utils.showMessage(`${file[i].name} not allowed to upload.(${ext})`);
     }
   }
+});
+
+$(document).on("click", ".download-att-client", function (e) {
+  e.preventDefault();
+  const row = tableAttach.row($(this).closest("tr"));
+  const data = row.data();
+  const fileName = data.FILE_ORIGINAL_NAME;
+  tb.downloadClientFile(selectedFilesMap, fileName);
+});
+
+$(document).on("click", ".delete-att-client", function (e) {
+  e.preventDefault();
+  const row = tableAttach.row($(this).closest("tr"));
+  const data = row.data();
+  const fileName = data.FILE_ORIGINAL_NAME;
+  //   tb.deleteClientFile(selectedFilesMap, fileName);
+  selectedFilesMap.delete(fileName);
+  row.remove().draw(false);
 });
 
 //Download template

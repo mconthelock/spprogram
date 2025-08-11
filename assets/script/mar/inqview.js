@@ -10,20 +10,28 @@ $(document).ready(async () => {
   $(".mainmenu").find("details").attr("open", false);
   $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
 
-  const inquiry = await service.getInquiryID($("#inquiry-id").val());
-  const cards = await inqs.setupCard(inquiry);
-  //   const cardsData = await inqs.applyValueCard(inquiry);
-  const detail = await tb.setupTableDetailView(inquiry.details);
-  table = await createTable(detail);
+  try {
+    const inquiry = await service.getInquiryID($("#inquiry-id").val());
+    if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
-  const logs = await service.getInquiryHistory(inquiry.INQ_NO);
-  const history = await tb.setupTableHistory(logs);
-  await createTable(history, { id: "#history" });
+    $("#inquiry-title").html(inquiry.INQ_NO);
+    const cards = await inqs.setupCard(inquiry);
+    const detail = await tb.setupTableDetailView(inquiry.details);
+    table = await createTable(detail);
 
-  const attachment = await tb.setupTableAttachment();
-  tableAttach = await createTable(attachment, { id: "#attachment" });
+    const logs = await service.getInquiryHistory(inquiry.INQ_NO);
+    const history = await tb.setupTableHistory(logs);
+    await createTable(history, { id: "#history" });
 
-  const btn = await setupButton();
+    const file = await service.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
+    const attachment = await tb.setupTableAttachment();
+    tableAttach = await createTable(attachment, { id: "#attachment" });
+
+    const btn = await setupButton();
+  } catch (error) {
+    utils.errorMessage(error);
+    return;
+  }
 });
 
 async function setupButton() {
