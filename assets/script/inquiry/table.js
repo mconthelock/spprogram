@@ -4,16 +4,18 @@ import * as utils from "../utils.js";
 
 //Start Table detail
 export async function setupTableDetail(data = []) {
+  const mode = data.length > 0 ? 1 : 0;
   const opt = {};
   opt.data = data;
   opt.paging = false;
   opt.searching = false;
+  opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
   opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
-      data: "id",
+      data: "INQD_RUNNO",
       title: "",
       className: "hidden",
     },
@@ -37,7 +39,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
+          return `<input type="number" min="1" class="!w-[65px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -49,8 +51,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          //return `<input type="text" maxlength="2" class="!w-[55px] uppercase cell-input carno" value="${data}">`;
-          return `<textarea class="!w-[55px] uppercase cell-input carno" maxlength="2">${data}</textarea>`;
+          return `<textarea class="!w-[55px] uppercase cell-input carno" maxlength="2">${
+            data == null ? "" : data
+          }</textarea>`;
         }
         return data;
       },
@@ -62,8 +65,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          //return `<input type="text" maxlength="9" class="!w-[150px] uppercase cell-input mfgno elmes-input" value="${data}">`;
-          return `<textarea class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9">${data}</textarea>`;
+          return `<textarea class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9">${
+            data == null ? "" : data
+          }</textarea>`;
         }
         return data;
       },
@@ -87,8 +91,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          //return `<input type="text" class="!w-[200px] cell-input edit-input partname" value="${data}">`;
-          return `<textarea class="!w-[250px] cell-input edit-input partname" maxlength="50">${data}</textarea>`;
+          return `<textarea class="!w-[250px] cell-input edit-input partname" maxlength="50">${
+            data == null ? "" : data
+          }</textarea>`;
         }
         return data;
       },
@@ -100,8 +105,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          //return `<input type="text" class="!w-[225px] cell-input edit-input" value="${data}">`;
-          return `<textarea class="!w-[225px] uppercase cell-input edit-input" maxlength="150">${data}</textarea>`;
+          return `<textarea class="!w-[225px] uppercase cell-input edit-input" maxlength="150">${
+            data == null ? "" : data
+          }</textarea>`;
         }
         return data;
       },
@@ -113,8 +119,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type) {
         if (type === "display") {
-          //return `<input type="text" class="!w-[200px] cell-input edit-input" value="${data}">`;
-          return `<textarea class="!w-[200px] uppercase cell-input edit-input" maxlength="250">${data}</textarea>`;
+          return `<textarea class="!w-[200px] uppercase cell-input edit-input" maxlength="250">${
+            data == null ? "" : data
+          }</textarea>`;
         }
         return data;
       },
@@ -152,7 +159,7 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row) {
         if (type === "display") {
           return `<select class="!w-[100px] select select-sm supplier edit-input" ${
-            row.INQD_UNREPLY !== "" ? "disabled" : ""
+            row.INQD_UNREPLY == "" || row.INQD_UNREPLY == null ? "" : "disabled"
           }>
             <option value=""></option>
             <option value="AMEC" ${
@@ -191,7 +198,7 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply edit-input"
-           ${data != "" ? "checked" : ""}/>`;
+           ${data == "" || data == null ? "" : "checked"}/>`;
         }
         return data;
       },
@@ -203,8 +210,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          //return `<input type="text" class="!w-[250px] cell-input remark edit-input" value="${data}">`;
-          return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${data}</textarea>`;
+          return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${
+            data == null ? "" : data
+          }</textarea>`;
         }
         return data;
       },
@@ -216,11 +224,15 @@ export async function setupTableDetail(data = []) {
         <button id="addRowBtn" class="btn btn-primary btn-sm btn-square" type="button"><i class="icofont-plus text-xl text-white"></i></button>
       </div>
       <div class="tooltip" data-tip="Upload inquiry">
-        <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-upload-alt text-xl text-white"></i></button>
+        <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square ${
+          mode == 1 ? "hidden" : ""
+        }"><i class="icofont-upload-alt text-xl text-white"></i></button>
         <input type="file" id="import-tsv" class="hidden" />
       </div>
       <div class="tooltip" data-tip="Download template">
-        <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square"><i class="icofont-download text-xl text-white"></i></button>
+        <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square ${
+          mode == 1 ? "hidden" : ""
+        }"><i class="icofont-download text-xl text-white"></i></button>
       </div>
     </div>`;
     $("#table").closest(".dt-container").find(".table-page").append(btn);
@@ -236,10 +248,9 @@ export async function setupTableDetail(data = []) {
 
 export function initRow(id) {
   return {
-    id: id,
     INQD_ID: "",
     INQD_SEQ: id,
-    INQD_RUNNO: "",
+    INQD_RUNNO: id,
     INQD_MFGORDER: "",
     INQD_ITEM: "",
     INQD_CAR: "",
@@ -427,26 +438,41 @@ export async function setupTableHistory(data = []) {
   const opt = {};
   opt.data = data;
   opt.pageLength = 5;
-  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex flex-none gap-5"i>>`;
+  opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
   opt.lengthChange = false;
   opt.order = [1, "desc"];
   opt.columns = [
     {
       data: "INQ_REV",
-      className: "text-center",
+      className: "text-center text-xs py-[8px] px-[5px]",
       title: "Rev.",
     },
     {
       data: "INQH_DATE",
+      className: "text-xs py-[8px] w-[155px] max-w-[155px]",
       title: "Date",
       render: (data) => {
-        return moment(data).format("YYYY-MM-DD HH:mm:ss");
+        return moment(data).format("YYYY-MM-DD HH:mm");
       },
     },
-    { data: "users", title: "User", render: (data) => data.SNAME },
-    { data: "status", title: "Action", render: (data) => data.STATUS_ACTION },
-    { data: "INQH_REMARK", title: "Remark" },
+    {
+      data: "users",
+      title: "User",
+      className: "text-xs py-[8px]",
+      render: (data) => {
+        if (data == null) return "";
+        const dsp = utils.displayname(data.SNAME);
+        return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${data.SEMPNO})`;
+      },
+    },
+    {
+      data: "status",
+      title: "Action",
+      className: "text-xs py-[8px]",
+      render: (data) => data.STATUS_ACTION,
+    },
+    { data: "INQH_REMARK", title: "Remark", className: "text-xs py-[8px]" },
   ];
   opt.initComplete = function (settings, json) {
     $("#history")
@@ -456,28 +482,42 @@ export async function setupTableHistory(data = []) {
         `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">History</h1>`
       );
   };
+  opt.drawCallback = function (settings) {
+    var api = this.api();
+    var totalRecords = api.rows().count();
+    var displayLength = settings._iDisplayLength;
+    if (totalRecords <= displayLength)
+      $("#history_wrapper").find(".table-page").addClass("hidden");
+  };
   return opt;
 }
 
-export async function setupTableAttachment(data = []) {
+export async function setupTableAttachment(data = [], view = false) {
   const icons = await utils.fileIcons();
   const opt = {};
   opt.data = data;
   opt.pageLength = 5;
   opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
+  opt.lengthChange = false;
+  opt.order = [2, "desc"];
   opt.columns = [
     {
       data: "FILE_ORIGINAL_NAME",
       title: "File Name",
-      className: "text-xs py-[5px]",
+      className: "text-xs py-[8px]",
       render: (data, type, row) => {
         const ext = utils.fileExtension(data);
         const icon = icons.find((x) => x.ext == ext);
         const img = icon
           ? icon.icon
           : `${process.env.APP_IMG}/fileicon/photo-gallery.png`;
-        return `<a href="#" class="flex items-center gap-1 download-att-${
+
+        const link =
+          row.FILE_ID == undefined
+            ? "#"
+            : `${process.env.APP_API}/sp/attachments/download/${row.FILE_ID}`;
+        return `<a href="${link}" class="flex items-center gap-1 download-att-${
           row.FILE_NAME ? "server" : "client"
         }">
             <img src="${img}" class="w-6 h-6"/>
@@ -488,15 +528,15 @@ export async function setupTableAttachment(data = []) {
     {
       data: "FILE_CREATE_BY",
       title: "Owner",
-      className: "text-xs py-[5px]",
+      className: "text-xs py-[8px]",
       render: (data) => {
         return `<div class="line-clamp-1">${data}</div>`;
       },
     },
     {
-      data: "FILE_DATE",
+      data: "FILE_CREATE_AT",
       title: "File Date",
-      className: "text-xs py-[5px]",
+      className: "text-xs py-[8px]",
       render: (data) => {
         return `<div class="line-clamp-1">${moment(data).format(
           "YYYY-MM-DD HH:mm:ss"
@@ -506,7 +546,7 @@ export async function setupTableAttachment(data = []) {
     {
       data: "FILE_ORIGINAL_NAME",
       title: `<i class="icofont-ui-delete text-lg"></i>`,
-      className: "text-center px-1 py-[5px]",
+      className: `text-center px-1 py-[8px] ${view ? "hidden" : ""}`,
       render: (data, type, row) => {
         return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att-${
           row.FILE_NAME ? "server" : "client"
@@ -529,11 +569,13 @@ export async function setupTableAttachment(data = []) {
         </button>
         <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />
        `);
-
-    $("#attachment")
-      .closest(".dt-container")
-      .find(".dt-length")
-      .addClass("hidden");
+  };
+  opt.drawCallback = function (settings) {
+    var api = this.api();
+    var totalRecords = api.rows().count();
+    var displayLength = settings._iDisplayLength;
+    if (totalRecords <= displayLength)
+      $("#attachment_wrapper").find(".table-page").addClass("hidden");
   };
   return opt;
 }
@@ -553,8 +595,6 @@ export async function downloadClientFile(selectedFiles, fileName) {
     utils.showMessage(`File "${fileName}" not found for download.`);
   }
 }
-
-export async function downloadServerFile() {}
 
 export async function elmesTable(data) {
   const opt = {};

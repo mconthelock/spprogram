@@ -80,15 +80,15 @@ export const showLoader = (val = true) => {
 };
 
 export const showConfirm = (
-  func,
+  class_function,
   title,
   message,
   icon,
   key = "",
   text = false
 ) => {
-  $("#confirm_accept").addClass(func);
-  $("#confirm_accept").attr("data-function", func);
+  $("#confirm_accept").addClass(class_function);
+  $("#confirm_accept").attr("data-function", class_function);
   $("#confirm_title").html(`${icon}${title}`);
   $("#confirm_message").html(message);
   $("#confirm_key").val(key);
@@ -165,6 +165,26 @@ export const amecschdule = (data) => {
   return `${fd}${letter.val}`;
 };
 
+export const revision_code = (current) => {
+  if (current === "*") return "A";
+  if (/^[A-Z]$/.test(current)) {
+    let chars = current.split("");
+    let i = chars.length - 1;
+    while (i >= 0) {
+      if (chars[i] === "Z") {
+        chars[i] = "A";
+        i--;
+      } else {
+        chars[i] = String.fromCharCode(chars[i].charCodeAt(0) + 1);
+        return chars.join("");
+      }
+    }
+    return "A" + chars.join("");
+  }
+  //throw new Error("Invalid revision format");
+  return null;
+};
+
 export const fileExtension = (fileName) => {
   const dotIndex = fileName.lastIndexOf(".");
   if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
@@ -197,6 +217,72 @@ export const setInquiryNo = (val) => {
     .toUpperCase();
 };
 
-export const foundError = () => {
-  window.location.href = `${process.env.APP_ENV}/authen/error/`;
+export const foundError = async (error) => {
+  const message = async (error) => {
+    if (error.responseJSON) {
+      const message = error.responseJSON.message;
+      if (typeof message == "string") {
+        return message;
+      }
+      let msg = ``;
+      error.responseJSON.message.map((val) => {
+        for (const [key, value] of Object.entries(val)) {
+          msg += `<li>${value}</li>`;
+        }
+      });
+      return msg;
+    } else {
+      return error.message;
+    }
+  };
+
+  const loop = localStorage.getItem("sperrorloop") || 0;
+  const msg = await message(error);
+  const text =
+    msg !== undefined || typeof msg == "string" ? msg : "Connection Lost";
+  $("#handleErrorBox").prop("checked", true);
+  $("#handleErrorBox_msg h1").append(`${text}`);
+  let count = 3;
+  const el = document.getElementById("countdown");
+  el.style.setProperty("--value", count);
+  el.setAttribute("aria-label", count);
+  const timer = setInterval(() => {
+    count--;
+    el.style.setProperty("--value", count);
+    el.setAttribute("aria-label", count);
+    el.textContent = count;
+    if (count <= 0) {
+      clearInterval(timer);
+      localStorage.setItem("sperrorloop", intVal(loop) + 1);
+      if (loop >= 3) {
+        localStorage.removeItem("sperrorloop");
+        window.location.href = `${process.env.APP_ENV}/authen/error/`;
+        return;
+      }
+      window.location.reload();
+    }
+  }, 1000);
+  //
+};
+
+export const displayname = (val) => {
+  if (val == null) return "";
+  const fullname = val.toLowerCase();
+  const name = fullname.split(/\s+/);
+  const fname = name[0].charAt(0).toUpperCase() + name[0].slice(1);
+  const lname = name[1].charAt(0).toUpperCase() + name[1].slice(1);
+  return { sname: `${fname} ${lname}`, fname, lname };
+};
+
+//Excel
+export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
+  const sourceRow = worksheet.getRow(sourceRowNum);
+  const newRow = worksheet.insertRow(targetRowNum);
+  sourceRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+    const newCell = newRow.getCell(colNumber);
+    if (cell.style) {
+      newCell.style = { ...cell.style };
+    }
+  });
+  newRow.height = sourceRow.height;
 };

@@ -8,3 +8,12 @@
 @section('scripts')
     <script src="{{ $_ENV['APP_JS'] }}/mar_inquiry.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection
+
+@section('styles')
+    <style>
+        #table tbody tr td {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+    </style>
+@endsection

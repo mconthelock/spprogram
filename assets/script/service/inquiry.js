@@ -48,6 +48,23 @@ export const createInquiry = async (data) => {
   });
 };
 
+export const deleteInquiry = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/inquiry/delete/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 // Function to manage inquiry group
 export const getInquiryGroup = async (data) => {
   return new Promise((resolve, reject) => {
@@ -148,6 +165,30 @@ export const getInquiryFile = async (data) => {
         resolve(response);
       },
       error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+export const getExportTemplate = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/attachments/export/template/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (res) {
+        const binaryData = atob(res.content);
+        const buffer = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          buffer[i] = binaryData.charCodeAt(i);
+        }
+        res.buffer = buffer;
+        resolve(res);
+      },
+      error: function (error) {
+        console.log(`Do error`);
         reject(error);
       },
     });

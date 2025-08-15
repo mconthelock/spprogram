@@ -55,17 +55,32 @@
                 <p class="py-4" id="confirm_message"></p>
                 <textarea class="textarea textarea-bordered w-full h-24 hidden" id="confirm_reason"
                     placeholder="Please enter your reson"></textarea>
+                <span class="text-xs text-red-500" id="confirm_error"></span>
                 <input type="hidden" id="confirm_key">
                 <div class="modal-action">
-                    <button class="btn btn-primary" id="confirm_accept"><span
+                    <button class="btn btn-primary text-white" id="confirm_accept"><span
                             class="loading loading-spinner hidden"></span>
                         Confirm</button>
                     <button class="btn btn-error text-white" id="confirm_close">Discard</button>
-
                 </div>
             </form>
         </div>
     </dialog>
+
+    <input type="checkbox" id="handleErrorBox" class="modal-toggle" />
+    <div class="modal" role="dialog">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold text-red-500"><i class="icofont-warning-alt text-2xl mr-1"></i> System Error!
+            </h3>
+            <div id="handleErrorBox_msg" class="py-4">
+                <h1 class="pb-5"></h1>
+                <div class="w-full text-xs text-center text-gray-600">Automatic reload within:</div>
+                <div class="countdown font-mono w-full justify-center">
+                    <span class="text-6xl" id="countdown" style="--value:10;" aria-live="polite" aria-label="10"></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="toast toast-end z-50" id="toast-alert"></div>
 

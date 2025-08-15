@@ -110,7 +110,6 @@ $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
-  //   await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -213,8 +212,8 @@ $(document).on("click", "#send-de", async function (e) {
   e.preventDefault();
   const chkheader = await inqs.verifyHeader(".req-2");
   if (!chkheader) return;
-  const header = await inqs.getFormHeader(); //Get header data
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO }); //Check inq no is not dupplicate
+  const header = await inqs.getFormHeader();
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
   if (check_inq.length > 0) {
     await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
     $("#inquiry-no").focus().select();
@@ -224,6 +223,8 @@ $(document).on("click", "#send-de", async function (e) {
   try {
     const checkdetail = await inqs.verifyDetail(table, details, 1);
     header.INQ_STATUS = 2;
+    header.INQ_TYPE = "SP";
+    header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {

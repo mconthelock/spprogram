@@ -2,22 +2,24 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import moment from "moment";
-
+import ExcelJS from "exceljs";
 import { createTable } from "@public/_dataTable.js";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
+
 var table;
 $(document).ready(async () => {
   try {
     utils.showLoader();
     $(".mainmenu").find("details").attr("open", false);
     $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
+
     const data = await service.getInquiry({});
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
-    await utils.foundError();
+    await utils.foundError(error);
   } finally {
     utils.showLoader(false);
   }
@@ -59,29 +61,23 @@ async function tableOpt(data) {
       title: "Status",
       render: (data) => {
         if (data == null) return "";
-        // const colors = [
-        //   { id: 1, color: "bg-gray-500 text-white" }, //Draft
-        //   { id: 19, color: "bg-indigo-500" }, //MAR Pre process
-        //   { id: 29, color: "bg-sky-500" }, //SE
-        //   { id: 39, color: "bg-amber-500" }, //DE
-        //   { id: 49, color: "bg-slate-500" }, //IS
-        //   { id: 59, color: "bg-pink-500" }, //FIN
-        //   { id: 98, color: "bg-red-900" }, //MAR Post process
-        //   { id: 99, color: "bg-emerald-500" }, //Fihish
-        // ];
         const statusColor = colors.find((item) => item.id >= data.STATUS_ID);
-        console.log(statusColor);
         return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
       },
     },
     {
-      data: "INQ_MAR_PIC",
+      data: "maruser",
       title: "MAR. In-Charge",
+      render: (data) => {
+        if (data == null) return "";
+        const dsp = utils.displayname(data.SNAME);
+        return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${data.SEMPNO})`;
+      },
     },
     {
       data: "inqgroup",
       title: "EME",
-      className: "text-center",
+      className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
         const des = data.filter((item) => item.INQG_GROUP === 1);
@@ -99,7 +95,7 @@ async function tableOpt(data) {
     {
       data: "inqgroup",
       title: "EEL",
-      className: "text-center",
+      className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
         const des = data.filter((item) => item.INQG_GROUP === 2);
@@ -117,7 +113,7 @@ async function tableOpt(data) {
     {
       data: "inqgroup",
       title: "EAP",
-      className: "text-center",
+      className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
         const des = data.filter((item) => item.INQG_GROUP === 3);
@@ -135,7 +131,7 @@ async function tableOpt(data) {
     {
       data: "inqgroup",
       title: "ESO",
-      className: "text-center",
+      className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
         const des = data.filter((item) => item.INQG_GROUP === 6);
@@ -156,10 +152,10 @@ async function tableOpt(data) {
       sortable: false,
       title: `<i class='icofont-settings text-lg text-white'></i>`,
       render: (data, type, row, meta) => {
-        const view = `<a class="btn btn-xs btn-neutral btn-outline" href="${process.env.APP_ENV}/mar/inquiry/view/${data}">View</a>`;
-        const edit = `<a class="btn btn-xs btn-neutral " href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
-        const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 delete-row hover:text-red-800" data-id="${data}" data-type="inquiry"><i class="icofont-trash text-xl"></i></button>`;
-        return `<div class="flex gap-1 justify-center w-fit">${view}${edit}${deleteBtn}</div>`;
+        const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${process.env.APP_ENV}/mar/inquiry/view/${data}">View</a>`;
+        const edit = `<a class="btn btn-sm btn-neutral " href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
+        const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="icofont-trash text-xl"></i></button>`;
+        return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleteBtn}</div>`;
       },
     },
   ];
@@ -168,13 +164,13 @@ async function tableOpt(data) {
         <a class="btn btn-primary btn-circle" href="${process.env.APP_ENV}/mar/inquiry/create/"><i class="icofont-plus text-xl text-white"></i></a>
         </div>`);
     $(".table-info").append(`<div class="flex gap-2">
-        <button class="btn btn-accent rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center"
+        <button class="btn btn-accent rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-detail"
             type="button">
             <span class="loading loading-spinner hidden"></span>
             <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export Detail</span>
         </button>
 
-         <button class="btn btn-neutral rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center"
+         <button class="btn btn-neutral rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-list"
             type="button">
             <span class="loading loading-spinner hidden"></span>
             <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export list</span>
@@ -183,3 +179,91 @@ async function tableOpt(data) {
   };
   return opt;
 }
+
+$(document).on("click", ".delete-inquiry", async function (e) {
+  e.preventDefault();
+  await utils.showConfirm(
+    "deleteinqs",
+    `<span class="text-red-500">Delete Inquiry</span>`,
+    "Are you sure you want to delete this inquiry?",
+    `<i class="icofont-exclamation-circle text-4xl text-red-500"></i>`,
+    $(this).attr("data-id"),
+    true
+  );
+});
+
+$(document).on(
+  "click",
+  "#confirm_accept.deleteinqs:not(disabled)",
+  async function (e) {
+    e.preventDefault();
+    const modal = $("#confirm_box");
+    modal.find("button").prop("disabled", true);
+    $(this).find(".loading").removeClass("hidden");
+
+    if ($("#confirm_reason").val() == "") {
+      $("#confirm_error").text(`Please enter reason.`);
+      setTimeout(() => {
+        $("#confirm_error").text(``);
+      }, 3000);
+      modal.find("button").prop("disabled", false);
+      $(this).find(".loading").addClass("hidden");
+      return;
+    }
+
+    confirm_key;
+    const res = await service.deleteInquiry({
+      INQ_ID: $("#confirm_key").val(),
+      INQ_MAR_PIC: "12069",
+      INQ_MAR_REMARK: $("#confirm_reason").val(),
+    });
+
+    if (!res.status) {
+      //   utils.foundError(res);
+    } else {
+      table.columns(3).search("T-MET-25-A0002").rows().remove().draw();
+    }
+
+    $(this).find(".loading").addClass("hidden");
+    $("#confirm_accept").removeClass("deleteinqs");
+    modal.find("button").prop("disabled", false);
+    modal.find("#confirm_close").click();
+  }
+);
+
+$(document).on("click", "#export-detail", async function (e) {
+  e.preventDefault();
+  // const setdata = async (sheet, el, r, num) => {};
+
+  const data = []; //Get data report
+  const template = await service.getExportTemplate({
+    name: `export_inquiry_list_template.xlsx`,
+  });
+  const file = template.buffer;
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(file).then(async (workbook) => {
+    const sheet = workbook.worksheets[0];
+    let row1 = 0;
+    for (let i = 3; i <= 10; i++) {
+      if (i > 4) {
+        await utils.cloneRows(sheet, row1, i);
+        row1 = i % 2 == 0 ? 4 : 3;
+      }
+      sheet.getCell(i, 2).value = `4542221`;
+      sheet.getCell(i, 3).value = `xxxxxxxxx cccc`;
+    }
+    await workbook.xlsx.writeBuffer().then(function (buffer) {
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `SP Inquiry List ${moment().format("YYYY-MM-DD")}.xlsx`;
+      link.click();
+    });
+  });
+});
+
+$(document).on("click", "#export-list", async function (e) {
+  e.preventDefault();
+});

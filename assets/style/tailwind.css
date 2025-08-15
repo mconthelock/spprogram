@@ -89,16 +89,6 @@
 }
 
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-@layer base {
   :root {
     --font-sans: "LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
       "LINE Seed TH Bold", "LINE Seed JP", "LINE Seed JP Bold", sans-serif;
@@ -107,9 +97,19 @@
     --color-dataTable-thead: #fff;
   }
 
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  html,
   body {
     @apply font-sans;
     background: #eeeeee;
+    scrollbar-gutter: stable;
   }
 
   #sidebar {
@@ -159,17 +159,17 @@
     @apply !w-64;
   }
 
-  .table tbody > tr > td:not(.dt-empty),
+  /* .table tbody > tr > td:not(.dt-empty), */
   .table-edit tbody > tr > td:not(.dt-empty) {
      border: 1px solid var(--color-gray-300) !important;
   }
 
-  .table tbody > tr > td:nth-child(2),
+  /* .table tbody > tr > td:nth-child(2), */
   .table-edit tbody > tr > td:nth-child(2) {
     border-left: none !important;
   }
 
-  .table tbody > tr > td:last-child,
+  /* .table tbody > tr > td:last-child, */
   .table-edit tbody > tr > td:last-child {
     border-right: none !important;
   }

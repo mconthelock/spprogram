@@ -12,10 +12,10 @@
             <table id="history" class="table table-zebra display text-xs"></table>
         </div>
         <div class="flex-1">
-            <table id="attachment" class="table table-zebra display text-sm"></table>
+            <table id="attachment" class="table table-zebra display text-xs"></table>
         </div>
     </div>
-    <div class="flex gap-2 my-6" id="btn-container"></div>
+    <div class="flex gap-2 mt-1 mb-8" id="btn-container"></div>
 @endsection
 
 @section('scripts')
