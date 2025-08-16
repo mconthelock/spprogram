@@ -16,6 +16,7 @@ import "@styles/datatable.min.css";
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { validateDrawingNo } from "../drawing.js";
 import * as inqservice from "../service/inquiry.js";
+import * as elmesservice from "../service/elmes.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";

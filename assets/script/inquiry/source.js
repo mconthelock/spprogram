@@ -1,6 +1,7 @@
 import * as mst from "../service/master.js";
 import * as mkt from "../service/mkt.js";
 import * as inq from "../service/inquiry.js";
+import * as sale from "../service/directsale.js";
 import * as utils from "../utils.js";
 
 export const init = {
@@ -116,7 +117,10 @@ export const events = {
     loader.removeClass("hidden");
 
     const q = { PRJ_NO: obj.value.toUpperCase() };
-    const data = await mkt.getMainProject(q);
+    let data = await mkt.getMainProject(q);
+    if (data.length == 0) data = await mkt.getPartProject(q);
+    if (data.length == 0) data = await mkt.getDummyProject(q);
+    // if (data.length == 0) data = await mkt.getCubeProject(q);
     if (data.length > 0) {
       const values = data[0];
       for (const key in values) {
@@ -222,4 +226,37 @@ export const events = {
   },
 
   handleRatioChange: (event) => {},
+};
+
+export const stockHeader = async (name, item) => {
+  //   const str = name.split("_");
+  const customers = await sale.getCustomer();
+  const value = customers.find((item) => item.CUS_NAME == name);
+  if (value !== undefined) {
+    $("#project-no").val(`${value.CUS_DISPLAY} STOCK`);
+    $("#project-name").val(`${value.CUS_DISPLAY} STOCK`);
+    $("#shop-order").val(`-`);
+    const series = item >= 6 ? "JSW" : "GQXL3";
+    const operation = item >= 6 ? "B2" : "2BC";
+    const spec = item >= 6 ? "1200/JS-SE/03500/30" : "P1000-CO-060,05S/O";
+    $("#series").val(series).trigger("change");
+    $("#operation").val(operation);
+    $("#spec").val(spec);
+    $("#schedule").val(`201505Y`);
+
+    const agent = `${value.CUS_AGENT} (${value.CUS_COUNTRY})`;
+    $("#agent").val(agent).trigger("change");
+    $("#country").val(value.CUS_COUNTRY).trigger("change");
+  }
+};
+
+export const projectConclude = async (data) => {
+  let q = {};
+  if (data.mfgno) q = { SMFG_NO: data.mfgno };
+  else q = { PRJ_NO: data.prjno, CAR_NO: data.carno };
+
+  let prjdata = await mkt.getMainProject(q);
+  if (prjdata.length == 0) await mkt.getPartProject(q);
+  if (prjdata.length == 0) await mkt.getDummyProject(q);
+  return prjdata;
 };

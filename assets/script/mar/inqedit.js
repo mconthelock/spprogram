@@ -33,7 +33,8 @@ $(document).ready(async () => {
     const inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
     if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
-    if (inquiry.INQ_STATUS < 10) inquiry.INQ_REV = utils.revision_code("A");
+    if (inquiry.INQ_STATUS < 10)
+      inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
     const btn = await setupButton();
     const reason = await inqs.createReasonModal();
     const elmes = await inqs.elmesComponent();

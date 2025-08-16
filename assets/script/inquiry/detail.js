@@ -14,7 +14,7 @@ import formData from "../../files/formData.json";
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { readInput } from "@public/_excel.js";
 import { getReason } from "../service/master";
-import { getElmesItem } from "../service/elmes.js";
+import { getElmesItem, getElmesDrawing } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
@@ -270,7 +270,6 @@ export async function importExcel(file) {
   });
 
   if (excelData.length > 0) {
-    await importHeader({ mfgno: excelData[1][7], inquiryno: excelData[1][0] });
     const readdata = excelData.map(async (el, i) => {
       const variavle = dwg.validateVariable(el[6]);
       const init = await tb.initRow(el[1]);
@@ -289,10 +288,17 @@ export async function importExcel(file) {
         INQD_OWNER: "MAR",
         INQ_NO: el[0],
       };
+
+      // ---------- Check 2na on Elmes here ----------
       return newRow;
     });
-    //convert to array
     const result = await Promise.all(readdata);
+    await importHeader({
+      mfgno: result[0].INQD_MFGORDER,
+      inquiryno: result[0].INQ_NO,
+      item: result[0].INQD_ITEM,
+      file: file.name,
+    });
     return result;
   } else {
     return null;
@@ -312,13 +318,12 @@ export async function importText(file) {
       reader.readAsText(file);
     });
   };
+
   const contents = await readFile(file);
   const lines = contents.split("\n").filter((line) => line.trim() !== "");
   if (lines.length == 0) return null;
-
   const cols = lines[0].split("\t");
   if (cols.length !== 10) return;
-
   const readdata = [];
   lines.forEach(function (row) {
     const el = row.split("\t");
@@ -339,12 +344,15 @@ export async function importText(file) {
       INQD_VARIABLE: variavle.isValid ? el[6] : "",
       INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
     };
+    // ---------- Check 2na on Elmes here ----------
     readdata.push(newRow);
   });
 
   await importHeader({
     mfgno: readdata[0].INQD_MFGORDER,
     inquiryno: readdata[0].INQ_NO,
+    item: readdata[0].INQD_ITEM,
+    file: file.name,
   });
   return readdata;
 }
@@ -357,6 +365,10 @@ export async function importHeader(data) {
     if (source.events.handleProjectChange) {
       await source.events.handleProjectChange({ target: projectNo });
     }
+  } else if (data.mfgno.toUpperCase().indexOf("STOCK") > -1) {
+    const name = data.file.split("_");
+    const str = name[1] == undefined ? "" : name[1];
+    await source.stockHeader(str, data.item);
   }
 
   const inqno = document.querySelector("#inquiry-no");
@@ -665,7 +677,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
   const duplicates = [];
   const seenKeys = new Set();
   if (data.length == 0) throw new Error(`Please insert inquiry detail.`);
-  data.map((item, i) => {
+  data.map(async (item, i) => {
     const row = $(table.row(i).node());
     const seq = item.INQD_SEQ;
     if (seenKeys.has(item.INQD_SEQ)) {

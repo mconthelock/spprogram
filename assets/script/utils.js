@@ -167,22 +167,22 @@ export const amecschdule = (data) => {
 
 export const revision_code = (current) => {
   if (current === "*") return "A";
-  if (/^[A-Z]$/.test(current)) {
-    let chars = current.split("");
-    let i = chars.length - 1;
-    while (i >= 0) {
-      if (chars[i] === "Z") {
-        chars[i] = "A";
-        i--;
-      } else {
-        chars[i] = String.fromCharCode(chars[i].charCodeAt(0) + 1);
-        return chars.join("");
+  const recursive = (val) => {
+    if (/^[A-Z]$/.test(val)) {
+      if (val === "Z") {
+        return "A";
       }
+      return String.fromCharCode(val.charCodeAt(0) + 1);
     }
-    return "A" + chars.join("");
+    return val;
+  };
+  let chars = current.split("");
+  let nb = chars.length - 1;
+  for (var i = nb; i >= 0; i--) {
+    chars[i] = recursive(chars[i]);
+    if (chars[i] != "A") break;
   }
-  //throw new Error("Invalid revision format");
-  return null;
+  return chars.join("");
 };
 
 export const fileExtension = (fileName) => {

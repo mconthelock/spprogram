@@ -62,3 +62,54 @@ export function getSeries() {
     });
   });
 }
+
+export const getPartProject = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/mkt/part/search`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+export const getDummyProject = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/mkt/dummy/search`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+export const getCubeProject = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/mkt/orders/search`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};

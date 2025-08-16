@@ -1,5 +1,6 @@
 import moment from "moment";
 import { getMainProject } from "../service/mkt.js";
+import * as source from "./source.js";
 import * as utils from "../utils.js";
 
 //Start Table detail
@@ -131,9 +132,24 @@ export async function setupTableDetail(data = []) {
       title: "Qty.",
       className: "!px-[3px]",
       sortable: false,
-      render: function (data, type) {
+      render: function (data, type, row) {
         if (type === "display") {
-          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
+          let qty = data;
+          if (row.logs.length > 0) {
+            const log = row.logs.sort(
+              (a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE)
+            )[0];
+            qty = log.INQD_QTY;
+          }
+
+          return `<div class="tooltip tooltip-left z-20">
+            <div class="tooltip-content">
+                <ui><li>AA</li><li>BB</li></ui>
+            </div>
+            <input type="number" min="1" class="!w-[50px] ${
+              data !== qty ? "text-blue-500 font-bold" : ""
+            } cell-input edit-input" value="${data}">
+        </div>`;
         }
         return data;
       },
@@ -306,11 +322,11 @@ export async function changeCar(table, el) {
   }
 
   const carno = $(el).val();
-  const orders = await getMainProject({
-    PRJ_NO: prjno,
-    CAR_NO: carno,
-  });
-
+  //   const orders = await getMainProject({
+  //     PRJ_NO: prjno,
+  //     CAR_NO: carno,
+  //   });
+  const orders = await source.projectConclude({ prjno, carno });
   if (orders.length > 0) {
     const newData = {
       ...data,
@@ -327,7 +343,7 @@ export async function changeCar(table, el) {
     };
     row.data(newData);
     row.draw(false);
-    $(row.node()).find(".mfgno").addClass("bg-red-500");
+    $(row.node()).find(".mfgno").focus();
   }
 }
 //End Table detail
