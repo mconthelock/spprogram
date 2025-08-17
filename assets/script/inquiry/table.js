@@ -5,6 +5,34 @@ import * as utils from "../utils.js";
 
 //Start Table detail
 export async function setupTableDetail(data = []) {
+  const renderText = (str, logs, key) => {
+    let li = ``;
+    const log = logs.sort(
+      (a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE)
+    );
+    log.map((el) => {
+      li += `<li class="flex gap-4 p-1 border-b">
+        <div>${el[key] == null ? "" : el[key]}</div>
+        <div class="text-xs">${moment(el.UPDATE_AT).format(
+          "yyyy-MM-DD h:mm a"
+        )}</div>
+        <div class="text-xs">${utils.displayname(el.UPDATE_BY).fname}</div>
+      </li>`;
+    });
+    const element = `<ul class="hidden">${li}</ul>${str}`;
+    return element;
+  };
+
+  const renderLog = (data, logs, key) => {
+    let update = false;
+    if (logs.length > 0) {
+      logs.map((log) => {
+        if (log[key] != data) update = true;
+      });
+    }
+    return update;
+  };
+
   const mode = data.length > 0 ? 1 : 0;
   const opt = {};
   opt.data = data;
@@ -38,9 +66,13 @@ export async function setupTableDetail(data = []) {
       title: "No",
       className: "sticky-column !px-[3px] seqno",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type, row) {
         if (type === "display") {
-          return `<input type="number" min="1" class="!w-[65px] cell-input edit-input" value="${data}">`;
+          const log = renderLog(data, row.logs, "INQD_SEQ");
+          const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
+            log ? "detail-log" : ""
+          }" value="${data}">`;
+          return renderText(str, row.logs, "INQD_SEQ");
         }
         return data;
       },
@@ -52,9 +84,11 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<textarea class="!w-[55px] uppercase cell-input carno" maxlength="2">${
-            data == null ? "" : data
-          }</textarea>`;
+          const log = renderLog(data, row.logs, "INQD_CAR");
+          const str = `<textarea class="!w-[55px] uppercase cell-input carno ${
+            log ? "detail-log" : ""
+          }" maxlength="2">${data == null ? "" : data}</textarea>`;
+          return renderText(str, row.logs, "INQD_CAR");
         }
         return data;
       },
@@ -256,7 +290,12 @@ export async function setupTableDetail(data = []) {
       .closest(".dt-container")
       .find(".table-search")
       .append(
-        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Detail</h1>`
+        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Detail</h1>
+        <div class="tooltip tooltip-open absolute z-50 hidden" id="tip1">
+            <div class="tooltip-content">
+                <div class="animate-bounce text-orange-400 -rotate-10 text-2xl font-black">Wow!</div>
+            </div>
+        </div>`
       );
   };
   return opt;
@@ -486,7 +525,7 @@ export async function setupTableHistory(data = []) {
       data: "status",
       title: "Action",
       className: "text-xs py-[8px]",
-      render: (data) => data.STATUS_ACTION,
+      render: (data) => (data == null ? "" : data.STATUS_ACTION),
     },
     { data: "INQH_REMARK", title: "Remark", className: "text-xs py-[8px]" },
   ];

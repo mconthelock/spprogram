@@ -51,7 +51,9 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment(file);
     tableAttach = await createTable(attachment, { id: "#attachment" });
   } catch (error) {
-    await utils.foundError(error);
+    console.log(error);
+
+    //await utils.foundError(error);
   } finally {
     utils.showLoader(false);
   }

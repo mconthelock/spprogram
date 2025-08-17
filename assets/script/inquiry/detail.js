@@ -79,7 +79,7 @@ export async function setFieldValue(field, data = {}) {
     const colors = await statusColors();
     const cls = colors.find((item) => item.id >= data.INQ_STATUS);
     field.class = cls.color;
-    field.display = data.status.STATUS_DESC;
+    field.display = data.status == null ? "N/A" : data.status.STATUS_DESC;
     return field;
   };
 
@@ -231,7 +231,11 @@ export async function createFieldInput(field) {
             <input type="${field.type}" id="${field.id}"
                 name="${field.name !== undefined ? field.name : field.id}"
                 class="w-full   ${field.class !== undefined ? field.class : ""}"
-                value="${field.value === undefined ? "" : field.value}"
+                value="${
+                  field.value === undefined || field.value == null
+                    ? ""
+                    : field.value
+                }"
                 maxlength="${
                   field.maxlength !== undefined ? field.maxlength : ""
                 }"

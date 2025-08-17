@@ -8,6 +8,7 @@ module.exports = {
     authen: "./assets/script/authen.js",
     app: "./assets/script/app.js",
     //MAR User
+    inquiryui: "./assets/script/inquiry/ui.js",
     mar_inquiry: "./assets/script/mar/inquiry.js",
     mar_inqdetail: "./assets/script/mar/inqdetail.js",
     mar_inqedit: "./assets/script/mar/inqedit.js",
