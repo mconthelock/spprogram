@@ -6,6 +6,7 @@ import * as utils from "../utils.js";
 //Start Table detail
 export async function setupTableDetail(data = []) {
   const renderText = (str, logs, key) => {
+    if (logs == undefined) return str;
     let li = ``;
     const log = logs.sort(
       (a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE)
@@ -25,6 +26,7 @@ export async function setupTableDetail(data = []) {
 
   const renderLog = (data, logs, key) => {
     let update = false;
+    if (logs == undefined) return update;
     if (logs.length > 0) {
       logs.map((log) => {
         if (log[key] != data) update = true;
@@ -41,7 +43,7 @@ export async function setupTableDetail(data = []) {
   opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex"<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_RUNNO",
@@ -168,22 +170,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row) {
         if (type === "display") {
-          let qty = data;
-          if (row.logs.length > 0) {
-            const log = row.logs.sort(
-              (a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE)
-            )[0];
-            qty = log.INQD_QTY;
-          }
-
-          return `<div class="tooltip tooltip-left z-20">
-            <div class="tooltip-content">
-                <ui><li>AA</li><li>BB</li></ui>
-            </div>
-            <input type="number" min="1" class="!w-[50px] ${
-              data !== qty ? "text-blue-500 font-bold" : ""
-            } cell-input edit-input" value="${data}">
-        </div>`;
+          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
         }
         return data;
       },

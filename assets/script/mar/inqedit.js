@@ -51,9 +51,9 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment(file);
     tableAttach = await createTable(attachment, { id: "#attachment" });
   } catch (error) {
-    console.log(error);
-
+    //console.log(error);
     //await utils.foundError(error);
+    window.location.href = `${process.env.APP_ENV}/mar/inquiry`;
   } finally {
     utils.showLoader(false);
   }
