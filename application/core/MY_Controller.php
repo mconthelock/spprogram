@@ -5,17 +5,13 @@
         protected $views = APPPATH . 'views';
         protected $cache = APPPATH . 'cache';
         protected $blade;
-        protected $callback;
+        public $callback;
 
         public function __construct(){
             parent::__construct();
             $this->blade = new PhpBlade($this->views, $this->cache);
-            $GLOBALS['version'] = $_ENV['STATE'] == 'development' ? time() : $_ENV['VERSION'];
-            //$this->callback = $_ENV['APP_HOST'].'/form/authen/index/99/';
-            //$this->callback = 'https://' . $_SERVER['HTTP_HOST'].'/wsd';
-            //$this->session_expire();
-            // $this->load->database();
-            // $this->load->library('mail');
+            $GLOBALS['version'] = $_ENV['STATE'] == 'production' ?  $_ENV['VERSION'] :time() ;
+            $this->callback = "{$_ENV['APP_HOST']}/form/authen/index/{$_ENV['APP_ID']}";
         }
 
         public function views($view_name, $data = array()){

@@ -4,14 +4,6 @@ class Authen extends MY_Controller {
         parent::__construct();
     }
 
-    public function index(){
-        // if(!isset($_SESSION['user'])){
-        //     $this->session_expire();
-        // }
-        $this->views('home/index');
-    }
-
-
     public function move(){
         $this->views('layouts/move');
     }
@@ -24,12 +16,18 @@ class Authen extends MY_Controller {
         $_SESSION['user']  = (object)$_POST['info'];
         $_SESSION['group']  = (object)$_POST['group'];
         $_SESSION['menu']  = isset($_POST['menu']) ? (object)$_POST['menu']: [];
-		$_SESSION['profile-img'] = $_POST['info']['image'];
          if($_SESSION['group'] != null && $_SESSION['group']->GROUP_HOME != null){
             $redir = $_SESSION['group']->GROUP_HOME;
         }else{
             $redir = '';
         }
         echo json_encode(['url' => $redir]);
+    }
+
+    public function logout(){
+        unset($_SESSION['user']);
+        unset($_SESSION['group']);
+        unset($_SESSION['menu']);
+        redirect($this->callback);
     }
 }

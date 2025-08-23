@@ -1,19 +1,22 @@
 import { getCookie, setCookie } from "@root/inc/_jsCookie";
 import { decryptText } from "@root/inc/_crypto";
-import { directlogin } from "@root/webservice.js";
+import { directlogin } from "@root/api/auth.js";
 
 $(async function () {
   const cookie = getCookie(process.env.APP_NAME);
   if (!cookie) {
-    window.location.href = `${process.env.APP_HOST}/form/authen/index/${process.env.APP_ID}`;
+    // window.location.replace(
+    //   `${process.env.APP_HOST}/form/authen/index/${process.env.APP_ID}`
+    // );
   }
-
   const indexedDBID = decryptText(cookie, process.env.APP_NAME);
   setCookie(process.env.APP_NAME, cookie, { expires: 0.5 / 24 });
   const [appid, empno] = indexedDBID.split("-");
   const res = await directlogin(empno, appid);
-  const session = await setSession(res);
-  window.location.href = `${process.env.APP_ENV}/${session.url}`;
+  //   const session = await setSession(res);
+  //   window.location.replace(
+  //     `${process.env.APP_ENV}/${res.GROUP_HOME == null ? "home" : res.GROUP_HOME}`
+  //   );
 });
 
 export function setSession(res) {

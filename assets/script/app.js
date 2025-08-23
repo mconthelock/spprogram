@@ -1,20 +1,23 @@
-// import { initAuthen } from "@public/authen.js";
+import "@flaticon/flaticon-uicons/css/all/all.css";
+import { initAuthen } from "@public/authen.js";
 import mockupmenu from "../files/mockup_menu.json";
 import { initSidebar, setSidebarMenu } from "@public/component/sidebar.js";
 import { initNavbar } from "@public/component/navbar.js";
 
 $(function () {
-  initSidebar({
+  initAuthen({
     icon: `${process.env.APP_ENV}/assets/images/cube.png`,
     programName: "SP PROGRAM",
+    sidebarClass: "!w-80 text-gray-600",
   });
+  //   initSidebar({});
 
-  initNavbar({
-    icon: `${process.env.APP_ENV}/assets/images/cube.png`,
-    programName: "SP PROGRAM",
-    toggleId: "mastermenu",
-  });
-  setSidebarMenu(mockupmenu, null);
+  //   initNavbar({
+  //     icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+  //     programName: "SP PROGRAM",
+  //     toggleId: "mastermenu",
+  //   });
+  //   setSidebarMenu(mockupmenu, null);
 });
 
 $(document).on("click", ".msg-close", function () {

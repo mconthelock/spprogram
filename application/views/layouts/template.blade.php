@@ -7,14 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="base_url" content="{{ $_ENV['APP_HOST'] }}">
     <meta name="appname" content="{{ $_ENV['APP_NAME'] }}">
+    <meta name="appstatus" content="{{ $_ENV['STATE'] }}">
     <link rel="manifest" href="{{ $_ENV['APP_HOST'] }}manifest.json">
     <meta name="theme-color" content="#C0C0C0">
     <link rel="shortcut icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/icon_512.png">
     <title>SPARE PART 🚀 DIRECT SALE PART [2025 Version]</title>
-
-    <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/icofont/v2025/icofont.min.css">
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css">
     <link rel="stylesheet"
         href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/tailwind.css?ver={{ $GLOBALS['version'] }}">
@@ -43,10 +42,10 @@
         </div>
     </div>
 
-    <input type="checkbox" id="loading-box" class="modal-toggle" />
+    {{-- <input type="checkbox" id="loading-box" class="modal-toggle" />
     <div class="modal" role="dialog">
         <div class="loader"></div>
-    </div>
+    </div> --}}
 
     <dialog id="confirm_box" class="modal">
         <div class="modal-box">
@@ -83,7 +82,6 @@
     </div>
 
     <div class="toast toast-end z-50" id="toast-alert"></div>
-
     <script src="{{ $_ENV['APP_JS'] }}/app.js?ver={{ $GLOBALS['version'] }}"></script>
     @yield('scripts')
 </body>

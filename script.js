@@ -1,12 +1,34 @@
 (function () {
-  //Redirect to full URL
-  const host = document.querySelector('meta[name="base_url"]').content;
-  //   const isdomain = host.indexOf("mitsubishielevatorasia.co.th");
-  //   if (isdomain == -1) {
-  //     var s = host.split("/");
-  //     window.location =
-  //       "https://" + s[2] + ".mitsubishielevatorasia.co.th/" + s[3];
-  //   }
+  const amecdomain = (host, state) => {
+    if (state == "local") return;
+    const isdomain = host.indexOf("mitsubishielevatorasia.co.th");
+    var s = host.split("/");
+    if (isdomain == -1) {
+      window.location =
+        "https://" + s[2] + ".mitsubishielevatorasia.co.th/" + s[3];
+    }
+
+    const currenturl = window.location.href;
+    const protocol = window.location.protocol;
+    if (protocol == "http:") {
+      const url = currenturl.replace(protocol, "https:");
+      window.location.href = url;
+    }
+  };
+
+  const checkCookie = () => {
+    var iscookie = "";
+    const name = document.querySelector('meta[name="appname"]').content;
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        iscookie = cookie.substring(name.length + 1);
+      }
+    }
+
+    return iscookie;
+  };
 
   // Swich Theme
   const savedTheme = localStorage.getItem("theme") || "light"; // ค่าเริ่มต้นเป็น 'light'
@@ -26,12 +48,16 @@
         .register(`${host}sw.js`, {
           scope: "./",
         })
-        .then((reg) => {
-          //console.log("Service Worker registered:", reg);
-        })
+        .then((reg) => {})
         .catch((err) =>
           console.error("Service Worker registration failed:", err)
         );
     });
   }
+
+  const host = document.querySelector('meta[name="base_url"]').content;
+  const state = document.querySelector('meta[name="appstatus"]').content;
+  const domain = amecdomain(host, state);
+  //   const cookie = checkCookie();
+  //if (cookie != "") window.location.replace(`${host}/home`);
 })();

@@ -4,9 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="base_url" content="{{ base_url() }}">
+    <meta name="base_url" content="{{ $_ENV['APP_HOST'] }}">
     <meta name="appname" content="{{ $_ENV['APP_NAME'] }}">
+    <meta name="appstatus" content="{{ $_ENV['STATE'] }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Move to another link.</title>
+    <link rel="shortcut icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="stylesheet" href="{{ base_url() }}assets/dist/css/tailwind.css?ver={{ $GLOBALS['version'] }}">
     <link rel="stylesheet" href="{{ base_url() }}assets/style/move.css">
     <script defer src="{{ base_url() }}script.js"></script>
@@ -48,7 +52,6 @@
             </div>
         </div>
     </div>
-
 </body>
 
 </html>
