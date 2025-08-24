@@ -27,7 +27,6 @@
         <input id="mastermenu" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col items-center justify-start w-full h-full">
             <!-- Navbar -->
-            {{-- @include('layouts.navbar') --}}
             <div id="navbar" class=""></div>
             <!-- Page content here -->
             <div class="flex-1 flex flex-col w-full px-4 md:px-8 mt-20 md:mt-4">
@@ -37,7 +36,6 @@
             {{-- @include('layouts.footer') --}}
         </div>
         <div class="drawer-side bg-white" style="box-shadow: 8px 0 12px rgba(0,0,0,0.25);">
-            {{-- @include('layouts.sidebar') --}}
             <div id="sidebar"></div>
         </div>
     </div>
