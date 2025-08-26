@@ -57,7 +57,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><i class="icofont-plus"></i></div>
+          return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><i class="fi fi-rr-add text-lg"></i></div>
           <button class="btn btn-sm btn-circle btn-ghost"><i class="icofont-error text-error text-lg"></i></button>`;
         }
         return data;
@@ -277,7 +277,7 @@ export async function setupTableDetail(data = []) {
       .closest(".dt-container")
       .find(".table-search")
       .append(
-        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Detail</h1>
+        `
         <div class="tooltip tooltip-open absolute z-50 hidden" id="tip1">
             <div class="tooltip-content">
                 <div class="animate-bounce text-orange-400 -rotate-10 text-2xl font-black">Wow!</div>
@@ -516,14 +516,14 @@ export async function setupTableHistory(data = []) {
     },
     { data: "INQH_REMARK", title: "Remark", className: "text-xs py-[8px]" },
   ];
-  opt.initComplete = function (settings, json) {
-    $("#history")
-      .closest(".dt-container")
-      .find(".table-search")
-      .append(
-        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">History</h1>`
-      );
-  };
+  //   opt.initComplete = function (settings, json) {
+  //     $("#history")
+  //       .closest(".dt-container")
+  //       .find(".table-search")
+  //       .append(
+  //         `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">History</h1>`
+  //       );
+  //   };
   opt.drawCallback = function (settings) {
     var api = this.api();
     var totalRecords = api.rows().count();
@@ -597,20 +597,19 @@ export async function setupTableAttachment(data = [], view = false) {
     },
   ];
   opt.initComplete = function (settings, json) {
-    $("#attachment")
-      .closest(".dt-container")
-      .find(".table-search")
-      .append(
-        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Attachment</h1>`
-      );
-
-    $("#attachment").closest(".dt-container").find(".table-option")
-      .append(`<button class="btn btn-outline btn-neutral btn-sm btn-circle text-neutral hover:!text-white" id="add-attachment">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="icofont-ui-clip text-xl"></span>
-        </button>
-        <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />
-       `);
+    // $("#attachment")
+    //   .closest(".dt-container")
+    //   .find(".table-search")
+    //   .append(
+    //     `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Attachment</h1>`
+    //   );
+    // $("#attachment").closest(".dt-container").find(".table-option")
+    //   .append(`<button class="btn btn-outline btn-neutral btn-sm btn-circle text-neutral hover:!text-white" id="add-attachment">
+    //         <span class="loading loading-spinner hidden"></span>
+    //         <span class="icofont-ui-clip text-xl"></span>
+    //     </button>
+    //     <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />
+    //    `);
   };
   opt.drawCallback = function (settings) {
     var api = this.api();

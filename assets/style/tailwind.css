@@ -14,7 +14,7 @@
   --color-base-content: oklch(0% 0.042 265.755);
   --color-primary: oklch(0.7115 0.131 174.2);
   --color-primary-content: oklch(0.6217 0.0587 190.68);
-  /* --color-secondary: oklch(80% 0.114 19.571); */
+  --color-secondary: oklch(80% 0.114 19.571);
   --color-secondary: oklch(0.7876 0.165783 75.5064);
   --color-secondary-content: oklch(25% 0.092 26.042);
   --color-accent: oklch(0.2997 0.0749 267.29);
@@ -92,6 +92,14 @@
   :root {
     --font-sans: "LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
       "LINE Seed TH Bold", "LINE Seed JP", "LINE Seed JP Bold", sans-serif;
+    --color-primary: 1, 71, 178;
+    --color-primary: 0, 0, 0;
+    --color-secondary: 107, 114, 128;
+    --color-accent: 232, 159, 2;
+    --color-card: 255, 255, 255;
+    --color-border: 216, 218, 223;
+    --color-body: 229, 231, 235;
+
     --bgcolor-dataTable-thead: var(--color-primary);
     --bgcolor-dataTable-tbody: #fff;
     --color-dataTable-thead: #fff;
@@ -110,10 +118,6 @@
     @apply font-sans;
     background: #eeeeee;
     scrollbar-gutter: stable;
-  }
-
-  #sidebar {
-    @apply !shadow-xl/20;
   }
 
   .input {
@@ -156,7 +160,7 @@
     margin: 0 !important;
   }
   div.dt-container .dt-search input {
-    @apply !w-64;
+    @apply !w-64 !rounded-md;
   }
 
   /* .table tbody > tr > td:not(.dt-empty), */
@@ -214,21 +218,24 @@
 
   .dt-orderable-asc::after,
   .dt-orderable-desc::after {
-    font-family: IcoFont !important;
+    font-family: uicons-thin-rounded!important;
     font-size: 1.2rem;
     color: var(--color-white);
     position: absolute;
     right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 
   .dt-ordering-asc::after {
-    content: "\eab2";
+     content:"\fba7";
   }
 
   .dt-ordering-desc::after {
-    content: "\eab9";
+   content:"\fba7";
+   transform: rotate(180deg);
   }
 
   /* Overwrite Select2 */

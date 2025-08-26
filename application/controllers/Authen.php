@@ -4,6 +4,10 @@ class Authen extends MY_Controller {
         parent::__construct();
     }
 
+    public function index(){
+        redirect('/home');
+    }
+
     public function move(){
         $this->views('layouts/move');
     }

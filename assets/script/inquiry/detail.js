@@ -105,15 +105,18 @@ export async function setFieldValue(field, data = {}) {
 
 export async function createFormCard(cardData, data = {}) {
   const card = document.createElement("div");
-  card.className = "bg-white rounded-lg shadow overflow-hidden px-6 pt-3";
+  card.className = "bg-white rounded-lg shadow-lg overflow-hidden p-4";
 
   const header = document.createElement("div");
-  header.className = "text-primary p-3 font-semibold";
-  header.textContent = cardData.title;
+  header.className = "divider divider-start divider-primary";
+  const headTxt = document.createElement("span");
+  headTxt.className = "font-extrabold text-md text-primary ps-3";
+  headTxt.textContent = cardData.title;
+  header.appendChild(headTxt);
   card.appendChild(header);
 
   const body = document.createElement("div");
-  body.className = "p-4 space-y-4";
+  body.className = "space-y-4";
   // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
   if (Object.keys(data).length === 0)
     data = {
@@ -126,10 +129,11 @@ export async function createFormCard(cardData, data = {}) {
     };
   for (let field of cardData.fields) {
     const fieldWrapper = document.createElement("div");
-    fieldWrapper.className = "grid grid-cols-3 items-center gap-2 min-h-[42px]";
+    fieldWrapper.className =
+      "grid grid-cols-3 items-center gap-2 min-h-[42px] m-1";
     const label = document.createElement("label");
     label.htmlFor = field.id || "";
-    label.className = "text-sm font-medium text-gray-600 col-span-1";
+    label.className = "text-sm font-bold text-gray-600 col-span-1";
     label.textContent = field.label;
     field = await setFieldValue(field, data);
     const inputElement = await createFieldInput(field);
@@ -163,19 +167,20 @@ export async function createFieldInput(field) {
       if (field.source) {
         if (source.init[field.source])
           options = await source.init[field.source]();
-      } else if (field.options) options = field.options;
+      } else if (field.options) {
+        options = field.options;
+      }
       options.forEach((opt) => {
         optStr += `<option value="${opt.id}" ${
           opt.id == field.value ? "selected" : ""
         }>${opt.text}</option>`;
       });
       const selectInput = `<select name="${field.name}"
-        id="${
-          field.id
-        }" class="w-full border border-gray-300 rounded-md p-2 bg-white select2 ${
-        field.class !== undefined ? field.class : ""
-      }"
-        data-mapping="${field.mapping}">${optStr}</select>`;
+            id="${field.id}"
+            class="w-full border border-gray-300 rounded-md p-2 bg-white select2 ${
+              field.class !== undefined ? field.class : ""
+            }"
+            data-mapping="${field.mapping}">${optStr}</select>`;
       inputContainer.innerHTML = selectInput;
       elementToListen = inputContainer.querySelector(`#${field.id}`);
       setTimeout(() => {

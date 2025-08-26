@@ -79,6 +79,26 @@ export const showLoader = (val = true) => {
   $("#loading-box").prop("checked", val);
 };
 
+export const tableOpt = {
+  language: {
+    info: "Showing _START_ to _END_ from _TOTAL_ records",
+    infoEmpty: "",
+    paginate: {
+      previous: '<i class="fi fi-br-arrow-alt-circle-left"></i>',
+      next: '<i class="fi fi-br-arrow-alt-circle-right"></i>',
+      first: '<i class="fi fi-rs-angle-double-small-left"></i>',
+      last: '<i class="fi fi-rs-angle-double-small-right"></i>',
+    },
+    search: "",
+    searchPlaceholder: "ค้นหา",
+    loadingRecords: "กำลังโหลดข้อมูล...",
+    emptyTable: "ไม่มีข้อมูลในตาราง",
+    zeroRecords: "ไม่พบข้อมูลที่ต้องการ",
+    lengthMenu: "_MENU_",
+    infoFiltered: "(กรองข้อมูลจากทั้งหมด _MAX_ รายการ)",
+  },
+};
+
 export const showConfirm = (
   class_function,
   title,

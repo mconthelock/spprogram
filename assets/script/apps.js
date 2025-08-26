@@ -8,7 +8,7 @@ $(function () {
   initAuthen({
     icon: `${process.env.APP_ENV}/assets/images/cube.png`,
     programName: "SP PROGRAM",
-    sidebarClass: `!w-80 text-gray-600`,
+    sidebarClass: `size-xl text-gray-50 bg-primary`,
   });
 });
 

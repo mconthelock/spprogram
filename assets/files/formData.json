@@ -236,10 +236,23 @@
         ]
     },
     {
-        "id": "des",
+        "id": "sale",
         "title": "Designer Information",
         "fields": [
-            { "label": "Design Class", "id":"des-class", "type": "select", "options": ["", "A", "B", "C", "D", "E"] },
+            {
+                "label": "Design Class",
+                "id": "des-class",
+                "type": "select",
+                "name": "des-class",
+                "class": "req-2",
+                "options": [
+                    {"id": "A", "text": "A"},
+                    {"id": "B", "text": "B"},
+                    {"id": "C", "text": "C"},
+                    {"id": "D", "text": "D"},
+                    {"id": "E", "text": "E"}
+                ]
+            },
             { "label": "Assigner", "id":"des-leader", "type": "text", "value": "CHALERMSAK SAWANAM" },
             { "label": "Designer", "id":"des-incharge", "type": "text", "value": "CHALERMSAK SAWANAM" },
             { "label": "Checker", "id":"des-checker", "type": "text", "value": "CHALERMSAK SAWANAM" }

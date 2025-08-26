@@ -55,21 +55,22 @@ async function setupButton() {
   const sendDE = await utils.creatBtn({
     id: "send-de",
     title: "Send to Design",
+    icon: "fi fi-rs-disk text-xl",
     className: "btn-primary text-white",
   });
 
   const sendIS = await utils.creatBtn({
     id: "send-bm",
     title: "Send to Pre-BM",
-    icon: "icofont-console text-2xl",
+    icon: "fi fi-tr-thumbs-up-trust text-xl",
     className: "btn-neutral text-white",
   });
 
   const draft = await utils.creatBtn({
     id: "draft",
     title: "Send draft",
-    icon: "icofont-attachment text-2xl",
-    className: "btn-neutral text-white",
+    icon: "fi fi-tr-arrow-down-from-dotted-line text-xl",
+    className: "btn-outline btn-neutral text-neutral hover:text-white",
   });
 
   const back = await utils.creatBtn({
@@ -77,7 +78,7 @@ async function setupButton() {
     title: "Back",
     type: "link",
     href: `${process.env.APP_ENV}/mar/inquiry`,
-    icon: "icofont-arrow-left text-2xl",
+    icon: "fi fi-rr-arrow-circle-left text-xl",
     className: "btn-outline btn-neutral text-neutral hover:text-white",
   });
   $("#btn-container").append(sendDE, sendIS, draft, back);

@@ -45,7 +45,7 @@
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
       navigator.serviceWorker
-        .register(`${host}sw.js`, {
+        .register(`${host}/sw.js`, {
           scope: "./",
         })
         .then((reg) => {})

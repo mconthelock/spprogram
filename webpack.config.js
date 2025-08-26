@@ -5,8 +5,8 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 module.exports = {
   entry: {
-    authen: "./assets/script/authen.js",
-    app: "./assets/script/app.js",
+    // authen: "./assets/script/authen.js",
+    apps: "./assets/script/apps.js",
     //MAR User
     inquiryui: "./assets/script/inquiry/ui.js",
     mar_inquiry: "./assets/script/mar/inquiry.js",
@@ -15,6 +15,9 @@ module.exports = {
     mar_inqviews: "./assets/script/mar/inqview.js",
     priceratio: "./assets/script/mar/priceratio.js",
     currency: "./assets/script/mar/currency.js",
+
+    //Sale user
+    se_inquiry: "./assets/script/sale/inquiry.js",
   },
   output: {
     filename: "[name].js",
