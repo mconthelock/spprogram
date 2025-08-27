@@ -13,6 +13,7 @@ import moment from "moment";
 import formData from "../../files/formData.json";
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { readInput } from "@public/_excel.js";
+import { displayEmpInfo } from "@public/setIndexDB.js";
 import { getReason } from "../service/master";
 import { getElmesItem, getElmesDrawing } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";
@@ -65,7 +66,10 @@ export async function setupCard(data) {
 }
 
 export async function setFieldValue(field, data = {}) {
-  const dspName = (data, field, key) => {
+  const dspName = async (data, field, key) => {
+    const emp = await displayEmpInfo(data[key]);
+    console.log(emp);
+
     field.display = `xxxx`;
     field.value = data[key];
     return field;
@@ -124,7 +128,7 @@ export async function createFormCard(cardData, data = {}) {
       INQ_DATE: moment().format("YYYY-MM-DD"),
       INQ_STATUS: 2,
       status: { id: 2, STATUS_DESC: "New" },
-      INQ_MAR_PIC: `12069`,
+      INQ_MAR_PIC: $("#user-login").attr("emp"),
       INQ_REV: "*",
     };
   for (let field of cardData.fields) {

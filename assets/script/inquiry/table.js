@@ -265,13 +265,13 @@ export async function setupTableDetail(data = []) {
       <div class="tooltip" data-tip="Upload inquiry">
         <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square ${
           mode == 1 ? "hidden" : ""
-        }"><i class="fi fi-rr-cloud-upload text-2xl text-white"></i></button>
+        }"><i class="fi fi-rr-cloud-upload-alt text-2xl text-white"></i></button>
         <input type="file" id="import-tsv" class="hidden" />
       </div>
       <div class="tooltip" data-tip="Download template">
         <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square ${
           mode == 1 ? "hidden" : ""
-        }"><i class="icofont-download text-xl text-white"></i></button>
+        }"><i class="fi fi-rr-cloud-download-alt text-2xl text-white"></i></button>
       </div>
     </div>`;
     $("#table").closest(".dt-container").find(".table-page").append(btn);

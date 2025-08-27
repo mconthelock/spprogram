@@ -1,7 +1,6 @@
 @extends('layouts/template')
 
 @section('contents')
-    <i class="fi fi-sc-cross"></i>
     <h1 class="text-3xl font-sans font-[700] uppercase text-gray-700">Inquiry Detail</h1>
     <div class="divider"></div>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="prj|info|mar"></main>
@@ -13,7 +12,7 @@
         <table id="table" class="table table-zebra table-edit display text-sm"></table>
     </div>
 
-    <div class="flex gap-4 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         <div class="flex-1">
             <div class="divider divider-start divider-primary">
                 <span class="font-extrabold text-md text-primary ps-3">History</span>
