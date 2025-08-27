@@ -19,4 +19,8 @@ class Inquiry extends MY_Controller {
     public function edit($id){
         $this->views('mar/inquiry/edit', array('id' => $id));
     }
+
+    public function createstock(){
+
+    }
 }

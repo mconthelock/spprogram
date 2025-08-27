@@ -258,12 +258,14 @@ export async function setupTableDetail(data = []) {
   opt.initComplete = function (settings, json) {
     const btn = `<div class="flex gap-2">
       <div class="tooltip" data-tip="Add line">
-        <button id="addRowBtn" class="btn btn-primary btn-sm btn-square" type="button"><i class="icofont-plus text-xl text-white"></i></button>
+        <button id="addRowBtn" class="btn btn-primary btn-sm btn-square flex items-center" type="button">
+            <i class="fi fi-rr-add text-2xl text-white"></i>
+        </button>
       </div>
       <div class="tooltip" data-tip="Upload inquiry">
         <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square ${
           mode == 1 ? "hidden" : ""
-        }"><i class="icofont-upload-alt text-xl text-white"></i></button>
+        }"><i class="fi fi-rr-cloud-upload text-2xl text-white"></i></button>
         <input type="file" id="import-tsv" class="hidden" />
       </div>
       <div class="tooltip" data-tip="Download template">

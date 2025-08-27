@@ -1,7 +1,8 @@
 @extends('layouts/template')
 
 @section('contents')
-    <h1 class="text-3xl font-sans font-[900] uppercase mb-5 text-gray-700">On-Process Inquiry</h1>
+    <h1 class="text-3xl font-sans font-[700] uppercase text-gray-700">On-Process Inquiry</h1>
+    <div class="divider"></div>
     <table id="table" class="table table-zebra display text-xs"></table>
 @endsection
 

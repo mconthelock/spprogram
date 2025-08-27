@@ -1,16 +1,4 @@
 import "@flaticon/flaticon-uicons/css/all/all.css";
-import { initAuthen } from "@public/authen.js";
-import mockupmenu from "../files/mockup_menu.json";
-import { initSidebar, setSidebarMenu } from "@public/component/sidebar.js";
-import { initNavbar } from "@public/component/navbar.js";
-
-$(function () {
-  initAuthen({
-    icon: `${process.env.APP_ENV}/assets/images/cube.png`,
-    programName: "SP PROGRAM",
-    sidebarClass: `size-xl text-gray-50 bg-primary`,
-  });
-});
 
 $(document).on("click", ".msg-close", function () {
   const msgbox = $(this).closest(".toast-message");

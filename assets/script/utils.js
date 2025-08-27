@@ -1,4 +1,18 @@
 import moment from "moment";
+import { initAuthen } from "@public/authen.js";
+
+export const initApp = async (opt = {}) => {
+  await initAuthen({
+    icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+    programName: "SP PROGRAM",
+    sidebarClass: `size-xl text-gray-50 bg-primary`,
+  });
+
+  $(".mainmenu").find("details").attr("open", false);
+  if (opt.submenu !== undefined) {
+    $(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
+  }
+};
 
 export function showMessage(msg, type = "error") {
   const prop = [

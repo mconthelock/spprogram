@@ -3,25 +3,25 @@ import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import moment from "moment";
 import ExcelJS from "exceljs";
+import { showbgLoader } from "@public/preloader";
 import { createTable } from "@public/_dataTable.js";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
-
 var table;
 $(document).ready(async () => {
   try {
-    utils.showLoader();
-    $(".mainmenu").find("details").attr("open", false);
-    $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
-
+    await showbgLoader();
+    await utils.initApp({ submenu: ".navmenu-newinq" });
     const data = await service.getInquiry({});
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
-    await utils.foundError(error);
+    // await utils.foundError(error);
+    console.log(error);
+    await utils.errorMessage(error);
   } finally {
-    utils.showLoader(false);
+    await showbgLoader({ show: false });
   }
 });
 
@@ -160,8 +160,13 @@ async function tableOpt(data) {
     },
   ];
   opt.initComplete = function (settings, json) {
-    $(".table-option").append(`<div class="flex gap-2">
-        <a class="btn btn-primary btn-circle" href="${process.env.APP_ENV}/mar/inquiry/create/"><i class="icofont-plus text-xl text-white"></i></a>
+    $(".table-option")
+      .append(`<div class="dropdown dropdown-end dropdown-hover">
+        <div tabindex="0" role="button" class="btn btn-outline btn-neutral m-1">New Inquiry</div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+            <li><a href="${process.env.APP_ENV}/mar/inquiry/create/">SP Inquiry</a></li>
+            <li><a href="${process.env.APP_ENV}/mar/inquiry/createstock/">Stock Part</a></li>
+        </ul>
         </div>`);
     $(".table-info").append(`<div class="flex gap-2">
         <button class="btn btn-accent rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-detail"

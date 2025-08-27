@@ -14,6 +14,7 @@ import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 
 import { createTable, destroyTable } from "@public/_dataTable.js";
+import { showbgLoader } from "@public/preloader";
 import { validateDrawingNo } from "../drawing.js";
 import * as inqservice from "../service/inquiry.js";
 import * as elmesservice from "../service/elmes.js";
@@ -28,9 +29,8 @@ var tableAttach;
 let selectedFilesMap = new Map();
 $(document).ready(async () => {
   try {
-    await utils.showLoader();
-    $(".mainmenu").find("details").attr("open", false);
-    $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
+    await showbgLoader();
+    await utils.initApp({ submenu: ".navmenu-newinq" });
 
     const btn = await setupButton();
     const reason = await inqs.createReasonModal();
@@ -45,9 +45,10 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment();
     tableAttach = await createTable(attachment, { id: "#attachment" });
   } catch (error) {
-    await utils.foundError();
+    console.log(error);
+    await utils.errorMessage(error);
   } finally {
-    utils.showLoader(false);
+    await showbgLoader({ show: false });
   }
 });
 
