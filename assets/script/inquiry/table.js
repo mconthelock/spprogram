@@ -36,7 +36,7 @@ export async function setupTableDetail(data = []) {
   };
 
   const mode = data.length > 0 ? 1 : 0;
-  const opt = {};
+  const opt = utils.tableOpt;
   opt.data = data;
   opt.paging = false;
   opt.searching = false;
@@ -57,8 +57,8 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><i class="fi fi-rr-add text-lg"></i></div>
-          <button class="btn btn-sm btn-circle btn-ghost"><i class="icofont-error text-error text-lg"></i></button>`;
+          return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
+          <button class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-ts-delete-right text-error text-lg"></i></button>`;
         }
         return data;
       },

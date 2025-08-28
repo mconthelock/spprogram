@@ -1,6 +1,7 @@
 @extends('layouts/template')
 
 @section('contents')
+    <i class="fi fi-tr-plus"></i>
     <h1 class="text-3xl font-sans font-[700] uppercase text-gray-700">Inquiry Detail</h1>
     <div class="divider"></div>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="prj|info|mar"></main>
@@ -23,7 +24,6 @@
             <div class="divider divider-start divider-primary">
                 <span class="font-extrabold text-md text-primary ps-3">Attachment</span>
             </div>
-
             <button class="btn btn-neutral btn-md btn-circle text-white shadoe-lg absolute top-0 right-0"
                 id="add-attachment">
                 <div class="tooltip tooltip-left" data-tip="Add attachment"><i class="fi fi-br-clip text-lg"></i></div>
@@ -37,6 +37,6 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/mar_inqdetail.js?ver={{ $GLOBALS['version'] }}"></script>
     <script src="{{ $_ENV['APP_JS'] }}/inquiryui.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/mar_inqdetail.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

@@ -31,7 +31,6 @@ $(document).ready(async () => {
   try {
     await showbgLoader();
     await utils.initApp({ submenu: ".navmenu-newinq" });
-
     const btn = await setupButton();
     const reason = await inqs.createReasonModal();
     const elmes = await inqs.elmesComponent();
@@ -56,21 +55,21 @@ async function setupButton() {
   const sendDE = await utils.creatBtn({
     id: "send-de",
     title: "Send to Design",
-    icon: "fi fi-rs-disk text-xl",
+    icon: "fi fi-tr-envelope-open-text text-xl",
     className: "btn-primary text-white",
   });
 
   const sendIS = await utils.creatBtn({
     id: "send-bm",
     title: "Send to Pre-BM",
-    icon: "fi fi-tr-thumbs-up-trust text-xl",
+    icon: "fi fi-ts-coins text-xl",
     className: "btn-neutral text-white",
   });
 
   const draft = await utils.creatBtn({
     id: "draft",
     title: "Send draft",
-    icon: "fi fi-tr-arrow-down-from-dotted-line text-xl",
+    icon: "fi fi-ts-clipboard-list text-xl",
     className: "btn-outline btn-neutral text-neutral hover:text-white",
   });
 

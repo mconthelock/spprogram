@@ -1,17 +1,24 @@
 import moment from "moment";
 import { initAuthen } from "@public/authen.js";
+import { showbgLoader } from "@public/preloader";
 
 export const initApp = async (opt = {}) => {
-  await initAuthen({
-    icon: `${process.env.APP_ENV}/assets/images/cube.png`,
-    programName: "SP PROGRAM",
-    sidebarClass: `size-xl text-gray-50 bg-primary`,
-  });
+  try {
+    await initAuthen({
+      icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+      programName: "SP PROGRAM",
+      sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
+    });
 
-  $(".mainmenu").find("details").attr("open", false);
-  if (opt.submenu !== undefined) {
-    $(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
+    $(".mainmenu").find("details").attr("open", false);
+    if (opt.submenu !== undefined) {
+      $(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
+    }
+  } catch (error) {
+    console.log(error);
   }
+  await new Promise((r) => setTimeout(r, 500));
+  return;
 };
 
 export function showMessage(msg, type = "error") {
@@ -104,9 +111,9 @@ export const tableOpt = {
       last: '<i class="fi fi-rs-angle-double-small-right"></i>',
     },
     search: "",
-    searchPlaceholder: "ค้นหา",
-    loadingRecords: "กำลังโหลดข้อมูล...",
-    emptyTable: "ไม่มีข้อมูลในตาราง",
+    searchPlaceholder: "Search...",
+    loadingRecords: `<span class="loading loading-spinner loading-xl"></span>`,
+    emptyTable: `<span class="text-[14px] text-gray-600 font-medium">Have no record found</span>`,
     zeroRecords: "ไม่พบข้อมูลที่ต้องการ",
     lengthMenu: "_MENU_",
     infoFiltered: "(กรองข้อมูลจากทั้งหมด _MAX_ รายการ)",

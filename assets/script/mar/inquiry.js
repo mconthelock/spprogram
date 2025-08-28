@@ -3,15 +3,16 @@ import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import moment from "moment";
 import ExcelJS from "exceljs";
-import { showbgLoader } from "@public/preloader";
+
 import { createTable } from "@public/_dataTable.js";
+import { showbgLoader } from "@public/preloader";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
 var table;
-$(document).ready(async () => {
+$(async function () {
   try {
-    await showbgLoader();
+    //await showbgLoader();
     await utils.initApp({ submenu: ".navmenu-newinq" });
     const data = await service.getInquiry({});
     const opt = await tableOpt(data);
@@ -27,7 +28,7 @@ $(document).ready(async () => {
 
 async function tableOpt(data) {
   const colors = await statusColors();
-  const opt = {};
+  const opt = utils.tableOpt;
   opt.data = data;
   opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-12"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
@@ -169,16 +170,14 @@ async function tableOpt(data) {
         </ul>
         </div>`);
     $(".table-info").append(`<div class="flex gap-2">
-        <button class="btn btn-accent rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-detail"
-            type="button">
+        <button class="btn btn-accent rounded-3xl text-white items-center" id="export-detail" type="button">
             <span class="loading loading-spinner hidden"></span>
-            <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export Detail</span>
+            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Detail</span>
         </button>
 
-         <button class="btn btn-neutral rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-list"
-            type="button">
+         <button class="btn btn-neutral rounded-3xl text-white items-center" id="export-list" type="button">
             <span class="loading loading-spinner hidden"></span>
-            <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export list</span>
+            <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>Export list</span>
         </button>
     </div>`);
   };

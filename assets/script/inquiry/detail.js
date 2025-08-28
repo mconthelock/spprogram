@@ -68,9 +68,11 @@ export async function setupCard(data) {
 export async function setFieldValue(field, data = {}) {
   const dspName = async (data, field, key) => {
     const emp = await displayEmpInfo(data[key]);
-    console.log(emp);
-
-    field.display = `xxxx`;
+    const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
+    const sname = name.split(" ");
+    const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
+    const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
+    field.display = `${fname} ${lname}`;
     field.value = data[key];
     return field;
   };
@@ -122,15 +124,16 @@ export async function createFormCard(cardData, data = {}) {
   const body = document.createElement("div");
   body.className = "space-y-4";
   // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
-  if (Object.keys(data).length === 0)
+  if (Object.keys(data).length === 0) {
     data = {
       ...data,
       INQ_DATE: moment().format("YYYY-MM-DD"),
       INQ_STATUS: 2,
       status: { id: 2, STATUS_DESC: "New" },
-      INQ_MAR_PIC: $("#user-login").attr("emp"),
+      INQ_MAR_PIC: $("#user-login").attr("empno"),
       INQ_REV: "*",
     };
+  }
   for (let field of cardData.fields) {
     const fieldWrapper = document.createElement("div");
     fieldWrapper.className =

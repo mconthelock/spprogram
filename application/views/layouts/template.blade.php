@@ -23,6 +23,16 @@
 </head>
 
 <body class="flex flex-col min-h-screen">
+    <input type="checkbox" id="my_modal_6" class="modal-toggle" />
+    <div class="modal" role="dialog">
+        <div
+            class="modal-box !w-[100vw] !max-w-[100vw] !h-[100vh] !max-h-[100vh] !rounded-none flex items-center justify-center">
+            <div class="">
+                <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-28" />
+            </div>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <div id="navbar" class=""></div>
     <div class="drawer md:drawer-open">
@@ -33,8 +43,8 @@
                 @yield('contents')
             </div>
         </div>
-        <div class="drawer-side shadow-2xl/20 z-[51]!">
-            <div id="sidebar"></div>
+        <div class="drawer-side z-[51]! md:px-3 md:py-5">
+            <div id="sidebar" class="max-h-[75vh]"></div>
         </div>
     </div>
 
@@ -58,7 +68,8 @@
     </dialog>
 
     <script src="{{ $_ENV['APP_JS'] }}/apps.js?ver={{ $GLOBALS['version'] }}"></script>
-    @yield('scripts')
+    @section('scripts')
+    @show
 </body>
 
 </html>
