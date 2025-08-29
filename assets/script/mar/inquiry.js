@@ -12,17 +12,15 @@ import * as utils from "../utils.js";
 var table;
 $(async function () {
   try {
-    //await showbgLoader();
     await utils.initApp({ submenu: ".navmenu-newinq" });
     const data = await service.getInquiry({});
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
-    // await utils.foundError(error);
     console.log(error);
     await utils.errorMessage(error);
   } finally {
-    await showbgLoader({ show: false });
+    await utils.showLoader({ show: false });
   }
 });
 
@@ -149,13 +147,13 @@ async function tableOpt(data) {
     },
     {
       data: "INQ_ID",
-      className: "text-center w-fit max-w-[100px]",
+      className: "text-center w-fit max-w-[110px]",
       sortable: false,
-      title: `<i class='icofont-settings text-lg text-white'></i>`,
+      title: `<i class="fi fi-ss-wrench-simple text-lg"></i>`,
       render: (data, type, row, meta) => {
         const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${process.env.APP_ENV}/mar/inquiry/view/${data}">View</a>`;
         const edit = `<a class="btn btn-sm btn-neutral " href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
-        const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="icofont-trash text-xl"></i></button>`;
+        const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
         return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleteBtn}</div>`;
       },
     },

@@ -29,7 +29,6 @@ var tableAttach;
 let selectedFilesMap = new Map();
 $(document).ready(async () => {
   try {
-    await showbgLoader();
     await utils.initApp({ submenu: ".navmenu-newinq" });
     const btn = await setupButton();
     const reason = await inqs.createReasonModal();
@@ -47,7 +46,7 @@ $(document).ready(async () => {
     console.log(error);
     await utils.errorMessage(error);
   } finally {
-    await showbgLoader({ show: false });
+    await utils.showLoader({ show: false });
   }
 });
 
@@ -224,6 +223,12 @@ $(document).on("click", "#send-de", async function (e) {
   const details = table.rows().data().toArray();
   try {
     const checkdetail = await inqs.verifyDetail(table, details, 1);
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
+
     header.INQ_STATUS = 2;
     header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
@@ -237,7 +242,7 @@ $(document).on("click", "#send-de", async function (e) {
       });
       await inqservice.createInquiryFile(attachment_form);
     }
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+    //window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
     utils.errorMessage(error);
     return;
@@ -271,11 +276,6 @@ $(document).on("click", "#send-bm", async function (e) {
   //Check supplier is not blank
   //Check drawing format
   //Check variable format
-});
-
-$(document).on("click", "#add-attachment", async function (e) {
-  e.preventDefault();
-  $("#attachment-file").click();
 });
 
 $(document).on("change", "#attachment-file", async function (e) {

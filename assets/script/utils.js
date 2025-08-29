@@ -5,6 +5,7 @@ import { showbgLoader } from "@public/preloader";
 export const initApp = async (opt = {}) => {
   try {
     await initAuthen({
+      loader: false,
       icon: `${process.env.APP_ENV}/assets/images/cube.png`,
       programName: "SP PROGRAM",
       sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
@@ -96,8 +97,16 @@ export const errorMessage = async function (error) {
   }
 };
 
-export const showLoader = (val = true) => {
-  $("#loading-box").prop("checked", val);
+export const showLoader = (opt = { show: true }) => {
+  $("#loading-box").prop("checked", opt.show);
+  $("#loading-box-modal")
+    .find("h1")
+    .html(`${opt.title == undefined ? "Loading" : opt.title}`);
+  if (opt.clsbox !== undefined)
+    $("#loading-box-modal")
+      .find(".modal-box")
+      .addClass(opt.clsbox)
+      .removeClass("glass");
 };
 
 export const tableOpt = {

@@ -14,3 +14,9 @@ $(document).on("mouseenter", ".detail-log", function () {
 $(document).on("mouseleave", ".detail-log", function () {
   $("#tip1").addClass("hidden");
 });
+
+$(document).on("click", "#add-attachment", async function (e) {
+  e.preventDefault();
+  console.log("Add attachment");
+  $("#attachment-file").click();
+});

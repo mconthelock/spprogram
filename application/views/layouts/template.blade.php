@@ -23,12 +23,13 @@
 </head>
 
 <body class="flex flex-col min-h-screen">
-    <input type="checkbox" id="my_modal_6" class="modal-toggle" />
-    <div class="modal" role="dialog">
+    <input type="checkbox" id="loading-box" class="modal-toggle" checked />
+    <div class="modal" role="dialog" id="loading-box-modal">
         <div
-            class="modal-box !w-[100vw] !max-w-[100vw] !h-[100vh] !max-h-[100vh] !rounded-none flex items-center justify-center">
+            class="modal-box !w-[100vw] !max-w-[100vw] !h-[100vh] !max-h-[100vh] !rounded-none flex items-center justify-center glass bg-white/5 ">
             <div class="">
-                <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-28" />
+                <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-36" />
+                <h1 class="text-center text-white text-lg font-bold">Loading....</h1>
             </div>
         </div>
     </div>
@@ -39,8 +40,12 @@
         <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col items-center justify-start w-full h-full">
             <!-- Page content here -->
-            <div class="flex-1 flex flex-col w-full px-4 mt-5 md:px-8">
-                @yield('contents')
+            <div class="flex-1 flex flex-col w-full px-4 my-5 md:px-4">
+                <div class="card bg-primary/5 border border-primary/20">
+                    <div class="card-body">
+                        @yield('contents')
+                    </div>
+                </div>
             </div>
         </div>
         <div class="drawer-side z-[51]! md:px-3 md:py-5">

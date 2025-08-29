@@ -76,7 +76,6 @@ export async function setFieldValue(field, data = {}) {
     field.value = data[key];
     return field;
   };
-
   const dspDetail = (data, topic, cols) => {
     return data[topic][cols];
   };

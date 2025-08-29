@@ -605,13 +605,12 @@ export async function setupTableAttachment(data = [], view = false) {
     //   .append(
     //     `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Attachment</h1>`
     //   );
-    // $("#attachment").closest(".dt-container").find(".table-option")
-    //   .append(`<button class="btn btn-outline btn-neutral btn-sm btn-circle text-neutral hover:!text-white" id="add-attachment">
-    //         <span class="loading loading-spinner hidden"></span>
-    //         <span class="icofont-ui-clip text-xl"></span>
-    //     </button>
-    //     <input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />
-    //    `);
+    $("#attachment")
+      .closest(".dt-container")
+      .find(".table-option")
+      .append(
+        `<input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />`
+      );
   };
   opt.drawCallback = function (settings) {
     var api = this.api();
