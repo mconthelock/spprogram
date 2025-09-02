@@ -93,7 +93,8 @@ export const errorMessage = async function (error) {
     await showMessage(msg);
     return;
   } else {
-    await showMessage(error.message, "error");
+    console.log(error.message);
+    await showMessage(error);
   }
 };
 

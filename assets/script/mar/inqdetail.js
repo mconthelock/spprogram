@@ -223,12 +223,15 @@ $(document).on("click", "#send-de", async function (e) {
   const details = table.rows().data().toArray();
   try {
     const checkdetail = await inqs.verifyDetail(table, details, 1);
+    console.log(`!bg-transparent ${checkdetail}`);
+    return;
     await utils.showLoader({
       show: true,
       title: "Saving data",
       clsbox: `!bg-transparent`,
     });
 
+    return;
     header.INQ_STATUS = 2;
     header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
@@ -244,7 +247,7 @@ $(document).on("click", "#send-de", async function (e) {
     }
     //window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
-    utils.errorMessage(error);
+    await utils.errorMessage(error);
     return;
   }
 });

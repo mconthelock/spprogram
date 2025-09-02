@@ -177,7 +177,6 @@ export const events = {
         }
       }
     }
-    console.log($("#agent").val());
     $("#inquiry-no").focus().select();
     loader.addClass("hidden");
   },

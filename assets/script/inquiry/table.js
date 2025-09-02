@@ -87,9 +87,9 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row, meta) {
         if (type === "display") {
           const log = renderLog(data, row.logs, "INQD_CAR");
-          const str = `<textarea class="!w-[55px] uppercase cell-input carno ${
+          const str = `<input type="text" class="!w-[55px] uppercase cell-input carno ${
             log ? "detail-log" : ""
-          }" maxlength="2">${data == null ? "" : data}</textarea>`;
+          }" maxlength="2" value="${data == null ? "" : data}"/>`;
           return renderText(str, row.logs, "INQD_CAR");
         }
         return data;
@@ -102,9 +102,9 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<textarea class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9">${
+          return `<input type="text" class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
             data == null ? "" : data
-          }</textarea>`;
+          }">`;
         }
         return data;
       },
@@ -116,7 +116,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input elmes-input itemno" value="${data}">`;
+          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input elmes-input itemno" value="${data}"/>`;
         }
         return data;
       },

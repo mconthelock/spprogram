@@ -680,6 +680,7 @@ export async function verifyHeader(cls) {
 }
 
 export async function verifyDetail(table, data, savelevel = 0) {
+  throw new Error(`Please insert inquiry detail.`);
   const errorEl = (obj) => {
     obj.addClass("!bg-red-300");
     setTimeout(() => {
