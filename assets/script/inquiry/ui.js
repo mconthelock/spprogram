@@ -1,3 +1,9 @@
+import * as utils from "../utils.js";
+var table;
+var tableElmes;
+var tableAttach;
+let selectedFilesMap = new Map();
+
 $(document).on("mouseenter", ".detail-log", function () {
   const data = $(this).closest("td").find("ul");
   console.log();

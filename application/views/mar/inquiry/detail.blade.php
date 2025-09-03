@@ -1,7 +1,8 @@
 @extends('layouts/template')
 
 @section('contents')
-    <h2 class="card-title text-2xl">On-Process Inquiry</h2>
+    <input type="text" name="inquiry-id" id="inquiry-id" value="{{ $id }}">
+    <h1 class="text-3xl font-sans font-[700] text-gray-700">Inquiry Detail</h1>
     <div class="divider m-0"></div>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="prj|info|mar"></main>
 
@@ -28,7 +29,6 @@
                 <div class="tooltip tooltip-left" data-tip="Add attachment"><i class="fi fi-br-clip text-lg"></i></div>
 
             </button>
-
             <table id="attachment" class="table table-zebra display text-sm"></table>
         </div>
     </div>

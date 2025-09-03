@@ -111,7 +111,6 @@ export async function setFieldValue(field, data = {}) {
 export async function createFormCard(cardData, data = {}) {
   const card = document.createElement("div");
   card.className = "bg-white rounded-lg shadow-lg overflow-hidden p-4";
-
   const header = document.createElement("div");
   header.className = "divider divider-start divider-primary";
   const headTxt = document.createElement("span");
@@ -680,7 +679,6 @@ export async function verifyHeader(cls) {
 }
 
 export async function verifyDetail(table, data, savelevel = 0) {
-  throw new Error(`Please insert inquiry detail.`);
   const errorEl = (obj) => {
     obj.addClass("!bg-red-300");
     setTimeout(() => {
@@ -736,7 +734,9 @@ export async function verifyDetail(table, data, savelevel = 0) {
       if (item.INQD_DRAWING == "" && hasAtt == 0) {
         check = false;
         row.find(".drawing-line").addClass("border-red-500");
-        message.push(`Please input Drawing no.`);
+        message.push(
+          `Please input Drawing no. or add some attachement to reference declaring part`
+        );
         return;
       }
     }
@@ -776,3 +776,34 @@ export async function verifyDetail(table, data, savelevel = 0) {
   return check;
 }
 //End: Verify save form
+
+//006: Add attachment
+export async function addAttached(e, selectedFilesMap) {
+  const file = e.target.files;
+  if (!file) {
+    utils.showMessage("Please select a file to upload.");
+    return;
+  }
+
+  let files = [];
+  for (let i = 0; i < file.length; i++) {
+    const ext = utils.fileExtension(file[i].name);
+    const allow = ["pdf", "jpg", "png", "docx", "xlsx", "txt"];
+    if (allow.includes(ext)) {
+      selectedFilesMap.set(file[i].name, file[i]);
+      const fs = {
+        FILE_ORIGINAL_NAME: file[i].name,
+        FILE_SIZE: file[i].size,
+        FILE_OWNER: file[i].type,
+        FILE_DATE: new Date().toISOString(),
+        FILE_CREATE_BY: $("#user-login").attr("empname"),
+        FILE_CREATE_AT: new Date(),
+      };
+      files.push(fs);
+    } else {
+      utils.showMessage(`${file[i].name} not allowed to upload.(${ext})`);
+      return;
+    }
+  }
+  return { files, selectedFilesMap };
+}

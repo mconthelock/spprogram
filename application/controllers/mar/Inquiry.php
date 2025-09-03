@@ -12,13 +12,15 @@ class Inquiry extends MY_Controller {
         $this->views('mar/inquiry/detail');
     }
 
+    public function edit($id){
+        $this->views('mar/inquiry/detail', array('id' => $id));
+    }
+
     public function view($id){
         $this->views('mar/inquiry/view', array('id' => $id));
     }
 
-    public function edit($id){
-        $this->views('mar/inquiry/edit', array('id' => $id));
-    }
+
 
     public function createstock(){
 

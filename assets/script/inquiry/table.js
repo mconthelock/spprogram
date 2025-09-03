@@ -36,7 +36,7 @@ export async function setupTableDetail(data = []) {
   };
 
   const mode = data.length > 0 ? 1 : 0;
-  const opt = utils.tableOpt;
+  const opt = { ...utils.tableOpt };
   opt.data = data;
   opt.paging = false;
   opt.searching = false;
@@ -350,10 +350,6 @@ export async function changeCar(table, el) {
   }
 
   const carno = $(el).val();
-  //   const orders = await getMainProject({
-  //     PRJ_NO: prjno,
-  //     CAR_NO: carno,
-  //   });
   const orders = await source.projectConclude({ prjno, carno });
   if (orders.length > 0) {
     const newData = {
@@ -377,12 +373,12 @@ export async function changeCar(table, el) {
 //End Table detail
 
 export async function setupTableDetailView(data = []) {
-  const opt = {};
+  const opt = { ...utils.tableOpt };
   opt.data = data;
   opt.searching = false;
   opt.responsive = false;
   opt.pageLength = 20;
-  opt.dom = `<"flex"<"table-search flex flex-1 gap-5"f><"flex items-center table-option">><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex"<"table-search flex flex-1 gap-5"f><"flex items-center table-option">><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-3"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_SEQ",
@@ -467,21 +463,14 @@ export async function setupTableDetailView(data = []) {
       className: "min-w-[250px]",
     },
   ];
-  opt.initComplete = function (settings, json) {
-    $("#table")
-      .closest(".dt-container")
-      .find(".table-search")
-      .append(
-        `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Detail</h1>`
-      );
-  };
   return opt;
 }
 
 export async function setupTableHistory(data = []) {
-  const opt = {};
+  const opt = { ...utils.tableOpt };
   opt.data = data;
   opt.pageLength = 5;
+  opt.paging = true;
   opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
   opt.lengthChange = false;
@@ -518,29 +507,15 @@ export async function setupTableHistory(data = []) {
     },
     { data: "INQH_REMARK", title: "Remark", className: "text-xs py-[8px]" },
   ];
-  //   opt.initComplete = function (settings, json) {
-  //     $("#history")
-  //       .closest(".dt-container")
-  //       .find(".table-search")
-  //       .append(
-  //         `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">History</h1>`
-  //       );
-  //   };
-  opt.drawCallback = function (settings) {
-    var api = this.api();
-    var totalRecords = api.rows().count();
-    var displayLength = settings._iDisplayLength;
-    if (totalRecords <= displayLength)
-      $("#history_wrapper").find(".table-page").addClass("hidden");
-  };
   return opt;
 }
 
 export async function setupTableAttachment(data = [], view = false) {
   const icons = await utils.fileIcons();
-  const opt = {};
+  const opt = { ...utils.tableOpt };
   opt.data = data;
   opt.pageLength = 5;
+  opt.paging = true;
   opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.info = false;
   opt.lengthChange = false;
@@ -549,7 +524,7 @@ export async function setupTableAttachment(data = [], view = false) {
     {
       data: "FILE_ORIGINAL_NAME",
       title: "File Name",
-      className: "text-xs py-[8px]",
+      className: "text-xs py-[5px] max-w-[220px]",
       render: (data, type, row) => {
         const ext = utils.fileExtension(data);
         const icon = icons.find((x) => x.ext == ext);
@@ -599,12 +574,6 @@ export async function setupTableAttachment(data = [], view = false) {
     },
   ];
   opt.initComplete = function (settings, json) {
-    // $("#attachment")
-    //   .closest(".dt-container")
-    //   .find(".table-search")
-    //   .append(
-    //     `<h1 class="bg-primary font-semibold text-white w-full px-5 mb-3 rounded-2xl">Attachment</h1>`
-    //   );
     $("#attachment")
       .closest(".dt-container")
       .find(".table-option")
@@ -612,13 +581,13 @@ export async function setupTableAttachment(data = [], view = false) {
         `<input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />`
       );
   };
-  opt.drawCallback = function (settings) {
-    var api = this.api();
-    var totalRecords = api.rows().count();
-    var displayLength = settings._iDisplayLength;
-    if (totalRecords <= displayLength)
-      $("#attachment_wrapper").find(".table-page").addClass("hidden");
-  };
+  //   opt.drawCallback = function (settings) {
+  //     var api = this.api();
+  //     var totalRecords = api.rows().count();
+  //     var displayLength = settings._iDisplayLength;
+  //     if (totalRecords <= displayLength)
+  //       $("#attachment_wrapper").find(".table-page").addClass("hidden");
+  //   };
   return opt;
 }
 

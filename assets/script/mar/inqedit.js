@@ -12,6 +12,7 @@ Funtion contents
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
+import "datatables.net-dt";
 
 import { createTable, destroyTable } from "@public/_dataTable.js";
 import { validateDrawingNo } from "../drawing.js";
@@ -27,13 +28,11 @@ var tableAttach;
 let selectedFilesMap = new Map();
 $(document).ready(async () => {
   try {
-    await utils.showLoader();
-    $(".mainmenu").find("details").attr("open", false);
-    $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
+    await utils.initApp({ submenu: ".navmenu-newinq" });
     const inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
     if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
-    if (inquiry.INQ_STATUS < 10)
+    if (inquiry.INQ_STATUS >= 10)
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
     const btn = await setupButton();
     const reason = await inqs.createReasonModal();
@@ -51,11 +50,10 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment(file);
     tableAttach = await createTable(attachment, { id: "#attachment" });
   } catch (error) {
-    //console.log(error);
-    //await utils.foundError(error);
+    console.log(error);
     window.location.href = `${process.env.APP_ENV}/mar/inquiry`;
   } finally {
-    utils.showLoader(false);
+    await utils.showLoader({ show: false });
   }
 });
 
@@ -119,6 +117,7 @@ $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
+  await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -156,21 +155,28 @@ $(document).on("keyup", ".text-comment", async function () {
 //007: Save and send to design
 $(document).on("click", "#send-de", async function (e) {
   e.preventDefault();
-  if ($("#remark").val() == "") {
-    await utils.showMessage(`Please enter remark.`);
-    $("#remark").focus().select();
-    return;
-  }
   const chkheader = await inqs.verifyHeader(".req-2");
   if (!chkheader) return;
   const header = await inqs.getFormHeader();
+  //   const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
+  //   if (check_inq.length > 0) {
+  //     await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+  //     $("#inquiry-no").focus().select();
+  //     return;
+  //   }
   const details = table.rows().data().toArray();
   try {
     const checkdetail = await inqs.verifyDetail(table, details, 1);
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
     header.INQ_STATUS = 2;
+    header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
+    //const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();
       attachment_form.append("INQ_NO", inquiry.INQ_NO);
@@ -181,39 +187,47 @@ $(document).on("click", "#send-de", async function (e) {
     }
     window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
-    utils.errorMessage(error);
+    await utils.errorMessage(error);
+    await utils.showLoader({ show: false });
     return;
   }
 });
 
 $(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
-  if ($("#remark").val() == "") {
-    await utils.showMessage(`Please enter remark.`);
-    $("#remark").focus().select();
-    return;
-  }
   const chkheader = await inqs.verifyHeader(".req-2");
   if (!chkheader) return;
   const header = await inqs.getFormHeader();
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
+  if (check_inq.length > 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+    $("#inquiry-no").focus().select();
+    return;
+  }
   const details = table.rows().data().toArray();
   try {
     const checkdetail = await inqs.verifyDetail(table, details, 1);
-    header.INQ_STATUS = 2;
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
+    header.INQ_STATUS = 30;
+    header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
+    // const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();
       attachment_form.append("INQ_NO", inquiry.INQ_NO);
       selectedFilesMap.forEach((file, fileName) => {
         attachment_form.append("files", file, fileName);
       });
-      await inqservice.createInquiryFile(attachment_form);
+      //   await inqservice.createInquiryFile(attachment_form);
     }
     window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
-    utils.errorMessage(error);
+    await utils.errorMessage(error);
     return;
   }
 });

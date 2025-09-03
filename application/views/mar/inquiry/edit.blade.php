@@ -2,7 +2,7 @@
 
 @section('contents')
     <input type="hidden" name="inquiry-id" id="inquiry-id" value="{{ $id }}">
-    <h1 class="text-3xl font-sans font-[700] uppercase mb-5 text-gray-700">Inquiry Detail</h1>
+    <h1 class="text-3xl font-sans font-[700] mb-5 text-gray-700">Inquiry Detail</h1>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="prj|info|mar"></main>
 
     <div class="mt-6">

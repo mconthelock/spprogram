@@ -8,6 +8,7 @@ Funtion contents
 006 - Save Draft
 007 - Save and send to design
 008 - Save and send to AS400
+009 - Add attachment
 */
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
@@ -30,18 +31,35 @@ let selectedFilesMap = new Map();
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    const btn = await setupButton();
-    const reason = await inqs.createReasonModal();
-    const elmes = await inqs.elmesComponent();
-    const cards = await inqs.setupCard();
-    const tableContainer = await tb.setupTableDetail();
+
+    let logs, inquiry, details, file;
+    let mode = "create";
+    const currentUrl = window.location.href;
+    if (currentUrl.includes("edit") && $("#inquiry-id").val() != "") {
+      inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
+      if (inquiry.length == 0) throw new Error("Inquiry do not found");
+
+      if (inquiry.INQ_STATUS >= 10)
+        inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
+
+      mode = "edit";
+      details = inquiry.details;
+      logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
+      file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
+    }
+    const cards = await inqs.setupCard(inquiry);
+    const tableContainer = await tb.setupTableDetail(details);
     table = await createTable(tableContainer);
 
-    const history = await tb.setupTableHistory();
+    const history = await tb.setupTableHistory(logs);
     await createTable(history, { id: "#history" });
 
-    const attachment = await tb.setupTableAttachment();
+    const attachment = await tb.setupTableAttachment(file);
     tableAttach = await createTable(attachment, { id: "#attachment" });
+
+    const btn = await setupButton(mode);
+    const reason = await inqs.createReasonModal();
+    const elmes = await inqs.elmesComponent();
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
@@ -50,7 +68,7 @@ $(document).ready(async () => {
   }
 });
 
-async function setupButton() {
+async function setupButton(mode) {
   const sendDE = await utils.creatBtn({
     id: "send-de",
     title: "Send to Design",
@@ -67,7 +85,7 @@ async function setupButton() {
 
   const draft = await utils.creatBtn({
     id: "draft",
-    title: "Send draft",
+    title: "Send Draft",
     icon: "fi fi-ts-clipboard-list text-xl",
     className: "btn-outline btn-neutral text-neutral hover:text-white",
   });
@@ -80,14 +98,16 @@ async function setupButton() {
     icon: "fi fi-rr-arrow-circle-left text-xl",
     className: "btn-outline btn-neutral text-neutral hover:text-white",
   });
-  $("#btn-container").append(sendDE, sendIS, draft, back);
+
+  if (mode == "edit") $("#btn-container").append(sendDE, sendIS, back);
+  else $("#btn-container").append(sendDE, sendIS, draft, back);
 }
 
 //002: Add table detail rows
 $(document).on("click", "#addRowBtn", async function (e) {
   e.preventDefault();
   const lastRow = table.row(":not(.d-none):last").data();
-  let id = lastRow === undefined ? 1 : parseInt(lastRow.id) + 1;
+  let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
   await tb.addRow(id, table);
 });
 
@@ -111,6 +131,7 @@ $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
+  await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -198,7 +219,15 @@ $(document).on("click", "#draft", async function (e) {
   const details = table.rows().data().toArray();
   try {
     const checkdetail = await inqs.verifyDetail(table, details, false);
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
+
     header.INQ_STATUS = 1;
+    header.INQ_TYPE = "SP";
+    header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
     window.location.href = `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`;
@@ -223,15 +252,11 @@ $(document).on("click", "#send-de", async function (e) {
   const details = table.rows().data().toArray();
   try {
     const checkdetail = await inqs.verifyDetail(table, details, 1);
-    console.log(`!bg-transparent ${checkdetail}`);
-    return;
     await utils.showLoader({
       show: true,
       title: "Saving data",
       clsbox: `!bg-transparent`,
     });
-
-    return;
     header.INQ_STATUS = 2;
     header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
@@ -245,7 +270,7 @@ $(document).on("click", "#send-de", async function (e) {
       });
       await inqservice.createInquiryFile(attachment_form);
     }
-    //window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
     await utils.errorMessage(error);
     return;
@@ -255,55 +280,51 @@ $(document).on("click", "#send-de", async function (e) {
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
-
-  //Get header data
-  //const header = await inqs.getFormHeader(); //Get header data
-  //console.log(header);
-
-  //   const details = table.rows().data().toArray(); //Get detail data
-  //   const attachment = tableAttach.rows().data().toArray(); //Get attachment data
-  //   const attachment_form = new FormData();
-  //   attachment_form.append("INQ_NO", "TEST-10110"); // append field ก่อน
-  //   const files = $("#attachment-file").prop("files"); // ดึง FileList
-  //   for (let i = 0; i < files.length; i++) {
-  //     attachment_form.append("files", files[i]); // append ทีละไฟล์
-  //   }
-  console.log(selectedFilesMap.size);
-  //   selectedFilesMap.forEach((file, fileName) => {
-  //     attachment_form.append("files", file, fileName);
-  //   });
-  //   await inqservice.createInquiryFile(attachment_form);
-  //Check inq no is not blank and not dupplicate
-  //Check table detail is not blank
-  //Check seq no is not dupplicate
-  //Check supplier is not blank
-  //Check drawing format
-  //Check variable format
-});
-
-$(document).on("change", "#attachment-file", async function (e) {
-  const file = e.target.files;
-  if (!file) {
-    utils.showMessage("Please select a file to upload.");
+  const chkheader = await inqs.verifyHeader(".req-2");
+  if (!chkheader) return;
+  const header = await inqs.getFormHeader();
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
+  if (check_inq.length > 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+    $("#inquiry-no").focus().select();
     return;
   }
-
-  for (let i = 0; i < file.length; i++) {
-    const ext = utils.fileExtension(file[i].name);
-    const allow = ["pdf", "jpg", "png", "docx", "xlsx", "txt"];
-    if (allow.includes(ext)) {
-      selectedFilesMap.set(file[i].name, file[i]);
-      const fs = {
-        FILE_ORIGINAL_NAME: file[i].name,
-        FILE_SIZE: file[i].size,
-        FILE_OWNER: file[i].type,
-        FILE_DATE: new Date().toISOString(),
-        FILE_CREATE_BY: "Chalormsak Sewanam",
-      };
-      tableAttach.row.add(fs).draw();
-    } else {
-      utils.showMessage(`${file[i].name} not allowed to upload.(${ext})`);
+  const details = table.rows().data().toArray();
+  try {
+    const checkdetail = await inqs.verifyDetail(table, details, 1);
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
+    header.INQ_STATUS = 30;
+    header.INQ_TYPE = "SP";
+    header.INQ_MAR_SENT = new Date();
+    const fomdata = { header, details };
+    const inquiry = await inqservice.createInquiry(fomdata);
+    if (selectedFilesMap.size > 0) {
+      const attachment_form = new FormData();
+      attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      selectedFilesMap.forEach((file, fileName) => {
+        attachment_form.append("files", file, fileName);
+      });
+      await inqservice.createInquiryFile(attachment_form);
     }
+    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+  } catch (error) {
+    await utils.errorMessage(error);
+    return;
+  }
+});
+
+//009: Add attachment
+$(document).on("change", "#attachment-file", async function (e) {
+  const datafile = await inqs.addAttached(e, selectedFilesMap);
+  if (datafile.files.length > 0) {
+    selectedFilesMap = datafile.selectedFilesMap;
+    datafile.files.map((fs) => {
+      tableAttach.row.add(fs).draw();
+    });
   }
 });
 

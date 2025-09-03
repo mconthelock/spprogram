@@ -1,3 +1,5 @@
+import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import moment from "moment";
 import ExcelJS from "exceljs";
@@ -9,10 +11,8 @@ import * as service from "../service/inquiry.js";
 var table;
 var tableAttach;
 $(document).ready(async () => {
-  $(".mainmenu").find("details").attr("open", false);
-  $(".mainmenu.navmenu-newinq").find("details").attr("open", true);
-
   try {
+    await utils.initApp({ submenu: ".navmenu-newinq" });
     const inquiry = await service.getInquiryID($("#inquiry-id").val());
     if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
@@ -32,6 +32,8 @@ $(document).ready(async () => {
   } catch (error) {
     utils.errorMessage(error);
     return;
+  } finally {
+    await utils.showLoader({ show: false });
   }
 });
 

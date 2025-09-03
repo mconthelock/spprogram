@@ -28,7 +28,7 @@ async function tableOpt(data) {
   const colors = await statusColors();
   const opt = utils.tableOpt;
   opt.data = data;
-  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-12"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
+  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
     {
       data: "INQ_DATE",
@@ -88,7 +88,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
       },
     },
     {
@@ -106,7 +106,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
       },
     },
     {
@@ -124,7 +124,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
       },
     },
     {
@@ -142,14 +142,14 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
       },
     },
     {
       data: "INQ_ID",
-      className: "text-center w-fit max-w-[110px]",
+      className: "text-center w-fit max-w-[118px]",
       sortable: false,
-      title: `<i class="fi fi-ss-wrench-simple text-lg"></i>`,
+      title: `<div class="flex justify-center"><i class="fi fi-ss-wrench-simple text-lg"></i></div>`,
       render: (data, type, row, meta) => {
         const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${process.env.APP_ENV}/mar/inquiry/view/${data}">View</a>`;
         const edit = `<a class="btn btn-sm btn-neutral " href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
@@ -158,6 +158,7 @@ async function tableOpt(data) {
       },
     },
   ];
+
   opt.initComplete = function (settings, json) {
     $(".table-option")
       .append(`<div class="dropdown dropdown-end dropdown-hover">
