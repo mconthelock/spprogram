@@ -65,6 +65,23 @@ export const deleteInquiry = async (data) => {
   });
 };
 
+export const updateInquiry = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/inquiry/update/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 // Function to manage inquiry group
 export const getInquiryGroup = async (data) => {
   return new Promise((resolve, reject) => {

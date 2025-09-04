@@ -58,7 +58,7 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row, meta) {
         if (type === "display") {
           return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
-          <button class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-ts-delete-right text-error text-lg"></i></button>`;
+          <button class="btn btn-sm btn-circle btn-ghost delete-sub-line"><i class="fi fi-ts-delete-right text-error text-lg"></i></button>`;
         }
         return data;
       },
@@ -567,9 +567,9 @@ export async function setupTableAttachment(data = [], view = false) {
       title: `<i class="icofont-ui-delete text-lg"></i>`,
       className: `text-center px-1 py-[8px] ${view ? "hidden" : ""}`,
       render: (data, type, row) => {
-        return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att-${
-          row.FILE_NAME ? "server" : "client"
-        }"><i class="icofont-ui-delete text-sm text-red-500"></i></a>`;
+        return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att">
+            <i class="icofont-ui-delete text-sm text-red-500"></i>
+        </a>`;
       },
     },
   ];

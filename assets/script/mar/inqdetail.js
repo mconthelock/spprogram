@@ -9,13 +9,16 @@ Funtion contents
 007 - Save and send to design
 008 - Save and send to AS400
 009 - Add attachment
+010 - Download attached file
+011 - Delete attached file
 */
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 
-import { createTable, destroyTable } from "@public/_dataTable.js";
 import { showbgLoader } from "@public/preloader";
+import { createTable, destroyTable } from "@public/_dataTable.js";
+import { displayEmpInfo } from "@public/setIndexDB.js";
 import { validateDrawingNo } from "../drawing.js";
 import * as inqservice from "../service/inquiry.js";
 import * as elmesservice from "../service/elmes.js";
@@ -28,6 +31,8 @@ var table;
 var tableElmes;
 var tableAttach;
 let selectedFilesMap = new Map();
+let deletedFilesMap = new Map();
+let deletedLineMap = new Map();
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
@@ -73,21 +78,36 @@ async function setupButton(mode) {
     id: "send-de",
     title: "Send to Design",
     icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white",
+    className: "btn-primary text-white hover:shadow-lg",
+  });
+
+  const updateDE = await utils.creatBtn({
+    id: "update-de",
+    title: "Send to Design",
+    icon: "fi fi-tr-envelope-open-text text-xl",
+    className: "btn-primary text-white hover:shadow-lg",
   });
 
   const sendIS = await utils.creatBtn({
     id: "send-bm",
     title: "Send to Pre-BM",
     icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white",
+    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
+  });
+
+  const updateIS = await utils.creatBtn({
+    id: "update-bm",
+    title: "Send to Pre-BM",
+    icon: "fi fi-ts-coins text-xl",
+    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
   });
 
   const draft = await utils.creatBtn({
     id: "draft",
     title: "Send Draft",
     icon: "fi fi-ts-clipboard-list text-xl",
-    className: "btn-outline btn-neutral text-neutral hover:text-white",
+    className:
+      "btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg",
   });
 
   const back = await utils.creatBtn({
@@ -96,10 +116,11 @@ async function setupButton(mode) {
     type: "link",
     href: `${process.env.APP_ENV}/mar/inquiry`,
     icon: "fi fi-rr-arrow-circle-left text-xl",
-    className: "btn-outline btn-neutral text-neutral hover:text-white",
+    className:
+      "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
   });
 
-  if (mode == "edit") $("#btn-container").append(sendDE, sendIS, back);
+  if (mode == "edit") $("#btn-container").append(updateDE, updateIS, back);
   else $("#btn-container").append(sendDE, sendIS, draft, back);
 }
 
@@ -118,6 +139,16 @@ $(document).on("click", ".add-sub-line", async function (e) {
   await tb.addRow(id, table);
 });
 
+$(document).on("click", ".delete-sub-line", async function (e) {
+  e.preventDefault();
+  const row = table.row($(this).closest("tr"));
+  const data = row.data();
+  if (data.INQD_ID != "") {
+    deletedLineMap.set(data.INQD_ID, data);
+  }
+  row.remove().draw(false);
+});
+
 $(document).on("change", ".edit-input", async function () {
   await tb.changeCell(table, this);
 });
@@ -131,7 +162,7 @@ $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
-  await tb.changeCell(table, this);
+  //await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -201,6 +232,50 @@ $(document).on("change", "#import-tsv", async function (e) {
 });
 //End :Import date from File
 
+//009: Add attachment
+$(document).on("change", "#attachment-file", async function (e) {
+  const datafile = await inqs.addAttached(e, selectedFilesMap);
+  if (datafile.files.length > 0) {
+    selectedFilesMap = datafile.selectedFilesMap;
+    datafile.files.map((fs) => {
+      tableAttach.row.add(fs).draw();
+    });
+  }
+});
+
+//010: Download attached file
+$(document).on("click", ".download-att-client", function (e) {
+  e.preventDefault();
+  const row = tableAttach.row($(this).closest("tr"));
+  const data = row.data();
+  const fileName = data.FILE_ORIGINAL_NAME;
+  tb.downloadClientFile(selectedFilesMap, fileName);
+});
+
+//011: Delete attached file
+$(document).on("click", ".delete-att", function (e) {
+  e.preventDefault();
+  const row = tableAttach.row($(this).closest("tr"));
+  const data = row.data();
+  if (data.FILE_ID !== undefined) {
+    deletedFilesMap.set(data);
+  }
+  const fileName = data.FILE_ORIGINAL_NAME;
+  selectedFilesMap.delete(fileName);
+  row.remove().draw(false);
+});
+
+//Download template
+$(document).on("click", "#downloadTemplateBtn", async function (e) {
+  e.preventDefault();
+  const link = document.createElement("a");
+  link.href = `${process.env.APP_ENV}/assets/files/export/Import_inquiry_template.xlsx`;
+  link.download = "Import_inquiry_template.xlsx";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
 //Submit Form
 //006: Save Draft
 $(document).on("click", "#draft", async function (e) {
@@ -260,7 +335,11 @@ $(document).on("click", "#send-de", async function (e) {
     header.INQ_STATUS = 2;
     header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
-    const fomdata = { header, details };
+    const users = {
+      empno: $("#user-login").attr("empno"),
+      group: $("#user-login").attr("groupcode"),
+    };
+    const fomdata = { header, details, users };
     const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();
@@ -270,7 +349,9 @@ $(document).on("click", "#send-de", async function (e) {
       });
       await inqservice.createInquiryFile(attachment_form);
     }
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+    window.location.replace(
+      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+    );
   } catch (error) {
     await utils.errorMessage(error);
     return;
@@ -310,6 +391,80 @@ $(document).on("click", "#send-bm", async function (e) {
       });
       await inqservice.createInquiryFile(attachment_form);
     }
+    window.location.replace(
+      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+    );
+  } catch (error) {
+    await utils.errorMessage(error);
+    return;
+  }
+});
+
+//012: Update and send to design
+$(document).on("click", "#update-de", async function (e) {
+  e.preventDefault();
+  const chkheader = await inqs.verifyHeader(".req-2");
+  if (!chkheader) return;
+  const header = await inqs.getFormHeader();
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
+  if (check_inq.length < 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
+    $("#inquiry-no").focus().select();
+    return;
+  }
+  const details = table.rows().data().toArray();
+  const deletedDetail = [];
+  if (deletedLineMap.size > 0) {
+    deletedLineMap.forEach((value, key) => {
+      deletedDetail.push(key);
+    });
+  }
+
+  const deletedAttach = [];
+  if (deletedFilesMap.size > 0) {
+    deletedFilesMap.forEach((value, key) => {
+      deletedAttach.push(key);
+    });
+  }
+
+  try {
+    const checkdetail = await inqs.verifyDetail(table, details, 1);
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
+    header.INQ_STATUS = 2;
+    header.INQ_TYPE = "SP";
+    header.INQ_MAR_SENT = new Date();
+    const fomdata = { header, details, deletedDetail, deletedAttach };
+    const inquiry = await inqservice.updateInquiry(fomdata);
+    if (selectedFilesMap.size > 0) {
+      const attachment_form = new FormData();
+      attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      selectedFilesMap.forEach((file, fileName) => {
+        attachment_form.append("files", file, fileName);
+      });
+      await inqservice.createInquiryFile(attachment_form);
+    }
+
+    if (deletedFilesMap.size > 0) {
+      //   const attachment_form = new FormData();
+      //   attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      //   selectedFilesMap.forEach((file, fileName) => {
+      //     attachment_form.append("files", file, fileName);
+      //   });
+      //   await inqservice.createInquiryFile(attachment_form);
+    }
+
+    if (deletedLineMap.size > 0) {
+      //   const attachment_form = new FormData();
+      //   attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      //   selectedFilesMap.forEach((file, fileName) => {
+      //     attachment_form.append("files", file, fileName);
+      //   });
+      //   await inqservice.createInquiryFile(attachment_form);
+    }
     window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
     await utils.errorMessage(error);
@@ -317,42 +472,42 @@ $(document).on("click", "#send-bm", async function (e) {
   }
 });
 
-//009: Add attachment
-$(document).on("change", "#attachment-file", async function (e) {
-  const datafile = await inqs.addAttached(e, selectedFilesMap);
-  if (datafile.files.length > 0) {
-    selectedFilesMap = datafile.selectedFilesMap;
-    datafile.files.map((fs) => {
-      tableAttach.row.add(fs).draw();
-    });
+//013: Update and send to AS400
+$(document).on("click", "#update-bm", async function (e) {
+  e.preventDefault();
+  const chkheader = await inqs.verifyHeader(".req-2");
+  if (!chkheader) return;
+  const header = await inqs.getFormHeader();
+  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
+  if (check_inq.length > 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+    $("#inquiry-no").focus().select();
+    return;
   }
-});
-
-$(document).on("click", ".download-att-client", function (e) {
-  e.preventDefault();
-  const row = tableAttach.row($(this).closest("tr"));
-  const data = row.data();
-  const fileName = data.FILE_ORIGINAL_NAME;
-  tb.downloadClientFile(selectedFilesMap, fileName);
-});
-
-$(document).on("click", ".delete-att-client", function (e) {
-  e.preventDefault();
-  const row = tableAttach.row($(this).closest("tr"));
-  const data = row.data();
-  const fileName = data.FILE_ORIGINAL_NAME;
-  //   tb.deleteClientFile(selectedFilesMap, fileName);
-  selectedFilesMap.delete(fileName);
-  row.remove().draw(false);
-});
-
-//Download template
-$(document).on("click", "#downloadTemplateBtn", async function (e) {
-  e.preventDefault();
-  const link = document.createElement("a");
-  link.href = `${process.env.APP_ENV}/assets/files/export/Import_inquiry_template.xlsx`;
-  link.download = "Import_inquiry_template.xlsx";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const details = table.rows().data().toArray();
+  try {
+    const checkdetail = await inqs.verifyDetail(table, details, 1);
+    await utils.showLoader({
+      show: true,
+      title: "Saving data",
+      clsbox: `!bg-transparent`,
+    });
+    header.INQ_STATUS = 30;
+    header.INQ_TYPE = "SP";
+    header.INQ_MAR_SENT = new Date();
+    const fomdata = { header, details };
+    const inquiry = await inqservice.createInquiry(fomdata);
+    if (selectedFilesMap.size > 0) {
+      const attachment_form = new FormData();
+      attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      selectedFilesMap.forEach((file, fileName) => {
+        attachment_form.append("files", file, fileName);
+      });
+      await inqservice.createInquiryFile(attachment_form);
+    }
+    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+  } catch (error) {
+    await utils.errorMessage(error);
+    return;
+  }
 });
