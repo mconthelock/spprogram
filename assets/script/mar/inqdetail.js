@@ -335,11 +335,7 @@ $(document).on("click", "#send-de", async function (e) {
     header.INQ_STATUS = 2;
     header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
-    const users = {
-      empno: $("#user-login").attr("empno"),
-      group: $("#user-login").attr("groupcode"),
-    };
-    const fomdata = { header, details, users };
+    const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();

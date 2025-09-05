@@ -314,8 +314,10 @@ export function initRow(id) {
     INQD_MAR_REMARK: "",
     INQD_DES_REMARK: "",
     INQD_FIN_REMARK: "",
-    INQD_LATEST: "",
-    INQD_OWNER: "",
+    INQD_LATEST: 1,
+    INQD_OWNER: $("#user-login").attr("groupcode"),
+    CREATE_BY: $("#user-login").attr("empname"),
+    UPDATE_BY: $("#user-login").attr("empname"),
   };
 }
 
