@@ -335,6 +335,8 @@ $(document).on("click", "#send-de", async function (e) {
     header.INQ_STATUS = 2;
     header.INQ_TYPE = "SP";
     header.INQ_MAR_SENT = new Date();
+    header.INQ_CREATEBY = $("#user-login").attr("empname");
+
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
@@ -403,7 +405,7 @@ $(document).on("click", "#update-de", async function (e) {
   if (!chkheader) return;
   const header = await inqs.getFormHeader();
   const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length < 0) {
+  if (check_inq.length == 0) {
     await utils.showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
     $("#inquiry-no").focus().select();
     return;
@@ -430,18 +432,19 @@ $(document).on("click", "#update-de", async function (e) {
       title: "Saving data",
       clsbox: `!bg-transparent`,
     });
+    // header.INQ_MAR_SENT = new Date();
     header.INQ_STATUS = 2;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
+    header.UPDATE_BY = $("#user-login").attr("empname");
+    header.UPDATE_AT = new Date();
     const fomdata = { header, details, deletedDetail, deletedAttach };
     const inquiry = await inqservice.updateInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
-      });
-      await inqservice.createInquiryFile(attachment_form);
+      //   const attachment_form = new FormData();
+      //   attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      //   selectedFilesMap.forEach((file, fileName) => {
+      //     attachment_form.append("files", file, fileName);
+      //   });
+      //   await inqservice.createInquiryFile(attachment_form);
     }
 
     if (deletedFilesMap.size > 0) {
@@ -461,7 +464,9 @@ $(document).on("click", "#update-de", async function (e) {
       //   });
       //   await inqservice.createInquiryFile(attachment_form);
     }
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+    window.location.replace(
+      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+    );
   } catch (error) {
     await utils.errorMessage(error);
     return;

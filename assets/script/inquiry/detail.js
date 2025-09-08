@@ -203,9 +203,11 @@ export async function createFieldInput(field) {
       const value = field.value ? field.value : "0";
       field.options.forEach((opt) => {
         optionstr += `<label class="flex items-center gap-2 text-sm">
-            <input type="radio" name="radio-4" class="radio radio-primary" ${
-              opt.value == value ? "checked" : ""
-            } /> ${opt.text}
+            <input type="radio" name="${
+              field.name
+            }" class="radio radio-primary" ${
+          opt.value == value ? "checked" : ""
+        } value="${opt.value}"/> ${opt.text}
         </label>`;
       });
       const radioGroup = `<div class="flex items-center gap-4 h-full">${optionstr}</div>`;
