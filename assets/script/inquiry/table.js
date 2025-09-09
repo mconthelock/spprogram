@@ -405,7 +405,7 @@ export async function setupTableDetailView(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
-      className: "text-nowrap",
+      className: "text-nowrap min-w-[200px]",
     },
     {
       data: "INQD_DRAWING",

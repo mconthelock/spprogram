@@ -88,7 +88,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {
@@ -106,7 +106,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {
@@ -124,7 +124,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {
@@ -142,7 +142,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {

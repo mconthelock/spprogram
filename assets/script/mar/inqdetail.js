@@ -36,7 +36,6 @@ let deletedLineMap = new Map();
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-
     let logs, inquiry, details, file;
     let mode = "create";
     const currentUrl = window.location.href;
@@ -48,7 +47,7 @@ $(document).ready(async () => {
         inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
 
       mode = "edit";
-      details = inquiry.details;
+      details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
       logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
       file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
     }
@@ -410,22 +409,9 @@ $(document).on("click", "#update-de", async function (e) {
     $("#inquiry-no").focus().select();
     return;
   }
-  const details = table.rows().data().toArray();
-  const deletedDetail = [];
-  if (deletedLineMap.size > 0) {
-    deletedLineMap.forEach((value, key) => {
-      deletedDetail.push(key);
-    });
-  }
-
-  const deletedAttach = [];
-  if (deletedFilesMap.size > 0) {
-    deletedFilesMap.forEach((value, key) => {
-      deletedAttach.push(key);
-    });
-  }
 
   try {
+    const details = table.rows().data().toArray();
     const checkdetail = await inqs.verifyDetail(table, details, 1);
     await utils.showLoader({
       show: true,
@@ -436,33 +422,34 @@ $(document).on("click", "#update-de", async function (e) {
     header.INQ_STATUS = 2;
     header.UPDATE_BY = $("#user-login").attr("empname");
     header.UPDATE_AT = new Date();
-    const fomdata = { header, details, deletedDetail, deletedAttach };
+
+    let deleteLine = [];
+    if (deletedLineMap.size > 0) {
+      deletedLineMap.forEach((value, key) => {
+        deleteLine.push(key);
+      });
+    }
+
+    let deleteFile = [];
+    if (deletedFilesMap.size > 0) {
+      deletedFilesMap.forEach((value, key) => {
+        deleteFile.push(key);
+      });
+    }
+    const fomdata = {
+      header,
+      details,
+      deleteLine,
+      deleteFile,
+    };
     const inquiry = await inqservice.updateInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
-      //   const attachment_form = new FormData();
-      //   attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      //   selectedFilesMap.forEach((file, fileName) => {
-      //     attachment_form.append("files", file, fileName);
-      //   });
-      //   await inqservice.createInquiryFile(attachment_form);
-    }
-
-    if (deletedFilesMap.size > 0) {
-      //   const attachment_form = new FormData();
-      //   attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      //   selectedFilesMap.forEach((file, fileName) => {
-      //     attachment_form.append("files", file, fileName);
-      //   });
-      //   await inqservice.createInquiryFile(attachment_form);
-    }
-
-    if (deletedLineMap.size > 0) {
-      //   const attachment_form = new FormData();
-      //   attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      //   selectedFilesMap.forEach((file, fileName) => {
-      //     attachment_form.append("files", file, fileName);
-      //   });
-      //   await inqservice.createInquiryFile(attachment_form);
+      const attachment_form = new FormData();
+      attachment_form.append("INQ_NO", inquiry.INQ_NO);
+      selectedFilesMap.forEach((file, fileName) => {
+        attachment_form.append("files", file, fileName);
+      });
+      await inqservice.createInquiryFile(attachment_form);
     }
     window.location.replace(
       `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`

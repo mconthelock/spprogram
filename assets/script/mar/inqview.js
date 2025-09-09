@@ -18,7 +18,8 @@ $(document).ready(async () => {
 
     $("#inquiry-title").html(inquiry.INQ_NO);
     const cards = await inqs.setupCard(inquiry);
-    const detail = await tb.setupTableDetailView(inquiry.details);
+    const details = inquiry.details.filter((dt) => dt.INQD_LATEST == 1);
+    const detail = await tb.setupTableDetailView(details);
     table = await createTable(detail);
 
     const logs = await service.getInquiryHistory(inquiry.INQ_NO);
@@ -41,8 +42,8 @@ async function setupButton() {
   const exportfile = await utils.creatBtn({
     id: "export-detail",
     title: "Export",
-    icon: "icofont-attachment text-2xl",
-    className: "btn-neutral text-white",
+    icon: "fi fi-tr-file-excel text-xl",
+    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
   });
 
   const back = await utils.creatBtn({
@@ -50,8 +51,9 @@ async function setupButton() {
     title: "Back",
     type: "link",
     href: `${process.env.APP_ENV}/mar/inquiry`,
-    icon: "icofont-arrow-left text-2xl",
-    className: "btn-outline btn-neutral text-neutral hover:text-white",
+    icon: "fi fi-rr-arrow-circle-left text-xl",
+    className:
+      "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
   });
   $("#btn-container").append(exportfile, back);
 }
@@ -110,8 +112,11 @@ $(document).on("click", "#export-detail", async function (e) {
     sheet.getCell(12, 20).value = info.INQ_PRJNAME;
 
     let s = 16;
-    for (const i in info.details) {
-      const rowdata = info.details[i];
+    const details = info.details
+      .filter((dt) => dt.INQD_LATEST == 1)
+      .sort((a, b) => a.INQD_RUNNO - b.INQD_RUNNO);
+    for (const i in details) {
+      const rowdata = details[i];
       if (s > 36) await clonerow(sheet, 20, s);
       await setdata(sheet, rowdata, s, info.shipment.SHIPMENT_VALUE);
       s++;
