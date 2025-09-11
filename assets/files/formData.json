@@ -150,7 +150,7 @@
         "id": "viewprj",
         "title": "Original Project",
         "fields": [
-            { "label": "Project No", "id": "project-no", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRJNO", "name": "INQ_PRJNO"},
+            { "label": "Project No", "id": "project-no", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRJNO", "name": "INQ_PRJNO", "input": true},
             { "label": "Project Name", "id": "project-name", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRJNAME", "name": "INQ_PRJNAME"},
             { "label": "Shop Order", "id": "shop-order", "type": "staticText", "class": "view-data" , "mapping": "INQ_SHOPORDER", "name": "INQ_SHOPORDER"},
             { "label": "Series", "id": "series", "type": "staticText", "class": "view-data", "mapping": "INQ_SERIES", "name": "INQ_SERIES"},
@@ -240,6 +240,15 @@
         "title": "Designer Information",
         "fields": [
             {
+                "label": "Assigner",
+                "id":"mar-incharge",
+                "type": "staticText",
+                "name": "INQ_SEG_PIC",
+                "class": "displayname",
+                "input": true
+            },
+            { "label": "Sale In-charge", "id": "sale-checker", "type": "select", "source": "getSalePerson" },
+            {
                 "label": "Design Class",
                 "id": "des-class",
                 "type": "select",
@@ -253,9 +262,12 @@
                     {"id": "E", "text": "E"}
                 ]
             },
-            { "label": "Assigner", "id":"des-leader", "type": "text", "value": "CHALERMSAK SAWANAM" },
-            { "label": "Designer", "id":"des-incharge", "type": "text", "value": "CHALERMSAK SAWANAM" },
-            { "label": "Checker", "id":"des-checker", "type": "text", "value": "CHALERMSAK SAWANAM" }
+            {
+                "label": "Remark",
+                "id": "remark",
+                "type": "textarea" ,
+                "name": "INQ_REMARK"
+            }
         ]
     }
 ]

@@ -8,18 +8,18 @@ import { showbgLoader } from "@public/preloader";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
-
 var table;
 $(document).ready(async () => {
   try {
-    await showbgLoader();
+    await utils.initApp({ submenu: ".navmenu-newinq" });
     const data = await service.getInquiry({});
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
-    await utils.foundError(error);
+    console.log(error);
+    await utils.errorMessage(error);
   } finally {
-    //utils.showLoader(false);
+    await utils.showLoader({ show: false });
   }
 });
 
@@ -87,7 +87,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {
@@ -105,7 +105,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {
@@ -123,7 +123,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {
@@ -141,7 +141,7 @@ async function tableOpt(data) {
             : des[0].INQG_STATUS >= 9
             ? "text-primary"
             : "text-secondary";
-        return `<i class="icofont-check-circled text-xl ${color}"></i>`;
+        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
       },
     },
     {

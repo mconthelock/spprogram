@@ -18,7 +18,7 @@
   --color-secondary: oklch(0.7876 0.165783 75.5064);
   --color-secondary-content: oklch(25% 0.092 26.042);
   --color-accent: oklch(0.2997 0.0749 267.29);
-  --color-accent-content: oklch(0.2997 0.0719 267.29)
+  --color-accent-content: oklch(0.2997 0.0719 267.29);
   --color-neutral: oklch(37% 0.044 257.287);
   --color-neutral-content: oklch(98% 0.003 247.858);
   --color-info: oklch(54% 0.245 262.881);
@@ -128,7 +128,7 @@
     }
   }
 
-  i.fi{
+  i.fi {
     display: flex !important;
   }
 
@@ -149,7 +149,6 @@
     animation: l4 2s infinite;
   }
 
-
   table > thead > tr > th {
     @apply !text-center;
   }
@@ -167,9 +166,14 @@
     @apply !w-64 !rounded-md;
   }
 
+  #table.table-index tbody tr td {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
   /* .table tbody > tr > td:not(.dt-empty), */
   .table-edit tbody > tr > td:not(.dt-empty) {
-     border: 1px solid var(--color-gray-300) !important;
+    border: 1px solid var(--color-gray-300) !important;
   }
 
   /* .table tbody > tr > td:nth-child(2), */
@@ -186,7 +190,6 @@
   .table-edit tbody > tr > td:not(.dt-empty) {
     padding: 3px !important;
   }
-
 
   .cell-input {
     width: 100%;
@@ -207,6 +210,11 @@
     cursor: pointer;
   }
 
+  .dt-empty {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
   #select-dt-rows-all {
     @apply !checkbox-neutral !text-neutral;
   }
@@ -222,7 +230,7 @@
 
   .dt-orderable-asc::after,
   .dt-orderable-desc::after {
-    font-family: uicons-thin-rounded!important;
+    font-family: uicons-thin-rounded !important;
     font-size: 1.2rem;
     color: var(--color-white);
     position: absolute;
@@ -234,12 +242,12 @@
   }
 
   .dt-ordering-asc::after {
-     content:"\fba7";
+    content: "\fba7";
   }
 
   .dt-ordering-desc::after {
-   content:"\fba7";
-   transform: rotate(180deg);
+    content: "\fba7";
+    transform: rotate(180deg);
   }
 
   /* Overwrite Select2 */

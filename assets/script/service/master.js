@@ -1,3 +1,4 @@
+import { displayEmpInfo } from "@public/setIndexDB.js";
 export function getPriceRatio() {
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -205,6 +206,32 @@ export const getReason = async () => {
       dataType: "json",
       success: function (response) {
         resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+export const getAppUsers = async () => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/docinv/appsusers/program/${process.env.APP_ID}`,
+      type: "GET",
+      dataType: "json",
+      success: async function (response) {
+        try {
+          const user = await Promise.all(
+            response.map(async (el) => {
+              const data = await displayEmpInfo(el.USERS_ID);
+              return { ...el, data };
+            })
+          );
+          resolve(user);
+        } catch (err) {
+          reject(err);
+        }
       },
       error: function (error) {
         reject(error);

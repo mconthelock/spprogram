@@ -104,6 +104,7 @@ export const showLoader = (opt = { show: true }) => {
 };
 
 export const tableOpt = {
+  responsive: false,
   language: {
     info: "Showing _START_ to _END_ from _TOTAL_ records",
     infoEmpty: "",

@@ -1,7 +1,6 @@
 @extends('layouts/template')
 
 @section('contents')
-    <i class="fi fi-rr-trash"></i>
     <input type="hidden" name="inquiry-id" id="inquiry-id" value="{{ $id }}">
     <h1 class="text-3xl font-sans font-[700] uppercase mb-5 text-gray-700">Inquiry Detail</h1>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewprj|viewinfo|sale"></main>
@@ -23,16 +22,6 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/mar_inqedit.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/se_inqdetail.js?ver={{ $GLOBALS['version'] }}"></script>
     <script src="{{ $_ENV['APP_JS'] }}/inquiryui.js?ver={{ $GLOBALS['version'] }}"></script>
-@endsection
-
-
-@section('styles')
-    <style>
-        .dt-empty {
-            padding-top: 8px;
-            padding-bottom: 8px;
-        }
-    </style>
 @endsection

@@ -25,7 +25,7 @@ import * as elmesservice from "../service/elmes.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
-import * as tbmar from "../inquiry/table_mar.js";
+import * as tbsale from "../inquiry/table_sale.js";
 
 //001: On load form
 var table;
@@ -38,22 +38,22 @@ $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
     let logs, inquiry, details, file;
-    let mode = "create";
     const currentUrl = window.location.href;
     if (currentUrl.includes("edit") && $("#inquiry-id").val() != "") {
       inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
       if (inquiry.length == 0) throw new Error("Inquiry do not found");
-
-      if (inquiry.INQ_STATUS >= 10)
-        inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
-
-      mode = "edit";
-      details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
-      logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
-      file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
     }
+
+    if (inquiry.INQ_STATUS >= 20)
+      inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
+
+    inquiry.INQ_SEG_PIC = "02035";
+    details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
+    logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
+    file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
+
     const cards = await inqs.setupCard(inquiry);
-    const tableContainer = await tbmar.setupTableDetail(details);
+    const tableContainer = await tbsale.setupTableDetail(details);
     table = await createTable(tableContainer);
 
     const history = await tb.setupTableHistory(logs);
@@ -62,7 +62,7 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment(file);
     tableAttach = await createTable(attachment, { id: "#attachment" });
 
-    const btn = await setupButton(mode);
+    const btn = await setupButton();
     const reason = await inqs.createReasonModal();
     const elmes = await inqs.elmesComponent();
   } catch (error) {
@@ -73,19 +73,20 @@ $(document).ready(async () => {
   }
 });
 
-async function setupButton(mode) {
-  const sendDE = await utils.creatBtn({
+async function setupButton() {
+  const usergroup = $("#user-login").attr("groupcode");
+  const assign = await utils.creatBtn({
     id: "send-de",
-    title: "Send to Design",
-    icon: "fi fi-tr-envelope-open-text text-xl",
+    title: "Assign PIC",
+    icon: "fi fi-rs-user-check text-xl",
     className: "btn-primary text-white hover:shadow-lg",
   });
 
-  const updateDE = await utils.creatBtn({
+  const sendDE = await utils.creatBtn({
     id: "update-de",
-    title: "Send to Design",
-    icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
+    title: "Forward to DE",
+    icon: "fi fi-tr-share-square text-xl",
+    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
   });
 
   const sendIS = await utils.creatBtn({
@@ -102,12 +103,11 @@ async function setupButton(mode) {
     className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
   });
 
-  const draft = await utils.creatBtn({
+  const confirm = await utils.creatBtn({
     id: "draft",
-    title: "Send Draft",
-    icon: "fi fi-ts-clipboard-list text-xl",
-    className:
-      "btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg",
+    title: "Confirm",
+    icon: "fi fi-tr-badge-check text-xl",
+    className: "btn-primary text-white hover:shadow-lg",
   });
 
   const back = await utils.creatBtn({
@@ -120,8 +120,9 @@ async function setupButton(mode) {
       "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
   });
 
-  if (mode == "edit") $("#btn-container").append(updateDE, updateIS, back);
-  else $("#btn-container").append(sendDE, sendIS, draft, back);
+  if (usergroup == "SEG")
+    $("#btn-container").append(assign, sendDE, sendIS, back);
+  else $("#btn-container").append(assign, sendDE, sendIS, back);
 }
 
 //002: Add table detail rows

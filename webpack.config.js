@@ -11,12 +11,13 @@ module.exports = {
     inquiryui: "./assets/script/inquiry/ui.js",
     mar_inquiry: "./assets/script/mar/inquiry.js",
     mar_inqdetail: "./assets/script/mar/inqdetail.js",
-    mar_inqedit: "./assets/script/mar/inqedit.js",
     mar_inqviews: "./assets/script/mar/inqview.js",
     priceratio: "./assets/script/mar/priceratio.js",
     currency: "./assets/script/mar/currency.js",
+    mar_items: "./assets/script/mar/items.js",
     //Sale user
     se_inquiry: "./assets/script/sale/inquiry.js",
+    se_inqdetail: "./assets/script/sale/inqdetail.js",
   },
   output: {
     filename: "[name].js",
