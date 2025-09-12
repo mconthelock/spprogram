@@ -1,7 +1,7 @@
 import * as mst from "../service/master.js";
 import * as mkt from "../service/mkt.js";
 import * as inq from "../service/inquiry.js";
-import * as sale from "../service/directsale.js";
+import * as cus from "../service/customers.js";
 import * as utils from "../utils.js";
 
 export const init = {
@@ -249,7 +249,7 @@ export const events = {
 
 export const stockHeader = async (name, item) => {
   //   const str = name.split("_");
-  const customers = await sale.getCustomer();
+  const customers = await cus.getCustomer();
   const value = customers.find((item) => item.CUS_NAME == name);
   if (value !== undefined) {
     $("#project-no").val(`${value.CUS_DISPLAY} STOCK`);

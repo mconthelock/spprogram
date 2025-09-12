@@ -43,7 +43,40 @@ async function tableOpt(data) {
     { data: "ITEM_SUPPLIER", title: "Supplier" },
     // { data: "CATEGORY", title: "Part Name" },
     { data: "ITEM_REMARK", title: "Remark" },
-    { data: "ITEM_STATUS", title: "Status" },
+    {
+      data: "ITEM_STATUS",
+      title: "Status",
+      className: "text-center",
+      render: (data) => {
+        return `<div class="badge ${
+          data == 1 ? "badge-primary text-white" : "badge-error"
+        }">${data == 1 ? "Enable" : "Disable"}</div>`;
+      },
+    },
+    {
+      data: "ITEM_ID",
+      title: `<div class="text-2xl w-full flex justify-center"><i class="fi fi-tr-pen-field"></i></div>`,
+      className: "text-center",
+      render: (data, type, row) => {
+        const edit = `<a class="btn btn-circle btn-sm btn-ghost text-xl" href="#"><i class="fi fi-tr-pen-square"></i></a>`;
+        const deleted = `<a class="btn btn-circle btn-sm btn-ghost text-xl ${
+          row.ITEM_STATUS == 0 ? "btn-disabled" : "text-red-500"
+        }" href="#" ><i class="fi fi-bs-trash-xmark"></i></a>`;
+        return `<div class="w-full flex justify-center">${edit}${deleted}</div>`;
+      },
+    },
   ];
+  opt.initComplete = function (settings, json) {
+    $(".table-option").append(
+      `<button class="btn btn-outline btn-primary hover:text-white">New Item</button>`
+    );
+    $(".table-paging").append(`<div class="flex gap-2">
+        <button class="btn btn-accent rounded-3xl text-white items-center" id="export-detail" type="button">
+            <span class="loading loading-spinner hidden"></span>
+            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Data</span>
+        </button>
+    </div>`);
+    $(".table-paging").addClass("flex-col gap-3");
+  };
   return opt;
 }

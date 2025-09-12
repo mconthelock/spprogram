@@ -15,6 +15,7 @@ module.exports = {
     priceratio: "./assets/script/mar/priceratio.js",
     currency: "./assets/script/mar/currency.js",
     mar_items: "./assets/script/mar/items.js",
+    mar_pricelist: "./assets/script/mar/pricelist.js",
     //Sale user
     se_inquiry: "./assets/script/sale/inquiry.js",
     se_inqdetail: "./assets/script/sale/inqdetail.js",
