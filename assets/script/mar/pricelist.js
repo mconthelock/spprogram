@@ -35,16 +35,13 @@ async function tableOpt(data, customers, selected) {
   const opt = utils.tableOpt;
   opt.data = data;
   opt.columns = [
-    { data: "ITEM", title: "Customer" },
-    { data: "FCCOST", title: "Agent" },
-    { data: "FCBASE", title: "Country" },
-    { data: "TCCOST", title: "Item" },
-    { data: "ITEM", title: "Part Name" },
-    { data: "ITEM", title: "Drawing No." },
-    { data: "ITEM", title: "Variable" },
-    { data: "ITEM", title: "Category" },
-    { data: "ITEM", title: "Currency" },
-    { data: "ITEM", title: "Customer" },
+    { data: "ITEM" },
+    { data: "FCCOST" },
+    { data: "FCBASE" },
+    { data: "TCCOST" },
+    { data: null, render: () => "1" },
+    { data: null, render: () => "2" },
+    { data: null, render: () => "3" },
   ];
   opt.initComplete = function (settings, json) {
     let option = ``;
