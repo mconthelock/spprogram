@@ -108,6 +108,17 @@ export const init = {
     return options;
   },
 
+  getCustomers: async function () {
+    const data = await mkt.getSeries();
+    let options = data.map((series) => {
+      return {
+        id: series.ABBREVIATION,
+        text: series.ABBREVIATION,
+      };
+    });
+    return options;
+  },
+
   getSalePerson: async function () {
     const data = await mst.getAppUsers();
     const result = data.filter((x) =>

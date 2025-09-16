@@ -211,3 +211,21 @@ export const getExportTemplate = async (data) => {
     });
   });
 };
+
+//Inquiry Timeline
+export const updateInquiryTimeline = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/timeline/`,
+      type: "PATCH",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};

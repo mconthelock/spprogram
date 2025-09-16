@@ -12,7 +12,10 @@ var table;
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    const data = await service.getInquiry({});
+    const data = await service.getInquiry({
+      GE_INQ_STATUS: 10,
+      LE_INQ_STATUS: 29,
+    });
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
@@ -150,7 +153,7 @@ async function tableOpt(data) {
       sortable: false,
       title: `<i class='icofont-settings text-lg text-white'></i>`,
       render: (data, type, row, meta) => {
-        return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a></div>`;
+        return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-process" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a></div>`;
       },
     },
   ];
@@ -172,56 +175,23 @@ async function tableOpt(data) {
   return opt;
 }
 
-$(document).on("click", ".delete-inquiry", async function (e) {
+$(document).on("click", ".btn-process", async function (e) {
   e.preventDefault();
-  await utils.showConfirm(
-    "deleteinqs",
-    `<span class="text-red-500">Delete Inquiry</span>`,
-    "Are you sure you want to delete this inquiry?",
-    `<i class="icofont-exclamation-circle text-4xl text-red-500"></i>`,
-    $(this).attr("data-id"),
-    true
-  );
-});
-
-$(document).on(
-  "click",
-  "#confirm_accept.deleteinqs:not(disabled)",
-  async function (e) {
-    e.preventDefault();
-    const modal = $("#confirm_box");
-    modal.find("button").prop("disabled", true);
-    $(this).find(".loading").removeClass("hidden");
-
-    if ($("#confirm_reason").val() == "") {
-      $("#confirm_error").text(`Please enter reason.`);
-      setTimeout(() => {
-        $("#confirm_error").text(``);
-      }, 3000);
-      modal.find("button").prop("disabled", false);
-      $(this).find(".loading").addClass("hidden");
-      return;
-    }
-
-    confirm_key;
-    const res = await service.deleteInquiry({
-      INQ_ID: $("#confirm_key").val(),
-      INQ_MAR_PIC: "12069",
-      INQ_MAR_REMARK: $("#confirm_reason").val(),
-    });
-
-    if (!res.status) {
-      //   utils.foundError(res);
-    } else {
-      table.columns(3).search("T-MET-25-A0002").rows().remove().draw();
-    }
-
-    $(this).find(".loading").addClass("hidden");
-    $("#confirm_accept").removeClass("deleteinqs");
-    modal.find("button").prop("disabled", false);
-    modal.find("#confirm_close").click();
+  const row = table.row($(this).closest("tr")).data();
+  const timeline = row.timeline;
+  if (timeline.SG_READ == null) {
+    const data = {
+      INQ_NO: row.INQ_NO,
+      INQ_REV: row.INQ_REV,
+      //SG_USER: $("#user-login").attr("empno"),
+      SG_READ: new Date(),
+    };
+    await service.updateInquiryTimeline(data);
   }
-);
+  const url = $(this).attr("href");
+  await showbgLoader(true);
+  window.location.href = url;
+});
 
 $(document).on("click", "#export-detail", async function (e) {
   e.preventDefault();

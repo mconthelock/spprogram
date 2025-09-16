@@ -1,4 +1,5 @@
 import * as utils from "../utils.js";
+
 export async function setupTableDetail(data = []) {
   const renderText = (str, logs, key) => {
     if (logs == undefined) return str;
@@ -235,6 +236,18 @@ export async function setupTableDetail(data = []) {
         if (type === "display") {
           return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply edit-input"
            ${data == "" || data == null ? "" : "checked"}/>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: null,
+      title: `<i class="fi fi-tr-share-square text-xl"></i>`,
+      className: "text-center",
+      sortable: false,
+      render: function (data, type, row, meta) {
+        if (type === "display") {
+          return `<input type="checkbox" class="checkbox checkbox-sm  checkbox-warning"/>`;
         }
         return data;
       },

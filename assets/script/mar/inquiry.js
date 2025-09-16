@@ -28,6 +28,10 @@ async function tableOpt(data) {
   const colors = await statusColors();
   const opt = utils.tableOpt;
   opt.data = data;
+  opt.order = [
+    [0, "desc"],
+    [1, "desc"],
+  ];
   opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
     {
@@ -79,7 +83,9 @@ async function tableOpt(data) {
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 1);
+        const des = data.filter(
+          (item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1
+        );
         if (des.length == 0) return "";
 
         const color =
@@ -97,7 +103,9 @@ async function tableOpt(data) {
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 2);
+        const des = data.filter(
+          (item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1
+        );
         if (des.length == 0) return "";
 
         const color =
@@ -115,7 +123,9 @@ async function tableOpt(data) {
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 3);
+        const des = data.filter(
+          (item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1
+        );
         if (des.length == 0) return "";
 
         const color =
@@ -133,7 +143,9 @@ async function tableOpt(data) {
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 6);
+        const des = data.filter(
+          (item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1
+        );
         if (des.length == 0) return "";
 
         const color =
@@ -214,17 +226,21 @@ $(document).on(
       return;
     }
 
-    confirm_key;
+    // confirm_key;
     const res = await service.deleteInquiry({
       INQ_ID: $("#confirm_key").val(),
-      INQ_MAR_PIC: "12069",
+      INQ_MAR_PIC: $("#user-login").attr("empno"),
       INQ_MAR_REMARK: $("#confirm_reason").val(),
     });
 
     if (!res.status) {
-      //   utils.foundError(res);
+      utils.foundError(res);
     } else {
-      table.columns(3).search("T-MET-25-A0002").rows().remove().draw();
+      //   remove row from table
+      table
+        .row($(`button[data-id='${$("#confirm_key").val()}']`).parents("tr"))
+        .remove()
+        .draw();
     }
 
     $(this).find(".loading").addClass("hidden");

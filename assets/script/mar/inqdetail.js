@@ -305,7 +305,9 @@ $(document).on("click", "#draft", async function (e) {
     header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`;
+    window.location.replace(
+      `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
+    );
   } catch (error) {
     utils.errorMessage(error);
     return;
@@ -468,13 +470,14 @@ $(document).on("click", "#update-bm", async function (e) {
   if (!chkheader) return;
   const header = await inqs.getFormHeader();
   const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length > 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+  if (check_inq.length == 0) {
+    await utils.showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
     $("#inquiry-no").focus().select();
     return;
   }
-  const details = table.rows().data().toArray();
+
   try {
+    const details = table.rows().data().toArray();
     const checkdetail = await inqs.verifyDetail(table, details, 1);
     await utils.showLoader({
       show: true,
@@ -482,10 +485,30 @@ $(document).on("click", "#update-bm", async function (e) {
       clsbox: `!bg-transparent`,
     });
     header.INQ_STATUS = 30;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
-    const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
+    header.UPDATE_BY = $("#user-login").attr("empname");
+    header.UPDATE_AT = new Date();
+
+    let deleteLine = [];
+    if (deletedLineMap.size > 0) {
+      deletedLineMap.forEach((value, key) => {
+        deleteLine.push(key);
+      });
+    }
+
+    let deleteFile = [];
+    if (deletedFilesMap.size > 0) {
+      deletedFilesMap.forEach((value, key) => {
+        deleteFile.push(key);
+      });
+    }
+
+    const fomdata = {
+      header,
+      details,
+      deleteLine,
+      deleteFile,
+    };
+    const inquiry = await inqservice.updateInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();
       attachment_form.append("INQ_NO", inquiry.INQ_NO);
@@ -494,7 +517,9 @@ $(document).on("click", "#update-bm", async function (e) {
       });
       await inqservice.createInquiryFile(attachment_form);
     }
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+    window.location.replace(
+      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+    );
   } catch (error) {
     await utils.errorMessage(error);
     return;

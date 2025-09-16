@@ -163,8 +163,8 @@
         "id": "viewinfo",
         "title": "Inquiry Information",
         "fields": [
-            { "label": "Inquiry No.", "id": "inquiry-no", "type": "staticText", "class": "view-data", "mapping": "INQ_NO","name": "INQ_NO" },
-            { "label": "Revision", "id": "revision", "type": "staticText", "class": "view-data", "mapping": "INQ_REV","name": "INQ_REV" },
+            { "label": "Inquiry No.", "id": "inquiry-no", "type": "staticText", "class": "view-data", "mapping": "INQ_NO","name": "INQ_NO", "input": true },
+            { "label": "Revision", "id": "revision", "type": "staticText", "class": "view-data", "mapping": "INQ_REV","name": "INQ_REV", "input": true },
             { "label": "Inquiry Date", "id": "inquiry-date", "type": "staticText", "class": "view-data", "mapping": "INQ_DATE", "name": "INQ_DATE"},
             { "label": "Trader", "id": "trader", "type": "staticText", "class": "view-data",  "mapping": "INQ_TRADER","name": "INQ_TRADER" },
             { "label": "Agent", "id": "agent", "type": "staticText", "class": "view-data", "mapping": "INQ_AGENT", "name": "INQ_AGENT" },
@@ -236,24 +236,71 @@
         ]
     },
     {
+        "id": "customer",
+        "title": "Customer Information",
+        "fields": [
+            {
+                "label": "Customer",
+                "id": "customer",
+                "type": "select",
+                "source": "getCustomers" ,
+                "mapping": "INQ_CUSTRQS",
+                "name": "INQ_CUSTRQS"
+            },
+            {
+                "label": "Project No",
+                "id": "project-no",
+                "type": "text" ,
+                "class": "uppercase",
+                "onChange": "handleProjectChange",
+                "mapping": "PRJ_NO",
+                "name": "INQ_PRJNO"
+            },
+            { "label": "Project Name", "id": "project-name", "type": "text" , "mapping": "PRJ_NAME", "name": "INQ_PRJNAME"},
+            { "label": "Shop Order", "id": "shop-order", "type": "text" , "mapping": "ORDER_NO", "name": "INQ_SHOPORDER"},
+            { "label": "Schedule", "id": "schedule", "type": "text" , "mapping": "AMEC_SCHDL", "name": "INQ_PRDSCH"}
+        ]
+    },
+    {
         "id": "sale",
         "title": "Designer Information",
         "fields": [
+             {
+                "label": "MAR. In-charge",
+                "id":"mar-incharge",
+                "type": "staticText",
+                "class": "displayname",
+                "mapping":"INQ_MAR_PIC",
+                "name": "INQ_MAR_PIC"
+            },
             {
                 "label": "Assigner",
                 "id":"mar-incharge",
                 "type": "staticText",
-                "name": "INQ_SEG_PIC",
+                "name": "SG_USER",
                 "class": "displayname",
                 "input": true
             },
-            { "label": "Sale In-charge", "id": "sale-checker", "type": "select", "source": "getSalePerson" },
+            {
+                "label": "Sale In-charge",
+                "id": "sale-checker",
+                "type": "select",
+                "source": "getSalePerson",
+                "class": "req-1",
+                "name": "SE_USER"
+            },
+            {
+                "label": "",
+                "id": "sale-confirm",
+                "type": "hidden",
+                "name": "SG_CONFIIRM"
+            },
             {
                 "label": "Design Class",
                 "id": "des-class",
                 "type": "select",
-                "name": "des-class",
-                "class": "req-2",
+                "name": "SALE_CLASS",
+                "class": "req-1",
                 "options": [
                     {"id": "A", "text": "A"},
                     {"id": "B", "text": "B"},

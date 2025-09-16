@@ -5,6 +5,6 @@ class Stockpart extends MY_Controller {
     }
 
      public function create(){
-        $this->views('mar/inquiry/detail');
+        $this->views('mar/stockpart/detail');
     }
 }

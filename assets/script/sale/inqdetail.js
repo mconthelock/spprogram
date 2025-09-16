@@ -5,8 +5,8 @@ Funtion contents
 003 - Show Elmes table
 004 - Unable to reply checkbox
 005 - Import data from file
-006 - Save Draft
-007 - Save and send to design
+006 - Assign Engineer
+007 - Bypass to DE
 008 - Save and send to AS400
 009 - Add attachment
 010 - Download attached file
@@ -47,7 +47,13 @@ $(document).ready(async () => {
     if (inquiry.INQ_STATUS >= 20)
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
 
-    inquiry.INQ_SEG_PIC = "02035";
+    const times = inquiry.timeline;
+    inquiry.SG_USER =
+      times.SG_USER == null ? $("#user-login").attr("empno") : times.SG_USER;
+    inquiry.SE_USER = times.SE_USER;
+    inquiry.SALE_CLASS = times.SALE_CLASS;
+    inquiry.SG_CONFIIRM = times.SG_CONFIIRM;
+
     details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
     logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
     file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
@@ -76,14 +82,14 @@ $(document).ready(async () => {
 async function setupButton() {
   const usergroup = $("#user-login").attr("groupcode");
   const assign = await utils.creatBtn({
-    id: "send-de",
+    id: "assign-pic",
     title: "Assign PIC",
     icon: "fi fi-rs-user-check text-xl",
     className: "btn-primary text-white hover:shadow-lg",
   });
 
   const sendDE = await utils.creatBtn({
-    id: "update-de",
+    id: "forward-de",
     title: "Forward to DE",
     icon: "fi fi-tr-share-square text-xl",
     className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
@@ -114,7 +120,7 @@ async function setupButton() {
     id: "goback",
     title: "Back",
     type: "link",
-    href: `${process.env.APP_ENV}/mar/inquiry`,
+    href: `${process.env.APP_ENV}/se/inquiry`,
     icon: "fi fi-rr-arrow-circle-left text-xl",
     className:
       "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
@@ -278,78 +284,32 @@ $(document).on("click", "#downloadTemplateBtn", async function (e) {
 });
 
 //Submit Form
-//006: Save Draft
-$(document).on("click", "#draft", async function (e) {
+//006: Assign Engineer
+$(document).on("click", "#assign-pic", async function (e) {
   e.preventDefault();
   const chkheader = await inqs.verifyHeader(".req-1");
   if (!chkheader) return;
-
-  const header = await inqs.getFormHeader(); //Get header data
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO }); //Check inq no is not dupplicate
-  if (check_inq.length > 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
-    $("#inquiry-no").focus().select();
-    return;
-  }
-
-  const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, false);
-    await utils.showLoader({
-      show: true,
-      title: "Saving data",
-      clsbox: `!bg-transparent`,
-    });
-
-    header.INQ_STATUS = 1;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
-    const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`;
+    const inquiry = await updatePath(10);
+    window.location.replace(
+      `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+    );
   } catch (error) {
-    utils.errorMessage(error);
+    await utils.errorMessage(error);
     return;
   }
 });
 
-//007: Save and send to design
-$(document).on("click", "#send-de", async function (e) {
+//007: Bypass to DE
+$(document).on("click", "#forward-de", async function (e) {
   e.preventDefault();
-  const chkheader = await inqs.verifyHeader(".req-2");
+  e.preventDefault();
+  const chkheader = await inqs.verifyHeader(".req-1");
   if (!chkheader) return;
-  const header = await inqs.getFormHeader();
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length > 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
-    $("#inquiry-no").focus().select();
-    return;
-  }
-  const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, 1);
-    await utils.showLoader({
-      show: true,
-      title: "Saving data",
-      clsbox: `!bg-transparent`,
-    });
-    header.INQ_STATUS = 2;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
-    header.INQ_CREATEBY = $("#user-login").attr("empname");
-
-    const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
-    if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
-      });
-      await inqservice.createInquiryFile(attachment_form);
-    }
+    const inquiry = await updatePath(12);
     window.location.replace(
-      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+      `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
   } catch (error) {
     await utils.errorMessage(error);
@@ -501,3 +461,59 @@ $(document).on("click", "#update-bm", async function (e) {
     return;
   }
 });
+
+async function updatePath(status) {
+  const header = await inqs.getFormHeader(); //Get header data
+  const details = table.rows().data().toArray();
+  const checkdetail = await inqs.verifyDetail(table, details, 1);
+  await utils.showLoader({
+    show: true,
+    title: "Saving data",
+    clsbox: `!bg-transparent`,
+  });
+
+  const timelinedata = {
+    SG_USER: header.SG_USER,
+    SE_USER: header.SE_USER,
+    SALE_CLASS: header.SALE_CLASS,
+    SG_CONFIIRM: header.SG_CONFIIRM == "" ? new Date() : header.SG_CONFIIRM,
+  };
+  delete header.SG_USER;
+  delete header.SE_USER;
+  delete header.SALE_CLASS;
+  delete header.SG_CONFIIRM;
+  header.INQ_STATUS = status;
+  header.UPDATE_BY = $("#user-login").attr("empname");
+  header.UPDATE_AT = new Date();
+
+  let deleteLine = [];
+  if (deletedLineMap.size > 0) {
+    deletedLineMap.forEach((value, key) => {
+      deleteLine.push(key);
+    });
+  }
+
+  let deleteFile = [];
+  if (deletedFilesMap.size > 0) {
+    deletedFilesMap.forEach((value, key) => {
+      deleteFile.push(key);
+    });
+  }
+  const fomdata = {
+    header,
+    details,
+    deleteLine,
+    deleteFile,
+    timelinedata,
+  };
+  const inquiry = await inqservice.updateInquiry(fomdata);
+  if (selectedFilesMap.size > 0) {
+    const attachment_form = new FormData();
+    attachment_form.append("INQ_NO", inquiry.INQ_NO);
+    selectedFilesMap.forEach((file, fileName) => {
+      attachment_form.append("files", file, fileName);
+    });
+    await inqservice.createInquiryFile(attachment_form);
+  }
+  return inquiry;
+}

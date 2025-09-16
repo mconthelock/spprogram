@@ -99,7 +99,7 @@ export async function setupTableDetailView(data = []) {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "sticky-column text-right",
+      className: "sticky-column",
     },
     {
       data: "INQD_CAR",
@@ -119,17 +119,17 @@ export async function setupTableDetailView(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
-      className: "text-nowrap min-w-[200px]",
+      className: "text-nowrap min-w-[200px] !text-left",
     },
     {
       data: "INQD_DRAWING",
       title: "Drawing No.",
-      className: "text-nowrap min-w-[200px]",
+      className: "text-nowrap min-w-[200px] !text-left",
     },
     {
       data: "INQD_VARIABLE",
       title: "Variable",
-      className: "min-w-[250px]",
+      className: "min-w-[250px] !text-left",
     },
     {
       data: "INQD_QTY",
@@ -171,12 +171,12 @@ export async function setupTableDetailView(data = []) {
     {
       data: "INQD_MAR_REMARK",
       title: "MAR Remark",
-      className: "min-w-[250px]",
+      className: "min-w-[250px] !text-left",
     },
     {
       data: "INQD_DES_REMARK",
       title: "DE Remark",
-      className: "min-w-[250px]",
+      className: "min-w-[250px] !text-left",
     },
   ];
   return opt;

@@ -26,8 +26,8 @@ import * as tb from "./table.js";
 export const statusColors = () => {
   return [
     { id: 1, color: "bg-gray-500 text-white" }, //Draft
-    { id: 19, color: "bg-indigo-500 text-white" }, //MAR Pre process
-    { id: 29, color: "bg-sky-500" }, //SE
+    { id: 9, color: "bg-indigo-500 text-white" }, //MAR Pre process
+    { id: 19, color: "bg-sky-500 text-white" }, //SE
     { id: 39, color: "bg-amber-500" }, //DE
     { id: 49, color: "bg-slate-500" }, //IS
     { id: 59, color: "bg-pink-500 text-white" }, //FIN
@@ -134,8 +134,9 @@ export async function createFormCard(cardData, data = {}) {
   }
   for (let field of cardData.fields) {
     const fieldWrapper = document.createElement("div");
-    fieldWrapper.className =
-      "grid grid-cols-3 items-center gap-2 min-h-[42px] m-1";
+    fieldWrapper.className = `grid grid-cols-3 items-center gap-2 min-h-[42px] m-1 ${
+      field.type == "hidden" ? "hidden" : ""
+    }`;
     const label = document.createElement("label");
     label.htmlFor = field.id || "";
     label.className = "text-sm font-bold text-gray-600 col-span-1";
@@ -220,13 +221,12 @@ export async function createFieldInput(field) {
       break;
 
     case "hidden":
-      inputContainer.innerHTML(
-        `<input type="hidden" class="${field.class ? field.class : ""}" id="${
-          field.id ? field.id : ""
-        }" name="${field.name ? field.name : ""}" value="${
-          field.value ? field.value : ""
-        }"/>`
-      );
+      const hidden = `<input type="hidden" class="${
+        field.class ? field.class : ""
+      }" id="${field.id ? field.id : ""}" name="${
+        field.name ? field.name : ""
+      }" value="${field.value ? field.value : ""}"/>`;
+      inputContainer.innerHTML = hidden;
       break;
 
     case "staticText":
