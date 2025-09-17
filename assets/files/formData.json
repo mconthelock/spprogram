@@ -316,5 +316,52 @@
                 "name": "INQ_REMARK"
             }
         ]
+    },
+    {
+        "id": "viewsale",
+        "title": "Designer Information",
+        "fields": [
+             {
+                "label": "MAR. In-charge",
+                "id":"mar-incharge",
+                "type": "staticText",
+                "class": "displayname",
+                "mapping":"INQ_MAR_PIC",
+                "name": "INQ_MAR_PIC"
+            },
+            {
+                "label": "Assigner",
+                "id":"mar-incharge",
+                "type": "staticText",
+                "name": "SG_USER",
+                "class": "displayname",
+                "input": true
+            },
+            {
+                "label": "Sale In-charge",
+                "id": "sale-checker",
+                "type": "staticText",
+                "class": "displayname",
+                "name": "SE_USER"
+            },
+            {
+                "label": "",
+                "id": "sale-confirm",
+                "type": "hidden",
+                "name": "SG_CONFIIRM"
+            },
+            {
+                "label": "Design Class",
+                "id": "des-class",
+                "type": "staticText",
+                "name": "SALE_CLASS"
+            },
+            {
+                "label": "Remark",
+                "id": "remark",
+                "type": "textarea" ,
+                "name": "INQ_REMARK"
+            }
+        ]
     }
 ]

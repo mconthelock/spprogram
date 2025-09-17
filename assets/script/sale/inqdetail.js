@@ -11,6 +11,10 @@ Funtion contents
 009 - Add attachment
 010 - Download attached file
 011 - Delete attached file
+012 - Update and send to design
+013 - Update and send to AS400
+014 - Export inquiry list
+015 - Update and send to AS400
 */
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
@@ -34,6 +38,7 @@ var tableAttach;
 let selectedFilesMap = new Map();
 let deletedFilesMap = new Map();
 let deletedLineMap = new Map();
+
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
@@ -47,12 +52,12 @@ $(document).ready(async () => {
     if (inquiry.INQ_STATUS >= 20)
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
 
+    const user = $("#user-login").attr("empno");
     const times = inquiry.timeline;
-    inquiry.SG_USER =
-      times.SG_USER == null ? $("#user-login").attr("empno") : times.SG_USER;
+    inquiry.SG_USER = times.SG_USER == null ? user : times.SG_USER;
+    inquiry.SG_CONFIIRM = times.SG_CONFIIRM;
     inquiry.SE_USER = times.SE_USER;
     inquiry.SALE_CLASS = times.SALE_CLASS;
-    inquiry.SG_CONFIIRM = times.SG_CONFIIRM;
 
     details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
     logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
@@ -88,7 +93,7 @@ async function setupButton() {
     className: "btn-primary text-white hover:shadow-lg",
   });
 
-  const sendDE = await utils.creatBtn({
+  const forwardde = await utils.creatBtn({
     id: "forward-de",
     title: "Forward to DE",
     icon: "fi fi-tr-share-square text-xl",
@@ -110,7 +115,7 @@ async function setupButton() {
   });
 
   const confirm = await utils.creatBtn({
-    id: "draft",
+    id: "send-confirm",
     title: "Confirm",
     icon: "fi fi-tr-badge-check text-xl",
     className: "btn-primary text-white hover:shadow-lg",
@@ -127,8 +132,8 @@ async function setupButton() {
   });
 
   if (usergroup == "SEG")
-    $("#btn-container").append(assign, sendDE, sendIS, back);
-  else $("#btn-container").append(assign, sendDE, sendIS, back);
+    $("#btn-container").append(assign, forwardde, sendIS, back);
+  else $("#btn-container").append(confirm, back);
 }
 
 //002: Add table detail rows
@@ -351,7 +356,7 @@ $(document).on("click", "#send-bm", async function (e) {
       await inqservice.createInquiryFile(attachment_form);
     }
     window.location.replace(
-      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+      `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
   } catch (error) {
     await utils.errorMessage(error);
@@ -414,7 +419,7 @@ $(document).on("click", "#update-de", async function (e) {
       await inqservice.createInquiryFile(attachment_form);
     }
     window.location.replace(
-      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+      `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
   } catch (error) {
     await utils.errorMessage(error);
@@ -455,12 +460,14 @@ $(document).on("click", "#update-bm", async function (e) {
       });
       await inqservice.createInquiryFile(attachment_form);
     }
-    window.location.href = `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+    window.location.href = `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`;
   } catch (error) {
     await utils.errorMessage(error);
     return;
   }
 });
+
+// 015: Update and send to AS400
 
 async function updatePath(status) {
   const header = await inqs.getFormHeader(); //Get header data

@@ -19,6 +19,7 @@ module.exports = {
     //Sale user
     se_inquiry: "./assets/script/sale/inquiry.js",
     se_inqdetail: "./assets/script/sale/inqdetail.js",
+    se_inqviews: "./assets/script/sale/inqview.js",
   },
   output: {
     filename: "[name].js",

@@ -28,8 +28,15 @@ $(document).ready(async () => {
 
 async function tableOpt(data) {
   const colors = await statusColors();
+  const usergroup = $("#user-login").attr("groupcode");
+  let datafilter = data;
+  if (usergroup == "SEG") {
+    datafilter = data.filter((item) => item.INQ_STATUS < 10);
+    console.log(datafilter);
+  }
+
   const opt = utils.tableOpt;
-  opt.data = data;
+  opt.data = datafilter;
   opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-12"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
     {
@@ -153,7 +160,10 @@ async function tableOpt(data) {
       sortable: false,
       title: `<i class='icofont-settings text-lg text-white'></i>`,
       render: (data, type, row, meta) => {
-        return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-process" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a></div>`;
+        if (usergroup == "SEG")
+          return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-process" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a></div>`;
+
+        return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-detail" href="${process.env.APP_ENV}/se/inquiry/detail/${data}">Process</a></div>`;
       },
     },
   ];
