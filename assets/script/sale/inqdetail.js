@@ -43,12 +43,9 @@ $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
     let logs, inquiry, details, file;
-    const currentUrl = window.location.href;
-    if (currentUrl.includes("edit") && $("#inquiry-id").val() != "") {
-      inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
-      if (inquiry.length == 0) throw new Error("Inquiry do not found");
-    }
 
+    inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
+    if (inquiry.length == 0) throw new Error("Inquiry do not found");
     if (inquiry.INQ_STATUS >= 20)
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
 
@@ -323,38 +320,23 @@ $(document).on("click", "#forward-de", async function (e) {
 });
 
 //008: Save and send to AS400
-$(document).on("click", "#send-bm", async function (e) {
+$(document).on("click", "#send-confirm", async function (e) {
   e.preventDefault();
-  const chkheader = await inqs.verifyHeader(".req-2");
+  const chkheader = await inqs.verifyHeader(".req-1");
   if (!chkheader) return;
-  const header = await inqs.getFormHeader();
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length > 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
-    $("#inquiry-no").focus().select();
-    return;
-  }
-  const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, 1);
-    await utils.showLoader({
-      show: true,
-      title: "Saving data",
-      clsbox: `!bg-transparent`,
-    });
-    header.INQ_STATUS = 30;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
-    const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
-    if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
+    let forward = false;
+    let status = 11;
+    table
+      .rows()
+      .data()
+      .toArray()
+      .forEach((dt) => {
+        if (dt.INQD_DE != null) forward = true;
       });
-      await inqservice.createInquiryFile(attachment_form);
-    }
+
+    if (!forward) status = 30;
+    const inquiry = await updatePath(status);
     window.location.replace(
       `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
@@ -367,104 +349,11 @@ $(document).on("click", "#send-bm", async function (e) {
 //012: Update and send to design
 $(document).on("click", "#update-de", async function (e) {
   e.preventDefault();
-  const chkheader = await inqs.verifyHeader(".req-2");
-  if (!chkheader) return;
-  const header = await inqs.getFormHeader();
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length == 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
-    $("#inquiry-no").focus().select();
-    return;
-  }
-
-  try {
-    const details = table.rows().data().toArray();
-    const checkdetail = await inqs.verifyDetail(table, details, 1);
-    await utils.showLoader({
-      show: true,
-      title: "Saving data",
-      clsbox: `!bg-transparent`,
-    });
-    // header.INQ_MAR_SENT = new Date();
-    header.INQ_STATUS = 2;
-    header.UPDATE_BY = $("#user-login").attr("empname");
-    header.UPDATE_AT = new Date();
-
-    let deleteLine = [];
-    if (deletedLineMap.size > 0) {
-      deletedLineMap.forEach((value, key) => {
-        deleteLine.push(key);
-      });
-    }
-
-    let deleteFile = [];
-    if (deletedFilesMap.size > 0) {
-      deletedFilesMap.forEach((value, key) => {
-        deleteFile.push(key);
-      });
-    }
-    const fomdata = {
-      header,
-      details,
-      deleteLine,
-      deleteFile,
-    };
-    const inquiry = await inqservice.updateInquiry(fomdata);
-    if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
-      });
-      await inqservice.createInquiryFile(attachment_form);
-    }
-    window.location.replace(
-      `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
-    );
-  } catch (error) {
-    await utils.errorMessage(error);
-    return;
-  }
 });
 
 //013: Update and send to AS400
 $(document).on("click", "#update-bm", async function (e) {
   e.preventDefault();
-  const chkheader = await inqs.verifyHeader(".req-2");
-  if (!chkheader) return;
-  const header = await inqs.getFormHeader();
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length > 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
-    $("#inquiry-no").focus().select();
-    return;
-  }
-  const details = table.rows().data().toArray();
-  try {
-    const checkdetail = await inqs.verifyDetail(table, details, 1);
-    await utils.showLoader({
-      show: true,
-      title: "Saving data",
-      clsbox: `!bg-transparent`,
-    });
-    header.INQ_STATUS = 30;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
-    const fomdata = { header, details };
-    const inquiry = await inqservice.createInquiry(fomdata);
-    if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
-      });
-      await inqservice.createInquiryFile(attachment_form);
-    }
-    window.location.href = `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`;
-  } catch (error) {
-    await utils.errorMessage(error);
-    return;
-  }
 });
 
 // 015: Update and send to AS400
@@ -506,12 +395,22 @@ async function updatePath(status) {
       deleteFile.push(key);
     });
   }
+
+  const history = {
+    INQ_NO: header.INQ_NO,
+    INQ_REV: header.INQ_REV,
+    INQH_USER: $("#user-login").attr("empno"),
+    INQH_ACTION: status,
+    INQH_REMARK: header.INQ_REMARK,
+  };
+
   const fomdata = {
     header,
     details,
     deleteLine,
     deleteFile,
     timelinedata,
+    history,
   };
   const inquiry = await inqservice.updateInquiry(fomdata);
   if (selectedFilesMap.size > 0) {

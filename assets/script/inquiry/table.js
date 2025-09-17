@@ -44,6 +44,8 @@ export async function addRow(id, table) {
 export async function changeCell(table, el) {
   const cell = table.cell($(el).closest("td"));
   let newValue = $(el).val();
+  if ($(el).attr("type") === "checkbox" && !$(el).is(":checked"))
+    newValue = null;
   if ($(el).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
   if ($(el).attr("type") === "number") newValue = utils.intVal(newValue);
   if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();

@@ -73,7 +73,7 @@ export async function setupTableDetail(data = []) {
           const log = renderLog(data, row.logs, "INQD_SEQ");
           const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
             log ? "detail-log" : ""
-          }" value="${data}">`;
+          }" value="${data}" ${row.INQD_OWNER != "MAR" ? "" : "readonly"}/>`;
           return renderText(str, row.logs, "INQD_SEQ");
         }
         return data;
@@ -241,13 +241,15 @@ export async function setupTableDetail(data = []) {
       },
     },
     {
-      data: null,
+      data: "INQD_DE",
       title: `<i class="fi fi-tr-share-square text-xl"></i>`,
       className: "text-center",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm  checkbox-warning"/>`;
+          return `<input type="checkbox" class="checkbox checkbox-sm  checkbox-warning edit-input" value="1" ${
+            data == "" || data == null ? "" : "checked"
+          }/>`;
         }
         return data;
       },
@@ -267,6 +269,7 @@ export async function setupTableDetail(data = []) {
       },
     },
   ];
+
   opt.initComplete = function (settings, json) {
     const btn = `<div class="flex gap-2 ">
       <div class="tooltip" data-tip="Add line">
