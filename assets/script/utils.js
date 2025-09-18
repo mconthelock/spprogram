@@ -1,7 +1,5 @@
 import moment from "moment";
 import { initAuthen } from "@public/authen.js";
-import { showbgLoader } from "@public/preloader";
-
 export const initApp = async (opt = {}) => {
   try {
     await initAuthen({
