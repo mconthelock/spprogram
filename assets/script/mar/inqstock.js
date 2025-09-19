@@ -18,15 +18,14 @@ import "@styles/datatable.min.css";
 
 import { createTable } from "@public/_dataTable.js";
 import * as inqservice from "../service/inquiry.js";
+import * as items from "../service/items.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
-import * as tbmar from "../inquiry/table_mar.js";
+import * as tbmar from "../inquiry/table_stock.js";
 
 //001: On load form
 var table;
-var tableElmes;
-var tableAttach;
 let selectedFilesMap = new Map();
 let deletedFilesMap = new Map();
 let deletedLineMap = new Map();
@@ -48,19 +47,15 @@ $(document).ready(async () => {
       logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
       file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
     }
+
     const cards = await inqs.setupCard(inquiry);
     const tableContainer = await tbmar.setupTableDetail(details);
     table = await createTable(tableContainer);
 
-    const history = await tb.setupTableHistory(logs);
-    await createTable(history, { id: "#history" });
-
-    const attachment = await tb.setupTableAttachment(file);
-    tableAttach = await createTable(attachment, { id: "#attachment" });
-
     const btn = await setupButton(mode);
-    const reason = await inqs.createReasonModal();
-    const elmes = await inqs.elmesComponent();
+    $("#inquiry-no").addClass("stockpart");
+    $("#remark").closest(".grid").addClass("hidden");
+    $("#currency").closest(".grid").removeClass("hidden");
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
@@ -69,41 +64,23 @@ $(document).ready(async () => {
   }
 });
 
+$(document).on("keyup", ".stockpart", async function (e) {
+  $("#project-no").val($(this).val());
+});
+
 async function setupButton(mode) {
-  const sendDE = await utils.creatBtn({
-    id: "send-de",
-    title: "Send to Design",
+  const additems = await utils.creatBtn({
+    id: "add-item",
+    title: "Add item",
+    icon: "fi fi-rr-shopping-cart text-xl",
+    className: "btn-neutral hover:bg-neutral/70 hover:shadow-lg",
+  });
+
+  const savedata = await utils.creatBtn({
+    id: "savedata",
+    title: "Save Data",
     icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
-  });
-
-  const updateDE = await utils.creatBtn({
-    id: "update-de",
-    title: "Send to Design",
-    icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
-  });
-
-  const sendIS = await utils.creatBtn({
-    id: "send-bm",
-    title: "Send to Pre-BM",
-    icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
-  });
-
-  const updateIS = await utils.creatBtn({
-    id: "update-bm",
-    title: "Send to Pre-BM",
-    icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
-  });
-
-  const draft = await utils.creatBtn({
-    id: "draft",
-    title: "Send Draft",
-    icon: "fi fi-ts-clipboard-list text-xl",
-    className:
-      "btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg",
+    className: "btn-primary text-white hover:shadow-lg hover:bg-primary/70",
   });
 
   const back = await utils.creatBtn({
@@ -116,23 +93,34 @@ async function setupButton(mode) {
       "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
   });
 
-  if (mode == "edit") $("#btn-container").append(updateDE, updateIS, back);
-  else $("#btn-container").append(sendDE, sendIS, draft, back);
+  $("#btn-container").append(additems, savedata, back);
 }
 
 //002: Add table detail rows
-$(document).on("click", "#addRowBtn", async function (e) {
+$(document).on("click", "#add-item", async function (e) {
   e.preventDefault();
-  const lastRow = table.row(":not(.d-none):last").data();
-  let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
+  const id = utils.digits(table.rows().data().length + 1);
   await tb.addRow(id, table);
 });
 
-$(document).on("click", ".add-sub-line", async function (e) {
+$(document).on("change", ".itemno", async function (e) {
   e.preventDefault();
-  const data = table.row($(this).parents("tr")).data();
-  const id = utils.digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
-  await tb.addRow(id, table);
+  const itemno = $(this).val();
+  const itemslist = await items.getItems({
+    ITEM_NO: itemno,
+    ITEM_STATUS: 1,
+  });
+  const pricelist = itemslist.fileter((it) => {
+    const price = it.prices.find((pr) => pr.PRICE_TYPE == "SP");
+    return it.ITEM_PRICE > 0;
+  });
+  console.log(pricelist);
+});
+
+$(document).on("click", "#price-list-cancel", async function (e) {
+  e.preventDefault();
+  $("#table-price-list").html("");
+  $("#new-stock-item").prop("checked", false);
 });
 
 $(document).on("click", ".delete-sub-line", async function (e) {
@@ -147,129 +135,6 @@ $(document).on("click", ".delete-sub-line", async function (e) {
 
 $(document).on("change", ".edit-input", async function () {
   await tb.changeCell(table, this);
-});
-
-$(document).on("change", ".carno", async function (e) {
-  await tb.changeCar(table, this);
-});
-
-//003: Show Elmes table
-$(document).on("change", ".elmes-input", async function (e) {
-  e.preventDefault();
-  const row = table.row($(this).closest("tr"));
-  tableElmes = await inqs.elmesSetup(row);
-  //await tb.changeCell(table, this);
-});
-
-$(document).on("click", "#elmes-confirm", async function () {
-  const increse = 1;
-  const elmesData = tableElmes.rows().data();
-  await inqs.elmesConform(elmesData, increse, table);
-});
-
-$(document).on("click", "#elmes-cancel", async function () {
-  await inqs.elmesCancel(table);
-});
-
-//004: Unable to reply checkbox
-$(document).on("click", ".unreply", async function () {
-  await inqs.clickUnreply(table.row($(this).parents("tr")));
-});
-
-$(document).on("click", "#cancel-reason", async function () {
-  await inqs.resetUnreply(table);
-});
-
-$(document).on("click", "#save-reason", async function () {
-  await inqs.saveUnreply(table);
-});
-
-$(document).on("click", ".text-comment", async function () {
-  $("#reason-99").prop("checked", true);
-});
-
-$(document).on("keyup", ".text-comment", async function () {
-  await inqs.countReason(this);
-});
-// END: Unable to reply checkbox
-
-//005: Import data from file
-$(document).on("click", "#uploadRowBtn", async function (e) {
-  $("#import-tsv").click();
-});
-
-$(document).on("change", "#import-tsv", async function (e) {
-  const file = e.target.files[0];
-  const ext = utils.fileExtension(file.name);
-  const allow = ["xlsx", "tsv", "txt"];
-  if (!allow.includes(ext)) {
-    const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
-      ", "
-    )}`;
-    utils.showMessage(msg);
-    return;
-  }
-
-  var newdata = null;
-  if (ext === "xlsx") {
-    newdata = await inqs.importExcel(file);
-  } else {
-    newdata = await inqs.importText(file);
-  }
-
-  if (newdata == null) {
-    utils.showMessage("No data found in the file.");
-    return;
-  }
-
-  newdata.forEach(async function (row) {
-    table.row.add(row).draw();
-  });
-});
-//End :Import date from File
-
-//009: Add attachment
-$(document).on("change", "#attachment-file", async function (e) {
-  const datafile = await inqs.addAttached(e, selectedFilesMap);
-  if (datafile.files.length > 0) {
-    selectedFilesMap = datafile.selectedFilesMap;
-    datafile.files.map((fs) => {
-      tableAttach.row.add(fs).draw();
-    });
-  }
-});
-
-//010: Download attached file
-$(document).on("click", ".download-att-client", function (e) {
-  e.preventDefault();
-  const row = tableAttach.row($(this).closest("tr"));
-  const data = row.data();
-  const fileName = data.FILE_ORIGINAL_NAME;
-  tb.downloadClientFile(selectedFilesMap, fileName);
-});
-
-//011: Delete attached file
-$(document).on("click", ".delete-att", function (e) {
-  e.preventDefault();
-  const row = tableAttach.row($(this).closest("tr"));
-  const data = row.data();
-  if (data.FILE_ID !== undefined) {
-    deletedFilesMap.set(data);
-  }
-  const fileName = data.FILE_ORIGINAL_NAME;
-  selectedFilesMap.delete(fileName);
-  row.remove().draw(false);
-});
-
-//Download template
-$(document).on("click", "#downloadTemplateBtn", async function (e) {
-  e.preventDefault();
-  const link = document.createElement("a");
-  link.href = `${process.env.APP_ENV}/assets/files/export/Import_inquiry_template.xlsx`;
-  link.download = "Import_inquiry_template.xlsx";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 });
 
 //Submit Form

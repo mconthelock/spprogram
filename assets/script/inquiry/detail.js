@@ -15,9 +15,8 @@ import { createTable, destroyTable } from "@public/_dataTable.js";
 import { readInput } from "@public/_excel.js";
 import { displayEmpInfo } from "@public/setIndexDB.js";
 import { getReason } from "../service/master";
-import { getElmesItem, getElmesDrawing } from "../service/elmes.js";
+import { getElmesItem } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";
-import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
 import * as dwg from "../drawing.js";
 import * as source from "./source";
@@ -186,15 +185,17 @@ export async function createFieldInput(field) {
             class="w-full border border-gray-300 rounded-md p-2 bg-white select2 ${
               field.class !== undefined ? field.class : ""
             }"
-            data-mapping="${field.mapping}">${optStr}</select>`;
+            data-mapping="${
+              field.mapping !== undefined ? field.mapping : ""
+            }">${optStr}</select>`;
       inputContainer.innerHTML = selectInput;
       elementToListen = inputContainer.querySelector(`#${field.id}`);
       setTimeout(() => {
         const jQueryElement = $(`#${field.id}`);
         jQueryElement.select2({ width: "100%" });
-
-        if (field.onChange && eventHandlers[field.onChange]) {
-          jQueryElement.on("change", eventHandlers[field.onChange]);
+        jQueryElement.removeAttr("aria-hidden");
+        if (field.onChange && source.events[field.onChange]) {
+          jQueryElement.on("change", source.events[field.onChange]);
         }
       }, 1000);
       break;
@@ -257,11 +258,13 @@ export async function createFieldInput(field) {
         </label>`;
       inputContainer.innerHTML = inputLabel;
       elementToListen = inputContainer.querySelector(`#${field.id}`);
+      if (elementToListen && field.onChange && source.events[field.onChange]) {
+        elementToListen.addEventListener(
+          "change",
+          source.events[field.onChange]
+        );
+      }
       break;
-  }
-
-  if (elementToListen && field.onChange && source.events[field.onChange]) {
-    elementToListen.addEventListener("change", source.events[field.onChange]);
   }
   return inputContainer;
 }
@@ -576,7 +579,7 @@ export async function elmesSetup(row) {
       INQD_ITEM: item,
     };
     row.data(newData);
-    row.draw(false);
+    //row.draw(false);
     tableElmes = null;
     $(row.node()).find(".partname").focus();
   }
@@ -690,7 +693,6 @@ export async function verifyDetail(table, data, savelevel = 0) {
 
   let check = true;
   let message = [];
-  const duplicates = [];
   const seenKeys = new Set();
   if (data.length == 0) throw new Error(`Please insert inquiry detail.`);
   data.map(async (item, i) => {
@@ -707,8 +709,8 @@ export async function verifyDetail(table, data, savelevel = 0) {
 
     if (utils.intVal(item.INQD_SEQ) <= 0) {
       check = false;
-      row.find(".seqno").addClass("border-red-500");
       message.push(`Please input seq no.`);
+      errorEl(row.find(".seqno"));
       return;
     }
 
@@ -726,6 +728,8 @@ export async function verifyDetail(table, data, savelevel = 0) {
     if (item.INQD_PARTNAME == "") {
       check = false;
       message.push(`Please input Part name`);
+      errorEl(row.find(".partname"));
+      return;
     }
 
     //Save data to Database
@@ -735,10 +739,10 @@ export async function verifyDetail(table, data, savelevel = 0) {
       const hasAtt = $("#attachment-file")[0].files.length;
       if (item.INQD_DRAWING == "" && hasAtt == 0) {
         check = false;
-        row.find(".drawing-line").addClass("border-red-500");
         message.push(
           `Please input Drawing no. or add some attachement to reference declaring part`
         );
+        errorEl(row.find(".drawing-line"));
         return;
       }
     }
@@ -746,29 +750,39 @@ export async function verifyDetail(table, data, savelevel = 0) {
     if (savelevel == 2) {
       if (item.INQD_DRAWING == "") {
         check = false;
-        row.find(".drawing-line").addClass("border-red-500");
         message.push(`Please input Drawing no.`);
+        errorEl(row.find(".drawing-line"));
         return;
       }
 
       const dwgno = dwg.validateDrawingNo(item.INQD_DRAWING);
       if (dwgno == null) {
         check = false;
-        row.find(".drawing-line").addClass("border-red-500");
         message.push(`Please check Drawing no. format.`);
+        errorEl(row.find(".drawing-line"));
         return;
+      }
+
+      if (item.INQD_VARIABLE != "") {
+        const variavle = dwg.validateVariable(item.INQD_VARIABLE);
+        if (!variavle.isValid) {
+          check = false;
+          message.push(`Please check Variable format.`);
+          errorEl(row.find(".variable-line"));
+          return;
+        }
       }
 
       if (item.INQD_UNREPLY == "" && item.INQD_SUPPLIER == "") {
         check = false;
-        errorEl(row.find(".supplier-line"));
         message.push(`Please select supplier.`);
+        errorEl(row.find(".supplier-line"));
         return;
       }
       if (item.INQD_UNREPLY != "" && row.find(".remark").val() == "") {
         check = false;
-        errorEl(row.find(".remark-line"));
         message.push(`Please input remark for unable to reply reason.`);
+        errorEl(row.find(".remark-line"));
         return;
       }
     }

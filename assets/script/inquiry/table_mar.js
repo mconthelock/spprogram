@@ -141,7 +141,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<textarea class="!w-[225px] uppercase cell-input edit-input" maxlength="150">${
+          return `<textarea class="!w-[225px] uppercase cell-input edit-input drawing-line" maxlength="150">${
             data == null ? "" : data
           }</textarea>`;
         }
@@ -155,7 +155,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type) {
         if (type === "display") {
-          return `<textarea class="!w-[200px] uppercase cell-input edit-input" maxlength="250">${
+          return `<textarea class="!w-[200px] uppercase cell-input edit-input variable-line" maxlength="250">${
             data == null ? "" : data
           }</textarea>`;
         }

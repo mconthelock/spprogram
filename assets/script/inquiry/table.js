@@ -1,5 +1,4 @@
 import moment from "moment";
-import { getMainProject } from "../service/mkt.js";
 import * as source from "./source.js";
 import * as utils from "../utils.js";
 
@@ -38,7 +37,8 @@ export function initRow(id) {
 export async function addRow(id, table) {
   const newRow = await initRow(id);
   const row = table.row.add(newRow).draw();
-  $(row.node()).find("td:eq(3) textarea").focus();
+  if ($(row.node()).find("td:eq(3) textarea").length > 0)
+    $(row.node()).find("td:eq(3) textarea").focus();
 }
 
 export async function changeCell(table, el) {

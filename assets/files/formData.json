@@ -30,6 +30,7 @@
                 "type": "text",
                 "class": "uppercase req-1 req-2",
                 "name": "INQ_NO",
+                "mapping": "INQ_NO",
                 "onChange": "handleInquiryChange"
             },
             {
@@ -236,7 +237,7 @@
         ]
     },
     {
-        "id": "customer",
+        "id": "customers",
         "title": "Customer Information",
         "fields": [
             {
@@ -244,21 +245,20 @@
                 "id": "customer",
                 "type": "select",
                 "source": "getCustomers" ,
-                "mapping": "INQ_CUSTRQS",
-                "name": "INQ_CUSTRQS"
+                "mapping": "INQ_CUSTOMER",
+                "name": "INQ_CUSTOMER",
+                "onChange" :"handleCustomerChange"
             },
             {
                 "label": "Project No",
                 "id": "project-no",
                 "type": "text" ,
                 "class": "uppercase",
-                "onChange": "handleProjectChange",
                 "mapping": "PRJ_NO",
                 "name": "INQ_PRJNO"
             },
             { "label": "Project Name", "id": "project-name", "type": "text" , "mapping": "PRJ_NAME", "name": "INQ_PRJNAME"},
-            { "label": "Shop Order", "id": "shop-order", "type": "text" , "mapping": "ORDER_NO", "name": "INQ_SHOPORDER"},
-            { "label": "Schedule", "id": "schedule", "type": "text" , "mapping": "AMEC_SCHDL", "name": "INQ_PRDSCH"}
+            { "label": "CUSTRQS", "id": "shop-order", "type": "text" , "mapping": "ORDER_NO", "name": "INQ_SHOPORDER"}
         ]
     },
     {

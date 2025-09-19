@@ -12,6 +12,7 @@ module.exports = {
     mar_inquiry: "./assets/script/mar/inquiry.js",
     mar_inqdetail: "./assets/script/mar/inqdetail.js",
     mar_inqviews: "./assets/script/mar/inqview.js",
+    mar_inqstock: "./assets/script/mar/inqstock.js",
     priceratio: "./assets/script/mar/priceratio.js",
     currency: "./assets/script/mar/currency.js",
     mar_items: "./assets/script/mar/items.js",

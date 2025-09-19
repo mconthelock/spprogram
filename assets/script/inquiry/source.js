@@ -109,11 +109,11 @@ export const init = {
   },
 
   getCustomers: async function () {
-    const data = await mkt.getSeries();
-    let options = data.map((series) => {
+    const data = await cus.getCustomer();
+    let options = data.map((customer) => {
       return {
-        id: series.ABBREVIATION,
-        text: series.ABBREVIATION,
+        id: customer.CUS_ID,
+        text: customer.CUS_DISPLAY,
       };
     });
     return options;
@@ -252,10 +252,31 @@ export const events = {
       loader.addClass("hidden");
       return;
     }
+
+    if ($(obj).hasClass("stockpart")) {
+      $("#project-no").val(obj.value);
+    }
     loader.addClass("hidden");
   },
 
-  handleRatioChange: (event) => {},
+  handleRatioChange: (e) => {},
+
+  handleCustomerChange: async (e) => {
+    const obj = e.target;
+    const data = await cus.getCustomer();
+    const customers = data.find((item) => item.CUS_ID == obj.value);
+    $("#project-name").val(customers.CUS_NAME + " STOCK");
+    $("#trader").val("Direct").change();
+    const agent = customers.CUS_AGENT + " (" + customers.CUS_COUNTRY + ")";
+    $("#agent").val(agent).change();
+    $("#country").val(customers.CUS_COUNTRY).change();
+
+    $("#quotation-type").val(customers.CUS_QUOTATION).change();
+    $("#delivery-term").val(customers.CUS_TERM).change();
+    $("#delivery-method").val(2).change();
+    $("#inq-leadtime").val(customers.CUS_LT).change();
+    $("#currency").val(customers.CUS_CURENCY).change();
+  },
 };
 
 export const stockHeader = async (name, item) => {

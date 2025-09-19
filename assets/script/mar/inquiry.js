@@ -245,6 +245,7 @@ $(document).on(
 
     $(this).find(".loading").addClass("hidden");
     $("#confirm_accept").removeClass("deleteinqs");
+    $("#confirm_reason").val("");
     modal.find("button").prop("disabled", false);
     modal.find("#confirm_close").click();
   }
