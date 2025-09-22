@@ -34,9 +34,10 @@ export function initRow(id) {
   };
 }
 
-export async function addRow(id, table) {
+export async function addRow(id, table, data = {}) {
   const newRow = await initRow(id);
-  const row = table.row.add(newRow).draw();
+  data = { ...newRow, ...data };
+  const row = table.row.add(data).draw();
   if ($(row.node()).find("td:eq(3) textarea").length > 0)
     $(row.node()).find("td:eq(3) textarea").focus();
 }

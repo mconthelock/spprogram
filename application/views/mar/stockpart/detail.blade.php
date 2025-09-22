@@ -19,7 +19,7 @@
         <div class="modal-box w-full rounded-none min-w-[100vw] min-h-[100vh]">
             <h3 class="text-lg font-bold pb-2">Price List item!</h3>
             <table id="table-price-list" class="table table-zebra table-edit display text-sm"></table>
-            <div class="flex gap-3">
+            <div class="flex gap-3 mt-5">
                 <button class="btn btn-primary rounded-none text-white hover:bg-primary/70" type="button"
                     id="price-list-confirm"><i class="fi fi-rr-insert text-xl"></i>Confirm</button>
                 <button class="btn btn-error rounded-none" type="button" id="price-list-cancel"><i
@@ -43,6 +43,10 @@
         #table tbody tr td input {
             background: transparent !important;
             border: none !important;
+        }
+
+        #table-price-list thead tr th:first-child::after {
+            display: none;
         }
     </style>
 @endsection

@@ -276,6 +276,8 @@ export const events = {
     $("#delivery-method").val(2).change();
     $("#inq-leadtime").val(customers.CUS_LT).change();
     $("#currency").val(customers.CUS_CURENCY).change();
+
+    $("#add-item").removeClass("btn-disabled");
   },
 };
 

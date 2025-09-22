@@ -26,6 +26,7 @@ import * as tbmar from "../inquiry/table_stock.js";
 
 //001: On load form
 var table;
+var tablePriceList;
 let selectedFilesMap = new Map();
 let deletedFilesMap = new Map();
 let deletedLineMap = new Map();
@@ -73,14 +74,15 @@ async function setupButton(mode) {
     id: "add-item",
     title: "Add item",
     icon: "fi fi-rr-shopping-cart text-xl",
-    className: "btn-neutral hover:bg-neutral/70 hover:shadow-lg",
+    className: "btn-neutral hover:bg-neutral/70 hover:shadow-lg btn-disabled",
   });
 
   const savedata = await utils.creatBtn({
     id: "savedata",
     title: "Save Data",
     icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white hover:shadow-lg hover:bg-primary/70",
+    className:
+      "btn-primary text-white hover:shadow-lg hover:bg-primary/70 btn-disabled",
   });
 
   const back = await utils.creatBtn({
@@ -101,24 +103,75 @@ $(document).on("click", "#add-item", async function (e) {
   e.preventDefault();
   const id = utils.digits(table.rows().data().length + 1);
   await tb.addRow(id, table);
+
+  const rowNode = table.rows("tr:last").nodes();
+  $(rowNode).find(".itemno").focus();
 });
 
-$(document).on("change", ".itemno", async function (e) {
+$(document).on("keyup", ".itemno", async function (e) {
   e.preventDefault();
   const itemno = $(this).val();
-  const itemslist = await items.getItems({
-    ITEM_NO: itemno,
-    ITEM_STATUS: 1,
+  if (itemno.length < 3) return;
+
+  const itemslist = await items.getItemsCustomer({
+    CUSTOMER_ID: $("#customer").val(),
   });
-  const pricelist = itemslist.fileter((it) => {
-    const price = it.prices.find((pr) => pr.PRICE_TYPE == "SP");
-    return it.ITEM_PRICE > 0;
+  const pricelist = itemslist.filter((item) => item.itemdesc.ITEM_NO == itemno);
+  if (pricelist.length == 0) {
+    await utils.showMessage(`Item ${itemno} is not found on Price List!`);
+    $(this).val("").focus();
+    return;
+  }
+
+  const pricelistTb = await tbmar.setupTablePriceList(pricelist);
+  tablePriceList = await createTable(pricelistTb, {
+    id: "#table-price-list",
+    columnSelect: { status: true },
   });
-  console.log(pricelist);
+  $("#new-stock-item").prop("checked", true);
 });
 
 $(document).on("click", "#price-list-cancel", async function (e) {
   e.preventDefault();
+  $("#table-price-list").html("");
+  $("#new-stock-item").prop("checked", false);
+});
+
+$(document).on("click", "#price-list-confirm", async function (e) {
+  e.preventDefault();
+  const rows = tablePriceList.rows({ selected: true }).data().toArray();
+  if (rows.length == 0) {
+    await utils.showMessage(`Please select item to add!`);
+    return;
+  }
+
+  //delete last row of table
+  const lastRow = table.rows().data().length - 1;
+  table.row(lastRow).remove().draw();
+  let index = lastRow;
+  rows.forEach(async (row) => {
+    if (row.selected) {
+      index = index + 1;
+      const formula = row.customer.rate.FORMULA;
+      const cost = row.itemdesc.prices[0].TCCOST;
+      const price = formula * cost;
+      const newrow = {
+        INQD_ITEM: row.itemdesc.ITEM_NO,
+        INQD_PARTNAME: row.itemdesc.ITEM_NAME,
+        INQD_DRAWING: row.itemdesc.ITEM_DWG,
+        INQD_VARIABLE: row.itemdesc.ITEM_VARIABLE,
+        INQD_UM: row.itemdesc.ITEM_UNIT,
+        INQD_SUPPLIER: row.itemdesc.ITEM_SUPPLIER,
+        INQD_FC_COST: row.itemdesc.prices[0].FCCOST,
+        INQD_FC_BASE: row.itemdesc.prices[0].FCBASE,
+        INQD_TC_COST: row.itemdesc.prices[0].TCCOST,
+        INQD_TC_BASE: row.customer.rate.FORMULA,
+        INQD_UNIT_PRICE: price,
+      };
+      await tb.addRow(index, table, newrow);
+      console.log(index);
+    }
+  });
   $("#table-price-list").html("");
   $("#new-stock-item").prop("checked", false);
 });

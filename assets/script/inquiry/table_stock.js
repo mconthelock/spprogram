@@ -66,7 +66,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "!px-[3px] w-[50px] min-w-[50px] max-w-[50px]",
+      className: "max-w-[50px]",
       sortable: false,
     },
     {
@@ -84,50 +84,40 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
-      className: "!px-[3px]",
-      sortable: false,
-      //   render: function (data, type, row, meta) {
-      //     if (type === "display") {
-      //       return `<textarea class="!w-[250px] cell-input edit-input partname" maxlength="50">${
-      //         data == null ? "" : data
-      //       }</textarea>`;
-      //     }
-      //     return data;
-      //   },
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2">${data}</div>`;
+        }
+        return data;
+      },
     },
     {
       data: "INQD_DRAWING",
       title: "Drawing No.",
-      className: "!px-[3px] drawing-line",
-      sortable: false,
-      //   render: function (data, type, row, meta) {
-      //     if (type === "display") {
-      //       return `<textarea class="!w-[225px] uppercase cell-input edit-input drawing-line" maxlength="150">${
-      //         data == null ? "" : data
-      //       }</textarea>`;
-      //     }
-      //     return data;
-      //   },
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2">${data}</div>`;
+        }
+        return data;
+      },
     },
     {
       data: "INQD_VARIABLE",
       title: "Variable",
-      className: "!px-[3px]",
-      sortable: false,
-      //   render: function (data, type) {
-      //     if (type === "display") {
-      //       return `<textarea class="!w-[200px] uppercase cell-input edit-input variable-line" maxlength="250">${
-      //         data == null ? "" : data
-      //       }</textarea>`;
-      //     }
-      //     return data;
-      //   },
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+        }
+        return data;
+      },
     },
     {
       data: "INQD_QTY",
       title: "Qty.",
-      className: "!px-[3px] w-[75px] min-w-[75px] max-w-[75px] item-no",
-      sortable: false,
+      className: "!px-[3px] max-w-[75px] item-no",
       render: function (data, type, row) {
         if (type === "display") {
           return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
@@ -138,63 +128,228 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_UM",
       title: "U/M",
-      className: "!px-[3px]",
-      sortable: false,
-      //   render: function (data, type, row, meta) {
-      //     data = data == "" ? "PC" : data;
-      //     if (type === "display") {
-      //       return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${data}">`;
-      //     }
-      //     return data;
-      //   },
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2">${data}</div>`;
+        }
+        return data;
+      },
     },
     {
       data: "INQD_SUPPLIER",
       title: "Supplier",
-      className: "!px-[3px] supplier-line",
-      sortable: false,
-      //   render: function (data, type, row) {
-      //     if (type === "display") {
-      //       return `<select class="!w-[100px] select select-sm supplier edit-input" ${
-      //         row.INQD_UNREPLY == "" || row.INQD_UNREPLY == null ? "" : "disabled"
-      //       }>
-      //         <option value=""></option>
-      //         <option value="AMEC" ${
-      //           data == "AMEC" ? "selected" : ""
-      //         }>AMEC</option>
-      //         <option value="MELINA" ${
-      //           data == "MELINA" ? "selected" : ""
-      //         }>MELINA</option>
-      //         <option value="LOCAL" ${
-      //           data == "LOCAL" ? "selected" : ""
-      //         }>LOCAL</option>
-      //       </select>`;
-      //     }
-      //     return data;
-      //   },
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2">${data}</div>`;
+        }
+        return data;
+      },
     },
-    // {
-    //   data: "INQD_MAR_REMARK",
-    //   className: "remark-line",
-    //   title: "Remark",
-    //   sortable: false,
-    //   render: function (data, type, row, meta) {
-    //     if (type === "display") {
-    //       return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${
-    //         data == null ? "" : data
-    //       }</textarea>`;
-    //     }
-    //     return data;
-    //   },
-    // },
-    { data: "INQD_FC_COST", title: "FC Cost" },
-    { data: "INQD_FC_BASE", title: "FC Base" },
-    { data: "INQD_TC_COST", title: "TC Cost" },
-    { data: "INQD_TC_BASE", title: "TC Base" },
-    { data: "INQD_UNIT_PRICE", title: "Unit Price" },
+    {
+      data: "INQD_FC_COST",
+      title: "FC Cost",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "INQD_FC_BASE",
+      title: "FC Base",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "INQD_TC_COST",
+      title: "TC Cost",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "INQD_TC_BASE",
+      title: "TC Base",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "INQD_UNIT_PRICE",
+      title: "Unit Price",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+        }
+        return data;
+      },
+    },
   ];
   opt.initComplete = function (settings, json) {};
   return opt;
 }
 
-export async function setupTablePriceList() {}
+export async function setupTablePriceList(data) {
+  const opt = { ...utils.tableOpt };
+  opt.data = data;
+  opt.lengthChange = false;
+  opt.responsive = false;
+  opt.pageLength = 10;
+  opt.orderFixed = [0, "asc"];
+  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "l><"flex items-center table-option mb-3"f>><"bg-white border border-slate-300 rounded-2xl"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.columns = [
+    { data: "itemdesc.ITEM_NO", title: "Item No" },
+    {
+      data: "itemdesc.ITEM_NAME",
+      title: "Part Name",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.ITEM_DWG",
+      title: "Drawing No",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.ITEM_VARIABLE",
+      title: "Variable",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.ITEM_UNIT",
+      title: "Unit",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.ITEM_SUPPLIER",
+      title: "Supplier",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.prices",
+      title: "FC Cost",
+      className: "text-right!",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(
+            data[0].FCBASE,
+            2
+          )}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.prices",
+      title: "FC Rate",
+      className: "text-right!",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(
+            data[0].FCBASE,
+            2
+          )}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "itemdesc.prices",
+      title: "TC Cost",
+      className: "text-right!",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(
+            data[0].FCBASE,
+            2
+          )}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "customer.rate",
+      title: "TC Rate",
+      className: "text-right!",
+      render: function (data, type) {
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(
+            data.FORMULA,
+            3
+          )}</div>`;
+        }
+        return data;
+      },
+    },
+    {
+      data: "customer.rate",
+      title: "Unit Price",
+      className: "text-right!",
+      render: (data, type, row) => {
+        const formula = data.FORMULA;
+        const cost = row.itemdesc.prices[0].TCCOST;
+        const price = formula * cost;
+        if (type === "display") {
+          data = data == null ? "" : data;
+          return `<div class="px-2 text-right!">${utils.digits(
+            price,
+            3
+          )}</div>`;
+        }
+        return price;
+      },
+    },
+  ];
+  return opt;
+}
