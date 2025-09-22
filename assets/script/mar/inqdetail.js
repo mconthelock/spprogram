@@ -17,6 +17,7 @@ import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 
 import { createTable } from "@public/_dataTable.js";
+import { setDatePicker } from "@public/_flatpickr.js";
 import * as inqservice from "../service/inquiry.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
@@ -61,6 +62,7 @@ $(document).ready(async () => {
     const btn = await setupButton(mode);
     const reason = await inqs.createReasonModal();
     const elmes = await inqs.elmesComponent();
+    const date = await setDatePicker();
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);

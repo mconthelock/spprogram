@@ -5,18 +5,18 @@ Funtion contents
 003 - Show Elmes table
 004 - Unable to reply checkbox
 005 - Import data from file
-006 - Save Draft
-007 - Save and send to design
-008 - Save and send to AS400
+007 - Save and create Quotation
 009 - Add attachment
 010 - Download attached file
 011 - Delete attached file
 */
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
+import "@styles/flatpickr.min.css";
 import "@styles/datatable.min.css";
 
 import { createTable } from "@public/_dataTable.js";
+import { setDatePicker, fpkDayOff } from "@public/_flatpickr.js";
 import * as inqservice from "../service/inquiry.js";
 import * as items from "../service/items.js";
 import * as utils from "../utils.js";
@@ -57,6 +57,7 @@ $(document).ready(async () => {
     $("#inquiry-no").addClass("stockpart");
     $("#remark").closest(".grid").addClass("hidden");
     $("#currency").closest(".grid").removeClass("hidden");
+    const date = await setDatePicker({ ...fpkDayOff() });
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
@@ -103,7 +104,6 @@ $(document).on("click", "#add-item", async function (e) {
   e.preventDefault();
   const id = utils.digits(table.rows().data().length + 1);
   await tb.addRow(id, table);
-
   const rowNode = table.rows("tr:last").nodes();
   $(rowNode).find(".itemno").focus();
 });
@@ -146,9 +146,10 @@ $(document).on("click", "#price-list-confirm", async function (e) {
   }
 
   //delete last row of table
-  const lastRow = table.rows().data().length - 1;
-  table.row(lastRow).remove().draw();
-  let index = lastRow;
+  const lastRowNode = table.rows("tr:last").nodes()[0];
+  const lastRowIndex = table.row(lastRowNode).index();
+  let index = lastRowIndex;
+  table.row(lastRowIndex).remove().draw();
   rows.forEach(async (row) => {
     if (row.selected) {
       index = index + 1;
@@ -167,13 +168,14 @@ $(document).on("click", "#price-list-confirm", async function (e) {
         INQD_TC_COST: row.itemdesc.prices[0].TCCOST,
         INQD_TC_BASE: row.customer.rate.FORMULA,
         INQD_UNIT_PRICE: price,
+        INQD_OWNER: "MAR",
       };
       await tb.addRow(index, table, newrow);
-      console.log(index);
     }
   });
   $("#table-price-list").html("");
   $("#new-stock-item").prop("checked", false);
+  $("#savedata").removeClass("btn-disabled");
 });
 
 $(document).on("click", ".delete-sub-line", async function (e) {
@@ -191,25 +193,9 @@ $(document).on("change", ".edit-input", async function () {
 });
 
 //Submit Form
-//006: Save Draft
-$(document).on("click", "#draft", async function (e) {
-  e.preventDefault();
-  await createPath({ level: 1, status: 1 });
-});
-
 //007: Save and send to design
-$(document).on("click", "#send-de", async function (e) {
+$(document).on("click", "#savedata", async function (e) {
   e.preventDefault();
-  await createPath({ level: 1, status: 2 });
-});
-
-//008: Save and send to AS400
-$(document).on("click", "#send-bm", async function (e) {
-  e.preventDefault();
-  await createPath({ level: 2, status: 30 });
-});
-
-async function createPath(opt) {
   const chkheader = await inqs.verifyHeader(".req-2");
   if (!chkheader) return;
   const header = await inqs.getFormHeader();
@@ -219,41 +205,38 @@ async function createPath(opt) {
     $("#inquiry-no").focus().select();
     return;
   }
+
   const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, opt.level);
+    if (details.length == 0) throw new Error("Please add item to inquiry!");
+    let qty = true;
+    details.forEach((dt) => {
+      if (dt.INQD_QTY == "" || dt.INQD_QTY == null || dt.INQD_QTY == 0)
+        qty = false;
+    });
+    if (!qty) throw new Error("Please enter quantity for all items!");
+    /*const checkdetail = await inqs.verifyDetail(table, details, 2);*/
     await utils.showLoader({
       show: true,
       title: "Saving data",
       clsbox: `!bg-transparent`,
     });
-    header.INQ_STATUS = opt.status;
-    header.INQ_TYPE = "SP";
+
+    header.INQ_STATUS = 99;
+    header.INQ_TYPE = "Secure";
     header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
-    if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
-      });
-      await inqservice.createInquiryFile(attachment_form);
-    }
+    //Create Quotation data
 
-    if (opt.status == 1)
-      window.location.replace(
-        `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
-      );
-    else
-      window.location.replace(
-        `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
-      );
+    window.location.replace(
+      `${process.env.APP_ENV}/mar/stockpart/view/${inquiry.INQ_ID}`
+    );
   } catch (error) {
     await utils.errorMessage(error);
     return;
   }
-}
+});
 
 //012: Update and send to design
 $(document).on("click", "#update-de", async function (e) {

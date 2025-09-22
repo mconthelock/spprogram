@@ -223,6 +223,11 @@ export const events = {
     };
 
     const obj = e.target;
+    if ($(obj).hasClass("stockpart")) {
+      $("#project-no").val(obj.value);
+      return;
+    }
+
     const loader = $(obj).closest(".input").find(".loading");
     loader.removeClass("hidden");
     const values = await utils.setInquiryNo(obj.value);
@@ -253,9 +258,6 @@ export const events = {
       return;
     }
 
-    if ($(obj).hasClass("stockpart")) {
-      $("#project-no").val(obj.value);
-    }
     loader.addClass("hidden");
   },
 
@@ -278,6 +280,7 @@ export const events = {
     $("#currency").val(customers.CUS_CURENCY).change();
 
     $("#add-item").removeClass("btn-disabled");
+    $("#inquiry-no").focus().select();
   },
 };
 

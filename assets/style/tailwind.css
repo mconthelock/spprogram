@@ -132,23 +132,6 @@
     display: flex !important;
   }
 
-  .dark {
-    --color-primary: 255, 0, 0;
-    --color-secondary: 107, 114, 128;
-    --color-navy: #1d2b53;
-    --color-accent: 232, 159, 2;
-    --color-card: 0, 0, 0;
-    --color-border: 216, 218, 223;
-    --color-body: 229, 231, 235;
-  }
-
-  .loader {
-    height: 5rem;
-    aspect-ratio: 1;
-    border: 3px solid #ffffff;
-    animation: l4 2s infinite;
-  }
-
   table > thead > tr > th {
     @apply !text-center;
   }
@@ -261,40 +244,9 @@
     background-color: #fff !important;
   }
 
-  @keyframes l4 {
-    0% {
-      aspect-ratio: 1;
-      border-radius: 50px;
-    }
-    25% {
-      aspect-ratio: 2;
-      border-radius: 50px;
-    }
-    50% {
-      aspect-ratio: 2;
-      border-radius: 0;
-    }
-    75% {
-      aspect-ratio: 1;
-      border-radius: 0;
-    }
-    100% {
-      aspect-ratio: 1;
-      border-radius: 50px;
-    }
-  }
-
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-  }
-  .fade-out-element {
-    animation: fadeOut 1s ease-out forwards;
+  .day-off:not(.selected) {
+    background-color: var(--color-gray-400) !important;
+    color: var(--color-gray-900) !important;
+    /* pointer-events: auto !important; */
   }
 }

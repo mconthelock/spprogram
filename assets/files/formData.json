@@ -43,8 +43,8 @@
             {
                 "label": "Inquiry Date",
                 "id": "inquiry-date",
-                "type": "date",
-                "class": "req-2",
+                "type": "text",
+                "class": "fdate req-2",
                 "name": "INQ_DATE"
             },
             {
@@ -258,7 +258,7 @@
                 "name": "INQ_PRJNO"
             },
             { "label": "Project Name", "id": "project-name", "type": "text" , "mapping": "PRJ_NAME", "name": "INQ_PRJNAME"},
-            { "label": "CUSTRQS", "id": "shop-order", "type": "text" , "mapping": "ORDER_NO", "name": "INQ_SHOPORDER"}
+            { "label": "CUSTRQS", "id": "custrqs", "type": "text", "class": "fdate", "mapping": "INQ_CUSTRQS", "name": "INQ_CUSTRQS"}
         ]
     },
     {

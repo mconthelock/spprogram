@@ -92,6 +92,9 @@ export async function setFieldValue(field, data = {}) {
   if (field.name == "INQ_DATE")
     field.value = moment(field.value).format("YYYY-MM-DD");
 
+  if (field.name == "INQ_CUSTRQS")
+    field.value = moment(field.value).format("YYYY-MM-DD");
+
   if (field.name == "INQ_AGENT")
     field.value = `${data["INQ_AGENT"]} (${data["INQ_COUNTRY"]})`;
 
@@ -125,6 +128,7 @@ export async function createFormCard(cardData, data = {}) {
     data = {
       ...data,
       INQ_DATE: moment().format("YYYY-MM-DD"),
+      INQ_CUSTRQS: moment().add(61, "days").format("YYYY-MM-DD"),
       INQ_STATUS: 2,
       status: { id: 2, STATUS_DESC: "New" },
       INQ_MAR_PIC: $("#user-login").attr("empno"),
@@ -243,7 +247,7 @@ export async function createFieldInput(field) {
       const inputLabel = `<label class="input bg-white w-full">
             <input type="${field.type}" id="${field.id}"
                 name="${field.name !== undefined ? field.name : field.id}"
-                class="w-full   ${field.class !== undefined ? field.class : ""}"
+                class="w-full ${field.class !== undefined ? field.class : ""}"
                 value="${
                   field.value === undefined || field.value == null
                     ? ""
