@@ -262,6 +262,61 @@
         ]
     },
     {
+        "id": "quotation",
+        "title": "Quotation Information",
+        "fields": [
+            {
+                "label": "Customer",
+                "id": "customer",
+                "type": "select",
+                "source": "getCustomers" ,
+                "mapping": "INQ_CUSTOMER",
+                "name": "INQ_CUSTOMER",
+                "onChange" :"handleCustomerChange"
+            }
+        ]
+    },
+    {
+        "id": "viewquo",
+        "title": "Quotation Information",
+        "fields": [
+            {
+                "label": "Customer",
+                "id": "customer",
+                "type": "staticText",
+                "name": "QUO_CUSTOMER"
+            },
+            {
+                "label": "Issue Date",
+                "type": "staticText",
+                "id": "quodate",
+                "mapping": "QUO_DATE",
+                "name": "QUO_DATE"
+            },
+            {
+                "label": "Offer Vadility",
+                "type": "staticText",
+                "id": "expiredate",
+                "mapping": "QUO_VALIDITY",
+                "name": "QUO_VALIDITY"
+            },
+            {
+                "label": "Series",
+                "type": "staticText",
+                "id": "series",
+                "mapping": "INQ_SERIES",
+                "name": "INQ_SERIES"
+            },
+            {
+                "label": "Additional Notes",
+                "type": "staticText",
+                "id": "quonote",
+                "mapping": "QUO_NOTE",
+                "name": "QUO_NOTE"
+            }
+        ]
+    },
+    {
         "id": "sale",
         "title": "Designer Information",
         "fields": [

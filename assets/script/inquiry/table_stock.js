@@ -51,14 +51,10 @@ export async function setupTableDetail(data = []) {
       className:
         "text-center text-nowrap px-1 w-[50px] min-w-[50px] max-w-[50px]",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
           return `
-          <button class="btn btn-sm btn-circle btn-ghost ${
-            row.INQD_OWNER == "MAR"
-              ? "delete-sub-line text-red-500"
-              : "btn-disabled"
-          }"><i class="fi fi-bs-cross"></i></button>`;
+          <button class="btn btn-sm btn-circle btn-ghost delete-sub-line text-red-500"><i class="fi fi-bs-cross"></i></button>`;
         }
         return data;
       },

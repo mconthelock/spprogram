@@ -3,7 +3,7 @@ import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import moment from "moment";
 import ExcelJS from "exceljs";
-import { createTable, destroyTable } from "@public/_dataTable.js";
+import { createTable } from "@public/_dataTable.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";

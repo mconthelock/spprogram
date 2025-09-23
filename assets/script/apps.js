@@ -5,6 +5,13 @@ $(document).on("click", ".msg-close", function (e) {
   msgbox.remove();
 });
 
+$(document).on("click", ".mainmenu", function () {
+  const m = $(".mainmenu").length;
+  $(".mainmenu").map((i, el) => {
+    $(el).find("details").removeAttr("open");
+  });
+});
+
 $("#confirm_close").on("click", function () {
   $("#confirm_reason").val("");
 });

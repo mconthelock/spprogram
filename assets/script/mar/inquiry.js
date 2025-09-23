@@ -5,7 +5,6 @@ import moment from "moment";
 import ExcelJS from "exceljs";
 
 import { createTable } from "@public/_dataTable.js";
-import { showbgLoader } from "@public/preloader";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
@@ -13,7 +12,11 @@ var table;
 $(async function () {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    const data = await service.getInquiry({});
+    let data = await service.getInquiry({ LE_INQ_STATUS: 90 });
+    if ($("#prebm").val() == "1") {
+      data = data.filter((item) => item.timeline.BM_COFIRM == null);
+    }
+
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
@@ -161,7 +164,7 @@ async function tableOpt(data) {
       data: "INQ_ID",
       className: "text-center w-fit max-w-[118px]",
       sortable: false,
-      title: `<div class="flex justify-center"><i class="fi fi-ss-wrench-simple text-lg"></i></div>`,
+      title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
       render: (data, type, row, meta) => {
         const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${process.env.APP_ENV}/mar/inquiry/view/${data}">View</a>`;
         const edit = `<a class="btn btn-sm btn-neutral " href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;

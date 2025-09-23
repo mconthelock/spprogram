@@ -5,7 +5,13 @@ class Inquiry extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/inquiry/index');
+        $data = array('title' => 'On-Process Inquiry', 'prebm' => '0');
+        $this->views('mar/inquiry/index', $data);
+    }
+
+    public function prebm(){
+        $data = array('title' => 'Pending Pre-BM Inquiry', 'prebm' => '1');
+        $this->views('mar/inquiry/index', $data);
     }
 
     public function create(){
@@ -19,4 +25,9 @@ class Inquiry extends MY_Controller {
     public function view($id){
         $this->views('mar/inquiry/view', array('id' => $id));
     }
+
+    public function report(){
+        $this->views('mar/inquiry/report');
+    }
+
 }

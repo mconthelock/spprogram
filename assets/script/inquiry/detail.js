@@ -30,8 +30,8 @@ export const statusColors = () => {
     { id: 39, color: "bg-amber-500" }, //DE
     { id: 49, color: "bg-slate-500" }, //IS
     { id: 59, color: "bg-pink-500 text-white" }, //FIN
-    { id: 98, color: "bg-red-900" }, //MAR Post process
-    { id: 99, color: "bg-emerald-500" }, //Fihish
+    { id: 98, color: "bg-red-900 text-white" }, //MAR Post process
+    { id: 99, color: "bg-emerald-500 text-white" }, //Fihish
   ];
 };
 

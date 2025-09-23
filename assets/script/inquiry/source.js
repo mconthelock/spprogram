@@ -224,7 +224,7 @@ export const events = {
 
     const obj = e.target;
     if ($(obj).hasClass("stockpart")) {
-      $("#project-no").val(obj.value);
+      $("#project-no").val(obj.value.toUpperCase());
       return;
     }
 

@@ -18,6 +18,7 @@ import "@styles/datatable.min.css";
 import { createTable } from "@public/_dataTable.js";
 import { setDatePicker, fpkDayOff } from "@public/_flatpickr.js";
 import * as inqservice from "../service/inquiry.js";
+import * as quoservice from "../service/quotation.js";
 import * as items from "../service/items.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
@@ -27,9 +28,10 @@ import * as tbmar from "../inquiry/table_stock.js";
 //001: On load form
 var table;
 var tablePriceList;
+let deletedLineMap = new Map();
 let selectedFilesMap = new Map();
 let deletedFilesMap = new Map();
-let deletedLineMap = new Map();
+
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
@@ -168,6 +170,7 @@ $(document).on("click", "#price-list-confirm", async function (e) {
         INQD_TC_COST: row.itemdesc.prices[0].TCCOST,
         INQD_TC_BASE: row.customer.rate.FORMULA,
         INQD_UNIT_PRICE: price,
+        ITEMID: row.itemdesc.ITEM_ID,
         INQD_OWNER: "MAR",
       };
       await tb.addRow(index, table, newrow);
@@ -210,12 +213,14 @@ $(document).on("click", "#savedata", async function (e) {
   try {
     if (details.length == 0) throw new Error("Please add item to inquiry!");
     let qty = true;
+    let isEso = false;
     details.forEach((dt) => {
       if (dt.INQD_QTY == "" || dt.INQD_QTY == null || dt.INQD_QTY == 0)
         qty = false;
+
+      if (parseInt(parseInt(dt.INQD_ITEM) / 100) >= 6) isEso = true;
     });
     if (!qty) throw new Error("Please enter quantity for all items!");
-    /*const checkdetail = await inqs.verifyDetail(table, details, 2);*/
     await utils.showLoader({
       show: true,
       title: "Saving data",
@@ -223,92 +228,28 @@ $(document).on("click", "#savedata", async function (e) {
     });
 
     header.INQ_STATUS = 99;
+    header.INQ_SERIES = isEso ? "JSWZ" : "GPSXL";
+    header.INQ_SPEC = "P1050-CO-120-10S/O";
+    header.INQ_PRDSCH = "201501Z";
     header.INQ_TYPE = "Secure";
     header.INQ_MAR_SENT = new Date();
     const fomdata = { header, details };
     const inquiry = await inqservice.createInquiry(fomdata);
     //Create Quotation data
-
-    window.location.replace(
-      `${process.env.APP_ENV}/mar/stockpart/view/${inquiry.INQ_ID}`
-    );
-  } catch (error) {
-    await utils.errorMessage(error);
-    return;
-  }
-});
-
-//012: Update and send to design
-$(document).on("click", "#update-de", async function (e) {
-  e.preventDefault();
-  if ($("#status").val() >= 10) await updatePath({ level: 2, status: 3 });
-  else await updatePath({ level: 1, status: 2 });
-});
-
-//013: Update and send to AS400
-$(document).on("click", "#update-bm", async function (e) {
-  e.preventDefault();
-  await updatePath({ level: 2, status: 30 });
-});
-
-async function updatePath(opt) {
-  const chkheader = await inqs.verifyHeader(".req-2");
-  if (!chkheader) return;
-  const header = await inqs.getFormHeader();
-  const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-  if (check_inq.length == 0) {
-    await utils.showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
-    $("#inquiry-no").focus().select();
-    return;
-  }
-
-  const details = table.rows().data().toArray();
-  try {
-    const checkdetail = await inqs.verifyDetail(table, details, opt.level);
-    await utils.showLoader({
-      show: true,
-      title: "Saving data",
-      clsbox: `!bg-transparent`,
+    const quotation = await quoservice.createQuotation({
+      QUO_INQ: inquiry.INQ_ID,
+      QUO_REV: inquiry.INQ_REV,
+      QUO_DATE: inquiry.INQ_DATE,
+      QUO_VALIDITY: inquiry.INQ_CUSTRQS,
+      QUO_PIC: inquiry.INQ_MAR_PIC,
+      QUO_LATEST: 1,
     });
 
-    let deleteLine = [];
-    if (deletedLineMap.size > 0) {
-      deletedLineMap.forEach((value, key) => {
-        deleteLine.push(key);
-      });
-    }
-
-    let deleteFile = [];
-    if (deletedFilesMap.size > 0) {
-      deletedFilesMap.forEach((value, key) => {
-        deleteFile.push(key);
-      });
-    }
-
-    header.INQ_STATUS = opt.status;
-    header.UPDATE_BY = $("#user-login").attr("empname");
-    header.UPDATE_AT = new Date();
-
-    const fomdata = {
-      header,
-      details,
-      deleteLine,
-      deleteFile,
-    };
-    const inquiry = await inqservice.updateInquiry(fomdata);
-    if (selectedFilesMap.size > 0) {
-      const attachment_form = new FormData();
-      attachment_form.append("INQ_NO", inquiry.INQ_NO);
-      selectedFilesMap.forEach((file, fileName) => {
-        attachment_form.append("files", file, fileName);
-      });
-      await inqservice.createInquiryFile(attachment_form);
-    }
     window.location.replace(
-      `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+      `${process.env.APP_ENV}/mar/quotation/view/${inquiry.INQ_ID}`
     );
   } catch (error) {
     await utils.errorMessage(error);
     return;
   }
-}
+});

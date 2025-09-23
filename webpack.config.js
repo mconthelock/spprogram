@@ -13,6 +13,8 @@ module.exports = {
     mar_inqdetail: "./assets/script/mar/inqdetail.js",
     mar_inqviews: "./assets/script/mar/inqview.js",
     mar_inqstock: "./assets/script/mar/inqstock.js",
+    mar_quotation: "./assets/script/mar/quotation.js",
+    mar_quoview: "./assets/script/mar/quoview.js",
     priceratio: "./assets/script/mar/priceratio.js",
     currency: "./assets/script/mar/currency.js",
     mar_items: "./assets/script/mar/items.js",
