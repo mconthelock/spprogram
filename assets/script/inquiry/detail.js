@@ -656,7 +656,12 @@ export async function getFormHeader() {
       header.INQ_AGENT =
         $(el).val() == "" ? "" : $(el).val().split("(")[0].trim();
     } else {
-      header[$(el).attr("name")] = $(el).val();
+      if ($(el).attr("name") != undefined) {
+        const value = $(el).hasClass("uppercase")
+          ? $(el).val().toUpperCase()
+          : $(el).val();
+        header[$(el).attr("name")] = value;
+      }
     }
   });
   return header;
