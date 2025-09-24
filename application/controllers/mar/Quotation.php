@@ -23,4 +23,8 @@ class Quotation extends MY_Controller {
     public function view($id){
         $this->views('mar/quotation/view', array('id'=> $id));
     }
+
+    public function viewinq($id){
+        $this->views('mar/quotation/view', array('id'=> $id, 'type' => 'inquiry'));
+    }
 }

@@ -112,7 +112,7 @@ async function setupButton(mode) {
     id: "goback",
     title: "Back",
     type: "link",
-    href: `${process.env.APP_ENV}/mar/inquiry`,
+    href: `#`,
     icon: "fi fi-rr-arrow-circle-left text-xl",
     className:
       "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
@@ -121,6 +121,10 @@ async function setupButton(mode) {
   if (mode == "edit") $("#btn-container").append(updateDE, updateIS, back);
   else $("#btn-container").append(sendDE, sendIS, draft, back);
 }
+$(document).on("click", "#goback", async function (e) {
+  e.preventDefault();
+  window.history.back();
+});
 
 //002: Add table detail rows
 $(document).on("click", "#addRowBtn", async function (e) {

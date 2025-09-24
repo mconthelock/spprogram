@@ -3,9 +3,14 @@
 @section('contents')
     <h2 class="card-title text-2xl">Inquiry Report</h2>
     <div class="divider m-0"></div>
+
+    {{-- <div id="start-report" class="flex justify-center my-6 min-h-[50vh]">
+        <span class="loading loading-spinner"></span>
+    </div> --}}
+
     <table id="table" class="table table-zebra display text-xs"></table>
 
-    <form action="#" id="form-container">
+    <form action="#" id="form-container" class="hidden" autocomplete="off">
         <div class="flex gap-8">
             <div class="flex-1 flex flex-col py-6 px-12 bg-white rounded-lg shadow">
                 <div class="divider divider-start font-bold text-primary">Search By Inquiry Information</div>
@@ -140,7 +145,7 @@
             <a href="#" id="search" class="btn btn-primary rounded-none text-white">
                 <i class="fi fi-ts-assessment text-xl"></i>Search
             </a>
-            <button type="reset" class="btn btn-outline btn-neutral rounded-none">
+            <button type="reset" class="btn btn-outline btn-neutral rounded-none" id="reset-form">
                 <i class="fi fi-ts-feedback-cycle-loop text-xl"></i>Reset
             </button>
         </div>

@@ -11,9 +11,13 @@ var table;
 $(async function () {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    let data = await service.getInquiry({ LE_INQ_STATUS: 90 });
+    let data;
     if ($("#prebm").val() == "1") {
-      data = data.filter((item) => item.timeline.BM_COFIRM == null);
+      data = await service.getInquiry({
+        "timeline.ISNULL_BM_COFIRM": null,
+      });
+    } else {
+      data = await service.getInquiry({ LE_INQ_STATUS: 45 });
     }
 
     const opt = await tableInquiry(data);

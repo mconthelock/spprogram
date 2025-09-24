@@ -33,7 +33,8 @@ export async function setupTableDetail(data = [], type = "SP") {
   const mode = data.length > 0 ? 1 : 0;
   const opt = { ...utils.tableOpt };
   opt.data = data;
-  opt.paging = false;
+  //   opt.paging = false;
+  opt.lengthChange = false;
   opt.searching = false;
   opt.responsive = false;
   opt.info = false;
@@ -270,30 +271,28 @@ export async function setupTableDetail(data = [], type = "SP") {
     let sumUnit = 0;
     let sumTotal = 0;
     api
-      .column(13, { page: "current" })
+      .column(13, { page: "-1" })
       .data()
       .each(function (value) {
-        console.log(value);
-
         sumfcCost += value;
       });
 
     api
-      .column(15, { page: "current" })
+      .column(15, { page: "-1" })
       .data()
       .each(function (value) {
         sumtcCost += value;
       });
 
     api
-      .column(17, { page: "current" })
+      .column(17, { page: "-1" })
       .data()
       .each(function (value) {
         sumUnit += value;
       });
 
     api
-      .column(18, { page: "current" })
+      .column(18, { page: "-1" })
       .data()
       .each(function (value) {
         sumTotal += value;

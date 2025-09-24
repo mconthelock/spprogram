@@ -144,9 +144,16 @@ export async function tableInquiry(data, options = {}) {
       className: "text-center w-fit max-w-[118px]",
       sortable: false,
       title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
-      render: (data) => {
-        const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${process.env.APP_ENV}/mar/inquiry/view/${data}">View</a>`;
-        const edit = `<a class="btn btn-sm btn-neutral " href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
+      render: (data, type, row) => {
+        const viewurl =
+          row.INQ_TYPE == "SP"
+            ? `${process.env.APP_ENV}/mar/inquiry/view/${data}`
+            : `${process.env.APP_ENV}/mar/quotation/viewinq/${data}`;
+        const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${viewurl}">View</a>`;
+
+        const edit = `<a class="btn btn-sm btn-neutral ${
+          row.INQ_TYPE == "SP" ? "" : "btn-disabled"
+        }" href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
         const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
         return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleteBtn}</div>`;
       },
@@ -159,7 +166,7 @@ export async function tableInquiry(data, options = {}) {
         <div tabindex="0" role="button" class="btn btn-outline btn-neutral m-1">New Inquiry</div>
         <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
             <li><a href="${process.env.APP_ENV}/mar/inquiry/create/">SP Inquiry</a></li>
-            <li><a href="${process.env.APP_ENV}/mar/inquiry/createstock/">Stock Part</a></li>
+            <li><a href="${process.env.APP_ENV}/mar/stockpart/create">Stock Part</a></li>
         </ul>
         </div>`);
 

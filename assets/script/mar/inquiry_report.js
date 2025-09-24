@@ -17,21 +17,45 @@ var table;
 $(async function () {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
+    const spinquiryquery = localStorage.getItem("spinquiryquery");
+    if (spinquiryquery) {
+      const data = await service.getInquiry(JSON.parse(spinquiryquery));
+      const opt = await tableInquiry(data, { backReportBtn: true });
+      table = await createTable(opt);
+      $("#form-container").addClass("hidden");
+      $("#table").removeClass("hidden");
+      return;
+    }
+
     $(".select").select2({});
     await setDatePicker();
-
     await setSeries();
     await setOrderType();
     await setTrader();
     await setAgent();
     await setCountry();
     await setStatus();
+    $("#form-container").removeClass("hidden");
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
   } finally {
     await utils.showLoader({ show: false });
   }
+});
+
+$(document).on("click", "#reset-form", async function (e) {
+  e.preventDefault();
+  $("#form-container")[0].reset();
+  $(".select").val(null).trigger("change");
+  localStorage.removeItem("spinquiryquery");
+});
+
+$(document).on("click", "#back-report", async function (e) {
+  e.preventDefault();
+  await destroyTable();
+  $("#form-container").removeClass("hidden");
+  localStorage.removeItem("spinquiryquery");
 });
 
 $(document).on("click", "#search", async function (e) {
@@ -53,18 +77,13 @@ $(document).on("click", "#search", async function (e) {
     table = await createTable(opt);
     $("#form-container").addClass("hidden");
     $("#table").removeClass("hidden");
+    localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
   } finally {
     await utils.showLoader({ show: false });
   }
-});
-
-$(document).on("click", "#back-report", async function (e) {
-  e.preventDefault();
-  await destroyTable();
-  $("#form-container").removeClass("hidden");
 });
 
 export const setSeries = async () => {

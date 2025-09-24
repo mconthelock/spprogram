@@ -7,7 +7,7 @@ import { createTable } from "@public/_dataTable.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
-import * as tbquo from "../inquiry/table_quotation_view.js";
+import * as tbquo from "../quotation/table_view.js";
 import * as service from "../service/inquiry.js";
 import * as cus from "../service/customers.js";
 var table;
@@ -15,7 +15,8 @@ var tableAttach;
 
 $(document).ready(async () => {
   try {
-    await utils.initApp({ submenu: ".navmenu-quotation" });
+    const view = $("#view-type").val() == "inquiry" ? "newinq" : "quotation";
+    await utils.initApp({ submenu: `.navmenu-${view}` });
     const inquiry = await service.getInquiryID($("#inquiry-id").val());
     if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
