@@ -24,14 +24,15 @@ import * as tb from "./table.js";
 
 export const statusColors = () => {
   return [
-    { id: 1, color: "bg-gray-500 text-white" }, //Draft
-    { id: 9, color: "bg-indigo-500 text-white" }, //MAR Pre process
-    { id: 19, color: "bg-sky-500 text-white" }, //SE
-    { id: 39, color: "bg-amber-500" }, //DE
-    { id: 49, color: "bg-slate-500" }, //IS
-    { id: 59, color: "bg-pink-500 text-white" }, //FIN
-    { id: 98, color: "bg-red-900 text-white" }, //MAR Post process
-    { id: 99, color: "bg-emerald-500 text-white" }, //Fihish
+    { id: 1, color: "bg-gray-500" }, //Draft
+    { id: 9, color: "bg-teal-500 text-white" }, //MAR [Pre process]
+    { id: 19, color: "bg-cyan-500" }, //SE
+    { id: 29, color: "bg-blue-500 text-white" }, //DE
+    { id: 39, color: "bg-slate-500 text-white" }, //IS
+    { id: 49, color: "bg-amber-500 text-white" }, //FIN
+    { id: 59, color: "bg-teal-500 text-white" }, //MAR [Post process]
+    { id: 98, color: "bg-red-500" }, //Cancel
+    { id: 99, color: "bg-primary text-white" }, //Finish
   ];
 };
 
@@ -58,10 +59,63 @@ export async function setupCard(data) {
     if (element) {
       form.append(element);
       if ($(element).find("#currency").length > 0) {
-        $(element).find("#currency").closest(".grid").addClass("hidden");
+        //$(element).find("#currency").closest(".grid").addClass("hidden");
       }
     }
   });
+}
+
+export async function createFormCard(cardData, data = {}) {
+  const card = document.createElement("div");
+  card.className = "bg-white rounded-lg shadow-lg overflow-hidden p-4";
+  const header = document.createElement("div");
+  header.className = "divider divider-start divider-primary";
+  const headTxt = document.createElement("span");
+  headTxt.className = "font-extrabold text-md text-primary ps-3";
+  headTxt.textContent = cardData.title;
+  header.appendChild(headTxt);
+  card.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "space-y-4";
+  // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
+  if (Object.keys(data).length === 0) {
+    data = {
+      ...data,
+      INQ_DATE: moment().format("YYYY-MM-DD"),
+      INQ_CUSTRQS: moment().add(61, "days").format("YYYY-MM-DD"),
+      INQ_STATUS: 2,
+      status: { id: 2, STATUS_DESC: "New" },
+      INQ_MAR_PIC: $("#user-login").attr("empno"),
+      INQ_REV: "*",
+    };
+  }
+  for (let field of cardData.fields) {
+    const fieldWrapper = document.createElement("div");
+    if (field.type == "table") {
+      fieldWrapper.className = `w-full mt-2`;
+      const inputElement = await freightTable();
+      fieldWrapper.innerHTML = inputElement;
+      body.appendChild(fieldWrapper);
+      continue;
+    }
+
+    fieldWrapper.className = `grid grid-cols-3 items-center gap-2 min-h-[42px] m-1 ${
+      field.type == "hidden" ? "hidden" : ""
+    }`;
+    const label = document.createElement("label");
+    label.htmlFor = field.id || "";
+    label.className = "text-sm font-bold text-gray-600 col-span-1";
+    label.textContent = field.label;
+    field = await setFieldValue(field, data);
+    const inputElement = await createFieldInput(field);
+    fieldWrapper.appendChild(label);
+    fieldWrapper.appendChild(inputElement);
+    body.appendChild(fieldWrapper);
+  }
+
+  card.appendChild(body);
+  return card;
 }
 
 export async function setFieldValue(field, data = {}) {
@@ -76,6 +130,7 @@ export async function setFieldValue(field, data = {}) {
     return field;
   };
   const dspDetail = (data, topic, cols) => {
+    if (data[topic] == null) return "";
     return data[topic][cols];
   };
 
@@ -108,51 +163,6 @@ export async function setFieldValue(field, data = {}) {
 
   if (field.type == "status") field = dspStatus(data, field);
   return field;
-}
-
-export async function createFormCard(cardData, data = {}) {
-  const card = document.createElement("div");
-  card.className = "bg-white rounded-lg shadow-lg overflow-hidden p-4";
-  const header = document.createElement("div");
-  header.className = "divider divider-start divider-primary";
-  const headTxt = document.createElement("span");
-  headTxt.className = "font-extrabold text-md text-primary ps-3";
-  headTxt.textContent = cardData.title;
-  header.appendChild(headTxt);
-  card.appendChild(header);
-
-  const body = document.createElement("div");
-  body.className = "space-y-4";
-  // ใช้ for...of loop เพื่อให้สามารถใช้ await ได้
-  if (Object.keys(data).length === 0) {
-    data = {
-      ...data,
-      INQ_DATE: moment().format("YYYY-MM-DD"),
-      INQ_CUSTRQS: moment().add(61, "days").format("YYYY-MM-DD"),
-      INQ_STATUS: 2,
-      status: { id: 2, STATUS_DESC: "New" },
-      INQ_MAR_PIC: $("#user-login").attr("empno"),
-      INQ_REV: "*",
-    };
-  }
-  for (let field of cardData.fields) {
-    const fieldWrapper = document.createElement("div");
-    fieldWrapper.className = `grid grid-cols-3 items-center gap-2 min-h-[42px] m-1 ${
-      field.type == "hidden" ? "hidden" : ""
-    }`;
-    const label = document.createElement("label");
-    label.htmlFor = field.id || "";
-    label.className = "text-sm font-bold text-gray-600 col-span-1";
-    label.textContent = field.label;
-    field = await setFieldValue(field, data);
-    const inputElement = await createFieldInput(field);
-    fieldWrapper.appendChild(label);
-    fieldWrapper.appendChild(inputElement);
-    body.appendChild(fieldWrapper);
-  }
-
-  card.appendChild(body);
-  return card;
 }
 
 export async function createFieldInput(field) {
@@ -271,6 +281,34 @@ export async function createFieldInput(field) {
       break;
   }
   return inputContainer;
+}
+
+export async function freightTable() {
+  const weightTypes = [
+    { id: "sea", text: "Sea" },
+    { id: "air", text: "Air" },
+    { id: "courier", text: "Courier" },
+  ];
+  let freightTable = `<table id="table-freight" class="table table-all-cell-border display table-md">
+    <thead>
+        <tr class="bg-gray-200">
+            <th>FREIGHT TYPE</th>
+            <th>FREIGHT</th>
+            <th>VOLUMN</th>
+            <th>TOTAL</th>
+        </tr>
+    </thead>
+    <tbody>`;
+  weightTypes.forEach((type) => {
+    freightTable += `<tr>
+        <td class="!px-3">${type.text}</td>
+        <td><input type="text" class="${type.id}-value freight-value" /></td>
+        <td><input type="text" class="${type.id}-voulumn" readonly /></td>
+        <td><input type="text" class="${type.id}-total" readonly /></td>
+    </tr>`;
+  });
+  freightTable += `</tbody></table>`;
+  return freightTable;
 }
 
 // 002: Import data from file
@@ -457,7 +495,11 @@ export async function createReasonModal() {
   $("body").append(modal);
 }
 
-export async function clickUnreply(row) {
+export async function clickUnreply(obj, row) {
+  if (!obj.is(":checked")) {
+    await resetUnreply(row.table());
+    return;
+  }
   //   const row = table.row($(this).parents("tr"));
   const data = row.data();
   if (data.INQD_UNREPLY != "") {

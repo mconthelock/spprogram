@@ -17,16 +17,6 @@ var table;
 $(async function () {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    const spinquiryquery = localStorage.getItem("spinquiryquery");
-    if (spinquiryquery) {
-      const data = await service.getInquiry(JSON.parse(spinquiryquery));
-      const opt = await tableInquiry(data, { backReportBtn: true });
-      table = await createTable(opt);
-      $("#form-container").addClass("hidden");
-      $("#table").removeClass("hidden");
-      return;
-    }
-
     $(".select").select2({});
     await setDatePicker();
     await setSeries();
@@ -35,6 +25,17 @@ $(async function () {
     await setAgent();
     await setCountry();
     await setStatus();
+
+    const spinquiryquery = localStorage.getItem("spinquiryquery");
+    // if (spinquiryquery) {
+    //   const data = await service.getInquiry(JSON.parse(spinquiryquery));
+    //   const opt = await tableInquiry(data, { backReportBtn: true });
+    //   table = await createTable(opt);
+    //   $("#form-container").addClass("hidden");
+    //   $("#table").removeClass("hidden");
+    //   return;
+    // }
+
     $("#form-container").removeClass("hidden");
   } catch (error) {
     console.log(error);

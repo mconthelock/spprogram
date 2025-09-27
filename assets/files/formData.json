@@ -233,6 +233,15 @@
                 "name": "INQ_SHIPMENT",
                 "topic": "shipment",
                 "mapping":"SHIPMENT_DESC"
+            },
+            {
+                "label": "Currency",
+                "id": "currency",
+                "type": "staticText",
+                "class": "nesting",
+                "topic": "currency",
+                "source": "getCurrency",
+                "name": "INQ_CUR"
             }
         ]
     },
@@ -266,13 +275,37 @@
         "title": "Quotation Information",
         "fields": [
             {
-                "label": "Customer",
-                "id": "customer",
-                "type": "select",
-                "source": "getCustomers" ,
-                "mapping": "INQ_CUSTOMER",
-                "name": "INQ_CUSTOMER",
-                "onChange" :"handleCustomerChange"
+                "label": "Series",
+                "type": "staticText",
+                "id": "series",
+                "mapping": "INQ_SERIES",
+                "name": "INQ_SERIES"
+            },
+            {
+                "label": "Issue Date",
+                "type": "text",
+                "id": "quodate",
+                "class": "fdate",
+                "mapping": "QUO_DATE",
+                "name": "QUO_DATE"
+            },
+            {
+                "label": "Offer Vadility",
+                "type": "text",
+                "id": "expiredate",
+                "class": "fdate",
+                "mapping": "QUO_VALIDITY",
+                "name": "QUO_VALIDITY"
+            },
+            {
+                "label": "Additional Notes",
+                "id": "quonote",
+                "type": "textarea" ,
+                "name": "QUO_NOTE"
+            },
+            {
+                "label": "A123",
+                "type": "table"
             }
         ]
     },
@@ -287,6 +320,13 @@
                 "name": "QUO_CUSTOMER"
             },
             {
+                "label": "Series",
+                "type": "staticText",
+                "id": "series",
+                "mapping": "INQ_SERIES",
+                "name": "INQ_SERIES"
+            },
+            {
                 "label": "Issue Date",
                 "type": "staticText",
                 "id": "quodate",
@@ -299,13 +339,6 @@
                 "id": "expiredate",
                 "mapping": "QUO_VALIDITY",
                 "name": "QUO_VALIDITY"
-            },
-            {
-                "label": "Series",
-                "type": "staticText",
-                "id": "series",
-                "mapping": "INQ_SERIES",
-                "name": "INQ_SERIES"
             },
             {
                 "label": "Additional Notes",

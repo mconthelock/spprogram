@@ -50,11 +50,11 @@ export async function setupTableDetail(data = []) {
       title: "<i class='icofont-settings text-lg'></i>",
       className: "text-center text-nowrap sticky-column px-1",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type, row) {
         if (type === "display") {
           return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
           <button class="btn btn-sm btn-circle btn-ghost ${
-            row.INQD_OWNER == "MAR"
+            row.INQD_OWNER_GROUP == "MAR"
               ? "delete-sub-line text-red-500"
               : "btn-disabled"
           }"><i class="fi fi-bs-cross"></i></button>`;
@@ -69,6 +69,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row) {
         if (type === "display") {
+          if (data % 1 !== 0) data = utils.digits(data, 2);
           const log = renderLog(data, row.logs, "INQD_SEQ");
           const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
             log ? "detail-log" : ""
@@ -233,7 +234,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply edit-input"
+          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
            ${data == "" || data == null ? "" : "checked"}/>`;
         }
         return data;

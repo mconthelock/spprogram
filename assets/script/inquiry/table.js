@@ -10,12 +10,14 @@ export async function tableInquiry(data, options = {}) {
   const colors = await statusColors();
   const opt = utils.tableOpt;
   opt.data = data;
+  opt.pageLength = 25;
   opt.order = [
     [0, "desc"],
     [1, "desc"],
   ];
   opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
+    { data: "timeline.MAR_SEND", className: "hidden" },
     {
       data: "INQ_DATE",
       className: "text-center text-nowrap sticky-column",
@@ -149,9 +151,9 @@ export async function tableInquiry(data, options = {}) {
           row.INQ_TYPE == "SP"
             ? `${process.env.APP_ENV}/mar/inquiry/view/${data}`
             : `${process.env.APP_ENV}/mar/quotation/viewinq/${data}`;
-        const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${viewurl}">View</a>`;
+        const view = `<a class="btn btn-xs btn-neutral btn-outline" href="${viewurl}">View</a>`;
 
-        const edit = `<a class="btn btn-sm btn-neutral ${
+        const edit = `<a class="btn btn-xs btn-neutral ${
           row.INQ_TYPE == "SP" ? "" : "btn-disabled"
         }" href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
         const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
@@ -214,7 +216,7 @@ export function initRow(id) {
     INQD_DES_REMARK: "",
     INQD_FIN_REMARK: "",
     INQD_LATEST: 1,
-    INQD_OWNER: $("#user-login").attr("groupcode"),
+    INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
     CREATE_BY: $("#user-login").attr("empname"),
     UPDATE_BY: $("#user-login").attr("empname"),
   };
@@ -289,6 +291,10 @@ export async function setupTableDetailView(data = []) {
       data: "INQD_SEQ",
       title: "No",
       className: "sticky-column",
+      render: (data) => {
+        if (data % 1 !== 0) return utils.digits(data, 2);
+        return data;
+      },
     },
     {
       data: "INQD_CAR",

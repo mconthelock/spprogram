@@ -14,7 +14,29 @@ $(async function () {
     let data;
     if ($("#prebm").val() == "1") {
       data = await service.getInquiry({
-        "timeline.ISNULL_BM_COFIRM": null,
+        "timeline.ISNULL_BM_CONFIRM": null,
+        GE_INQ_STATUS: 30,
+        needDetail: true,
+      });
+
+      //filter status = 97, 98 (Closed, Cancel)
+      data = data.filter(
+        (d) =>
+          d.status.STATUS_ID != 50 && //Other Supplier
+          d.status.STATUS_ID != 97 && //Cancelled
+          d.status.STATUS_ID != 98 //Unable Issue Quotation
+      );
+
+      //filter data that detail not contain 'AMEC'
+      data = data.filter((d) => {
+        const details = d.details.filter((dt) => dt.INQD_LATEST == 1);
+        const haveAmec = details.find((dt) => {
+          if (dt.INQD_SUPPLIER == null) return false;
+          return dt.INQD_SUPPLIER.toUpperCase().includes("AMEC");
+        });
+        console.log(haveAmec);
+
+        return haveAmec !== undefined;
       });
     } else {
       data = await service.getInquiry({ LE_INQ_STATUS: 45 });

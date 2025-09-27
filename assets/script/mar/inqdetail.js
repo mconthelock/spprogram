@@ -121,10 +121,6 @@ async function setupButton(mode) {
   if (mode == "edit") $("#btn-container").append(updateDE, updateIS, back);
   else $("#btn-container").append(sendDE, sendIS, draft, back);
 }
-$(document).on("click", "#goback", async function (e) {
-  e.preventDefault();
-  window.history.back();
-});
 
 //002: Add table detail rows
 $(document).on("click", "#addRowBtn", async function (e) {
@@ -179,7 +175,7 @@ $(document).on("click", "#elmes-cancel", async function () {
 
 //004: Unable to reply checkbox
 $(document).on("click", ".unreply", async function () {
-  await inqs.clickUnreply(table.row($(this).parents("tr")));
+  await inqs.clickUnreply($(this), table.row($(this).parents("tr")));
 });
 
 $(document).on("click", "#cancel-reason", async function () {

@@ -9,12 +9,10 @@ export async function tableQuotation(data, options = {}) {
   const colors = await statusColors();
   const opt = utils.tableOpt;
   opt.data = data;
-  opt.order = [
-    [0, "desc"],
-    [1, "desc"],
-  ];
+  opt.order = [[0, "desc"]];
   opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
+    { data: "timeline.MAR_SEND", className: "hidden" },
     {
       data: "INQ_DATE",
       className: "text-center text-nowrap sticky-column",
@@ -33,13 +31,6 @@ export async function tableQuotation(data, options = {}) {
       className: "text-nowrap text-center sticky-column",
       title: "Rev.",
     },
-    // {
-    //   data: "INQ_TRADER",
-    //   className: "text-nowrap",
-    //   title: "Trader",
-    // },
-    // { data: "INQ_AGENT", title: "Agent" },
-    // { data: "INQ_COUNTRY", title: "Country" },
     {
       data: "status",
       title: "Status",
@@ -58,117 +49,58 @@ export async function tableQuotation(data, options = {}) {
         return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${data.SEMPNO})`;
       },
     },
-    // {
-    //   data: "inqgroup",
-    //   title: "EME",
-    //   className: "text-center px-[5px] w-[45px] max-w-[45px]",
-    //   sortable: false,
-    //   render: (data) => {
-    //     const des = data.filter(
-    //       (item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1
-    //     );
-    //     if (des.length == 0) return "";
-
-    //     const color =
-    //       des[0].INQG_STATUS == null
-    //         ? "text-gray-500"
-    //         : des[0].INQG_STATUS >= 9
-    //         ? "text-primary"
-    //         : "text-secondary";
-    //     return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-    //   },
-    // },
-    // {
-    //   data: "inqgroup",
-    //   title: "EEL",
-    //   className: "text-center px-[5px] w-[45px] max-w-[45px]",
-    //   sortable: false,
-    //   render: (data) => {
-    //     const des = data.filter(
-    //       (item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1
-    //     );
-    //     if (des.length == 0) return "";
-
-    //     const color =
-    //       des[0].INQG_STATUS == null
-    //         ? "text-gray-500"
-    //         : des[0].INQG_STATUS >= 9
-    //         ? "text-primary"
-    //         : "text-secondary";
-    //     return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-    //   },
-    // },
-    // {
-    //   data: "inqgroup",
-    //   title: "EAP",
-    //   className: "text-center px-[5px] w-[45px] max-w-[45px]",
-    //   sortable: false,
-    //   render: (data) => {
-    //     const des = data.filter(
-    //       (item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1
-    //     );
-    //     if (des.length == 0) return "";
-
-    //     const color =
-    //       des[0].INQG_STATUS == null
-    //         ? "text-gray-500"
-    //         : des[0].INQG_STATUS >= 9
-    //         ? "text-primary"
-    //         : "text-secondary";
-    //     return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-    //   },
-    // },
-    // {
-    //   data: "inqgroup",
-    //   title: "ESO",
-    //   className: "text-center px-[5px] w-[45px] max-w-[45px]",
-    //   sortable: false,
-    //   render: (data) => {
-    //     const des = data.filter(
-    //       (item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1
-    //     );
-    //     if (des.length == 0) return "";
-
-    //     const color =
-    //       des[0].INQG_STATUS == null
-    //         ? "text-gray-500"
-    //         : des[0].INQG_STATUS >= 9
-    //         ? "text-primary"
-    //         : "text-secondary";
-    //     return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-    //   },
-    // },
+    {
+      data: "timeline",
+      title: "Pre-BM Date",
+      render: (data) => {
+        if (data.BM_CONFIRM == null) return "";
+        return moment(data.BM_CONFIRM).format("YYYY-MM-DD HH:mm");
+      },
+    },
+    {
+      data: "timeline",
+      title: "Fin Date",
+      render: (data) => {
+        if (data.FIN_CONFIRM == null) return "";
+        return moment(data.FIN_CONFIRM).format("YYYY-MM-DD HH:mm");
+      },
+    },
+    {
+      data: "INQ_PKC_REQ",
+      title: `Weight<br>Request`,
+      className: `text-center max-w-[75px] `,
+      render: (data, type, row) => {
+        if (data == null || data == "0") return "";
+        return `<div class="flex w-full justify-center"><i class="fi fi-ss-check-circle text-xl ${
+          row.timeline.PKC_CONFIRM !== null ? "text-primary" : ""
+        }"></i></div>`;
+      },
+    },
     {
       data: "INQ_ID",
       className: "text-center w-fit max-w-[118px]",
       sortable: false,
       title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
       render: (data, type, row) => {
-        const viewurl =
-          row.INQ_TYPE == "SP"
-            ? `${process.env.APP_ENV}/mar/inquiry/view/${data}`
-            : `${process.env.APP_ENV}/mar/quotation/viewinq/${data}`;
-        const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${viewurl}">View</a>`;
+        // const viewurl =
+        //   row.INQ_TYPE == "SP"
+        //     ? `${process.env.APP_ENV}/mar/inquiry/view/${data}`
+        //     : `${process.env.APP_ENV}/mar/quotation/viewinq/${data}`;
+        // const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${viewurl}">View</a>`;
 
-        const edit = `<a class="btn btn-sm btn-neutral ${
-          row.INQ_TYPE == "SP" ? "" : "btn-disabled"
-        }" href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Edit</a>`;
-        const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
-        return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleteBtn}</div>`;
+        // const edit = `<a class="btn btn-sm btn-neutral ${
+        //   row.INQ_TYPE == "SP" ? "" : "btn-disabled"
+        // }" href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Process</a>`;
+        // const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
+        if (row.INQ_PKC_REQ == "1" && row.timeline.PKC_CONFIRM == null) {
+          return `<a href="#" class="btn btn-sm btn-soft">View</a>`;
+        }
+        return `<a href="${process.env.APP_ENV}/mar/quotation/create/${data}" class="btn btn-sm btn-neutral hover:bg-neutral/70">Process</a>`;
       },
     },
   ];
 
   opt.initComplete = function () {
-    // $(".table-option")
-    //   .append(`<div class="dropdown dropdown-end dropdown-hover">
-    //     <div tabindex="0" role="button" class="btn btn-outline btn-neutral m-1">New Inquiry</div>
-    //     <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-    //         <li><a href="${process.env.APP_ENV}/mar/inquiry/create/">SP Inquiry</a></li>
-    //         <li><a href="${process.env.APP_ENV}/mar/stockpart/create">Stock Part</a></li>
-    //     </ul>
-    //     </div>`);
-
     const export1 = `<button class="btn btn-accent rounded-none text-white items-center hover:bg-accent/70" id="export-detail" type="button">
             <span class="loading loading-spinner hidden"></span>
             <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Detail</span>
