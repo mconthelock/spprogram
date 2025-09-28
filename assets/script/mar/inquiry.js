@@ -34,8 +34,6 @@ $(async function () {
           if (dt.INQD_SUPPLIER == null) return false;
           return dt.INQD_SUPPLIER.toUpperCase().includes("AMEC");
         });
-        console.log(haveAmec);
-
         return haveAmec !== undefined;
       });
     } else {

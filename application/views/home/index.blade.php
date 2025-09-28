@@ -1,6 +1,7 @@
 @extends('layouts/template')
 
 @section('contents')
+    <i class="fi fi-tr-subscription-user"></i>
 @endsection
 
 

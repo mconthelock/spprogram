@@ -5,6 +5,6 @@ class Users extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/inquiry/index');
+        $this->views('des/users/index');
     }
 }

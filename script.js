@@ -26,7 +26,6 @@
         iscookie = cookie.substring(name.length + 1);
       }
     }
-
     return iscookie;
   };
 
@@ -57,7 +56,7 @@
 
   const host = document.querySelector('meta[name="base_url"]').content;
   const state = document.querySelector('meta[name="appstatus"]').content;
-  const domain = amecdomain(host, state);
-  //   const cookie = checkCookie();
+  //const domain = amecdomain(host, state);
+  //const cookie = checkCookie();
   //if (cookie != "") window.location.replace(`${host}/home`);
 })();

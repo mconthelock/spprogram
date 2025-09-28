@@ -1,7 +1,7 @@
-import * as utils from "./utils.js";
+import * as utils from "../utils.js";
 $(async function () {
   try {
-    await utils.initApp({ submenu: ".navmenu-newinq" });
+    await utils.initApp();
   } catch (error) {
     console.log(error);
   } finally {

@@ -27,6 +27,12 @@ module.exports = {
     se_inquiry: "./assets/script/sale/inquiry.js",
     se_inqdetail: "./assets/script/sale/inqdetail.js",
     se_inqviews: "./assets/script/sale/inqview.js",
+    //Designer
+    des_inquiry: "./assets/script/des/inquiry.js",
+    des_inqdetail: "./assets/script/des/detail.js",
+    des_inqviews: "./assets/script/des/view.js",
+    des_report: "./assets/script/des/report.js",
+    des_users: "./assets/script/des/users.js",
   },
   output: {
     filename: "[name].js",
