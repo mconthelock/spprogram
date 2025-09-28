@@ -1,5 +1,6 @@
 .DS_Store
 .env
+package-lock.json
 /node_modules
 /system
 assets/dist
@@ -8,3 +9,4 @@ application/config
 application/logs
 application/third_party
 application/vendor
+application/composer.lock
