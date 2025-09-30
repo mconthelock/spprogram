@@ -6,12 +6,17 @@ import { createTable } from "@public/_dataTable.js";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
+import { getDesignerGroup } from "./data.js";
 var table;
 $(async function () {
   try {
     await utils.initApp();
-    const pagetype = $("#pagetype").val();
-    const data = await service.getInquiry({ INQ_STATUS: pagetype });
+    let data = await service.getInquiry({
+      GE_INQ_STATUS: 20,
+      LE_INQ_STATUS: 29,
+    });
+    // filter data by designer group
+    data = await filterData(data);
     const opt = await tableInquiry(data);
     table = await createTable(opt);
   } catch (error) {
@@ -21,8 +26,33 @@ $(async function () {
   }
 });
 
-async function tableInquiry(data = []) {
+async function filterData(data) {
+  const min = $("#minstatus").val();
+  const max = $("#maxstatus").val();
+  const des = await getDesignerGroup();
+  data = data.filter((d) => {
+    let chk = false;
+    const groups = d.inqgroup.map((g) => {
+      if (
+        g.INQG_GROUP == des.DES_GROUP &&
+        g.INQG_LATEST == 1 &&
+        g.INQG_STATUS >= min &&
+        g.INQG_STATUS <= max
+      )
+        chk = true;
+      return chk;
+    });
+    return chk;
+  });
+
+  return data;
+}
+
+async function tableInquiry(data, options = {}) {
   const colors = await statusColors();
+  const des = await getDesignerGroup();
+  console.log(des.DES_GROUP);
+
   const opt = { ...utils.tableOpt };
   opt.data = data;
   opt.pageLength = 25;
@@ -51,7 +81,7 @@ async function tableInquiry(data = []) {
       className: "text-nowrap text-center sticky-column",
       title: "Rev.",
     },
-    { data: "INQ_SERIES", title: "Series" },
+    { data: "INQ_SERIES", title: "Series", className: "text-center" },
     { data: "INQ_COUNTRY", title: "Country" },
     {
       data: "status",
@@ -74,6 +104,7 @@ async function tableInquiry(data = []) {
     {
       data: "inqgroup",
       title: "EME",
+      visible: des.DES_GROUP != 6 ? true : false,
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
@@ -85,7 +116,7 @@ async function tableInquiry(data = []) {
         const color =
           des[0].INQG_STATUS == null
             ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
+            : des[0].INQG_STATUS >= 26
             ? "text-primary"
             : "text-secondary";
         return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
@@ -94,6 +125,7 @@ async function tableInquiry(data = []) {
     {
       data: "inqgroup",
       title: "EEL",
+      visible: des.DES_GROUP != 6 ? true : false,
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
@@ -105,7 +137,7 @@ async function tableInquiry(data = []) {
         const color =
           des[0].INQG_STATUS == null
             ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
+            : des[0].INQG_STATUS >= 26
             ? "text-primary"
             : "text-secondary";
         return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
@@ -114,6 +146,7 @@ async function tableInquiry(data = []) {
     {
       data: "inqgroup",
       title: "EAP",
+      visible: des.DES_GROUP != 6 ? true : false,
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
@@ -125,7 +158,7 @@ async function tableInquiry(data = []) {
         const color =
           des[0].INQG_STATUS == null
             ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
+            : des[0].INQG_STATUS >= 26
             ? "text-primary"
             : "text-secondary";
         return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
@@ -134,6 +167,7 @@ async function tableInquiry(data = []) {
     {
       data: "inqgroup",
       title: "ESO",
+      visible: des.DES_GROUP == 6 ? true : false,
       className: "text-center px-[5px] w-[45px] max-w-[45px]",
       sortable: false,
       render: (data) => {
@@ -145,7 +179,7 @@ async function tableInquiry(data = []) {
         const color =
           des[0].INQG_STATUS == null
             ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
+            : des[0].INQG_STATUS >= 26
             ? "text-primary"
             : "text-secondary";
         return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;

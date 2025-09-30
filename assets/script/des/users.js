@@ -6,6 +6,7 @@ import { createTable } from "@public/_dataTable.js";
 import { displayEmpInfo, fillImages } from "@public/setIndexDB";
 import * as service from "../service/master.js";
 import * as utils from "../utils.js";
+import { getDesigner } from "./data.js";
 var table;
 
 $(async function () {
@@ -180,22 +181,6 @@ $(document).on("click", ".checker", async function () {
   await updateDesigner(data.USERS_ID, { DES_CHECKER: value });
   await utils.showMessage("Update designer group successfully", "success");
 });
-
-async function getDesigner() {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: `${process.env.APP_API}/sp/designer/all`,
-      type: "GET",
-      dataType: "json",
-      success: function (response) {
-        resolve(response);
-      },
-      error: function (error) {
-        reject(error);
-      },
-    });
-  });
-}
 
 async function updateDesigner(id, data) {
   return new Promise((resolve, reject) => {

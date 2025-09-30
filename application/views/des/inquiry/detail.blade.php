@@ -4,13 +4,16 @@
     <input type="text" name="inquiry-id" id="inquiry-id" value="{{ $id }}" class="hidden">
     <h2 class="card-title text-2xl">Inquiry Detail</h2>
     <div class="divider m-0"></div>
-    <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="prj|info|mar"></main>
+    <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewprj|viewinfo|mar"></main>
 
     <div class="mt-6">
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-edit display text-sm"></table>
+
+        <div class="relative max-h-[80vh] overflow-auto">
+            <table id="table" class="table table-zebra table-edit display text-sm"></table>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
