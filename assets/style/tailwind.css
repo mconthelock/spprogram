@@ -198,6 +198,12 @@
     padding-bottom: 8px;
   }
 
+  /* Style for sticky table */
+  #table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
   #select-dt-rows-all {
     @apply !checkbox-neutral !text-neutral;
   }

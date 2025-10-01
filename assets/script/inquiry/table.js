@@ -1,5 +1,6 @@
 import moment from "moment";
 import ExcelJS from "exceljs";
+import { displayEmpInfo, fillImages } from "@public/setIndexDB";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as source from "./source.js";
@@ -191,10 +192,10 @@ export async function tableInquiry(data, options = {}) {
   return opt;
 }
 
-export function initRow(id) {
+export function initRow(id, seq) {
   return {
     INQD_ID: "",
-    INQD_SEQ: id,
+    INQD_SEQ: seq,
     INQD_RUNNO: id,
     INQD_MFGORDER: "",
     INQD_ITEM: "",
@@ -222,12 +223,12 @@ export function initRow(id) {
   };
 }
 
-export async function addRow(id, table, data = {}) {
-  const newRow = await initRow(id);
+export async function addRow({ id, seq }, table, data = {}) {
+  const newRow = await initRow(id, seq);
   data = { ...newRow, ...data };
   const row = table.row.add(data).draw();
-  if ($(row.node()).find("td:eq(3) textarea").length > 0)
-    $(row.node()).find("td:eq(3) textarea").focus();
+  if ($(row.node()).find("td:eq(3) input").length > 0)
+    $(row.node()).find("td:eq(3) input").focus();
 }
 
 export async function changeCell(table, el) {
@@ -239,6 +240,7 @@ export async function changeCell(table, el) {
   if ($(el).attr("type") === "number") newValue = utils.intVal(newValue);
   if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();
   cell.data(newValue);
+  return table;
 }
 
 export async function changeCar(table, el) {
@@ -389,35 +391,53 @@ export async function setupTableHistory(data = []) {
   opt.columns = [
     {
       data: "INQ_REV",
-      className: "text-center text-xs py-[8px] px-[5px]",
+      className: "text-center text-xs py-[8px] px-[5px] w-[30px] max-w-[30px]",
       title: "Rev.",
     },
     {
       data: "INQH_DATE",
-      className: "text-xs py-[8px] w-[155px] max-w-[155px]",
+      className: "text-xs py-[8px] w-[255px] max-w-[255px]",
       title: "Date",
-      render: (data) => {
+      render: (data, type, row) => {
+        if (type === "display") {
+          const emp = row.users;
+          const dsp = utils.displayname(emp.SNAME);
+          const name = `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
+            emp.SEMPNO
+          })`;
+          return `
+          <div class="flex gap-2">
+            <div class="avatar">
+                <div class="w-8 h-8 rounded-full">
+                    <img src="" id="image-${emp.SEMPNO}" class="hidden" />
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <a href="http://webflow/form/usrInfo.asp?uid=${
+                  emp.SEMPNO
+                }" target="_blank" class="text-nowrap font-bold">${name}</a>
+                <div class="text-nowrap text-gray-500">${moment(data).format(
+                  "YYYY-MM-DD HH:mm"
+                )}</div>
+            </div>
+        </div>`;
+        }
         return moment(data).format("YYYY-MM-DD HH:mm");
-      },
-    },
-    {
-      data: "users",
-      title: "User",
-      className: "text-xs py-[8px]",
-      render: (data) => {
-        if (data == null) return "";
-        const dsp = utils.displayname(data.SNAME);
-        return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${data.SEMPNO})`;
       },
     },
     {
       data: "status",
       title: "Action",
-      className: "text-xs py-[8px]",
+      className: "text-xs py-[8px] text-nowrap",
       render: (data) => (data == null ? "" : data.STATUS_ACTION),
     },
     { data: "INQH_REMARK", title: "Remark", className: "text-xs py-[8px]" },
   ];
+  opt.createdRow = async function (row, data) {
+    const emp = await displayEmpInfo(data.users.SEMPNO);
+    const element = $(row).find(`#image-${data.users.SEMPNO}`);
+    await fillImages(element, data.users.SEMPNO);
+  };
   return opt;
 }
 

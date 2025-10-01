@@ -38,7 +38,7 @@ export async function setupTableDetail(data = []) {
   opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto overflow-x-scroll max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_RUNNO",
@@ -71,7 +71,7 @@ export async function setupTableDetail(data = []) {
         if (type === "display") {
           if (data % 1 !== 0) data = utils.digits(data, 2);
           const log = renderLog(data, row.logs, "INQD_SEQ");
-          const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
+          const str = `<input type="text" class="!w-[50px] cell-input edit-input input-number ${
             log ? "detail-log" : ""
           }" value="${data}">`;
           return renderText(str, row.logs, "INQD_SEQ");
@@ -87,7 +87,7 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row, meta) {
         if (type === "display") {
           const log = renderLog(data, row.logs, "INQD_CAR");
-          const str = `<input type="text" class="!w-[55px] uppercase cell-input carno ${
+          const str = `<input type="text" class="!w-[40px] uppercase cell-input carno ${
             log ? "detail-log" : ""
           }" maxlength="2" value="${data == null ? "" : data}"/>`;
           return renderText(str, row.logs, "INQD_CAR");
@@ -100,9 +100,9 @@ export async function setupTableDetail(data = []) {
       title: "MFG No.",
       className: "sticky-column !px-[3px]",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="text" class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
+          return `<input type="text" class="!w-[100px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
             data == null ? "" : data
           }">`;
         }
@@ -114,9 +114,9 @@ export async function setupTableDetail(data = []) {
       title: "Item",
       className: "!px-[3px] item-no",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input elmes-input itemno" value="${data}"/>`;
+          return `<input type="text" class="!w-[50px] cell-input elmes-input input-number itemno" value="${data}"/>`;
         }
         return data;
       },
@@ -183,7 +183,7 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row, meta) {
         data = data == "" ? "PC" : data;
         if (type === "display") {
-          return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${data}">`;
+          return `<input type="type" class="!w-[55px] uppercase cell-input edit-input" value="${data}">`;
         }
         return data;
       },

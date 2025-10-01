@@ -37,10 +37,13 @@
 
 @section('styles')
     <style>
-        /* #table thead tr th, */
+        #table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
         #table tbody tr td {
-            /* padding: 8px 7px !important; */
-            border: 1px solid rgba(125, 125, 125, .5);
+            border: 1px solid rgba(125, 125, 125, .25);
         }
     </style>
 @endsection

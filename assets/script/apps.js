@@ -29,11 +29,6 @@ $(document).on("focus", ".input-number", function (e) {
   this.select();
 });
 
-$(document).on("click", "#goback", async function (e) {
-  e.preventDefault();
-  window.history.back();
-});
-
 $(document).on("keyup", ".input-number", function (e) {
   let value = $(this).val();
   value = value.replace(/[^\d.-]/g, ""); // เอาเฉพาะตัวเลข จุด และ -
@@ -42,4 +37,9 @@ $(document).on("keyup", ".input-number", function (e) {
   const parts = value.split(".");
   if (parts.length > 2) value = parts[0] + "." + parts.slice(1).join("");
   $(this).val(value);
+});
+
+$(document).on("click", "#goback", async function (e) {
+  e.preventDefault();
+  window.history.back();
 });

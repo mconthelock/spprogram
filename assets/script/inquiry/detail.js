@@ -814,7 +814,8 @@ export async function verifyDetail(table, data, savelevel = 0) {
         return;
       }
 
-      if (item.INQD_VARIABLE != "") {
+      if (item.INQD_VARIABLE != "" || item.INQD_VARIABLE != null) {
+        console.log(item.INQD_VARIABLE);
         const variavle = dwg.validateVariable(item.INQD_VARIABLE);
         if (!variavle.isValid) {
           check = false;

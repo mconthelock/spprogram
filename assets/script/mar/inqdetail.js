@@ -41,10 +41,12 @@ $(document).ready(async () => {
       inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
       if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
-      if (inquiry.INQ_STATUS >= 10)
-        inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
-
       mode = "edit";
+      if (inquiry.INQ_STATUS >= 10) {
+        inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
+        mode = "revise";
+      }
+
       details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
       logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
       file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
@@ -76,36 +78,35 @@ async function setupButton(mode) {
     id: "send-de",
     title: "Send to Design",
     icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
+    className: `btn-primary text-white hover:shadow-lg ${mode}`,
   });
 
   const updateDE = await utils.creatBtn({
     id: "update-de",
     title: "Send to Design",
     icon: "fi fi-tr-envelope-open-text text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
+    className: `btn-primary text-white hover:shadow-lg ${mode}`,
   });
 
   const sendIS = await utils.creatBtn({
     id: "send-bm",
     title: "Send to Pre-BM",
     icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
+    className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
   });
 
   const updateIS = await utils.creatBtn({
     id: "update-bm",
     title: "Send to Pre-BM",
     icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
+    className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
   });
 
   const draft = await utils.creatBtn({
     id: "draft",
     title: "Send Draft",
     icon: "fi fi-ts-clipboard-list text-xl",
-    className:
-      "btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg",
+    className: `btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg`,
   });
 
   const back = await utils.creatBtn({
@@ -118,23 +119,25 @@ async function setupButton(mode) {
       "btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
   });
 
-  if (mode == "edit") $("#btn-container").append(updateDE, updateIS, back);
-  else $("#btn-container").append(sendDE, sendIS, draft, back);
+  if (mode == "create") $("#btn-container").append(sendDE, sendIS, draft, back);
+  else $("#btn-container").append(updateDE, updateIS, back);
 }
 
 //002: Add table detail rows
 $(document).on("click", "#addRowBtn", async function (e) {
   e.preventDefault();
   const lastRow = table.row(":not(.d-none):last").data();
-  let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
-  await tb.addRow(id, table);
+  let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_RUNNO) + 1;
+  let seq = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
+  await tb.addRow({ id, seq }, table);
 });
 
 $(document).on("click", ".add-sub-line", async function (e) {
   e.preventDefault();
   const data = table.row($(this).parents("tr")).data();
-  const id = utils.digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
-  await tb.addRow(id, table);
+  const seq = utils.digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
+  const id = parseInt(data.INQD_RUNNO) + 0.1;
+  await tb.addRow({ id, seq }, table);
 });
 
 $(document).on("click", ".delete-sub-line", async function (e) {
@@ -147,20 +150,27 @@ $(document).on("click", ".delete-sub-line", async function (e) {
   row.remove().draw(false);
 });
 
-$(document).on("change", ".edit-input", async function () {
-  await tb.changeCell(table, this);
-});
-
 $(document).on("change", ".carno", async function (e) {
   await tb.changeCar(table, this);
 });
 
+$(document).on("change", ".edit-input", async function () {
+  await tb.changeCell(table, this);
+});
+
 //003: Show Elmes table
 $(document).on("change", ".elmes-input", async function (e) {
-  e.preventDefault();
   const row = table.row($(this).closest("tr"));
-  tableElmes = await inqs.elmesSetup(row);
-  //await tb.changeCell(table, this);
+  const node = table.row($(this).closest("tr")).node();
+  const item = $(node).find(".itemno").val();
+  const mfg = $(node).find(".mfgno").val();
+  let data = row.data();
+
+  row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
+
+  if (item != "" && mfg != "") {
+    tableElmes = await inqs.elmesSetup(row);
+  }
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
@@ -342,13 +352,24 @@ async function createPath(opt) {
 //012: Update and send to design
 $(document).on("click", "#update-de", async function (e) {
   e.preventDefault();
-  if ($("#status").val() >= 10) await updatePath({ level: 2, status: 3 });
+  if ($(this).hasClass("revise") && $("#remark").val() == "") {
+    await utils.showMessage("Please enter remark for revise inquiry.");
+    $("#remark").focus();
+    return;
+  }
+
+  if ($("#status").val() >= 10) await updatePath({ level: 1, status: 3 });
   else await updatePath({ level: 1, status: 2 });
 });
 
 //013: Update and send to AS400
 $(document).on("click", "#update-bm", async function (e) {
   e.preventDefault();
+  if ($(this).hasClass("revise") && $("#remark").val() == "") {
+    await utils.showMessage("Please enter remark for revise inquiry.");
+    $("#remark").focus();
+    return;
+  }
   await updatePath({ level: 2, status: 30 });
 });
 
