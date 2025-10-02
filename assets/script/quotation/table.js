@@ -82,16 +82,6 @@ export async function tableQuotation(data, options = {}) {
       sortable: false,
       title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
       render: (data, type, row) => {
-        // const viewurl =
-        //   row.INQ_TYPE == "SP"
-        //     ? `${process.env.APP_ENV}/mar/inquiry/view/${data}`
-        //     : `${process.env.APP_ENV}/mar/quotation/viewinq/${data}`;
-        // const view = `<a class="btn btn-sm btn-neutral btn-outline" href="${viewurl}">View</a>`;
-
-        // const edit = `<a class="btn btn-sm btn-neutral ${
-        //   row.INQ_TYPE == "SP" ? "" : "btn-disabled"
-        // }" href="${process.env.APP_ENV}/mar/inquiry/edit/${data}">Process</a>`;
-        // const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
         if (row.INQ_PKC_REQ == "1" && row.timeline.PKC_CONFIRM == null) {
           return `<a href="#" class="btn btn-sm btn-soft">View</a>`;
         }

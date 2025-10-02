@@ -137,6 +137,7 @@
   }
 
   .table-edit > thead > tr,
+  .table-all-cell-border > thead > tr,
   #history > thead > tr,
   #attachment > thead > tr {
     @apply !bg-gray-300 !text-gray-600 !text-xs;
@@ -202,6 +203,13 @@
   #table {
     border-collapse: separate;
     border-spacing: 0;
+  }
+
+  .table-all-cell-border th,
+  .table-all-cell-border td {
+    border-right: 1px solid #d1d5db !important;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
   }
 
   #select-dt-rows-all {

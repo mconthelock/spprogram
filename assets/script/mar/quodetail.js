@@ -120,6 +120,15 @@ $(document).on("change", ".inqty", async function () {
   await totalDetail();
 });
 
+$(document).on("change", ".inqprice", async function () {
+  const tccost = utils.intVal($(this).val());
+  const row = table.row($(this).closest("tr")).data();
+  const unitprice = Math.ceil(tccost * row.INQD_TC_BASE);
+  const data = { ...row, INQD_TC_COST: tccost, INQD_UNIT_PRICE: unitprice };
+  table.row($(this).closest("tr")).data(data).draw();
+  await totalDetail();
+});
+
 $(document).on("change", ".freight-value", function () {
   const value = $(this).val();
   if (isNaN(value) || value < 0) {
@@ -161,13 +170,23 @@ async function freightData(data) {
 
 async function totalDetail() {
   //Summary
-  let grandTotal = 0;
+  let totalcost = 0;
+  let totalunit = 0;
+  let grandtotal = 0;
+
   table.rows().every(function () {
     const data = this.data();
-    const unit = Math.ceil(data.INQD_UNIT_PRICE * data.INQD_QTY);
-    grandTotal += unit;
+    totalcost += Math.ceil(data.INQD_TC_COST);
+    totalunit += Math.ceil(data.INQD_UNIT_PRICE);
+    const unit = Math.ceil(data.INQD_UNIT_PRICE) * data.INQD_QTY;
+    grandtotal += unit;
   });
+
+  $(table.table().footer()).find(".total-tc").text(utils.digits(totalcost, 0));
+  $(table.table().footer())
+    .find(".total-unit")
+    .text(utils.digits(totalunit, 0));
   $(table.table().footer())
     .find(".grand-total")
-    .text(utils.digits(grandTotal, 0));
+    .text(utils.digits(grandtotal, 0));
 }

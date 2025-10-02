@@ -24,7 +24,7 @@ import * as tb from "./table.js";
 
 export const statusColors = () => {
   return [
-    { id: 1, color: "bg-gray-500" }, //Draft
+    { id: 1, color: "bg-gray-300 text-gray-600" }, //Draft
     { id: 9, color: "bg-teal-500 text-white" }, //MAR [Pre process]
     { id: 19, color: "bg-cyan-500" }, //SE
     { id: 29, color: "bg-blue-500 text-white" }, //DE
@@ -736,9 +736,9 @@ export async function verifyHeader(cls) {
 
 export async function verifyDetail(table, data, savelevel = 0) {
   const errorEl = (obj) => {
-    obj.addClass("!bg-red-300");
+    obj.addClass("!bg-red-200");
     setTimeout(() => {
-      obj.removeClass("!bg-red-300");
+      obj.removeClass("!bg-red-200");
     }, 5000);
   };
 

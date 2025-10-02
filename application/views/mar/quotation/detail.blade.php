@@ -17,7 +17,7 @@
                 <span class="font-bold ">Item Detail</span>
             </label>
             <div class="tab-content bg-base-100 border-base-300 p-6">
-                <table id="table" class="table table-zebra table-all-cell-border display text-sm"></table>
+                <table id="table" class="table table-zebra table-all-cell-border display text-xs"></table>
             </div>
 
             <label class="tab flex items-center gap-2">
@@ -26,7 +26,7 @@
                 <span class="font-bold ">Weight Package</span>
             </label>
             <div class="tab-content bg-base-100 border-base-300 p-6">
-                <table id="table-weight" class="table table-zebra display text-sm">
+                <table id="table-weight" class="table table-zebra table-all-cell-border display text-xs">
                     <thead>
                         <tr>
                             <th rowspan="2">No.</th>
@@ -51,7 +51,7 @@
         </div>
 
         <div id="without-tab">
-            <table id="table" class="table table-zebra table-all-cell-border display text-sm"></table>
+            <table id="table" class="table table-zebra table-all-cell-border display text-xs"></table>
         </div>
 
     </div>
@@ -80,13 +80,6 @@
 
 @section('styles')
     <style>
-        .table-all-cell-border th,
-        .table-all-cell-border td {
-            border: 1px solid #D1D5DB !important;
-            padding-left: 0.25rem !important;
-            padding-right: 0.25rem !important;
-        }
-
         #table-freight thead th {
             font-size: 0.75rem;
             text-align: center;

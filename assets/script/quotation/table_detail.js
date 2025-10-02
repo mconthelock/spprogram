@@ -33,13 +33,13 @@ export async function setupTableDetail(data = [], type = "SP") {
   const mode = data.length > 0 ? 1 : 0;
   const opt = { ...utils.tableOpt };
   opt.data = data;
-  //   opt.paging = false;
+  opt.paging = false;
   opt.lengthChange = false;
   opt.searching = false;
   opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto overflow-x-scroll max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_RUNNO",
@@ -48,12 +48,12 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "max-w-[50px] sticky-column",
+      className: "sticky-column w-[50px] min-w-[50px]",
     },
     {
       data: "INQD_CAR",
       title: "CAR",
-      className: "max-w-[50px] sticky-column",
+      className: "sticky-column w-[50px] min-w-[50px]",
     },
     {
       data: "INQD_MFGORDER",
@@ -89,7 +89,7 @@ export async function setupTableDetail(data = [], type = "SP") {
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 text-nowrap">${data}</div>`;
+          return `<div class="px-2 min-w-[200px] max-w-[200px] break-all">${data}</div>`;
         }
         return data;
       },
@@ -100,7 +100,7 @@ export async function setupTableDetail(data = [], type = "SP") {
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 text-nowrap">${data}</div>`;
+          return `<div class="px-2 min-w-[200px] max-w-[200px] break-all">${data}</div>`;
         }
         return data;
       },
@@ -111,7 +111,7 @@ export async function setupTableDetail(data = [], type = "SP") {
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 min-w-[200px] max-w-[250px] break-all">${data}</div>`;
+          return `<div class="px-2 min-w-[200px] max-w-[200px] break-all">${data}</div>`;
         }
         return data;
       },
@@ -155,7 +155,7 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_QTY",
       title: "Qty.",
-      className: "!px-[3px] bg-primary/10",
+      className: "!px-[3px] INQD_QTY",
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
@@ -178,9 +178,13 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_TC_COST",
       title: "TC Cost",
-      render: function (data, type) {
+      className: `min-w-[100px] INQD_TC_COST`,
+      render: function (data, type, row) {
         if (type === "display") {
           data = data == null ? "" : data;
+          if (row.INQD_SUPPLIER == "MELINA") {
+            return `<div class="px-2"><input type="text" class="w-full min-w-[55px] outline-0 text-right input-number inqprice" value="${data}"/></div>`;
+          }
           return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
         }
         return data;
@@ -189,6 +193,7 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_TC_BASE",
       title: "% TC",
+      className: `min-w-[70px]`,
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
@@ -200,9 +205,10 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_UNIT_PRICE",
       title: "Unit Price",
+      className: `min-w-[100px]`,
       render: function (data, type) {
         if (type === "display") {
-          data = data == null ? "" : data;
+          data = data == null ? "" : Math.ceil(data);
           return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
         }
         return data;
@@ -211,11 +217,12 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_UNIT_PRICE",
       title: "Total Price",
+      className: `min-w-[100px]`,
       render: function (data, type, row) {
-        const totalPrice = row.INQD_UNIT_PRICE * row.INQD_QTY;
+        const totalPrice = Math.ceil(row.INQD_UNIT_PRICE) * row.INQD_QTY;
         if (type === "display") {
           return `<div class="px-2 text-right!">${utils.digits(
-            Math.ceil(totalPrice),
+            totalPrice,
             0
           )}</div>`;
         }
@@ -225,10 +232,14 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_MAR_REMARK",
       title: "MAR Remark",
+      className: `min-w-[250px]`,
       render: function (data, type) {
         if (type === "display") {
-          data = data == null ? "" : data;
-          return `<div class="px-2 min-w-[250px] max-w-[250px] break-all text-xs">${data}</div>`;
+          if (data == null) return "";
+          return `<div class="flex">
+            <div class="px-2 min-w-[250px] max-w-[250px] break-all text-xs line-clamp-1">${data}</div>
+            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
+          </div>`;
         }
         return data;
       },
@@ -236,16 +247,25 @@ export async function setupTableDetail(data = [], type = "SP") {
     {
       data: "INQD_DES_REMARK",
       title: "D/E Remark",
+      className: `min-w-[250px]`,
       render: function (data, type) {
         if (type === "display") {
-          data = data == null ? "" : data;
-          return `<div class="px-2 min-w-[250px] max-w-[250px] break-all text-xs">${data}</div>`;
+          if (data == null) return "";
+          return `<div class="flex">
+            <div class="px-2 min-w-[250px] max-w-[250px] break-all text-xs line-clamp-1">${data}</div>
+            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
+          </div>`;
         }
         return data;
       },
     },
   ];
   opt.createdRow = function (row, data, dataIndex) {
+    $(row).find("td.INQD_QTY").addClass("bg-yellow-100");
+    if (data.INQD_SUPPLIER == "MELINA") {
+      $(row).find(".INQD_TC_COST").addClass("bg-yellow-100");
+    }
+
     if (data.INQD_UNREPLY != null) {
       $(row).find("td").addClass("bg-gray-300!");
       $(row).find("td").find(".inqty").attr("readonly", true);
@@ -260,14 +280,14 @@ export async function setupTableDetail(data = [], type = "SP") {
       .column(13, { page: "-1" })
       .data()
       .each(function (value) {
-        sumtcCost += value;
+        sumtcCost += Math.ceil(value);
       });
 
     api
       .column(15, { page: "-1" })
       .data()
       .each(function (value) {
-        sumUnit += value;
+        sumUnit += Math.ceil(value);
       });
 
     api
@@ -277,22 +297,23 @@ export async function setupTableDetail(data = [], type = "SP") {
         // Get the corresponding row data to access qty
         const rowData = api.row(index).data();
         const qty = rowData ? rowData.INQD_QTY : 0;
-        const totalPrice = qty * rowData.INQD_UNIT_PRICE;
+        const totalPrice = qty * Math.ceil(rowData.INQD_UNIT_PRICE);
         sumTotal += totalPrice;
       });
 
     const footer = `<tr class="bg-slate-200 font-semibold">
-            <th class="text-right" colspan="${
+            <th class="text-right pr-5!" colspan="${
               type === "SP" ? 12 : 8
             }">Total</th>
-            <th class="text-right">${utils.digits(sumtcCost, 0)}</th>
+            <th class="text-right total-tc">${utils.digits(sumtcCost, 0)}</th>
             <th class="text-right"></th>
-            <th class="text-right">${utils.digits(sumUnit, 0)}</th>
+            <th class="text-right total-unit">${utils.digits(sumUnit, 0)}</th>
             <th class="text-right grand-total">${utils.digits(sumTotal, 0)}</th>
             <th class="${type !== "SP" ? "hidden" : ""}"></th>
             <th class="${type !== "SP" ? "hidden" : ""}"></th>
           </tr>`;
     $("#table tfoot").append(footer);
+    $("#table tfoot").addClass("sticky! bottom-0! bg-white! z-10! shadow-md!");
     if (type !== "SP") {
       this.api().column(2).visible(false);
       this.api().column(3).visible(false);

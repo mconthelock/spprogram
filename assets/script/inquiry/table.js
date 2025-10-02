@@ -396,7 +396,7 @@ export async function setupTableHistory(data = []) {
     },
     {
       data: "INQH_DATE",
-      className: "text-xs py-[8px] w-[255px] max-w-[255px]",
+      className: "text-xs py-[8px] px-[5px] w-[200px] max-w-[225px]",
       title: "Date",
       render: (data, type, row) => {
         if (type === "display") {
@@ -428,10 +428,24 @@ export async function setupTableHistory(data = []) {
     {
       data: "status",
       title: "Action",
-      className: "text-xs py-[8px] text-nowrap",
+      className: "text-xs py-[8px] px-[5px] w-[130px] max-w-[130px]",
       render: (data) => (data == null ? "" : data.STATUS_ACTION),
     },
-    { data: "INQH_REMARK", title: "Remark", className: "text-xs py-[8px]" },
+    {
+      data: "INQH_REMARK",
+      title: "Remark",
+      className: "text-xs py-[8px] px-[5px]",
+      render: function (data, type) {
+        if (type === "display") {
+          if (data == null) return "";
+          return `<div class="flex">
+            <div class="line-clamp-1">${data}</div>
+            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
+          </div>`;
+        }
+        return data;
+      },
+    },
   ];
   opt.createdRow = async function (row, data) {
     const emp = await displayEmpInfo(data.users.SEMPNO);

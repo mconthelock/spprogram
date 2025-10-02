@@ -165,9 +165,7 @@ $(document).on("change", ".elmes-input", async function (e) {
   const item = $(node).find(".itemno").val();
   const mfg = $(node).find(".mfgno").val();
   let data = row.data();
-
   row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
-
   if (item != "" && mfg != "") {
     tableElmes = await inqs.elmesSetup(row);
   }
@@ -288,7 +286,7 @@ $(document).on("click", "#downloadTemplateBtn", async function (e) {
 //006: Save Draft
 $(document).on("click", "#draft", async function (e) {
   e.preventDefault();
-  await createPath({ level: 1, status: 1 });
+  await createPath({ level: 0, status: 1 });
 });
 
 //007: Save and send to design
@@ -304,7 +302,9 @@ $(document).on("click", "#send-bm", async function (e) {
 });
 
 async function createPath(opt) {
-  const chkheader = await inqs.verifyHeader(".req-2");
+  const chkheader = await inqs.verifyHeader(
+    opt.level == 0 ? ".req-1" : ".req-2"
+  );
   if (!chkheader) return;
   const header = await inqs.getFormHeader();
   const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
@@ -313,18 +313,20 @@ async function createPath(opt) {
     $("#inquiry-no").focus().select();
     return;
   }
+
+  header.INQ_STATUS = opt.status;
+  header.INQ_TYPE = "SP";
   const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, opt.level);
+    await inqs.verifyDetail(table, details, opt.level);
     await utils.showLoader({
       show: true,
       title: "Saving data",
       clsbox: `!bg-transparent`,
     });
-    header.INQ_STATUS = opt.status;
-    header.INQ_TYPE = "SP";
-    header.INQ_MAR_SENT = new Date();
-    const fomdata = { header, details };
+    const timelinedata = await setTimelineData(opt.status);
+    const historys = await setLogsData(opt.status);
+    const fomdata = { header, details, timelinedata, historys };
     const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();
@@ -433,4 +435,24 @@ async function updatePath(opt) {
     await utils.errorMessage(error);
     return;
   }
+}
+
+async function setTimelineData() {
+  return {
+    INQ_NO: $("#inquiry-no").val(),
+    INQ_REV: $("#revision").val(),
+    MAR_USER: $("#user-login").attr("empno"),
+    MAR_SEND: new Date(),
+  };
+}
+
+async function setLogsData(action) {
+  return {
+    INQ_NO: $("#inquiry-no").val(),
+    INQ_REV: $("#revision").val(),
+    INQH_DATE: new Date(),
+    INQH_USER: $("#user-login").attr("empno"),
+    INQH_ACTION: action,
+    INQH_REMARK: $("#remark").val(),
+  };
 }

@@ -38,7 +38,7 @@ export async function setupTableDetail(data = []) {
   opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto overflow-x-scroll max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_RUNNO",
@@ -245,13 +245,22 @@ export async function setupTableDetail(data = []) {
       className: "remark-line",
       title: "Remark",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
           return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${
             data == null ? "" : data
           }</textarea>`;
         }
         return data;
+      },
+    },
+    {
+      data: "INQD_DES_REMARK",
+      className: `min-w-[250px] ${mode == 0 ? "hidden" : ""}`,
+      title: "D/E Remark",
+      sortable: false,
+      render: function (data) {
+        return data == null ? "" : data;
       },
     },
   ];
