@@ -31,6 +31,7 @@ var tableAttach;
 let selectedFilesMap = new Map();
 let deletedFilesMap = new Map();
 let deletedLineMap = new Map();
+
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
@@ -325,8 +326,8 @@ async function createPath(opt) {
       clsbox: `!bg-transparent`,
     });
     const timelinedata = await setTimelineData(opt.status);
-    const historys = await setLogsData(opt.status);
-    const fomdata = { header, details, timelinedata, historys };
+    const history = await setLogsData(opt.status);
+    const fomdata = { header, details, timelinedata, history };
     const inquiry = await inqservice.createInquiry(fomdata);
     if (selectedFilesMap.size > 0) {
       const attachment_form = new FormData();
@@ -360,8 +361,11 @@ $(document).on("click", "#update-de", async function (e) {
     return;
   }
 
-  if ($("#status").val() >= 10) await updatePath({ level: 1, status: 3 });
-  else await updatePath({ level: 1, status: 2 });
+  if ($("#status").val() >= 10) {
+    await updatePath({ level: 1, status: 3 });
+  } else {
+    await updatePath({ level: 1, status: 2 });
+  }
 });
 
 //013: Update and send to AS400
@@ -386,9 +390,13 @@ async function updatePath(opt) {
     return;
   }
 
+  header.INQ_STATUS = opt.status;
+  header.UPDATE_BY = $("#user-login").attr("empname");
+  header.UPDATE_AT = new Date();
+
   const details = table.rows().data().toArray();
   try {
-    const checkdetail = await inqs.verifyDetail(table, details, opt.level);
+    await inqs.verifyDetail(table, details, opt.level);
     await utils.showLoader({
       show: true,
       title: "Saving data",
@@ -409,15 +417,15 @@ async function updatePath(opt) {
       });
     }
 
-    header.INQ_STATUS = opt.status;
-    header.UPDATE_BY = $("#user-login").attr("empname");
-    header.UPDATE_AT = new Date();
-
+    const timelinedata = await setTimelineData();
+    const history = await setLogsData(opt.status);
     const fomdata = {
       header,
       details,
       deleteLine,
       deleteFile,
+      timelinedata,
+      history,
     };
     const inquiry = await inqservice.updateInquiry(fomdata);
     if (selectedFilesMap.size > 0) {

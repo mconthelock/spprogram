@@ -48,7 +48,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_ID",
       title: "<i class='icofont-settings text-lg'></i>",
-      className: "text-center text-nowrap sticky-column px-1",
+      className: "sticky-column text-center text-nowrap !px-1",
       sortable: false,
       render: function (data, type, row) {
         if (type === "display") {
@@ -65,7 +65,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "sticky-column !px-[3px] seqno",
+      className: "sticky-column seqno",
       sortable: false,
       render: function (data, type, row) {
         if (type === "display") {
@@ -82,7 +82,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_CAR",
       title: "CAR",
-      className: "sticky-column !px-[3px]",
+      className: "sticky-column",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -98,7 +98,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_MFGORDER",
       title: "MFG No.",
-      className: "sticky-column !px-[3px]",
+      className: "sticky-column",
       sortable: false,
       render: function (data, type) {
         if (type === "display") {
@@ -112,7 +112,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_ITEM",
       title: "Item",
-      className: "!px-[3px] item-no",
+      className: "sticky-column item-no",
       sortable: false,
       render: function (data, type) {
         if (type === "display") {

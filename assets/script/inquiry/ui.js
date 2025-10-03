@@ -20,3 +20,8 @@ $(document).on("click", "#add-attachment", async function (e) {
   console.log("Add attachment");
   $("#attachment-file").click();
 });
+
+$(document).on("click", ".view-last-revision", function (e) {
+  e.preventDefault();
+  $("#inquiry-last-revision").prop("checked", true);
+});

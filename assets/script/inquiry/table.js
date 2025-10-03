@@ -391,8 +391,14 @@ export async function setupTableHistory(data = []) {
   opt.columns = [
     {
       data: "INQ_REV",
-      className: "text-center text-xs py-[8px] px-[5px] w-[30px] max-w-[30px]",
+      className: "text-center text-xs w-[30px] max-w-[30px] !p-0",
       title: "Rev.",
+      render: (data, type) => {
+        if (type === "display") {
+          return `<a href="#" class="btn btn-xs btn-circle btn-ghost view-last-revision" data-value="${data}">${data}</a>`;
+        }
+        return data;
+      },
     },
     {
       data: "INQH_DATE",

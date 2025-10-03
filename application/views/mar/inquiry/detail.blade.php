@@ -10,7 +10,7 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-edit display text-xs"></table>
+        <table id="table" class="table table-zebra table-second table-edit display text-xs"></table>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
@@ -18,7 +18,7 @@
             <div class="divider divider-start divider-primary">
                 <span class="font-extrabold text-md text-primary ps-3">History</span>
             </div>
-            <table id="history" class="table table-zebra display text-xs"></table>
+            <table id="history" class="table table-zebra table-second display text-xs"></table>
         </div>
         <div class="flex-1 relative">
             <div class="divider divider-start divider-primary">
@@ -28,10 +28,11 @@
                 id="add-attachment">
                 <div class="tooltip tooltip-left" data-tip="Add attachment"><i class="fi fi-br-clip text-lg"></i></div>
             </button>
-            <table id="attachment" class="table table-zebra display text-xs"></table>
+            <table id="attachment" class="table table-zebra table-second display text-xs"></table>
         </div>
     </div>
     <div class="flex gap-2 my-3" id="btn-container"></div>
+    @include('mar.inquiry._revision')
 @endsection
 
 @section('scripts')
