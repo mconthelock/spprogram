@@ -38,23 +38,20 @@ export async function setupTableDetail(data = []) {
   opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_RUNNO",
-      title: "",
       className: "hidden",
     },
     {
       data: "INQD_ID",
       title: "<i class='icofont-settings text-lg'></i>",
-      className:
-        "text-center text-nowrap px-1 w-[50px] min-w-[50px] max-w-[50px]",
-      sortable: false,
+      className: "sticky-column text-center text-nowrap w-[40px] max-w-[40px]",
       render: function (data, type) {
         if (type === "display") {
           return `
-          <button class="btn btn-sm btn-circle btn-ghost delete-sub-line text-red-500"><i class="fi fi-bs-cross"></i></button>`;
+          <button class="btn btn-xs btn-circle btn-ghost delete-sub-line text-red-500"><i class="fi fi-bs-cross"></i></button>`;
         }
         return data;
       },
@@ -62,17 +59,15 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "max-w-[50px]",
-      sortable: false,
+      className: "sticky-column w-[50px] max-w-[50px]",
     },
     {
       data: "INQD_ITEM",
       title: "Item",
-      className: "!px-[3px] w-[75px] min-w-[75px] max-w-[75px] item-no",
-      sortable: false,
-      render: function (data, type, row, meta) {
+      className: "sticky-column w-[75px] max-w-[75px] cell-edit",
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="text" maxlength="3" minlength="3" class="!w-[75px] cell-input edit-input itemno " value="${data}"/>`;
+          return `<input type="text" maxlength="3" minlength="3" class="w-full cell-input edit-input itemno " value="${data}"/>`;
         }
         return data;
       },
@@ -80,6 +75,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
+      className: "sticky-column w-[225px] max-w-[225px]",
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
@@ -91,6 +87,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_DRAWING",
       title: "Drawing No.",
+      className: "w-[225px] max-w-[225px]",
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
@@ -102,10 +99,11 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_VARIABLE",
       title: "Variable",
+      className: "w-[225px] max-w-[225px]",
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+          return `<div class="px-2 max-w-[275px] break-all">${data}</div>`;
         }
         return data;
       },
@@ -113,10 +111,10 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_QTY",
       title: "Qty.",
-      className: "!px-[3px] max-w-[75px] item-no",
-      render: function (data, type, row) {
+      className: "w-[55px] max-w-[55px] cell-edit",
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
+          return `<input type="text" class="!w-full cell-input input-number qty-input" value="${data}">`;
         }
         return data;
       },
@@ -143,35 +141,35 @@ export async function setupTableDetail(data = []) {
         return data;
       },
     },
-    {
-      data: "INQD_FC_COST",
-      title: "FC Cost",
-      render: function (data, type) {
-        if (type === "display") {
-          data = data == null ? "" : data;
-          return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
-        }
-        return data;
-      },
-    },
-    {
-      data: "INQD_FC_BASE",
-      title: "FC Base",
-      render: function (data, type) {
-        if (type === "display") {
-          data = data == null ? "" : data;
-          return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
-        }
-        return data;
-      },
-    },
+    // {
+    //   data: "INQD_FC_COST",
+    //   title: "FC Cost",
+    //   render: function (data, type) {
+    //     if (type === "display") {
+    //       data = data == null ? "" : data;
+    //       return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+    //     }
+    //     return data;
+    //   },
+    // },
+    // {
+    //   data: "INQD_FC_BASE",
+    //   title: "FC Base",
+    //   render: function (data, type) {
+    //     if (type === "display") {
+    //       data = data == null ? "" : data;
+    //       return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+    //     }
+    //     return data;
+    //   },
+    // },
     {
       data: "INQD_TC_COST",
       title: "TC Cost",
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+          return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
         }
         return data;
       },
@@ -193,13 +191,12 @@ export async function setupTableDetail(data = []) {
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+          return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
         }
         return data;
       },
     },
   ];
-  opt.initComplete = function (settings, json) {};
   return opt;
 }
 
@@ -210,7 +207,7 @@ export async function setupTablePriceList(data) {
   opt.responsive = false;
   opt.pageLength = 10;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "l><"flex items-center table-option mb-3"f>><"bg-white border border-slate-300 rounded-2xl"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex gap-3 mb-3"<"table-search flex flex-1 items-center gap-5"><"flex table-option"f>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     { data: "itemdesc.ITEM_NO", title: "Item No" },
     {
@@ -241,7 +238,7 @@ export async function setupTablePriceList(data) {
       render: function (data, type) {
         if (type === "display") {
           data = data == null ? "" : data;
-          return `<div class="px-2 max-w-[250px] break-all">${data}</div>`;
+          return `<div class="px-2 max-w-[275px] break-all">${data}</div>`;
         }
         return data;
       },
@@ -276,7 +273,7 @@ export async function setupTablePriceList(data) {
         if (type === "display") {
           data = data == null ? "" : data;
           return `<div class="px-2 text-right!">${utils.digits(
-            data[0].FCBASE,
+            data[0].FCCOST,
             2
           )}</div>`;
         }
@@ -306,8 +303,8 @@ export async function setupTablePriceList(data) {
         if (type === "display") {
           data = data == null ? "" : data;
           return `<div class="px-2 text-right!">${utils.digits(
-            data[0].FCBASE,
-            2
+            data[0].TCCOST,
+            0
           )}</div>`;
         }
         return data;
@@ -347,5 +344,12 @@ export async function setupTablePriceList(data) {
       },
     },
   ];
+
+  opt.initComplete = function (settings, json) {
+    $(`#${settings.sTableId}`)
+      .closest(".dt-container")
+      .find(".table-search")
+      .html(`<h3 class="text-lg font-bold">Price List item!</h3>`);
+  };
   return opt;
 }

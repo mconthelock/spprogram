@@ -45,6 +45,7 @@ $(document).ready(async () => {
       mode = "edit";
       if (inquiry.INQ_STATUS >= 10) {
         inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
+        inquiry.INQ_MAR_PIC = $("#user-login").attr("empno");
         mode = "revise";
       }
 

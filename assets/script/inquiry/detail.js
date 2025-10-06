@@ -25,7 +25,8 @@ import * as tb from "./table.js";
 export const statusColors = () => {
   return [
     { id: 1, color: "bg-gray-300 text-gray-600" }, //Draft
-    { id: 9, color: "bg-teal-500 text-white" }, //MAR [Pre process]
+    { id: 2, color: "bg-teal-500 text-white" }, //New
+    { id: 9, color: "bg-yellow-400" }, //revise
     { id: 19, color: "bg-cyan-500" }, //SE
     { id: 29, color: "bg-blue-500 text-white" }, //DE
     { id: 39, color: "bg-slate-500 text-white" }, //IS
@@ -497,7 +498,8 @@ export async function createReasonModal() {
 
 export async function clickUnreply(obj, row) {
   if (!obj.is(":checked")) {
-    await resetUnreply(row.table());
+    const tr = $(obj).closest("tr");
+    tr.find(".supplier").attr("disabled", false);
     return;
   }
   //   const row = table.row($(this).parents("tr"));
@@ -543,13 +545,17 @@ export async function saveUnreply(table) {
     return;
   }
 
+  const groupcode = $("#user-login").attr("groupcode");
+  const marremark = groupcode == "MAR" ? remark : null;
+  const deremark = groupcode != "MAR" ? remark : null;
   const target = $("#reason-target").val();
   const row = table.row(target);
   const data = row.data();
   const newData = {
     ...data,
     INQD_UNREPLY: selected.val(),
-    INQD_MAR_REMARK: remark,
+    INQD_MAR_REMARK: marremark == null ? data.INQD_MAR_REMARK : marremark,
+    INQD_DES_REMARK: deremark == null ? data.INQD_DES_REMARK : deremark,
     INQD_SUPPLIER: "",
   };
   table.row(target).data(newData);
@@ -563,7 +569,7 @@ export async function resetUnreply(table) {
   const newData = {
     ...data,
     INQD_UNREPLY: ``,
-    INQD_MAR_REMARK: ``,
+    // INQD_MAR_REMARK: ``,
   };
   table.row(target).data(newData);
   await resetUnreplyForm();

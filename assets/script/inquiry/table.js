@@ -316,7 +316,7 @@ export async function setupTableDetailView(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
-      className: "text-nowrap min-w-[200px] !text-left",
+      className: "sticky-column text-nowrap min-w-[200px] !text-left",
     },
     {
       data: "INQD_DRAWING",
@@ -444,7 +444,7 @@ export async function setupTableHistory(data = []) {
       render: function (data, type) {
         if (type === "display") {
           if (data == null) return "";
-          return `<div class="flex">
+          return `<div class="flex gap-2">
             <div class="line-clamp-1">${data}</div>
             <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
           </div>`;

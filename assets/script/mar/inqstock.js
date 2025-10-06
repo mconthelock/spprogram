@@ -105,13 +105,15 @@ async function setupButton(mode) {
 $(document).on("click", "#add-item", async function (e) {
   e.preventDefault();
   const id = utils.digits(table.rows().data().length + 1);
-  await tb.addRow(id, table);
+  await tb.addRow({ id, seq: id }, table);
   const rowNode = table.rows("tr:last").nodes();
   $(rowNode).find(".itemno").focus();
 });
 
-$(document).on("keyup", ".itemno", async function (e) {
+$(document).on("change", ".itemno", async function (e) {
   e.preventDefault();
+  console.log("keyup itemno");
+
   const itemno = $(this).val();
   if (itemno.length < 3) return;
 
@@ -173,7 +175,7 @@ $(document).on("click", "#price-list-confirm", async function (e) {
         ITEMID: row.itemdesc.ITEM_ID,
         INQD_OWNER: "MAR",
       };
-      await tb.addRow(index, table, newrow);
+      await tb.addRow({ id: index, seq: index }, table, newrow);
     }
   });
   $("#table-price-list").html("");
@@ -193,6 +195,47 @@ $(document).on("click", ".delete-sub-line", async function (e) {
 
 $(document).on("change", ".edit-input", async function () {
   await tb.changeCell(table, this);
+});
+
+$(document).on("change", ".qty-input", async function (e) {
+  e.preventDefault();
+  const qty = $(this).val();
+  const row = table.row($(this).closest("tr"));
+  const data = row.data();
+  if (
+    !(
+      (data.INQD_ITEM == "101" && data.INQD_PARTNAME == "T/M") ||
+      (data.INQD_ITEM == "125" && data.INQD_PARTNAME == "T/M ASSY")
+    )
+  ) {
+    table.cell($(this).closest("td")).data(qty).draw();
+    return;
+  }
+
+  let current = utils.intVal(data.INQD_RUNNO) + utils.intVal(qty);
+  table.rows().every(function () {
+    const dt = this.data();
+    if (dt.INQD_RUNNO > data.INQD_RUNNO) {
+      const newrow = { ...dt, INQD_SEQ: current, INQD_RUNNO: current };
+      this.data(newrow).draw();
+      current++;
+    }
+  });
+
+  table.row(row).remove().draw();
+  let seq = data.INQD_SEQ;
+  for (let i = 0; i < qty; i++) {
+    const no = seq + i;
+    const value = {
+      ...data,
+      INQD_SEQ: no,
+      INQD_RUNNO: no,
+      INQD_QTY: 1,
+    };
+    await tb.addRow({ id: no, seq: no }, table, value);
+  }
+
+  $("#new-stock-item").prop("checked", false);
 });
 
 //Submit Form

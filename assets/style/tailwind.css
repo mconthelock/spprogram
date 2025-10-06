@@ -192,6 +192,10 @@
     transition: all 0.2s ease-in-out;
     font-size: var(--text-xs);
   }
+
+  .table-second > tbody > tr > td.cell-edit {
+    @apply bg-yellow-100!;
+  }
   .table-second > tbody > tr > td > .cell-input:focus,
   .table-second > tbody > tr > td > .cell-input:hover {
     outline: #3b82f6 1px solid;
@@ -299,5 +303,11 @@
   .day-off:not(.selected) {
     background-color: var(--color-gray-400) !important;
     color: var(--color-gray-900) !important;
+  }
+
+  /* Tooltip */
+  .tooltip::before {
+    font-size: 0.7rem !important;
+    max-width: 40rem !important;
   }
 }

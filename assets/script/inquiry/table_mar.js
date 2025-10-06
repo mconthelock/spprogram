@@ -124,7 +124,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
-      className: "!px-[3px]",
+      className: "sticky-column !px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
