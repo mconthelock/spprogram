@@ -1,6 +1,6 @@
 import * as utils from "../utils.js";
 
-export async function setupTableDetail(data = []) {
+export async function setupTableDetail(data = [], group = "SEG") {
   const renderText = (str, logs, key) => {
     if (logs == undefined) return str;
     let li = ``;
@@ -39,11 +39,10 @@ export async function setupTableDetail(data = []) {
   opt.responsive = false;
   opt.info = false;
   opt.orderFixed = [0, "asc"];
-  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "INQD_RUNNO",
-      title: "",
       className: "hidden",
     },
     {
@@ -55,7 +54,7 @@ export async function setupTableDetail(data = []) {
         if (type === "display") {
           return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
           <button class="btn btn-sm btn-circle btn-ghost ${
-            row.INQD_OWNER != "MAR"
+            row.INQD_OWNER_GROUP != "MAR"
               ? "delete-sub-line text-red-500"
               : "btn-disabled"
           }"><i class="fi fi-bs-cross"></i></button>`;
@@ -66,14 +65,15 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_SEQ",
       title: "No",
-      className: "sticky-column !px-[3px] seqno",
+      className: "sticky-column seqno",
       sortable: false,
       render: function (data, type, row) {
         if (type === "display") {
+          if (data % 1 !== 0) data = utils.digits(data, 2);
           const log = renderLog(data, row.logs, "INQD_SEQ");
-          const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
+          const str = `<input type="text" class="!w-[50px] cell-input edit-input input-number ${
             log ? "detail-log" : ""
-          }" value="${data}" ${row.INQD_OWNER != "MAR" ? "" : "readonly"}/>`;
+          }" value="${data}">`;
           return renderText(str, row.logs, "INQD_SEQ");
         }
         return data;
@@ -82,12 +82,12 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_CAR",
       title: "CAR",
-      className: "sticky-column !px-[3px]",
+      className: "sticky-column",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
           const log = renderLog(data, row.logs, "INQD_CAR");
-          const str = `<input type="text" class="!w-[55px] uppercase cell-input carno ${
+          const str = `<input type="text" class="!w-[40px] uppercase cell-input carno ${
             log ? "detail-log" : ""
           }" maxlength="2" value="${data == null ? "" : data}"/>`;
           return renderText(str, row.logs, "INQD_CAR");
@@ -98,11 +98,11 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_MFGORDER",
       title: "MFG No.",
-      className: "sticky-column !px-[3px]",
+      className: "sticky-column",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="text" class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
+          return `<input type="text" class="!w-[100px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
             data == null ? "" : data
           }">`;
         }
@@ -112,11 +112,11 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_ITEM",
       title: "Item",
-      className: "!px-[3px] item-no",
+      className: "sticky-column item-no",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
-          return `<input type="number" min="100" max="999" class="!w-[75px] cell-input elmes-input itemno" value="${data}"/>`;
+          return `<input type="text" class="!w-[50px] cell-input elmes-input input-number itemno" value="${data}"/>`;
         }
         return data;
       },
@@ -124,7 +124,7 @@ export async function setupTableDetail(data = []) {
     {
       data: "INQD_PARTNAME",
       title: "Part Name",
-      className: "!px-[3px]",
+      className: "sticky-column !px-[3px]",
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
@@ -142,7 +142,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<textarea class="!w-[225px] uppercase cell-input edit-input" maxlength="150">${
+          return `<textarea class="!w-[225px] uppercase cell-input edit-input drawing-line" maxlength="150">${
             data == null ? "" : data
           }</textarea>`;
         }
@@ -156,7 +156,7 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type) {
         if (type === "display") {
-          return `<textarea class="!w-[200px] uppercase cell-input edit-input" maxlength="250">${
+          return `<textarea class="!w-[200px] uppercase cell-input edit-input variable-line" maxlength="250">${
             data == null ? "" : data
           }</textarea>`;
         }
@@ -183,7 +183,7 @@ export async function setupTableDetail(data = []) {
       render: function (data, type, row, meta) {
         data = data == "" ? "PC" : data;
         if (type === "display") {
-          return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${data}">`;
+          return `<input type="type" class="!w-[55px] uppercase cell-input edit-input" value="${data}">`;
         }
         return data;
       },
@@ -198,17 +198,17 @@ export async function setupTableDetail(data = []) {
           return `<select class="!w-[100px] select select-sm supplier edit-input" ${
             row.INQD_UNREPLY == "" || row.INQD_UNREPLY == null ? "" : "disabled"
           }>
-            <option value=""></option>
-            <option value="AMEC" ${
-              data == "AMEC" ? "selected" : ""
-            }>AMEC</option>
-            <option value="MELINA" ${
-              data == "MELINA" ? "selected" : ""
-            }>MELINA</option>
-            <option value="LOCAL" ${
-              data == "LOCAL" ? "selected" : ""
-            }>LOCAL</option>
-          </select>`;
+                <option value=""></option>
+                <option value="AMEC" ${
+                  data == "AMEC" ? "selected" : ""
+                }>AMEC</option>
+                <option value="MELINA" ${
+                  data == "MELINA" ? "selected" : ""
+                }>MELINA</option>
+                <option value="LOCAL" ${
+                  data == "LOCAL" ? "selected" : ""
+                }>LOCAL</option>
+              </select>`;
         }
         return data;
       },
@@ -234,32 +234,40 @@ export async function setupTableDetail(data = []) {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-black unreply edit-input"
-           ${data == "" || data == null ? "" : "checked"}/>`;
+          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
+               ${data == "" || data == null ? "" : "checked"}/>`;
         }
         return data;
       },
     },
     {
       data: "INQD_DE",
-      title: `<i class="fi fi-tr-share-square text-xl"></i>`,
-      className: "text-center",
+      title: `<i class='fi fi-tr-share-square text-lg'></i>`,
+      className: `text-center ${group == "SEG" ? "hidden" : ""}`,
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm  checkbox-warning edit-input" value="1" ${
-            data == "" || data == null ? "" : "checked"
-          }/>`;
+          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white forward edit-input"
+               ${data == "" || data == null ? "" : "checked"}/>`;
         }
         return data;
       },
     },
     {
       data: "INQD_MAR_REMARK",
+      className: `min-w-[250px] ${mode == 0 ? "hidden" : ""}`,
+      title: "MAR Remark",
+      sortable: false,
+      render: function (data) {
+        return data == null ? "" : data;
+      },
+    },
+    {
+      data: "INQD_DES_REMARK",
       className: "remark-line",
       title: "Remark",
       sortable: false,
-      render: function (data, type, row, meta) {
+      render: function (data, type) {
         if (type === "display") {
           return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${
             data == null ? "" : data

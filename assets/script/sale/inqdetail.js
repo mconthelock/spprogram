@@ -50,6 +50,7 @@ $(document).ready(async () => {
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
 
     const user = $("#user-login").attr("empno");
+    const usergroup = $("#user-login").attr("groupcode");
     const times = inquiry.timeline;
     inquiry.SG_USER = times.SG_USER == null ? user : times.SG_USER;
     inquiry.SG_CONFIIRM = times.SG_CONFIIRM;
@@ -61,7 +62,7 @@ $(document).ready(async () => {
     file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
 
     const cards = await inqs.setupCard(inquiry);
-    const tableContainer = await tbsale.setupTableDetail(details);
+    const tableContainer = await tbsale.setupTableDetail(details, usergroup);
     table = await createTable(tableContainer);
 
     const history = await tb.setupTableHistory(logs);
@@ -145,7 +146,7 @@ $(document).on("click", ".add-sub-line", async function (e) {
   e.preventDefault();
   const data = table.row($(this).parents("tr")).data();
   const id = utils.digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
-  await tb.addRow(id, table);
+  await tb.addRow({ id, seq: id }, table);
 });
 
 $(document).on("click", ".delete-sub-line", async function (e) {
@@ -171,11 +172,10 @@ $(document).on("change", ".elmes-input", async function (e) {
   e.preventDefault();
   const row = table.row($(this).closest("tr"));
   tableElmes = await inqs.elmesSetup(row);
-  //await tb.changeCell(table, this);
 });
 
 $(document).on("click", "#elmes-confirm", async function () {
-  const increse = 1;
+  const increse = 0.01;
   const elmesData = tableElmes.rows().data();
   await inqs.elmesConform(elmesData, increse, table);
 });

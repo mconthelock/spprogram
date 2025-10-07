@@ -9,11 +9,11 @@ class Inquiry extends MY_Controller {
     }
 
     public function edit($id){
-        $this->views('sale/inquiry/edit', array('id'=> $id));
+        $this->views('sale/inquiry/detail', array('id'=> $id));
     }
 
     public function detail($id){
-        $this->views('sale/inquiry/detail', array('id'=> $id));
+        $this->views('sale/inquiry/declare', array('id'=> $id));
     }
 
     public function view($id){

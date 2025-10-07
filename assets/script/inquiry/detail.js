@@ -671,7 +671,7 @@ export async function elmesConform(elmesData, increse, table) {
         INQD_SENDPART: second,
       };
       table.row.add(newRow).draw(false);
-      i++;
+      i = increse + i;
     }
   });
 

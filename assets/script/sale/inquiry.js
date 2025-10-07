@@ -1,4 +1,3 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import moment from "moment";
@@ -9,13 +8,20 @@ import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
 var table;
+
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    const data = await service.getInquiry({
-      GE_INQ_STATUS: 10,
-      LE_INQ_STATUS: 29,
+    const usergroup = $("#user-login").attr("groupcode");
+    let data = await service.getInquiry({
+      GE_INQ_STATUS: 2,
+      LE_INQ_STATUS: 10,
     });
+    if (usergroup == "SEG") {
+      data = data.filter((item) => item.INQ_STATUS < 10);
+    } else {
+      data = data.filter((item) => item.INQ_STATUS == 10);
+    }
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
@@ -27,16 +33,10 @@ $(document).ready(async () => {
 });
 
 async function tableOpt(data) {
-  const colors = await statusColors();
   const usergroup = $("#user-login").attr("groupcode");
-  let datafilter = data;
-  if (usergroup == "SEG") {
-    datafilter = data.filter((item) => item.INQ_STATUS < 10);
-    console.log(datafilter);
-  }
-
+  const colors = await statusColors();
   const opt = utils.tableOpt;
-  opt.data = datafilter;
+  opt.data = data;
   opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-12"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
     {
@@ -156,7 +156,7 @@ async function tableOpt(data) {
     },
     {
       data: "INQ_ID",
-      className: "text-center w-fit max-w-[60px]",
+      className: "text-center w-fit max-w-[80px]",
       sortable: false,
       title: `<i class='icofont-settings text-lg text-white'></i>`,
       render: (data, type, row, meta) => {
@@ -167,20 +167,20 @@ async function tableOpt(data) {
       },
     },
   ];
-  opt.initComplete = function (settings, json) {
-    $(".table-info").append(`<div class="flex gap-2">
-        <button class="btn btn-accent rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-detail"
-            type="button">
+  opt.initComplete = function () {
+    const export1 = `<button class="btn btn-accent rounded-none text-white items-center hover:bg-accent/70" id="sale-export-detail" type="button">
             <span class="loading loading-spinner hidden"></span>
-            <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export Detail</span>
-        </button>
+            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Detail</span>
+        </button>`;
+    const export2 = `<button class="btn btn-neutral rounded-none text-white items-center hover:bg-neutral/70" id="export-list" type="button">
+            <span class="loading loading-spinner hidden"></span>
+            <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>Export list</span>
+        </button>`;
 
-         <button class="btn btn-neutral rounded-3xl text-white transition delay-100 duration-300 ease-in-out hover:scale-110 items-center" id="export-list"
-            type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export list</span>
-        </button>
-    </div>`);
+    $(".table-info").append(`<div class="flex gap-2">
+        ${export1}
+
+     </div>`);
   };
   return opt;
 }
@@ -203,24 +203,71 @@ $(document).on("click", ".btn-process", async function (e) {
   window.location.href = url;
 });
 
-$(document).on("click", "#export-detail", async function (e) {
+$(document).on("click", "#sale-export-detail", async function (e) {
   e.preventDefault();
-  const data = []; //Get data report
+  const usergroup = $("#user-login").attr("groupcode");
+  let data = await service.getInquiryReport({
+    GE_INQ_STATUS: 2,
+    LE_INQ_STATUS: 10,
+  });
+  if (usergroup == "SEG") {
+    data = data.filter((item) => item.INQ_STATUS < 10);
+  }
   const template = await service.getExportTemplate({
     name: `export_inquiry_list_template.xlsx`,
   });
   const file = template.buffer;
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(file).then(async (workbook) => {
+    const sheet_data = workbook.worksheets[1];
+    const columns = await service.exportFormat(sheet_data);
     const sheet = workbook.worksheets[0];
     let row1 = 0;
-    for (let i = 3; i <= 10; i++) {
-      if (i > 4) {
-        await utils.cloneRows(sheet, row1, i);
-        row1 = i % 2 == 0 ? 4 : 3;
+    let str = 3;
+    const colCount = sheet.columnCount;
+    data.forEach(async (el, i) => {
+      str = i + 3;
+      if (str > 4) {
+        utils.cloneRows(sheet, row1, str);
+        row1 = str % 2 == 0 ? 4 : 3;
       }
-      sheet.getCell(i, 2).value = `4542221`;
-      sheet.getCell(i, 3).value = `xxxxxxxxx cccc`;
+
+      for (let j = 1; j <= colCount; j++) {
+        const format = columns.find((item) => item[1] == j);
+        let value;
+
+        if (format[2] == "Func") {
+          value = 0;
+        } else {
+          if (format[3].includes(".")) {
+            const keys = format[3].split(".");
+            value = el;
+            for (const key of keys) {
+              value = value && value[key] !== undefined ? value[key] : "";
+            }
+          } else {
+            value = el[format[3]];
+          }
+        }
+
+        if (format[2] === "Date" && value) {
+          sheet.getCell(str, format[1]).value =
+            moment(value).format("YYYY-MM-DD");
+        } else if (format[2] === "Datetime" && value) {
+          sheet.getCell(str, format[1]).value = moment(value).format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+        } else {
+          sheet.getCell(str, format[1]).value = value;
+        }
+      }
+      //   sheet.getCell(str, 1).value = el.INQ_NO;
+      //   sheet.getCell(str, 2).value = moment(el.INQ_DATE).format("YYYY-MM-DD");
+    });
+
+    // Remove all sheets except the first one
+    while (workbook.worksheets.length > 1) {
+      workbook.removeWorksheet(workbook.worksheets[1].id);
     }
     await workbook.xlsx.writeBuffer().then(function (buffer) {
       const blob = new Blob([buffer], {
@@ -234,6 +281,6 @@ $(document).on("click", "#export-detail", async function (e) {
   });
 });
 
-$(document).on("click", "#export-list", async function (e) {
-  e.preventDefault();
-});
+// $(document).on("click", "#export-list", async function (e) {
+//   e.preventDefault();
+// });

@@ -82,6 +82,23 @@ export const updateInquiry = async (data) => {
   });
 };
 
+export const getInquiryReport = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/inquiry/report/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 // Function to manage inquiry group
 export const getInquiryGroup = async (data) => {
   return new Promise((resolve, reject) => {
@@ -210,6 +227,18 @@ export const getExportTemplate = async (data) => {
       },
     });
   });
+};
+
+export const exportFormat = (sheet) => {
+  const data_array = [];
+  sheet.eachRow({ includeEmpty: false }, function (row, rowNumber) {
+    const row_values = [];
+    row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
+      row_values.push(cell.value);
+    });
+    data_array.push(row_values);
+  });
+  return data_array;
 };
 
 //Inquiry Timeline

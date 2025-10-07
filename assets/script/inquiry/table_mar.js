@@ -42,7 +42,6 @@ export async function setupTableDetail(data = []) {
   opt.columns = [
     {
       data: "INQD_RUNNO",
-      title: "",
       className: "hidden",
     },
     {

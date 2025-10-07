@@ -4,7 +4,7 @@
     <input type="hidden" name="inquiry-id" id="inquiry-id" value="{{ $id }}">
     <h1 class="text-3xl font-sans font-[700] uppercase text-gray-700">Inquiry Detail</h1>
     <div class="divider m-0"></div>
-    <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewprj|viewinfo|sale"></main>
+    <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewprj|viewinfo|viewsale"></main>
 
     <div class="mt-6">
         <div class="divider divider-start divider-primary">
