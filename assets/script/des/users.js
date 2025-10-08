@@ -57,12 +57,8 @@ async function createUserTable(users = []) {
         return data;
       },
     },
-    {
-      data: "data.SDEPT",
-    },
-    {
-      data: "data.SSEC",
-    },
+    { data: "data.SDEPT" },
+    { data: "data.SSEC" },
     {
       data: "USERS_ID",
       sortable: false,

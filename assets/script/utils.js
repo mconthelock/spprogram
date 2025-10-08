@@ -208,6 +208,23 @@ export const amecschdule = (data) => {
   return `${fd}${letter.val}`;
 };
 
+export const ameccaledar = async (sdate, edate) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/calendar/range`,
+      type: "POST",
+      dataType: "json",
+      data: { sdate, edate },
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 export const revision_code = (current) => {
   if (current === "*") return "A";
   const recursive = (val) => {

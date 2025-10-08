@@ -7,8 +7,9 @@ import { showbgLoader } from "@public/preloader";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
-var table;
 
+var table;
+var daterange;
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
@@ -193,7 +194,6 @@ $(document).on("click", ".btn-process", async function (e) {
     const data = {
       INQ_NO: row.INQ_NO,
       INQ_REV: row.INQ_REV,
-      //SG_USER: $("#user-login").attr("empno"),
       SG_READ: new Date(),
     };
     await service.updateInquiryTimeline(data);
@@ -213,40 +213,46 @@ $(document).on("click", "#sale-export-detail", async function (e) {
   if (usergroup == "SEG") {
     data = data.filter((item) => item.INQ_STATUS < 10);
   }
+  daterange = await getCalendar(data);
   const template = await service.getExportTemplate({
-    name: `export_inquiry_list_template.xlsx`,
+    name: `export_inquiry_list_template_for_sale.xlsx`,
   });
   const file = template.buffer;
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(file).then(async (workbook) => {
     const sheet_data = workbook.worksheets[1];
     const columns = await service.exportFormat(sheet_data);
+    const rowstart = 2;
     const sheet = workbook.worksheets[0];
     let row1 = 0;
-    let str = 3;
+    let str = 0;
+
     const colCount = sheet.columnCount;
     data.forEach(async (el, i) => {
-      str = i + 3;
-      if (str > 4) {
+      str = i + rowstart;
+      if (str > rowstart + 1) {
         utils.cloneRows(sheet, row1, str);
-        row1 = str % 2 == 0 ? 4 : 3;
+        row1 = str % 2 == 0 ? rowstart + 1 : rowstart;
       }
 
       for (let j = 1; j <= colCount; j++) {
         const format = columns.find((item) => item[1] == j);
-        let value;
-
+        let value = "";
+        if (format[3] == null) continue;
         if (format[2] == "Func") {
-          value = 0;
+          const param = format[4] ? JSON.parse(format[4]) : {};
+          value = eval(format[3])(el, param);
+        } else if (format[2] == "Formula") {
+          value = { formula: format[3].replaceAll("{x}", str) };
         } else {
           if (format[3].includes(".")) {
-            const keys = format[3].split(".");
             value = el;
+            const keys = format[3].split(".");
             for (const key of keys) {
-              value = value && value[key] !== undefined ? value[key] : "";
+              value = value[key] !== undefined ? value[key] : "";
             }
           } else {
-            value = el[format[3]];
+            value = el[format[3]] !== undefined ? el[format[3]] : "";
           }
         }
 
@@ -261,8 +267,6 @@ $(document).on("click", "#sale-export-detail", async function (e) {
           sheet.getCell(str, format[1]).value = value;
         }
       }
-      //   sheet.getCell(str, 1).value = el.INQ_NO;
-      //   sheet.getCell(str, 2).value = moment(el.INQ_DATE).format("YYYY-MM-DD");
     });
 
     // Remove all sheets except the first one
@@ -281,6 +285,42 @@ $(document).on("click", "#sale-export-detail", async function (e) {
   });
 });
 
-// $(document).on("click", "#export-list", async function (e) {
-//   e.preventDefault();
-// });
+function getEffect(data, param) {
+  const inqgroup = data.inqgroup;
+  const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
+  return des.length > 0 ? "Y" : "";
+}
+
+function nextWorkingDay(data, param) {
+  //sdate, days, daterange
+  const sdate = moment(data.timeline.MAR_SEND).format("YYYYMMDD");
+  const days = parseInt(param.days);
+  daterange = daterange.filter(
+    (item) => item.DAYOFF == 0 && item.WORKID >= sdate
+  );
+  let i = 1;
+  let current = sdate;
+  daterange.forEach((item) => {
+    if (i == days) {
+      current = item.WORKID;
+    }
+    i++;
+  });
+  return moment(current, "YYYYMMDD").format("YYYY-MM-DD");
+}
+
+async function getCalendar(data) {
+  const minInqMoment = data.reduce((acc, item) => {
+    if (!item || !item.INQ_DATE) return acc;
+    const m = moment(item.INQ_DATE);
+    if (!m.isValid()) return acc;
+    return acc === null || m.isBefore(acc) ? m : acc;
+  }, null);
+
+  const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
+  const daterange = await utils.ameccaledar(
+    minInqDate,
+    moment().add(10, "days").format("YYYYMMDD")
+  );
+  return daterange;
+}

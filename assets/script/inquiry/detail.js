@@ -120,19 +120,15 @@ export async function createFormCard(cardData, data = {}) {
 }
 
 export async function setFieldValue(field, data = {}) {
-  const dspName = async (data, field, key) => {
-    const emp = await displayEmpInfo(data[key]);
+  const dspName = async (data, field) => {
+    const emp = await displayEmpInfo(data[field.name]);
     const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
     const sname = name.split(" ");
     const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
     const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
     field.display = `${fname} ${lname}`;
-    field.value = data[key];
+    field.value = data[field.name];
     return field;
-  };
-  const dspDetail = (data, topic, cols) => {
-    if (data[topic] == null) return "";
-    return data[topic][cols];
   };
 
   const dspStatus = async (data, field) => {
@@ -143,26 +139,40 @@ export async function setFieldValue(field, data = {}) {
     return field;
   };
 
+  const showNesting = (data, field) => {
+    if (data[field.topic] == null) return field;
+    const values = data[field.topic][field.mapping];
+    field.display = values;
+    return field;
+  };
+
+  const setNestingValue = async (data, field) => {
+    const values = data[field.topic][field.mapping];
+    field.value = values;
+    return field;
+  };
+
   // Start hear
   field.value = data[field.name];
-  if (field.name == "INQ_DATE")
-    field.value = moment(field.value).format("YYYY-MM-DD");
-
-  if (field.name == "INQ_CUSTRQS")
-    field.value = moment(field.value).format("YYYY-MM-DD");
-
-  if (field.name == "INQ_AGENT")
-    field.value = `${data["INQ_AGENT"]} (${data["INQ_COUNTRY"]})`;
-
   if (field.name == "INQ_PKC_REQ")
     field.display = data["INQ_PKC_REQ"] == 1 ? "Yes" : "No";
-
-  if (field.class == "nesting")
-    field.display = dspDetail(data, field.topic, field.mapping);
-
-  if (field.class == "displayname") field = dspName(data, field, field.name);
-
   if (field.type == "status") field = dspStatus(data, field);
+
+  if (field.class && field.class.includes("fdate"))
+    field.value = moment(field.value).format("YYYY-MM-DD");
+
+  if (field.class && field.class.includes("agent"))
+    field.value = `${data["INQ_AGENT"]} (${data["INQ_COUNTRY"]})`;
+
+  if (field.class && field.class.includes("shownesting"))
+    field = showNesting(data, field);
+
+  if (field.class && field.class.includes("setnesting"))
+    field = setNestingValue(data, field);
+
+  if (field.class && field.class.includes("displayname"))
+    field = dspName(data, field);
+
   return field;
 }
 

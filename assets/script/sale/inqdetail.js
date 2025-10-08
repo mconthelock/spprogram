@@ -20,17 +20,13 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 
-import { showbgLoader } from "@public/preloader";
-import { createTable, destroyTable } from "@public/_dataTable.js";
-import { displayEmpInfo } from "@public/setIndexDB.js";
-import { validateDrawingNo } from "../drawing.js";
+import { createTable } from "@public/_dataTable.js";
 import * as inqservice from "../service/inquiry.js";
-import * as elmesservice from "../service/elmes.js";
+import * as mail from "../service/mail.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
 import * as tbsale from "../inquiry/table_sale.js";
-
 //001: On load form
 var table;
 var tableElmes;
@@ -100,13 +96,6 @@ async function setupButton() {
 
   const sendIS = await utils.creatBtn({
     id: "send-bm",
-    title: "Send to Pre-BM",
-    icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
-  });
-
-  const updateIS = await utils.creatBtn({
-    id: "update-bm",
     title: "Send to Pre-BM",
     icon: "fi fi-ts-coins text-xl",
     className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
@@ -293,6 +282,10 @@ $(document).on("click", "#assign-pic", async function (e) {
   if (!chkheader) return;
   try {
     const inquiry = await updatePath(10);
+    const email = await mail.sendSE({
+      ...inquiry,
+      remark: $("#remark").val(),
+    });
     window.location.replace(
       `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
@@ -305,11 +298,12 @@ $(document).on("click", "#assign-pic", async function (e) {
 //007: Bypass to DE
 $(document).on("click", "#forward-de", async function (e) {
   e.preventDefault();
-  e.preventDefault();
-  const chkheader = await inqs.verifyHeader(".req-1");
-  if (!chkheader) return;
   try {
     const inquiry = await updatePath(12);
+    const email = await mail.sendGLD({
+      ...inquiry,
+      remark: $("#remark").val(),
+    });
     window.location.replace(
       `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
@@ -320,23 +314,14 @@ $(document).on("click", "#forward-de", async function (e) {
 });
 
 //008: Save and send to AS400
-$(document).on("click", "#send-confirm", async function (e) {
+$(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
-  const chkheader = await inqs.verifyHeader(".req-1");
-  if (!chkheader) return;
   try {
-    let forward = false;
-    let status = 11;
-    table
-      .rows()
-      .data()
-      .toArray()
-      .forEach((dt) => {
-        if (dt.INQD_DE != null) forward = true;
-      });
-
-    if (!forward) status = 30;
-    const inquiry = await updatePath(status);
+    const inquiry = await updatePath(30);
+    const email = await mail.sendPKC({
+      ...inquiry,
+      remark: $("#remark").val(),
+    });
     window.location.replace(
       `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
     );
@@ -351,36 +336,18 @@ $(document).on("click", "#update-de", async function (e) {
   e.preventDefault();
 });
 
-//013: Update and send to AS400
-$(document).on("click", "#update-bm", async function (e) {
-  e.preventDefault();
-});
-
 // 015: Update and send to AS400
-
 async function updatePath(status) {
   const header = await inqs.getFormHeader(); //Get header data
   const details = table.rows().data().toArray();
-  const checkdetail = await inqs.verifyDetail(table, details, 1);
-  await utils.showLoader({
-    show: true,
-    title: "Saving data",
-    clsbox: `!bg-transparent`,
-  });
+  await inqs.verifyDetail(table, details, 1);
 
-  const timelinedata = {
-    SG_USER: header.SG_USER,
-    SE_USER: header.SE_USER,
-    SALE_CLASS: header.SALE_CLASS,
-    SG_CONFIIRM: header.SG_CONFIIRM == "" ? new Date() : header.SG_CONFIIRM,
-  };
-  delete header.SG_USER;
-  delete header.SE_USER;
-  delete header.SALE_CLASS;
-  delete header.SG_CONFIIRM;
   header.INQ_STATUS = status;
   header.UPDATE_BY = $("#user-login").attr("empname");
   header.UPDATE_AT = new Date();
+
+  const timelinedata = await setTimelineData(header, status);
+  const history = await setLogsData(status);
 
   let deleteLine = [];
   if (deletedLineMap.size > 0) {
@@ -396,13 +363,11 @@ async function updatePath(status) {
     });
   }
 
-  const history = {
-    INQ_NO: header.INQ_NO,
-    INQ_REV: header.INQ_REV,
-    INQH_USER: $("#user-login").attr("empno"),
-    INQH_ACTION: status,
-    INQH_REMARK: header.INQ_REMARK,
-  };
+  await utils.showLoader({
+    show: true,
+    title: "Saving data",
+    clsbox: `!bg-transparent`,
+  });
 
   const fomdata = {
     header,
@@ -412,6 +377,7 @@ async function updatePath(status) {
     timelinedata,
     history,
   };
+
   const inquiry = await inqservice.updateInquiry(fomdata);
   if (selectedFilesMap.size > 0) {
     const attachment_form = new FormData();
@@ -422,4 +388,35 @@ async function updatePath(status) {
     await inqservice.createInquiryFile(attachment_form);
   }
   return inquiry;
+}
+
+async function setTimelineData(header, status) {
+  const data = {
+    INQ_NO: header.INQ_NO,
+    INQ_REV: header.INQ_REV,
+    SE_USER: header.SE_USER,
+    SALE_CLASS: header.SALE_CLASS,
+    SG_CONFIIRM: header.SG_CONFIIRM == "" ? new Date() : header.SG_CONFIIRM,
+  };
+
+  if (status > 10) {
+    data.SE_USER =
+      header.SE_USER == "" ? $("#user-login").attr("empno") : header.SE_USER;
+    data.SE_READ = header.SE_READ == "" ? new Date() : header.SE_READ;
+    data.SE_CONFIIRM =
+      header.SE_CONFIIRM == "" ? new Date() : header.SE_CONFIIRM;
+    data.SALE_CLASS = header.SALE_CLASS == "" ? "A" : header.SALE_CLASS;
+  }
+  return data;
+}
+
+async function setLogsData(action) {
+  return {
+    INQ_NO: $("#inquiry-no").val(),
+    INQ_REV: $("#revision").val(),
+    INQH_DATE: new Date(),
+    INQH_USER: $("#user-login").attr("empno"),
+    INQH_ACTION: action,
+    INQH_REMARK: $("#remark").val(),
+  };
 }
