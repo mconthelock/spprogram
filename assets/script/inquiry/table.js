@@ -423,12 +423,12 @@ export async function setupTableHistory(data = []) {
                   emp.SEMPNO
                 }" target="_blank" class="text-nowrap font-bold">${name}</a>
                 <div class="text-nowrap text-gray-500">${moment(data).format(
-                  "YYYY-MM-DD HH:mm"
+                  "YYYY-MM-DD HH:mm:ss"
                 )}</div>
             </div>
         </div>`;
         }
-        return moment(data).format("YYYY-MM-DD HH:mm");
+        return moment(data).format("YYYY-MM-DD HH:mm:ss");
       },
     },
     {

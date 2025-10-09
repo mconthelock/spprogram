@@ -38,12 +38,14 @@ let deletedLineMap = new Map();
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
-    let logs, inquiry, details, file;
-
+    let logs, inquiry, details, file, revise;
     inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
     if (inquiry.length == 0) throw new Error("Inquiry do not found");
-    if (inquiry.INQ_STATUS >= 20)
+    revise = false;
+    if (inquiry.INQ_STATUS >= 20) {
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
+      revise = true;
+    }
 
     const user = $("#user-login").attr("empno");
     const usergroup = $("#user-login").attr("groupcode");
@@ -67,7 +69,7 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment(file);
     tableAttach = await createTable(attachment, { id: "#attachment" });
 
-    const btn = await setupButton();
+    const btn = await setupButton(revise);
     const reason = await inqs.createReasonModal();
     const elmes = await inqs.elmesComponent();
   } catch (error) {
@@ -78,27 +80,33 @@ $(document).ready(async () => {
   }
 });
 
-async function setupButton() {
+async function setupButton(revise) {
   const usergroup = $("#user-login").attr("groupcode");
   const assign = await utils.creatBtn({
     id: "assign-pic",
     title: "Assign PIC",
     icon: "fi fi-rs-user-check text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
+    className: `btn-primary text-white hover:shadow-lg ${
+      revise ? "revised" : ""
+    }`,
   });
 
   const forwardde = await utils.creatBtn({
     id: "forward-de",
     title: "Forward to DE",
     icon: "fi fi-tr-share-square text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
+    className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${
+      revise ? "revised" : ""
+    }`,
   });
 
   const sendIS = await utils.creatBtn({
     id: "send-bm",
     title: "Send to Pre-BM",
     icon: "fi fi-ts-coins text-xl",
-    className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
+    className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${
+      revise ? "revised" : ""
+    }`,
   });
 
   const confirm = await utils.creatBtn({
@@ -278,6 +286,13 @@ $(document).on("click", "#downloadTemplateBtn", async function (e) {
 //006: Assign Engineer
 $(document).on("click", "#assign-pic", async function (e) {
   e.preventDefault();
+  const isRevise = $(this).hasClass("revised");
+  if (isRevise && $("#remark").val().trim() === "") {
+    utils.showMessage("Please provide a remark for the revision.");
+    $("#remark").focus();
+    return;
+  }
+
   const chkheader = await inqs.verifyHeader(".req-1");
   if (!chkheader) return;
   try {
@@ -298,6 +313,12 @@ $(document).on("click", "#assign-pic", async function (e) {
 //007: Bypass to DE
 $(document).on("click", "#forward-de", async function (e) {
   e.preventDefault();
+  const isRevise = $(this).hasClass("revised");
+  if (isRevise && $("#remark").val().trim() === "") {
+    utils.showMessage("Please provide a remark for the revision.");
+    $("#remark").focus();
+    return;
+  }
   try {
     const inquiry = await updatePath(12);
     const email = await mail.sendGLD({
@@ -316,8 +337,14 @@ $(document).on("click", "#forward-de", async function (e) {
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
   e.preventDefault();
+  const isRevise = $(this).hasClass("revised");
+  if (isRevise && $("#remark").val().trim() === "") {
+    utils.showMessage("Please provide a remark for the revision.");
+    $("#remark").focus();
+    return;
+  }
   try {
-    const inquiry = await updatePath(30);
+    const inquiry = await updatePath(30, 2);
     const email = await mail.sendPKC({
       ...inquiry,
       remark: $("#remark").val(),
@@ -337,10 +364,10 @@ $(document).on("click", "#update-de", async function (e) {
 });
 
 // 015: Update and send to AS400
-async function updatePath(status) {
+async function updatePath(status, level = 0) {
   const header = await inqs.getFormHeader(); //Get header data
   const details = table.rows().data().toArray();
-  await inqs.verifyDetail(table, details, 1);
+  await inqs.verifyDetail(table, details, level);
 
   header.INQ_STATUS = status;
   header.UPDATE_BY = $("#user-login").attr("empname");
@@ -400,8 +427,9 @@ async function setTimelineData(header, status) {
   };
 
   if (status > 10) {
-    data.SE_USER =
-      header.SE_USER == "" ? $("#user-login").attr("empno") : header.SE_USER;
+    const user = $("#user-login").attr("empno");
+    data.SG_USER = header.SG_USER == "" ? user : header.SG_USER;
+    data.SE_USER = header.SE_USER == "" ? user : header.SE_USER;
     data.SE_READ = header.SE_READ == "" ? new Date() : header.SE_READ;
     data.SE_CONFIIRM =
       header.SE_CONFIIRM == "" ? new Date() : header.SE_CONFIIRM;

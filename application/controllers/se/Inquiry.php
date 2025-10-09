@@ -19,4 +19,8 @@ class Inquiry extends MY_Controller {
     public function view($id){
         $this->views('sale/inquiry/view', array('id'=> $id));
     }
+
+    public function report(){
+        $this->views('sale/inquiry/report');
+    }
 }

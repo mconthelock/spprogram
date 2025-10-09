@@ -1,4 +1,5 @@
 import "@flaticon/flaticon-uicons/css/all/all.css";
+import moment from "moment";
 
 $(document).on("click", ".msg-close", function (e) {
   const msgbox = $(this).closest(".alert");
@@ -37,6 +38,19 @@ $(document).on("keyup", ".input-number", function (e) {
   const parts = value.split(".");
   if (parts.length > 2) value = parts[0] + "." + parts.slice(1).join("");
   $(this).val(value);
+});
+
+$(document).on("change", ".fdate", function (e) {
+  if ($(this).hasClass("sdate-report")) {
+    const row = $(this).closest(".fieldset");
+    const edate = row.find(".edate-report").val();
+    if (edate == "") {
+      const newdate = moment($(this).val())
+        .add(30, "days")
+        .format("YYYY-MM-DD");
+      row.find(".edate-report").val(newdate);
+    }
+  }
 });
 
 $(document).on("click", "#goback", async function (e) {

@@ -1,6 +1,6 @@
 import moment from "moment";
 import * as mst from "./master.js";
-import { displayEmpInfo, fillImages } from "@public/setIndexDB";
+import { displayEmpInfo } from "@public/setIndexDB";
 import { getDesigner } from "../des/data.js";
 
 export const sendGLD = async (data) => {
@@ -31,11 +31,14 @@ export const sendSE = async (data) => {
 export const sendPKC = async (data) => {
   let users = await mst.getAppUsers();
   users = users.filter((u) => ["PKC"].includes(u.appsgroups?.GROUP_CODE));
-  const emailto = users.map((u) => u.data.SRECMAIL);
-  return await createEmailData(data, emailto);
+  if (data.INQ_PKC_REQ == 1) {
+    const emailto = users.map((u) => u.data.SRECMAIL);
+    return await createEmailData(data, emailto);
+  }
 };
 
 export const sendAAS = async () => {};
+
 export const sendFIN = async () => {};
 
 //Mail

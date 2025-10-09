@@ -1,23 +1,22 @@
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
-import moment from "moment";
-import ExcelJS from "exceljs";
 import { createTable } from "@public/_dataTable.js";
 import { showbgLoader } from "@public/preloader";
-import { statusColors } from "../inquiry/detail.js";
+import { tableOpt } from "./table.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
 
 var table;
-var daterange;
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
     const usergroup = $("#user-login").attr("groupcode");
-    let data = await service.getInquiry({
+    const q = {
       GE_INQ_STATUS: 2,
       LE_INQ_STATUS: 10,
-    });
+    };
+    let data = await service.getInquiry(q);
+    localStorage.setItem("spinquiryquery", JSON.stringify(q));
     if (usergroup == "SEG") {
       data = data.filter((item) => item.INQ_STATUS < 10);
     } else {
@@ -32,159 +31,6 @@ $(document).ready(async () => {
     await utils.showLoader({ show: false });
   }
 });
-
-async function tableOpt(data) {
-  const usergroup = $("#user-login").attr("groupcode");
-  const colors = await statusColors();
-  const opt = utils.tableOpt;
-  opt.data = data;
-  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-12"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
-  opt.columns = [
-    {
-      data: "INQ_DATE",
-      className: "text-center text-nowrap sticky-column",
-      title: "Inq. Date",
-      render: function (data, type, row, meta) {
-        return moment(data).format("YYYY-MM-DD");
-      },
-    },
-    {
-      data: "INQ_NO",
-      className: "text-nowrap sticky-column",
-      title: "No.",
-    },
-    {
-      data: "INQ_REV",
-      className: "text-nowrap text-center sticky-column",
-      title: "Rev.",
-    },
-    {
-      data: "INQ_TRADER",
-      className: "text-nowrap",
-      title: "Trader",
-    },
-    { data: "INQ_AGENT", title: "Agent" },
-    { data: "INQ_COUNTRY", title: "Country" },
-    {
-      data: "status",
-      title: "Status",
-      render: (data) => {
-        if (data == null) return "";
-        const statusColor = colors.find((item) => item.id >= data.STATUS_ID);
-        return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
-      },
-    },
-    {
-      data: "maruser",
-      title: "MAR. In-Charge",
-      render: (data) => {
-        if (data == null) return "";
-        const dsp = utils.displayname(data.SNAME);
-        return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${data.SEMPNO})`;
-      },
-    },
-    {
-      data: "inqgroup",
-      title: "EME",
-      className: "text-center px-[5px] w-[45px] max-w-[45px]",
-      sortable: false,
-      render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 1);
-        if (des.length == 0) return "";
-
-        const color =
-          des[0].INQG_STATUS == null
-            ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
-            ? "text-primary"
-            : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-      },
-    },
-    {
-      data: "inqgroup",
-      title: "EEL",
-      className: "text-center px-[5px] w-[45px] max-w-[45px]",
-      sortable: false,
-      render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 2);
-        if (des.length == 0) return "";
-
-        const color =
-          des[0].INQG_STATUS == null
-            ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
-            ? "text-primary"
-            : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-      },
-    },
-    {
-      data: "inqgroup",
-      title: "EAP",
-      className: "text-center px-[5px] w-[45px] max-w-[45px]",
-      sortable: false,
-      render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 3);
-        if (des.length == 0) return "";
-
-        const color =
-          des[0].INQG_STATUS == null
-            ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
-            ? "text-primary"
-            : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-      },
-    },
-    {
-      data: "inqgroup",
-      title: "ESO",
-      className: "text-center px-[5px] w-[45px] max-w-[45px]",
-      sortable: false,
-      render: (data) => {
-        const des = data.filter((item) => item.INQG_GROUP === 6);
-        if (des.length == 0) return "";
-
-        const color =
-          des[0].INQG_STATUS == null
-            ? "text-gray-500"
-            : des[0].INQG_STATUS >= 9
-            ? "text-primary"
-            : "text-secondary";
-        return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
-      },
-    },
-    {
-      data: "INQ_ID",
-      className: "text-center w-fit max-w-[80px]",
-      sortable: false,
-      title: `<i class='icofont-settings text-lg text-white'></i>`,
-      render: (data, type, row, meta) => {
-        if (usergroup == "SEG")
-          return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-process" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a></div>`;
-
-        return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-detail" href="${process.env.APP_ENV}/se/inquiry/detail/${data}">Process</a></div>`;
-      },
-    },
-  ];
-  opt.initComplete = function () {
-    const export1 = `<button class="btn btn-accent rounded-none text-white items-center hover:bg-accent/70" id="sale-export-detail" type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Detail</span>
-        </button>`;
-    const export2 = `<button class="btn btn-neutral rounded-none text-white items-center hover:bg-neutral/70" id="export-list" type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>Export list</span>
-        </button>`;
-
-    $(".table-info").append(`<div class="flex gap-2">
-        ${export1}
-
-     </div>`);
-  };
-  return opt;
-}
 
 $(document).on("click", ".btn-process", async function (e) {
   e.preventDefault();
@@ -202,125 +48,3 @@ $(document).on("click", ".btn-process", async function (e) {
   await showbgLoader(true);
   window.location.href = url;
 });
-
-$(document).on("click", "#sale-export-detail", async function (e) {
-  e.preventDefault();
-  const usergroup = $("#user-login").attr("groupcode");
-  let data = await service.getInquiryReport({
-    GE_INQ_STATUS: 2,
-    LE_INQ_STATUS: 10,
-  });
-  if (usergroup == "SEG") {
-    data = data.filter((item) => item.INQ_STATUS < 10);
-  }
-  daterange = await getCalendar(data);
-  const template = await service.getExportTemplate({
-    name: `export_inquiry_list_template_for_sale.xlsx`,
-  });
-  const file = template.buffer;
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(file).then(async (workbook) => {
-    const sheet_data = workbook.worksheets[1];
-    const columns = await service.exportFormat(sheet_data);
-    const rowstart = 2;
-    const sheet = workbook.worksheets[0];
-    let row1 = 0;
-    let str = 0;
-
-    const colCount = sheet.columnCount;
-    data.forEach(async (el, i) => {
-      str = i + rowstart;
-      if (str > rowstart + 1) {
-        utils.cloneRows(sheet, row1, str);
-        row1 = str % 2 == 0 ? rowstart + 1 : rowstart;
-      }
-
-      for (let j = 1; j <= colCount; j++) {
-        const format = columns.find((item) => item[1] == j);
-        let value = "";
-        if (format[3] == null) continue;
-        if (format[2] == "Func") {
-          const param = format[4] ? JSON.parse(format[4]) : {};
-          value = eval(format[3])(el, param);
-        } else if (format[2] == "Formula") {
-          value = { formula: format[3].replaceAll("{x}", str) };
-        } else {
-          if (format[3].includes(".")) {
-            value = el;
-            const keys = format[3].split(".");
-            for (const key of keys) {
-              value = value[key] !== undefined ? value[key] : "";
-            }
-          } else {
-            value = el[format[3]] !== undefined ? el[format[3]] : "";
-          }
-        }
-
-        if (format[2] === "Date" && value) {
-          sheet.getCell(str, format[1]).value =
-            moment(value).format("YYYY-MM-DD");
-        } else if (format[2] === "Datetime" && value) {
-          sheet.getCell(str, format[1]).value = moment(value).format(
-            "YYYY-MM-DD HH:mm:ss"
-          );
-        } else {
-          sheet.getCell(str, format[1]).value = value;
-        }
-      }
-    });
-
-    // Remove all sheets except the first one
-    while (workbook.worksheets.length > 1) {
-      workbook.removeWorksheet(workbook.worksheets[1].id);
-    }
-    await workbook.xlsx.writeBuffer().then(function (buffer) {
-      const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `SP Inquiry List ${moment().format("YYYY-MM-DD")}.xlsx`;
-      link.click();
-    });
-  });
-});
-
-function getEffect(data, param) {
-  const inqgroup = data.inqgroup;
-  const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
-  return des.length > 0 ? "Y" : "";
-}
-
-function nextWorkingDay(data, param) {
-  //sdate, days, daterange
-  const sdate = moment(data.timeline.MAR_SEND).format("YYYYMMDD");
-  const days = parseInt(param.days);
-  daterange = daterange.filter(
-    (item) => item.DAYOFF == 0 && item.WORKID >= sdate
-  );
-  let i = 1;
-  let current = sdate;
-  daterange.forEach((item) => {
-    if (i == days) {
-      current = item.WORKID;
-    }
-    i++;
-  });
-  return moment(current, "YYYYMMDD").format("YYYY-MM-DD");
-}
-
-async function getCalendar(data) {
-  const minInqMoment = data.reduce((acc, item) => {
-    if (!item || !item.INQ_DATE) return acc;
-    const m = moment(item.INQ_DATE);
-    if (!m.isValid()) return acc;
-    return acc === null || m.isBefore(acc) ? m : acc;
-  }, null);
-
-  const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
-  const daterange = await utils.ameccaledar(
-    minInqDate,
-    moment().add(10, "days").format("YYYYMMDD")
-  );
-  return daterange;
-}

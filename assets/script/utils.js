@@ -1,4 +1,7 @@
 import moment from "moment";
+import ExcelJS from "exceljs";
+import { exportFormat } from "./service/inquiry.js";
+
 import { initAuthen } from "@public/authen.js";
 export const initApp = async (opt = {}) => {
   try {
@@ -332,17 +335,4 @@ export const displayname = (val) => {
   const fname = name[0].charAt(0).toUpperCase() + name[0].slice(1);
   const lname = name[1].charAt(0).toUpperCase() + name[1].slice(1);
   return { sname: `${fname} ${lname}`, fname, lname };
-};
-
-//Excel
-export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
-  const sourceRow = worksheet.getRow(sourceRowNum);
-  const newRow = worksheet.insertRow(targetRowNum);
-  sourceRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    const newCell = newRow.getCell(colNumber);
-    if (cell.style) {
-      newCell.style = { ...cell.style };
-    }
-  });
-  newRow.height = sourceRow.height;
 };

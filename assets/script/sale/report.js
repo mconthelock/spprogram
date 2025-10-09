@@ -2,17 +2,15 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
 import "select2";
-import moment from "moment";
-import ExcelJS from "exceljs";
-
 import { setDatePicker } from "@public/_flatpickr.js";
 import { createTable, destroyTable } from "@public/_dataTable.js";
-import { tableInquiry } from "../inquiry/table.js";
 import { getFormHeader } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as mkt from "../service/mkt.js";
 import * as mst from "../service/master.js";
 import * as utils from "../utils.js";
+import { tableOpt } from "./table.js";
+
 var table;
 $(async function () {
   try {
@@ -25,10 +23,12 @@ $(async function () {
     await setAgent();
     await setCountry();
     await setStatus();
-    //const spinquiryquery = localStorage.getItem("spinquiryquery");
+    await setSE();
+    // const spinquiryquery = localStorage.getItem("spinquiryquery");
+    // console.log(spinquiryquery);
     // if (spinquiryquery) {
     //   const data = await service.getInquiry(JSON.parse(spinquiryquery));
-    //   const opt = await tableInquiry(data, { backReportBtn: true });
+    //   const opt = await tableOpt(data, { backReportBtn: true });
     //   table = await createTable(opt);
     //   $("#form-container").addClass("hidden");
     //   $("#table").removeClass("hidden");
@@ -61,7 +61,6 @@ $(document).on("click", "#search", async function (e) {
   e.preventDefault();
   try {
     let formdata = await getFormHeader();
-
     Object.keys(formdata).forEach(
       (key) => formdata[key] == "" && delete formdata[key]
     );
@@ -70,9 +69,8 @@ $(document).on("click", "#search", async function (e) {
       await utils.showMessage("Please select at least one filter criteria.");
       return;
     }
-
-    const data = await service.getInquiry(formdata);
-    const opt = await tableInquiry(data, { backReportBtn: true });
+    let data = await service.getInquiry(formdata);
+    const opt = await tableOpt(data, { backReportBtn: true });
     table = await createTable(opt);
     $("#form-container").addClass("hidden");
     $("#table").removeClass("hidden");
@@ -148,5 +146,17 @@ export const setStatus = async () => {
   $(`${id}`).empty().append(new Option("", "", false, false));
   data.map((el) => {
     $(`${id}`).append(new Option(el.STATUS_ACTION, el.STATUS_ID, false, false));
+  });
+};
+
+export const setSE = async () => {
+  const id = "#se_engineer";
+  let users = await mst.getAppUsers();
+  users = users.filter((u) =>
+    ["SEG", "SEL"].includes(u.appsgroups?.GROUP_CODE)
+  );
+  $(`${id}`).empty().append(new Option("", "", false, false));
+  users.map((el) => {
+    $(`${id}`).append(new Option(el.data.SNAME, el.data.SEMPNO, false, false));
   });
 };

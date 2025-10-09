@@ -17,13 +17,13 @@
                     <legend class="fieldset-legend">Inquiry Date</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
                                 name="GE_INQ_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
+                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
                                 name="LE_INQ_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
@@ -34,13 +34,13 @@
                     <legend class="fieldset-legend">MAR Send Date</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
                                 name="timeline.GE_MAR_SEND" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
+                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
                                 name="timeline.LE_MAR_SEND" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
@@ -89,11 +89,6 @@
                 </fieldset>
 
                 <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Shop Order</legend>
-                    <input type="text" class="input w-full" placeholder="" name="LIKE_INQ_SHOPORDER" />
-                </fieldset>
-
-                <fieldset class="fieldset">
                     <legend class="fieldset-legend">Series</legend>
                     <select class="select w-full" id="series" name="INQ_SERIES">
                     </select>
@@ -104,36 +99,48 @@
                     <select class="select w-full" id="ordertype" name="INQ_ORDER_TYPE"></select>
                 </fieldset>
 
-                <div class="divider divider-start font-bold text-primary">Search by Quotation Info.</div>
+                {{-- <fieldset class="fieldset">
+                    <legend class="fieldset-legend">Forward to D/E</legend>
+                    <select class="select w-full" id="ordertype" name="_TYPE"></select>
+                </fieldset> --}}
+
+                <div class="divider divider-start font-bold text-primary">Search by Sale action.</div>
                 <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Issue Date</legend>
+                    <legend class="fieldset-legend">Sale Engineer</legend>
+                    <select class="select w-full" id="se_engineer" name="timeline.SE_USER">
+                        <option disabled selected></option>
+                    </select>
+                </fieldset>
+
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">Sale Receive</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.GE_QUO_DATE" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
+                                name="timeline.GE_SG_READ" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.LE_QUO_DATE" />
+                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
+                                name="timeline.LE_SG_READ" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
                 </fieldset>
 
                 <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Validation Date</legend>
+                    <legend class="fieldset-legend">Sale Confirm</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.GE_QUO_VALIDITY" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
+                                name="timeline.GE_SE_CONFIIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.LE_QUO_VALIDITY" />
+                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
+                                name="timeline.LE_SE_CONFIIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -152,5 +159,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/mar_inq_report.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/se_inq_report.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection
