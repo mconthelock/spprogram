@@ -506,8 +506,8 @@
                 "type": "hidden",
                 "class": "setnesting",
                 "topic": "timeline",
-                "name": "SG_CONFIIRM",
-                "mapping": "SG_CONFIIRM"
+                "name": "SG_CONFIRM",
+                "mapping": "SG_CONFIRM"
             },
             {
                 "label": "",
@@ -560,7 +560,7 @@
                 "label": "",
                 "id": "sale-confirm",
                 "type": "hidden",
-                "name": "SG_CONFIIRM"
+                "name": "SG_CONFIRM"
             },
             {
                 "label": "Design Class",

@@ -51,7 +51,7 @@ $(document).ready(async () => {
     const usergroup = $("#user-login").attr("groupcode");
     const times = inquiry.timeline;
     inquiry.SG_USER = times.SG_USER == null ? user : times.SG_USER;
-    inquiry.SG_CONFIIRM = times.SG_CONFIIRM;
+    inquiry.SG_CONFIRM = times.SG_CONFIRM;
     inquiry.SE_USER = times.SE_USER;
     inquiry.SALE_CLASS = times.SALE_CLASS;
 
@@ -423,7 +423,7 @@ async function setTimelineData(header, status) {
     INQ_REV: header.INQ_REV,
     SE_USER: header.SE_USER,
     SALE_CLASS: header.SALE_CLASS,
-    SG_CONFIIRM: header.SG_CONFIIRM == "" ? new Date() : header.SG_CONFIIRM,
+    SG_CONFIRM: header.SG_CONFIRM == "" ? new Date() : header.SG_CONFIRM,
   };
 
   if (status > 10) {

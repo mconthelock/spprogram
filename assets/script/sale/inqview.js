@@ -22,7 +22,7 @@ $(document).ready(async () => {
       times.SG_USER == null ? $("#user-login").attr("empno") : times.SG_USER;
     inquiry.SE_USER = times.SE_USER;
     inquiry.SALE_CLASS = times.SALE_CLASS;
-    inquiry.SG_CONFIIRM = times.SG_CONFIIRM;
+    inquiry.SG_CONFIRM = times.SG_CONFIRM;
 
     const cards = await inqs.setupCard(inquiry);
     const details = inquiry.details.filter((dt) => dt.INQD_LATEST == 1);
