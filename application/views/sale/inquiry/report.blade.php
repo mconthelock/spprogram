@@ -134,13 +134,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.GE_SE_CONFIIRM" />
+                                name="timeline.GE_SE_CONFIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.LE_SE_CONFIIRM" />
+                                name="timeline.LE_SE_CONFIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>

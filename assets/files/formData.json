@@ -524,8 +524,8 @@
                 "type": "hidden",
                 "class": "setnesting",
                 "topic": "timeline",
-                "name": "SE_CONFIIRM",
-                "mapping": "SE_CONFIIRM"
+                "name": "SE_CONFIRM",
+                "mapping": "SE_CONFIRM"
             }
         ]
     },

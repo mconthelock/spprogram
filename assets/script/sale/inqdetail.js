@@ -431,8 +431,7 @@ async function setTimelineData(header, status) {
     data.SG_USER = header.SG_USER == "" ? user : header.SG_USER;
     data.SE_USER = header.SE_USER == "" ? user : header.SE_USER;
     data.SE_READ = header.SE_READ == "" ? new Date() : header.SE_READ;
-    data.SE_CONFIIRM =
-      header.SE_CONFIIRM == "" ? new Date() : header.SE_CONFIIRM;
+    data.SE_CONFIRM = header.SE_CONFIRM == "" ? new Date() : header.SE_CONFIRM;
     data.SALE_CLASS = header.SALE_CLASS == "" ? "A" : header.SALE_CLASS;
   }
   return data;
