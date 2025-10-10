@@ -10,6 +10,7 @@ import * as mkt from "../service/mkt.js";
 import * as mst from "../service/master.js";
 import * as utils from "../utils.js";
 import { tableOpt } from "./table.js";
+import { grep } from "jquery";
 
 var table;
 $(async function () {
@@ -24,16 +25,6 @@ $(async function () {
     await setCountry();
     await setStatus();
     await setSE();
-    // const spinquiryquery = localStorage.getItem("spinquiryquery");
-    // console.log(spinquiryquery);
-    // if (spinquiryquery) {
-    //   const data = await service.getInquiry(JSON.parse(spinquiryquery));
-    //   const opt = await tableOpt(data, { backReportBtn: true });
-    //   table = await createTable(opt);
-    //   $("#form-container").addClass("hidden");
-    //   $("#table").removeClass("hidden");
-    //   return;
-    // }
     $("#form-container").removeClass("hidden");
   } catch (error) {
     console.log(error);
@@ -70,7 +61,10 @@ $(document).on("click", "#search", async function (e) {
       return;
     }
     let data = await service.getInquiry(formdata);
-    const opt = await tableOpt(data, { backReportBtn: true });
+    const opt = await tableOpt(data, {
+      backReportBtn: true,
+      report: true,
+    });
     table = await createTable(opt);
     $("#form-container").addClass("hidden");
     $("#table").removeClass("hidden");

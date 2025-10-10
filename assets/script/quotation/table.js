@@ -110,33 +110,33 @@ export async function tableQuotation(data, options = {}) {
   return opt;
 }
 
-$(document).on("click", "#export-detail", async function (e) {
-  e.preventDefault();
-  const data = [];
-  const template = await service.getExportTemplate({
-    name: `export_inquiry_list_template.xlsx`,
-  });
-  const file = template.buffer;
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(file).then(async (workbook) => {
-    const sheet = workbook.worksheets[0];
-    let row1 = 0;
-    for (let i = 3; i <= 10; i++) {
-      if (i > 4) {
-        await utils.cloneRows(sheet, row1, i);
-        row1 = i % 2 == 0 ? 4 : 3;
-      }
-      sheet.getCell(i, 2).value = `4542221`;
-      sheet.getCell(i, 3).value = `xxxxxxxxx cccc`;
-    }
-    await workbook.xlsx.writeBuffer().then(function (buffer) {
-      const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `SP Inquiry List ${moment().format("YYYY-MM-DD")}.xlsx`;
-      link.click();
-    });
-  });
-});
+// $(document).on("click", "#export-detail", async function (e) {
+//   e.preventDefault();
+//   const data = [];
+//   const template = await service.getExportTemplate({
+//     name: `export_inquiry_list_template.xlsx`,
+//   });
+//   const file = template.buffer;
+//   const workbook = new ExcelJS.Workbook();
+//   await workbook.xlsx.load(file).then(async (workbook) => {
+//     const sheet = workbook.worksheets[0];
+//     let row1 = 0;
+//     for (let i = 3; i <= 10; i++) {
+//       if (i > 4) {
+//         await utils.cloneRows(sheet, row1, i);
+//         row1 = i % 2 == 0 ? 4 : 3;
+//       }
+//       sheet.getCell(i, 2).value = `4542221`;
+//       sheet.getCell(i, 3).value = `xxxxxxxxx cccc`;
+//     }
+//     await workbook.xlsx.writeBuffer().then(function (buffer) {
+//       const blob = new Blob([buffer], {
+//         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+//       });
+//       const link = document.createElement("a");
+//       link.href = URL.createObjectURL(blob);
+//       link.download = `SP Inquiry List ${moment().format("YYYY-MM-DD")}.xlsx`;
+//       link.click();
+//     });
+//   });
+// });

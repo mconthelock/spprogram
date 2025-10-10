@@ -130,14 +130,18 @@ export async function tableOpt(data, options = {}) {
     },
     {
       data: "INQ_ID",
-      className: "text-center w-fit max-w-[80px]",
+      className: "text-center w-fit max-w-[120px]",
       sortable: false,
       title: `<i class='icofont-settings text-lg text-white'></i>`,
-      render: (data, type, row, meta) => {
-        if (usergroup == "SEG")
-          return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-process" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a></div>`;
-
-        return `<div class="flex gap-1 justify-center items-center w-fit"><a class="btn btn-sm btn-neutral btn-detail" href="${process.env.APP_ENV}/se/inquiry/detail/${data}">Process</a></div>`;
+      render: (data) => {
+        const assign = `<a class="btn btn-xs btn-neutral btn-process ${
+          usergroup == "SEG" ? "" : "hidden"
+        }" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a>`;
+        const declare = `<a class="btn btn-xs btn-neutral btn-process ${
+          usergroup == "SEG" ? "hidden" : ""
+        }" href="${process.env.APP_ENV}/se/inquiry/detail/${data}">Process</a>`;
+        const view = `<a class="btn btn-xs btn-neutral" href="${process.env.APP_ENV}/se/inquiry/view/${data}">View</a>`;
+        return `<div class="flex gap-1 justify-center items-center w-fit">${assign}${declare}${view}</div>`;
       },
     },
   ];
