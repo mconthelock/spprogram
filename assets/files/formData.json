@@ -530,9 +530,9 @@
                 "name": "INQ_REMARK"
             },
             {
-                "label": "",
+                "label": "MAR. Send",
                 "id": "mar-send",
-                "type": "hidden",
+                "type": "text",
                 "class": "setnesting",
                 "topic": "timeline",
                 "name": "MAR_SEND",

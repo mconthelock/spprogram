@@ -134,8 +134,7 @@ export async function setFieldValue(field, data = {}) {
     const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
     const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
     field.display = `${fname} ${lname}`;
-    field.value = data[field.name];
-
+    field.value = val;
     return field;
   };
 
