@@ -459,9 +459,29 @@
                 "label": "Assigner",
                 "id":"sale-leader-incharge",
                 "type": "staticText",
+                "class": "setnesting displayname",
+                "topic": "timeline",
                 "name": "SG_USER",
-                "class": "displayname",
+                "mapping":"SG_USER",
                 "input": true
+            },
+            {
+                "label": "Read",
+                "id": "sale-leader-read",
+                "type": "text",
+                "class": "setnesting",
+                "name": "SG_READ",
+                "topic": "timeline",
+                "mapping": "SG_READ"
+            },
+            {
+                "label": "Confirm",
+                "id": "sale-leader-confirm",
+                "type": "text",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "SG_CONFIRM",
+                "mapping": "SG_CONFIRM"
             },
             {
                 "label": "Sale In-charge",
@@ -470,6 +490,24 @@
                 "source": "getSalePerson",
                 "class": "req-1",
                 "name": "SE_USER"
+            },
+            {
+                "label": "SE Read",
+                "id": "sale-read",
+                "type": "text",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "SE_READ",
+                "mapping": "SE_READ"
+            },
+            {
+                "label": "SE Confirm",
+                "id": "sale-confirm",
+                "type": "text",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "SE_CONFIRM",
+                "mapping": "SE_CONFIRM"
             },
             {
                 "label": "Design Class",
@@ -493,39 +531,12 @@
             },
             {
                 "label": "",
-                "id": "sale-leader-read",
-                "type": "hidden",
-                "class": "setnesting",
-                "name": "SG_READ",
-                "topic": "timeline",
-                "mapping": "SG_READ"
-            },
-            {
-                "label": "",
-                "id": "sale-leader-confirm",
+                "id": "mar-send",
                 "type": "hidden",
                 "class": "setnesting",
                 "topic": "timeline",
-                "name": "SG_CONFIRM",
-                "mapping": "SG_CONFIRM"
-            },
-            {
-                "label": "",
-                "id": "sale-read",
-                "type": "hidden",
-                "class": "setnesting",
-                "topic": "timeline",
-                "name": "SE_READ",
-                "mapping": "SE_READ"
-            },
-            {
-                "label": "",
-                "id": "sale-confirm",
-                "type": "hidden",
-                "class": "setnesting",
-                "topic": "timeline",
-                "name": "SE_CONFIRM",
-                "mapping": "SE_CONFIRM"
+                "name": "MAR_SEND",
+                "mapping": "MAR_SEND"
             }
         ]
     },
@@ -550,17 +561,29 @@
                 "input": true
             },
             {
+                "label": "Read",
+                "id": "sale-leader-read",
+                "type": "text",
+                "class": "setnesting",
+                "name": "SG_READ",
+                "topic": "timeline",
+                "mapping": "SG_READ"
+            },
+            {
+                "label": "Confirm",
+                "id": "sale-leader-confirm",
+                "type": "text",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "SG_CONFIRM",
+                "mapping": "SG_CONFIRM"
+            },
+            {
                 "label": "Sale In-charge",
                 "id": "sale-checker",
                 "type": "staticText",
                 "class": "displayname",
                 "name": "SE_USER"
-            },
-            {
-                "label": "",
-                "id": "sale-confirm",
-                "type": "hidden",
-                "name": "SG_CONFIRM"
             },
             {
                 "label": "Design Class",
@@ -573,6 +596,35 @@
                 "id": "remark",
                 "type": "textarea" ,
                 "name": "INQ_REMARK"
+            },
+
+
+            {
+                "label": "",
+                "id": "sale-read",
+                "type": "hidden",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "SE_READ",
+                "mapping": "SE_READ"
+            },
+            {
+                "label": "",
+                "id": "sale-confirm",
+                "type": "hidden",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "SE_CONFIRM",
+                "mapping": "SE_CONFIRM"
+            },
+            {
+                "label": "",
+                "id": "mar-send",
+                "type": "hidden",
+                "class": "setnesting",
+                "topic": "timeline",
+                "name": "MAR_SEND",
+                "mapping": "MAR_SEND"
             }
         ]
     }

@@ -60,6 +60,8 @@ $(document).on("click", "#search", async function (e) {
       await utils.showMessage("Please select at least one filter criteria.");
       return;
     }
+
+    formdata = { ...formdata, INQ_TYPE: "SP" };
     let data = await service.getInquiry(formdata);
     const opt = await tableOpt(data, {
       backReportBtn: true,

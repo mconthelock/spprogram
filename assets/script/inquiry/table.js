@@ -434,7 +434,7 @@ export async function setupTableHistory(data = []) {
     {
       data: "status",
       title: "Action",
-      className: "text-xs py-[8px] px-[5px] w-[130px] max-w-[130px]",
+      className: "text-xs py-[8px] px-[5px] w-[150px] max-w-[150px]",
       render: (data) => (data == null ? "" : data.STATUS_ACTION),
     },
     {
@@ -444,9 +444,9 @@ export async function setupTableHistory(data = []) {
       render: function (data, type) {
         if (type === "display") {
           if (data == null) return "";
-          return `<div class="flex gap-2">
-            <div class="line-clamp-1">${data}</div>
-            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
+          return `<div class="flex">
+            <div class="line-clamp-1 INQH_REMARK">${data}</div>
+            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg readmore"></i></div>
           </div>`;
         }
         return data;
@@ -457,6 +457,31 @@ export async function setupTableHistory(data = []) {
     const emp = await displayEmpInfo(data.users.SEMPNO);
     const element = $(row).find(`#image-${data.users.SEMPNO}`);
     await fillImages(element, data.users.SEMPNO);
+
+    const remark = data.INQH_REMARK;
+    if (remark == null || remark == "") return;
+
+    const tdEl = $(row).find("td").eq(3).get(0) || row;
+    const style = window.getComputedStyle(tdEl);
+    const width = parseFloat(style.width) || 32;
+    const $temp = $(
+      `<div id="temp-remark" class="text-xs" style="width:${
+        width - 25
+      }px;white-space:normal;">${remark}</div>`
+    ).appendTo("body");
+
+    const tempEl = $temp.get(0);
+    const tempStyle = window.getComputedStyle(tempEl);
+    // determine line-height (fallback to 1.2 * font-size if 'normal')
+    let lineHeight = parseFloat(tempStyle.lineHeight);
+    if (isNaN(lineHeight) || tempStyle.lineHeight === "normal") {
+      const fontSize = parseFloat(tempStyle.fontSize) || 14;
+      lineHeight = fontSize * 1.2;
+    }
+    const totalHeight = tempEl.scrollHeight || tempEl.offsetHeight;
+    const lines = Math.max(1, Math.round(totalHeight / lineHeight));
+    if (lines == 1) $(tdEl).find(".readmore").remove();
+    $temp.remove();
   };
   return opt;
 }

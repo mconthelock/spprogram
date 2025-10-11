@@ -32,13 +32,15 @@ export const statusColors = () => {
     { id: 39, color: "bg-slate-500 text-white" }, //IS
     { id: 49, color: "bg-amber-500 text-white" }, //FIN
     { id: 59, color: "bg-teal-500 text-white" }, //MAR [Post process]
-    { id: 98, color: "bg-red-500" }, //Cancel
+    { id: 98, color: "bg-red-500 text-white" }, //Cancel
     { id: 99, color: "bg-primary text-white" }, //Finish
   ];
 };
 
 // 001: Create card
 export async function setupCard(data) {
+  console.log(data);
+
   const form = $("#form-container");
   const carddata = form.attr("data");
   const cardIds = carddata.split("|");
@@ -121,15 +123,19 @@ export async function createFormCard(cardData, data = {}) {
 
 export async function setFieldValue(field, data = {}) {
   const dspName = async (data, field) => {
-    if (data[field.name] == null) return field;
-
-    const emp = await displayEmpInfo(data[field.name]);
+    const val =
+      field.topic !== undefined
+        ? data[field.topic][field.name]
+        : data[field.name];
+    if (val == null) return field;
+    const emp = await displayEmpInfo(val);
     const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
     const sname = name.split(" ");
     const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
     const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
     field.display = `${fname} ${lname}`;
     field.value = data[field.name];
+
     return field;
   };
 
@@ -158,7 +164,7 @@ export async function setFieldValue(field, data = {}) {
   field.value = data[field.name];
   if (field.name == "INQ_PKC_REQ")
     field.display = data["INQ_PKC_REQ"] == 1 ? "Yes" : "No";
-  if (field.type == "status") field = dspStatus(data, field);
+  if (field.type == "status") field = await dspStatus(data, field);
 
   if (field.class && field.class.includes("fdate"))
     field.value = moment(field.value).format("YYYY-MM-DD");
@@ -167,13 +173,13 @@ export async function setFieldValue(field, data = {}) {
     field.value = `${data["INQ_AGENT"]} (${data["INQ_COUNTRY"]})`;
 
   if (field.class && field.class.includes("shownesting"))
-    field = showNesting(data, field);
+    field = await showNesting(data, field);
 
   if (field.class && field.class.includes("setnesting"))
-    field = setNestingValue(data, field);
+    field = await setNestingValue(data, field);
 
   if (field.class && field.class.includes("displayname"))
-    field = dspName(data, field);
+    field = await dspName(data, field);
 
   return field;
 }

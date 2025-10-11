@@ -19,6 +19,7 @@ Funtion contents
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
+import moment from "moment";
 
 import { createTable } from "@public/_dataTable.js";
 import * as inqservice from "../service/inquiry.js";
@@ -38,27 +39,51 @@ let deletedLineMap = new Map();
 $(document).ready(async () => {
   try {
     await utils.initApp({ submenu: ".navmenu-newinq" });
+    const user = $("#user-login").attr("empno");
+    const usergroup = $("#user-login").attr("groupcode");
     let logs, inquiry, details, file, revise;
     inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
     if (inquiry.length == 0) throw new Error("Inquiry do not found");
     revise = false;
+    let setime = {
+      SALE_CLASS: inquiry.timeline.SALE_CLASS,
+      SG_USER: inquiry.timeline.SG_USER,
+      SG_READ: inquiry.timeline.SG_READ,
+      SG_CONFIRM: inquiry.timeline.SG_CONFIRM,
+      SE_USER: inquiry.timeline.SE_USER,
+      SE_READ: inquiry.timeline.SE_READ,
+      SE_CONFIRM: inquiry.timeline.SE_CONFIRM,
+    };
+    // inquiry.SALE_CLASS = times.SALE_CLASS;
+    // inquiry.SG_USER = times.SG_USER == null ? user : times.SG_USER;
+    // inquiry.SG_READ =
+    //   times.SG_READ == null
+    //     ? moment().format("YYYY-MM-DD HH:mm:ss")
+    //     : times.SG_READ;
+    // inquiry.SG_CONFIRM = times.SG_CONFIRM;
+    // inquiry.SE_USER = times.SE_USER;
+
     if (inquiry.INQ_STATUS >= 20) {
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
       revise = true;
+      if (usergroup == "SEG")
+        setime = {
+          ...setime,
+          SG_READ: moment().format("YYYY-MM-DD HH:mm:ss"),
+          SG_USER: user,
+        };
+      if (usergroup != "SEG")
+        setime = {
+          ...setime,
+          SE_READ: moment().format("YYYY-MM-DD HH:mm:ss"),
+          SE_USER: user,
+        };
     }
-
-    const user = $("#user-login").attr("empno");
-    const usergroup = $("#user-login").attr("groupcode");
-    const times = inquiry.timeline;
-    inquiry.SG_USER = times.SG_USER == null ? user : times.SG_USER;
-    inquiry.SG_CONFIRM = times.SG_CONFIRM;
-    inquiry.SE_USER = times.SE_USER;
-    inquiry.SALE_CLASS = times.SALE_CLASS;
 
     details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
     logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
     file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
-
+    inquiry = { ...inquiry, timeline: { ...inquiry.timeline, ...setime } };
     const cards = await inqs.setupCard(inquiry);
     const tableContainer = await tbsale.setupTableDetail(details, usergroup);
     table = await createTable(tableContainer);
@@ -371,6 +396,7 @@ $(document).on("click", "#send-confirm", async function (e) {
   }
   try {
     const inquiry = await updatePath(11, 1);
+    // return;
     const grpdata = {
       data: { INQG_STATUS: 28, INQG_SKIP: 1 },
       condition: { INQ_ID: inquiry.INQ_ID },
@@ -398,10 +424,10 @@ $(document).on("click", "#send-confirm", async function (e) {
         fomdata,
         $("#inquiry-id").val()
       );
-      const email = await mail.sendPKC({
-        ...inqs,
-        remark: $("#remark").val(),
-      });
+      //   const email = await mail.sendPKC({
+      //     ...inqs,
+      //     remark: $("#remark").val(),
+      //   });
       window.location.replace(
         `${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`
       );
@@ -416,10 +442,10 @@ $(document).on("click", "#send-confirm", async function (e) {
       };
       await inqservice.updateInquiryGroup(grpdata);
       const inqs = await inqservice.getInquiryID(inquiry.INQ_ID);
-      const email = await mail.sendGLD({
-        ...inqs,
-        remark: $("#remark").val(),
-      });
+      //   const email = await mail.sendGLD({
+      //     ...inqs,
+      //     remark: $("#remark").val(),
+      //   });
       //   window.location.replace(
       //     `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
       //   );
@@ -479,7 +505,8 @@ async function updatePath(status, level = 0) {
     timelinedata,
     history,
   };
-
+  //   console.log(fomdata);
+  //   return;
   const inquiry = await inqservice.updateInquiry(fomdata);
   if (selectedFilesMap.size > 0) {
     const attachment_form = new FormData();
@@ -503,11 +530,22 @@ async function setTimelineData(header, status) {
 
   if (status > 10) {
     const user = $("#user-login").attr("empno");
-    data.SG_USER = header.SG_USER == "" ? user : header.SG_USER;
-    data.SE_USER = header.SE_USER == "" ? user : header.SE_USER;
-    data.SE_READ = header.SE_READ == "" ? new Date() : header.SE_READ;
-    data.SE_CONFIRM = header.SE_CONFIRM == "" ? new Date() : header.SE_CONFIRM;
-    data.SALE_CLASS = header.SALE_CLASS == "" ? "A" : header.SALE_CLASS;
+    data.SG_USER =
+      header.SG_USER == "" || header.SG_USER == null ? user : header.SG_USER;
+    data.SE_USER =
+      header.SE_USER == "" || header.SE_USER == null ? user : header.SE_USER;
+    data.SE_READ =
+      header.SE_READ == "" || header.SE_READ == null
+        ? new Date()
+        : header.SE_READ;
+    data.SE_CONFIRM =
+      header.SE_CONFIRM == "" || header.SE_CONFIRM == null
+        ? new Date()
+        : header.SE_CONFIRM;
+    data.SALE_CLASS =
+      header.SALE_CLASS == "" || header.SALE_CLASS == null
+        ? "A"
+        : header.SALE_CLASS;
   }
   return data;
 }
