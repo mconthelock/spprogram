@@ -137,11 +137,13 @@ export async function tableOpt(data, options = {}) {
         const assign = `<a class="btn btn-xs btn-neutral btn-process ${
           usergroup == "SEG" ? "" : "hidden"
         }" href="${process.env.APP_ENV}/se/inquiry/edit/${data}">Process</a>`;
-        const declare = `<a class="btn btn-xs btn-neutral btn-process ${
+        const declare = `<a class="btn btn-xs btn-neutral btn-process-declare ${
           usergroup == "SEG" ? "hidden" : ""
         }" href="${process.env.APP_ENV}/se/inquiry/detail/${data}">Process</a>`;
-        const view = `<a class="btn btn-xs btn-neutral" href="${process.env.APP_ENV}/se/inquiry/view/${data}">View</a>`;
-        return `<div class="flex gap-1 justify-center items-center w-fit">${assign}${declare}${view}</div>`;
+        const view = `<a class="btn btn-xs btn-outline btn-neutral ${
+          options.report === undefined ? "hidden" : ""
+        }" href="${process.env.APP_ENV}/se/inquiry/view/${data}">View</a>`;
+        return `<div class="flex gap-1 justify-end items-center w-full">${assign}${declare}${view}</div>`;
       },
     },
   ];

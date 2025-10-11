@@ -52,8 +52,8 @@ export async function setupTableDetail(data = [], group = "SEG") {
       sortable: false,
       render: function (data, type, row) {
         if (type === "display") {
-          return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
-          <button class="btn btn-sm btn-circle btn-ghost ${
+          return `<div class="btn btn-xs btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
+          <button class="btn btn-xs btn-circle btn-ghost ${
             row.INQD_OWNER_GROUP != "MAR"
               ? "delete-sub-line text-red-500"
               : "btn-disabled"
@@ -247,7 +247,7 @@ export async function setupTableDetail(data = [], group = "SEG") {
       sortable: false,
       render: function (data, type, row, meta) {
         if (type === "display") {
-          return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white forward edit-input"
+          return `<input type="checkbox" value="1" class="checkbox checkbox-sm checkbox-warning text-white forward edit-input"
                ${data == "" || data == null ? "" : "checked"}/>`;
         }
         return data;

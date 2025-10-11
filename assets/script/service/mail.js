@@ -14,7 +14,7 @@ export const sendGLD = async (data) => {
 
   let emailto = [];
   let group = data.inqgroup;
-  group = group.filter((g) => g.INQG_LATEST == "1");
+  group = group.filter((g) => g.INQG_LATEST == "1" && g.INQG_STATUS == 0);
   group.map((g) => {
     const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
     if (user) emailto.push(user.data.SRECMAIL);

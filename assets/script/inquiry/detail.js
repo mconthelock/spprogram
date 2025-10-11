@@ -121,6 +121,8 @@ export async function createFormCard(cardData, data = {}) {
 
 export async function setFieldValue(field, data = {}) {
   const dspName = async (data, field) => {
+    if (data[field.name] == null) return field;
+
     const emp = await displayEmpInfo(data[field.name]);
     const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
     const sname = name.split(" ");
@@ -256,9 +258,11 @@ export async function createFieldInput(field) {
       break;
 
     case "staticText":
+      let text = !field.display ? field.value : field.display;
+      text = text == null ? "" : text;
       let staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
         field.class !== undefined ? field.class : ""
-      }">${!field.display ? field.value : field.display}</p>`;
+      }">${text}</p>`;
       if (field.input)
         staticText += `<input type="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
       inputContainer.innerHTML = staticText;

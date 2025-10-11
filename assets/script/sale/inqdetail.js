@@ -113,7 +113,9 @@ async function setupButton(revise) {
     id: "send-confirm",
     title: "Confirm",
     icon: "fi fi-tr-badge-check text-xl",
-    className: "btn-primary text-white hover:shadow-lg",
+    className: `btn-primary text-white hover:shadow-lg ${
+      revise ? "revised" : ""
+    }`,
   });
 
   const back = await utils.creatBtn({
@@ -359,20 +361,93 @@ $(document).on("click", "#send-bm", async function (e) {
 });
 
 //012: Update and send to design
-$(document).on("click", "#update-de", async function (e) {
+$(document).on("click", "#send-confirm", async function (e) {
   e.preventDefault();
+  const isRevise = $(this).hasClass("revised");
+  if (isRevise && $("#remark").val().trim() === "") {
+    utils.showMessage("Please provide a remark for the revision.");
+    $("#remark").focus();
+    return;
+  }
+  try {
+    const inquiry = await updatePath(11, 1);
+    const grpdata = {
+      data: { INQG_STATUS: 28, INQG_SKIP: 1 },
+      condition: { INQ_ID: inquiry.INQ_ID },
+    };
+    await inqservice.updateInquiryGroup(grpdata);
+    const details = table.rows().data().toArray();
+    let group = [];
+    for (const dt of details) {
+      if (dt.INQD_DE !== null) {
+        let item = Math.floor(parseInt(dt.INQD_ITEM) / 100);
+        if (item == 5) item = 2;
+        if (item >= 6) item = 6;
+        group.push(item);
+      }
+    }
+
+    if (group.length == 0) {
+      const header = { INQ_STATUS: 30, INQ_NO: inquiry.INQ_NO };
+      const history = await setLogsData(30);
+      const fomdata = {
+        header,
+        history,
+      };
+      const inqs = await inqservice.updateInquiryStatus(
+        fomdata,
+        $("#inquiry-id").val()
+      );
+      const email = await mail.sendPKC({
+        ...inqs,
+        remark: $("#remark").val(),
+      });
+      window.location.replace(
+        `${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`
+      );
+      return;
+    }
+
+    group = [...new Set(group)];
+    for (const gp of group) {
+      const grpdata = {
+        data: { INQG_STATUS: 0, INQG_SKIP: null },
+        condition: { INQ_ID: inquiry.INQ_ID, INQG_GROUP: gp },
+      };
+      await inqservice.updateInquiryGroup(grpdata);
+      const inqs = await inqservice.getInquiryID(inquiry.INQ_ID);
+      const email = await mail.sendGLD({
+        ...inqs,
+        remark: $("#remark").val(),
+      });
+      //   window.location.replace(
+      //     `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+      //   );
+      return;
+    }
+    // const email = await mail.sendPKC({
+    //   ...inquiry,
+    //   remark: $("#remark").val(),
+    // });
+    // window.location.replace(
+    //   `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+    // );
+  } catch (error) {
+    await utils.errorMessage(error);
+    return;
+  }
 });
 
 // 015: Update and send to AS400
 async function updatePath(status, level = 0) {
-  const header = await inqs.getFormHeader(); //Get header data
+  //Get header data
+  const header = await inqs.getFormHeader();
   const details = table.rows().data().toArray();
   await inqs.verifyDetail(table, details, level);
 
   header.INQ_STATUS = status;
   header.UPDATE_BY = $("#user-login").attr("empname");
   header.UPDATE_AT = new Date();
-
   const timelinedata = await setTimelineData(header, status);
   const history = await setLogsData(status);
 
