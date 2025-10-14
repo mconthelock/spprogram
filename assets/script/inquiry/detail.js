@@ -39,8 +39,6 @@ export const statusColors = () => {
 
 // 001: Create card
 export async function setupCard(data) {
-  console.log(data);
-
   const form = $("#form-container");
   const carddata = form.attr("data");
   const cardIds = carddata.split("|");
@@ -840,7 +838,6 @@ export async function verifyDetail(table, data, savelevel = 0) {
       }
 
       if (item.INQD_VARIABLE != "" || item.INQD_VARIABLE != null) {
-        console.log(item.INQD_VARIABLE);
         const variavle = dwg.validateVariable(item.INQD_VARIABLE);
         if (!variavle.isValid) {
           check = false;

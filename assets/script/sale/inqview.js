@@ -37,6 +37,7 @@ $(document).ready(async () => {
     const attachment = await tb.setupTableAttachment(file, true);
     tableAttach = await createTable(attachment, { id: "#attachment" });
     const btn = await setupButton();
+    $("#remark").closest(".grid").addClass("hidden");
   } catch (error) {
     utils.errorMessage(error);
     return;

@@ -54,30 +54,26 @@ $(document).ready(async () => {
       SE_READ: inquiry.timeline.SE_READ,
       SE_CONFIRM: inquiry.timeline.SE_CONFIRM,
     };
-    // inquiry.SALE_CLASS = times.SALE_CLASS;
-    // inquiry.SG_USER = times.SG_USER == null ? user : times.SG_USER;
-    // inquiry.SG_READ =
-    //   times.SG_READ == null
-    //     ? moment().format("YYYY-MM-DD HH:mm:ss")
-    //     : times.SG_READ;
-    // inquiry.SG_CONFIRM = times.SG_CONFIRM;
-    // inquiry.SE_USER = times.SE_USER;
 
     if (inquiry.INQ_STATUS >= 20) {
       inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
       revise = true;
-      if (usergroup == "SEG")
+      if (usergroup == "SEG") {
+        const current = moment().format("YYYY-MM-DD HH:mm:ss");
         setime = {
           ...setime,
-          SG_READ: moment().format("YYYY-MM-DD HH:mm:ss"),
+          SG_READ: setime.SG_READ == null ? current : setime.SG_READ,
+          SE_READ: setime.SE_READ == null ? current : setime.SE_READ,
           SG_USER: user,
         };
-      if (usergroup != "SEG")
+      }
+      if (usergroup != "SEG") {
         setime = {
           ...setime,
           SE_READ: moment().format("YYYY-MM-DD HH:mm:ss"),
           SE_USER: user,
         };
+      }
     }
 
     details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
@@ -85,6 +81,9 @@ $(document).ready(async () => {
     file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
     inquiry = { ...inquiry, timeline: { ...inquiry.timeline, ...setime } };
     const cards = await inqs.setupCard(inquiry);
+
+    console.log(inquiry.timeline);
+
     const tableContainer = await tbsale.setupTableDetail(details, usergroup);
     table = await createTable(tableContainer);
 
@@ -210,7 +209,7 @@ $(document).on("click", "#elmes-cancel", async function () {
 
 //004: Unable to reply checkbox
 $(document).on("click", ".unreply", async function () {
-  await inqs.clickUnreply(table.row($(this).parents("tr")));
+  await inqs.clickUnreply($(this), table.row($(this).parents("tr")));
 });
 
 $(document).on("click", "#cancel-reason", async function () {
@@ -324,13 +323,13 @@ $(document).on("click", "#assign-pic", async function (e) {
   if (!chkheader) return;
   try {
     const inquiry = await updatePath(10);
-    const email = await mail.sendSE({
-      ...inquiry,
-      remark: $("#remark").val(),
-    });
-    window.location.replace(
-      `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
-    );
+    // const email = await mail.sendSE({
+    //   ...inquiry,
+    //   remark: $("#remark").val(),
+    // });
+    // window.location.replace(
+    //   `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+    // );
   } catch (error) {
     await utils.errorMessage(error);
     return;
@@ -476,7 +475,6 @@ async function updatePath(status, level = 0) {
   header.UPDATE_AT = new Date();
   const timelinedata = await setTimelineData(header, status);
   const history = await setLogsData(status);
-
   let deleteLine = [];
   if (deletedLineMap.size > 0) {
     deletedLineMap.forEach((value, key) => {
@@ -523,17 +521,15 @@ async function setTimelineData(header, status) {
   const data = {
     INQ_NO: header.INQ_NO,
     INQ_REV: header.INQ_REV,
-    SE_USER: header.SE_USER,
-    SALE_CLASS: header.SALE_CLASS,
+    MAR_SEND: header.MAR_SEND,
+    SG_USER: header.SG_USER,
+    SG_READ: header.SG_READ,
     SG_CONFIRM: header.SG_CONFIRM == "" ? new Date() : header.SG_CONFIRM,
+    SALE_CLASS: header.SALE_CLASS,
+    SE_USER: header.SE_USER,
   };
 
   if (status > 10) {
-    const user = $("#user-login").attr("empno");
-    data.SG_USER =
-      header.SG_USER == "" || header.SG_USER == null ? user : header.SG_USER;
-    data.SE_USER =
-      header.SE_USER == "" || header.SE_USER == null ? user : header.SE_USER;
     data.SE_READ =
       header.SE_READ == "" || header.SE_READ == null
         ? new Date()
@@ -542,10 +538,6 @@ async function setTimelineData(header, status) {
       header.SE_CONFIRM == "" || header.SE_CONFIRM == null
         ? new Date()
         : header.SE_CONFIRM;
-    data.SALE_CLASS =
-      header.SALE_CLASS == "" || header.SALE_CLASS == null
-        ? "A"
-        : header.SALE_CLASS;
   }
   return data;
 }

@@ -71,9 +71,6 @@ module.exports = {
       datatables: "DataTables",
     }),
   ],
-  //   externals: {
-  //     datatables: "DataTables",
-  //   },
   resolve: {
     alias: {
       "@root": path.resolve(__dirname, "../form/assets/script"),
