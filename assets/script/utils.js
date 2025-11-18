@@ -6,7 +6,6 @@ import { initAuthen } from "@public/authen.js";
 export const initApp = async (opt = {}) => {
   try {
     await initAuthen({
-      loader: false,
       icon: `${process.env.APP_ENV}/assets/images/cube.png`,
       programName: "SP PROGRAM",
       sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
@@ -19,7 +18,7 @@ export const initApp = async (opt = {}) => {
   } catch (error) {
     console.log(error);
   }
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 1000));
   return;
 };
 

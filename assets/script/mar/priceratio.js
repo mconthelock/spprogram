@@ -1,16 +1,11 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
-
 import "select2";
-import {
-  showMessage,
-  errorMessage,
-  showLoader,
-  intVal,
-  digits,
-} from "../utils.js";
+import * as utils from "../utils.js";
 import { createTable } from "@public/_dataTable.js";
+import { getExportTemplate } from "../service/inquiry.js";
+import { exportExcel } from "../service/excel.js";
 import {
   getPriceRatio,
   findPriceRatio,
@@ -21,12 +16,17 @@ import {
 } from "../service/master.js";
 var table;
 $(document).ready(async () => {
-  $(".mainmenu").find("details").attr("open", false);
-  $(".mainmenu.navmenu-admin").find("details").attr("open", true);
-
-  const data = await getPriceRatio();
-  const opt = await tableOpt(data);
-  table = await createTable(opt);
+  try {
+    await utils.initApp({ submenu: ".navmenu-admin" });
+    const data = await getPriceRatio();
+    const opt = await tableOpt(data);
+    table = await createTable(opt);
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  } finally {
+    await utils.showLoader({ show: false });
+  }
 });
 
 async function tableOpt(data) {
@@ -35,15 +35,15 @@ async function tableOpt(data) {
   const trader = data.map((val) => val.TRADER);
   const currency = data.map((val) => val.CURRENCY);
 
-  const opt = {};
+  const opt = utils.tableOpt;
   opt.data = data;
-  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option">><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-auto"t><"flex my-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.columns = [
     { data: "ID", className: "hidden" },
     {
       data: "quoText",
       className: "text-nowrap",
-      title: `<div class="text-center text-white">Quotation Type</div>`,
+      title: `Quotation Type`,
       render: function (data, type, row) {
         if (type === "display" && row.isNew !== undefined) {
           const activeTypes = types.filter((val) => val.QUOTYPE_STATUS == 1);
@@ -62,7 +62,7 @@ async function tableOpt(data) {
     {
       data: "TRADER",
       className: "text-nowrap",
-      title: `<div class="text-center text-white">Trader</div>`,
+      title: `Trader`,
       render: function (data, type, row) {
         if (type === "display" && row.isNew !== undefined) {
           const uniqueTrader = [...new Set(trader)];
@@ -80,7 +80,7 @@ async function tableOpt(data) {
     {
       data: "SUPPLIER",
       className: "text-nowrap",
-      title: `<div class="text-center text-white">Supplier</div>`,
+      title: `Supplier`,
       render: function (data, type, row) {
         if (type === "display" && row.isNew !== undefined) {
           const uniqueSuppler = [...new Set(supplier)];
@@ -99,7 +99,7 @@ async function tableOpt(data) {
     {
       data: "CURRENCY",
       className: "text-center text-nowrap",
-      title: `<div class="text-center text-white">Currency</div>`,
+      title: `Currency`,
       render: function (data, type, row) {
         if (type === "display" && row.isNew !== undefined) {
           const uniqueCurrency = [
@@ -119,24 +119,24 @@ async function tableOpt(data) {
     {
       data: "FORMULA",
       className: "text-nowrap !text-right",
-      title: `<div class="text-center text-white">Rate</div>`,
+      title: `Rate`,
       render: function (data, type, row) {
         if (type === "display" && row.isNew !== undefined) {
-          return `<input type="number" class="cell-input w-full input-dt" data-key="formula" value="${data}" min="0.001" step="0.01">`;
+          return `<input type="number" class="input cell-input w-full input-dt" data-key="formula" value="${data}" min="0.001" step="0.01">`;
         }
-        return digits(data, 3);
+        return utils.digits(data, 3);
       },
     },
     {
       data: "STATUS",
       className: "text-center text-nowrap",
-      title: `<div class="text-center text-white">Status</div>`,
+      title: `Status`,
       render: function (data, type) {
         if (type === "display") {
           let result =
             data == 1
-              ? `<div class="badge badge-primary text-black">Active</div>`
-              : `<div class="badge badge-error">In-Active</div>`;
+              ? `<div class="badge badge-primary text-white text-xs">Active</div>`
+              : `<div class="badge badge-error  text-xs">In-Active</div>`;
           result += `<input type="hidden" value="${data}" class="input-dt" data-key="status"/>`;
           return result;
         }
@@ -145,56 +145,54 @@ async function tableOpt(data) {
     },
     {
       data: "ID",
-      className: "text-nowrap",
+      className: "text-nowrap w-[120px]! max-w-[120px]!",
       sortable: false,
-      title: `<div class="text-center"><i class='icofont-settings text-lg text-white'></i></div>`,
+      title: `<div class="flex justify-center"><i class="fi fi-br-tools text-xl"></i></div>`,
       render: function (data, type, row) {
         return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
         <div class="flex items-center justify-center gap-2">
-
             <button class="btn btn-sm btn-ghost btn-circle save-row ${
               row.isNew === undefined ? "hidden" : ""
-            }" data-id="${data}"><i class="icofont-save text-lg"></i></button>
+            }" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>
 
-            <button class="btn btn-sm btn-ghost btn-circle ignore-row ${
+            <a class="btn btn-sm btn-ghost btn-circle ignore-row ${
               row.isNew === undefined ? "hidden" : ""
-            }" data-id="${data}"><i class="icofont-close text-lg text-red-500"></i></button>
+            }" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>
 
             <button class="btn btn-sm btn-ghost btn-circle edit-row ${
               row.isNew !== undefined ? "hidden" : ""
-            }" data-id="${data}"><i class="icofont-pencil-alt-5 text-lg"></i></button>
+            }" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></button>
 
             <button class="btn btn-sm btn-ghost btn-circle toggle-status
                 ${row.STATUS === 0 ? "hidden" : ""}
                 ${row.isNew !== undefined ? "hidden" : ""}"
                 data-id="${data}" data-value="0">
-                <i class="icofont-trash text-lg text-red-500"></i>
+                <i class="fi fi-sr-trash text-2xl text-red-500"></i>
             </button>
-
-
 
             <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
               row.STATUS === 1 ? "hidden" : ""
-            }" data-id="${data}" data-value="1"><i class="icofont-refresh text-lg text-primary"></i></button>
+            }" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>
         </div>`;
       },
     },
   ];
 
   opt.initComplete = function (settings, json) {
-    $(".table-option").append(`<div class="flex gap-2">
-        <button class="btn btn-primary rounded-3xl text-white transition delay-100 duration-100 ease-in-out hover:scale-105 items-center"
-            type="button" id="add-new-rate">
+    const addnew = `<button class="btn btn-primary rounded-none text-white items-center hover:bg-primary/70" id="add-new-rate" type="button">
             <span class="loading loading-spinner hidden"></span>
-            <span class=""><i class="icofont-plus text-lg me-2"></i>New Item</span>
-        </button>
+            <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>New Item</span>
+        </button>`;
+    const export2 = `<button class="btn btn-neutral rounded-none text-white items-center hover:bg-neutral/70" id="export-list" type="button">
+            <span class="loading loading-spinner hidden"></span>
+            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export list</span>
+        </button>`;
+    const back = `<a href="#" class="btn btn-outline btn-neutral rounded-none text-neutral hover:text-white hover:bg-neutral/70 flex gap-3"><i class="fi fi-rr-arrow-circle-left text-xl"></i>Back</a>`;
 
-         <button class="btn btn-neutral rounded-3xl text-white transition delay-100 duration-100 ease-in-out hover:scale-105 items-center"
-            type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class=""><i class="icofont-spreadsheet text-lg me-2"></i>Export</span>
-        </button>
-    </div>`);
+    $(".table-info").append(`<div class="flex gap-2">
+        ${addnew}
+        ${export2}
+     </div>`);
   };
   return opt;
 }
@@ -310,6 +308,7 @@ $(document).on("click", ".save-row", async function (e) {
   }
 
   //Save Price Ratio
+  const empname = $("#user-login").attr("empname");
   const ratio = {
     ID: data.id,
     TRADER: data.trader,
@@ -317,7 +316,7 @@ $(document).on("click", ".save-row", async function (e) {
     QUOTATION: data.quotype,
     FORMULA: data.formula,
     CURRENCY: data.currency,
-    UPDATE_BY: "THEERAPATH  JITTAWATTANA",
+    UPDATE_BY: empname,
     UPDATE_AT: new Date(),
     STATUS: data.status,
   };
@@ -345,6 +344,11 @@ $(document).on("click", ".ignore-row", async function (e) {
   e.preventDefault();
   const row = table.row($(this).parents("tr"));
   const data = row.data();
+  if (data.isNew) {
+    row.remove().draw(false);
+    return;
+  }
+
   const res = await findPriceRatio({
     TRADER: data.TRADER,
     SUPPLIER: data.SUPPLIER,
@@ -352,4 +356,16 @@ $(document).on("click", ".ignore-row", async function (e) {
   });
   row.data(res[0]);
   row.draw(false);
+});
+
+$(document).on("click", "#export-list", async function (e) {
+  e.preventDefault();
+  const data = table.rows().data().toArray();
+  data.forEach((val) => {
+    val.statusText = val.STATUS == 1 ? "Active" : "Inactive";
+  });
+  const template = await getExportTemplate({
+    name: "Import_price_ratio_template.xlsx",
+  });
+  await exportExcel(data, template, "price_ratio_list.xlsx");
 });

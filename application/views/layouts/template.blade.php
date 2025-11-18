@@ -43,7 +43,7 @@
             <div
                 class="modal-box !w-[100vw] !max-w-[100vw] !h-[100vh] !max-h-[100vh] !rounded-none flex items-center justify-center glass bg-white/5 ">
                 <div class="">
-                    <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-36" />
+                    <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-28" />
                     <h1 class="text-center text-white text-lg font-bold">Loading....</h1>
                 </div>
             </div>
@@ -56,7 +56,7 @@
             <div class="drawer-content flex flex-col items-center justify-start w-full h-full">
                 <!-- Page content here -->
                 <div class="flex-1 flex flex-col w-full px-4 my-5 md:px-4">
-                    <div class="card bg-primary/5 border border-primary/20">
+                    <div class="card bg-primary/5 border border-primary/30 min-h-[calc(100vh-3rem)]">
                         <div class="card-body">
                             @yield('contents')
                         </div>

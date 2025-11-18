@@ -644,7 +644,7 @@ export async function confirmDeleteInquiry(table) {
   if (!res.status) {
     utils.foundError(res);
   } else {
-    //   remove row from table
+    // remove row from table
     table
       .row($(`button[data-id='${$("#confirm_key").val()}']`).parents("tr"))
       .remove()

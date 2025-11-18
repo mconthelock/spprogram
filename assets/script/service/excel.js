@@ -16,7 +16,7 @@ export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
   newRow.height = sourceRow.height;
 };
 
-export const exportExcel = async (data, template) => {
+export const exportExcel = async (data, template, filename = "export.xlsx") => {
   daterange = await getCalendar(data);
   const file = template.buffer;
   const workbook = new ExcelJS.Workbook();
@@ -80,11 +80,27 @@ export const exportExcel = async (data, template) => {
       });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `SP Inquiry List ${moment().format("YYYY-MM-DD")}.xlsx`;
+      link.download = filename;
       link.click();
     });
   });
 };
+
+async function getCalendar(data) {
+  const minInqMoment = data.reduce((acc, item) => {
+    if (!item || !item.INQ_DATE) return acc;
+    const m = moment(item.INQ_DATE);
+    if (!m.isValid()) return acc;
+    return acc === null || m.isBefore(acc) ? m : acc;
+  }, null);
+
+  const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
+  const daterange = await ameccaledar(
+    minInqDate,
+    moment().add(10, "days").format("YYYYMMDD")
+  );
+  return daterange;
+}
 
 function getEffect(data, param) {
   const inqgroup = data.inqgroup;
@@ -107,20 +123,4 @@ function nextWorkingDay(data, param) {
     i++;
   });
   return moment(current, "YYYYMMDD").format("YYYY-MM-DD");
-}
-
-async function getCalendar(data) {
-  const minInqMoment = data.reduce((acc, item) => {
-    if (!item || !item.INQ_DATE) return acc;
-    const m = moment(item.INQ_DATE);
-    if (!m.isValid()) return acc;
-    return acc === null || m.isBefore(acc) ? m : acc;
-  }, null);
-
-  const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
-  const daterange = await ameccaledar(
-    minInqDate,
-    moment().add(10, "days").format("YYYYMMDD")
-  );
-  return daterange;
 }
