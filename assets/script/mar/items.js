@@ -5,16 +5,14 @@ import moment from "moment";
 import ExcelJS from "exceljs";
 
 import { createTable } from "@public/_dataTable.js";
-import { showbgLoader } from "@public/preloader";
-import { statusColors } from "../inquiry/detail.js";
-import * as service from "../service/items.js";
+import * as items from "../service/items.js";
 import * as utils from "../utils.js";
 var table;
 
 $(async function () {
   try {
     await utils.initApp({ submenu: ".navmenu-price" });
-    const data = await service.getItems();
+    const data = await items.getItems();
     const opt = await tableOpt(data);
     table = await createTable(opt);
   } catch (error) {
@@ -28,6 +26,7 @@ $(async function () {
 async function tableOpt(data) {
   const opt = utils.tableOpt;
   opt.data = data;
+  opt.order = [[0, "asc"]];
   opt.columns = [
     { data: "ITEM_NO", title: "Item" },
     { data: "ITEM_NAME", title: "Part Name", className: "max-w-[175px]" },
@@ -58,11 +57,33 @@ async function tableOpt(data) {
       title: `<div class="text-2xl w-full flex justify-center"><i class="fi fi-tr-pen-field"></i></div>`,
       className: "text-center",
       render: (data, type, row) => {
-        const edit = `<a class="btn btn-circle btn-sm btn-ghost text-xl" href="#"><i class="fi fi-tr-pen-square"></i></a>`;
-        const deleted = `<a class="btn btn-circle btn-sm btn-ghost text-xl ${
-          row.ITEM_STATUS == 0 ? "btn-disabled" : "text-red-500"
-        }" href="#" ><i class="fi fi-bs-trash-xmark"></i></a>`;
-        return `<div class="w-full flex justify-center">${edit}${deleted}</div>`;
+        return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
+        <div class="flex items-center justify-center gap-2">
+            <button class="btn btn-sm btn-ghost btn-circle save-row ${
+              row.isNew === undefined ? "hidden" : ""
+            }" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>
+
+            <a class="btn btn-sm btn-ghost btn-circle ignore-row ${
+              row.isNew === undefined ? "hidden" : ""
+            }" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>
+
+            <a href="${
+              process.env.APP_ENV
+            }/mar/items/detail/${data}" class="btn btn-sm btn-ghost btn-circle edit-row ${
+          row.isNew !== undefined ? "hidden" : ""
+        }" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>
+
+            <button class="btn btn-sm btn-ghost btn-circle toggle-status
+                ${row.ITEM_STATUS === 0 ? "hidden" : ""}
+                ${row.isNew !== undefined ? "hidden" : ""}"
+                data-id="${data}" data-value="0">
+                <i class="fi fi-sr-trash text-2xl text-red-500"></i>
+            </button>
+
+            <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
+              row.ITEM_STATUS === 1 ? "hidden" : ""
+            }" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>
+        </div>`;
       },
     },
   ];

@@ -1,10 +1,11 @@
 @extends('layouts/template')
 
 @section('contents')
-    <h1 class="text-3xl font-sans font-[900] uppercase mb-5 text-gray-700">Inquiry Default values Setting</h1>
+    <h2 class="card-title text-2xl">Inquiry Default Values</h2>
+    <div class="divider m-0"></div>
     <table id="table" class="table table-zebra"></table>
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/priceratio.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/inqcontrol.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

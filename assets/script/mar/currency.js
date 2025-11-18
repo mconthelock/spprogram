@@ -1,26 +1,37 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "@styles/select2.min.css";
+import "@styles/datatable.min.css";
 import "select2";
-import moment from "moment";
-import {
-  showMessage,
-  errorMessage,
-  showLoader,
-  intVal,
-  digits,
-} from "../utils.js";
+import dayjs from "dayjs";
+import * as utils from "../utils.js";
 import { createTable } from "@public/_dataTable.js";
 import { getCurrency, updateCurrency } from "../service/master.js";
+
 var table;
+const curricon = [
+  { code: "GBP", icon: `<i class="text-xl fi fi-bs-sterling-sign"></i>` },
+  { code: "JPY", icon: `<i class="text-xl fi fi-br-yen"></i>` },
+  { code: "THB", icon: `<i class="text-xl fi fi-br-baht-sign"></i>` },
+  { code: "EUR", icon: `<i class="text-xl fi fi-br-euro"></i>` },
+  { code: "USD", icon: `<i class="text-xl fi fi-ss-dollar"></i>` },
+  { code: "OTH", icon: `<i class="text-xl fi fi-ss-dollar"></i>` },
+];
 $(document).ready(async () => {
-  $(".mainmenu").find("details").attr("open", false);
-  $(".mainmenu.nav-master").find("details").attr("open", true);
-  const data = await getCurrency();
-  const opt = await tableOpt(data);
-  table = await createTable(opt);
+  try {
+    await utils.initApp({ submenu: ".navmenu-admin" });
+    const data = await getCurrency();
+    const opt = await tableOpt(data);
+    table = await createTable(opt);
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  } finally {
+    await utils.showLoader({ show: false });
+  }
 });
 
 async function tableOpt(data) {
-  const opt = {};
+  const opt = { ...utils.tableOpt };
   opt.order = [
     [0, "desc"],
     [1, "desc"],
@@ -30,16 +41,14 @@ async function tableOpt(data) {
   opt.columns = [
     {
       data: "CURR_YEAR",
-      title: `<div class="text-center text-white">FYEAR</div>`,
+      title: "FYEAR",
     },
     {
       data: "CURR_PERIOD",
       className: "text-nowrap",
-      title: `<div class="text-center text-white">Period</div>`,
+      title: "Period",
       render: function (data, type, row) {
         if (type === "display") {
-          //   return `<input type="number" class="cell-input w-full input-dt" data-key="formula" value="${data}" min="0.001" step="0.01">`;
-          // }
           return `0${data}-H`;
         }
         return data;
@@ -48,50 +57,59 @@ async function tableOpt(data) {
     {
       data: "CURR_CODE",
       className: "text-center",
-      title: `<div class="text-center text-white">Code</div>`,
+      title: "Code",
+      render: function (data, type, row) {
+        const curr = curricon.find((item) => item.code == data);
+        if (type === "display") {
+          return `<div class="flex items-center justify-center gap-2">${
+            curr ? curr.icon : ""
+          }${data}</div>`;
+        }
+        return data;
+      },
     },
     {
       data: "CURR_RATE",
       className: "!text-end",
-      title: `<div class="text-center text-white">Rate</div>`,
+      title: "Rate",
       render: function (data, type, row) {
         if (type === "display" && row.isNew !== undefined) {
-          return `<input type="number" class="cell-input w-full input-dt" value="${digits(
+          return `<input type="number" class="input cell-input w-full input-dt" value="${utils.digits(
             data,
             2
           )}" min="0.01" step="0.01">`;
         }
-        return digits(data, 2);
+        return utils.digits(data, 2);
       },
     },
     {
       data: "CURR_UPDATE_DATE",
       className: "text-center",
-      title: `<div class="text-center text-white">Last Update</div>`,
+      title: "Last Update",
       render: function (data, type, row) {
-        return data == null ? "" : moment(data).format("YYYY-MM-DD HH:mm");
+        return data == null ? "" : dayjs(data).format("YYYY-MM-DD HH:mm");
       },
     },
     {
       data: "CURR_UPDATE_BY",
       className: "text-start",
-      title: `<div class="text-center text-white">Update By</div>`,
+      title: "Update By",
+      render: (data) => (data == null ? "" : utils.displayname(data).sname),
     },
     {
       data: "CURR_CODE",
-      className: "text-nowrap",
       sortable: false,
-      title: `<div class="text-center"><i class='icofont-settings text-lg text-white'></i></div>`,
+      title: `<div class="flex justify-center"><i class='fi fi-br-settings-sliders text-lg'></i></div>`,
       render: function (data, type, row) {
         return `
         <div class="flex items-center justify-center gap-2">
             <button class="btn btn-sm btn-ghost btn-circle save-row ${
               row.isNew === undefined ? "hidden" : ""
-            }"><i class="icofont-save text-lg"></i></button>
+            }"><i class="fi fi-sr-disk text-lg"></i></button>
 
             <button class="btn btn-sm btn-ghost btn-circle edit-row ${
               row.isNew !== undefined || row.CURR_LATEST == 0 ? "hidden" : ""
-            }"><i class="icofont-pencil-alt-5 text-lg"></i></button>
+            }"><i class="fi fi-rr-customize text-lg"></i></button>
         </div>`;
       },
     },

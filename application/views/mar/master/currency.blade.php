@@ -1,7 +1,8 @@
 @extends('layouts/template')
 
 @section('contents')
-    <h1 class="text-3xl font-sans font-[900] uppercase mb-5 text-gray-700">Currency Master</h1>
+    <h2 class="card-title text-2xl">Currency Master</h2>
+    <div class="divider m-0"></div>
     <table id="table" class="table table-zebra"></table>
 @endsection
 
