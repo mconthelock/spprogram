@@ -23,6 +23,7 @@ module.exports = {
     currency: "./assets/script/mar/currency.js",
     inqcontrol: "./assets/script/mar/inqcontrol.js",
     mar_items: "./assets/script/mar/items.js",
+    mar_items_detail: "./assets/script/mar/items_detail.js",
     mar_pricelist: "./assets/script/mar/pricelist.js",
     //Sale user
     se_inquiry: "./assets/script/sale/inquiry.js",
