@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 const CompressionPlugin = require("compression-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   entry: {
     apps: "./assets/script/apps.js",
@@ -45,7 +46,18 @@ module.exports = {
   optimization: {
     concatenateModules: true,
     minimize: true,
-    minimizer: [new TerserPlugin()],
+    minimizer: [
+      new TerserPlugin({
+        parallel: true, // ✅ เปิด multi-core minify
+        terserOptions: {
+          format: {
+            comments: false, // ลบคอมเมนต์ทิ้ง
+          },
+        },
+        extractComments: false, // ไม่แยก LICENSE ออกมาเป็นไฟล์ .txt
+        exclude: /public/, // <<< อย่ามาย่อไฟล์ที่ copy มา
+      }),
+    ],
   },
   module: {
     rules: [
@@ -66,11 +78,26 @@ module.exports = {
       test: /\.(js|css|html|svg)$/,
       threshold: 10240,
       minRatio: 0.8,
+      exclude: /public/, // <<< อย่ามาบีบอัดไฟล์ที่ copy มา
     }),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
       datatables: "DataTables",
+    }),
+    // copy public script ไปไว้ที่ assets/script/public
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "../form/assets/script/public/v1.0.3"),
+          to: path.resolve(__dirname, "assets/script/public"),
+          noErrorOnMissing: true,
+          globOptions: {
+            // เอาเฉพาะ js ก็พอ
+            ignore: ["**/*.map", "**/*.json"], // จะไม่ก็อปไฟล์ขยะ
+          },
+        },
+      ],
     }),
   ],
   resolve: {
@@ -80,4 +107,14 @@ module.exports = {
       "@styles": path.resolve(__dirname, "../form/assets/dist/css"),
     },
   },
+  cache:
+    process.env.STATE === "production"
+      ? false
+      : {
+          type: "filesystem",
+          //   cacheDirectory: path.resolve(__dirname, '.cache/webpack'),
+          buildDependencies: {
+            config: [__filename],
+          },
+        },
 };

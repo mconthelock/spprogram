@@ -89,7 +89,7 @@ async function tableOpt(data) {
   ];
   opt.initComplete = function (settings, json) {
     $(".table-option").append(
-      `<button class="btn btn-outline btn-primary hover:text-white">New Item</button>`
+      `<a href="${process.env.APP_ENV}/mar/items/detail" class="btn btn-outline btn-primary hover:text-white">New Item</a>`
     );
     $(".table-paging").append(`<div class="flex gap-2">
         <button class="btn btn-accent rounded-3xl text-white items-center" id="export-detail" type="button">

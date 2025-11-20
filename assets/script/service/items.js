@@ -15,6 +15,68 @@ export const getItems = async (data) => {
   });
 };
 
+export const getItemsImage = async (id) => {
+  const res = await fetch(`${process.env.APP_API}/sp/items/photo/${id}`);
+  if (!res.ok) {
+    await fetchMsgErr(res);
+    throw new Error("Failed to fetch user image");
+  }
+  return res.text();
+};
+
+export const createItems = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/items/create/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+export const updateItems = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/items/update/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
+export const uploadItemsPhoto = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/items/photo/upload/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      processData: false,
+      contentType: false,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 export const getItemsCategory = async (data) => {
   return new Promise((resolve, reject) => {
     $.ajax({

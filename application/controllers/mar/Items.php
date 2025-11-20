@@ -8,7 +8,7 @@ class Items extends MY_Controller {
         $this->views('mar/items/index');
     }
 
-    public function detail($id){
+    public function detail($id = ''){
         $this->views('mar/items/detail', array('id' => $id));
     }
 }
