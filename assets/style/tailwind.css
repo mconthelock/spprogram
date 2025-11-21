@@ -161,14 +161,14 @@
     align-items: center;
   }
 
-  .dt-ordering-asc::after {
+  /* .dt-ordering-asc::after {
     content: "\fba7";
   }
 
   .dt-ordering-desc::after {
     content: "\fba7";
     transform: rotate(180deg);
-  }
+  } */
 
   .table-second {
     border-collapse: separate;

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {
   dragDropInit,
   dragDropListImage,
@@ -5,6 +6,7 @@ import {
 } from "@public/_dragdrop";
 import { getCustomer } from "../service/customers.js";
 import * as items from "../service/items.js";
+import { getPriceList, updatePriceList } from "../service/pricelist.js";
 import * as utils from "../utils.js";
 
 $(async function () {
@@ -108,14 +110,32 @@ async function listCategory() {
 }
 
 $(document).on("click", "#save-data", async function () {
+  await utils.showLoader();
+  let isValid = true;
+  $(".field-data.req").each(function () {
+    if ($(this).val() == "") {
+      isValid = false;
+      $(this).addClass("input-error");
+    } else {
+      $(this).removeClass("input-error");
+    }
+  });
+  if (!isValid) {
+    await utils.errorMessage({
+      message: "Please fill in all required fields.",
+    });
+    await utils.showLoader({ show: false });
+    return;
+  }
   try {
-    await utils.showLoader();
     const action = $(this).attr("data-action");
     let payload = {};
     $(".field-data").each(function () {
       const key = $(this).attr("data-map");
       const value = $(this).val();
-      payload[key] = value;
+      if (key == "ITEM_DWG" || key == "ITEM_VARIABLE")
+        payload[key] = value.toUpperCase();
+      else payload[key] = value;
     });
 
     if (action == "add") {
@@ -146,9 +166,19 @@ $(document).on("click", "#save-data", async function () {
       const responsePhoto = await items.uploadItemsPhoto(photo);
     }
     //Save Price
+    let maxYear =
+      dayjs().format("M") < 4
+        ? dayjs().format("YYYY") - 1
+        : dayjs().format("YYYY");
+    let maxPeriod = dayjs().format("M") < 4 ? 2 : 1;
+    const lastest = await getPriceList({ LATEST: 1 });
+    if (lastest.length > 0) {
+      maxYear = Math.max(...lastest.map((p) => p.FYYEAR));
+      maxPeriod = Math.max(...lastest.map((p) => p.PERIOD));
+    }
     const prices = {
-      FYYEAR: 2025,
-      PERIOD: 1,
+      FYYEAR: maxYear,
+      PERIOD: maxPeriod,
       ITEM: payload.ITEM_ID,
       STATUS: 1,
       STARTIN: dayjs().format("YYYY-MM-DD"),
@@ -156,7 +186,11 @@ $(document).on("click", "#save-data", async function () {
       FCCOST: payload.FCCOST,
       FCBASE: payload.FCBASE,
       TCCOST: payload.TCCOST,
+      LATEST: 1,
+      CREATE_BY: $("#user-login").attr("empname"),
+      CREATE_AT: new Date().toISOString(),
     };
+    const responsePrice = await updatePriceList(prices);
     //Save Customer
     // const response = await items.updateItems(payload);
     // console.log(response);
@@ -169,6 +203,24 @@ $(document).on("click", "#save-data", async function () {
   }
 });
 
+$(document).on("blur", ".price-change", async function (e) {
+  e.preventDefault();
+  const fccost = parseFloat($("#fccost").val()) || 0;
+  const fcrate = parseFloat($("#fcrate").val()) || 0;
+  const tccost = Math.ceil(fccost * fcrate);
+  $("#tccost").val(tccost);
+});
+
 $(document).on("change", 'input[name="files"]', async function (e) {
   handleFiles();
+});
+
+$(document).on("click", "#back-to-list", async function (e) {
+  e.preventDefault();
+  const user = await utils.userInfo();
+  if (user.group == "MAR") {
+    window.location.href = `${process.env.APP_ENV}/mar/items`;
+    return;
+  }
+  window.location.href = `${process.env.APP_ENV}/fin/price`;
 });

@@ -14,3 +14,20 @@ export const getPriceList = (data) => {
     });
   });
 };
+
+export const updatePriceList = (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/pricelist/update`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};

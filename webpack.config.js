@@ -37,6 +37,11 @@ module.exports = {
     des_inqviews: "./assets/script/des/view.js",
     des_report: "./assets/script/des/report.js",
     des_users: "./assets/script/des/users.js",
+
+    //Finance
+    fin_items: "./assets/script/fin/items.js",
+    fin_inquiry: "./assets/script/fin/inquiry.js",
+    fin_inqdetail: "./assets/script/fin/inquiry_detail.js",
   },
   output: {
     filename: "[name].js",

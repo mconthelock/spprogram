@@ -18,7 +18,7 @@ export const getInquiry = async (data) => {
 export const getInquiryID = async (id) => {
   return new Promise((resolve, reject) => {
     $.ajax({
-      url: `${process.env.APP_API}/sp/inquiry/${id}/`,
+      url: `${process.env.APP_API}/sp/inquiry/find/${id}/`,
       type: "GET",
       dataType: "json",
       success: function (response) {

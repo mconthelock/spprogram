@@ -5,6 +5,14 @@ class Inquiry extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/inquiry/index');
+        $this->views('fin/inquiry/index', array(
+            'title' => 'Inquiry Cost Management',
+        ));
+    }
+
+    public function detail($id){
+        $this->views('fin/inquiry/detail', array(
+            'id' => $id,
+        ));
     }
 }

@@ -1,8 +1,9 @@
 import moment from "moment";
 import ExcelJS from "exceljs";
 import { exportFormat } from "./service/inquiry.js";
-
 import { initAuthen } from "@public/authen.js";
+import { displayEmpInfo } from "@public/setIndexDB.js";
+
 export const initApp = async (opt = {}) => {
   try {
     await initAuthen({
@@ -335,3 +336,15 @@ export const displayname = (val) => {
   const lname = name[1].charAt(0).toUpperCase() + name[1].slice(1);
   return { sname: `${fname} ${lname}`, fname, lname };
 };
+
+export async function userInfo() {
+  const user = $("#user-login");
+  const info = await displayEmpInfo(user.attr("empno"));
+  return {
+    empno: info.SEMPNO,
+    username: info.SNAME,
+    displayname: displayname(info.SNAME),
+    info: info,
+    group: user.attr("groupcode"),
+  };
+}
