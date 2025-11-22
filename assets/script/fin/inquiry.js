@@ -7,14 +7,13 @@ import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
 import * as utils from "../utils.js";
 import * as service from "../service/inquiry.js";
 import dayjs from "dayjs";
+var table;
 $(async function () {
   try {
     await utils.initApp();
-    let data;
-    data = await service.getInquiry({ LE_INQ_STATUS: 45 });
-
+    const data = await service.getInquiry({ INQ_STATUS: ">= 30 && < 43" });
     const opt = await tableOptions(data);
-    const table = await createTable(opt);
+    table = await createTable(opt);
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
@@ -69,23 +68,25 @@ async function tableOptions(data) {
       className: "",
       title: "MAR. Sent Date",
       render: (data) => {
+        console.log(data);
         return dayjs(data).format("YYYY-MM-DD HH:mm:ss");
       },
     },
     {
-      data: "timeline.MAR_SEND",
+      data: "INQ_ID",
       className: "",
       title: "B/M Date",
       render: (data) => {
-        return dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+        //return dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+        return data;
       },
     },
     {
-      data: "timeline.MAR_SEND",
-      className: "",
+      data: "INQ_FIN_REMARK",
+      sortable: false,
       title: "Note",
       render: (data) => {
-        return `<textarea class="!h-[52px] border border-slate-300 rounded-sm min-w-[200px]" rows="1"></textarea>`;
+        return `<textarea class="w-full min-w-[200px] !h-[52px] border border-slate-300 rounded-sm" rows="1">${data}</textarea>`;
       },
     },
     {

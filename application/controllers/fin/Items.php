@@ -5,6 +5,10 @@ class Items extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/inquiry/index');
+        $this->views('fin/items/index');
+    }
+
+    public function detail($id = ''){
+        $this->views('fin/items/detail', array('id' => $id));
     }
 }

@@ -41,8 +41,11 @@ async function setItemDetail() {
 
     const prices = data[0].prices;
     if (prices.length > 0) {
-      for (const [key, value] of Object.entries(prices[0])) {
-        $(`.field-data[data-map="${key}"]`).val(value);
+      const latestPrice = prices.filter((price) => price.LATEST === "1");
+      if (latestPrice.length > 0) {
+        for (const [key, value] of Object.entries(latestPrice[0])) {
+          $(`.field-data[data-map="${key}"]`).val(value);
+        }
       }
     }
 
@@ -222,5 +225,5 @@ $(document).on("click", "#back-to-list", async function (e) {
     window.location.href = `${process.env.APP_ENV}/mar/items`;
     return;
   }
-  window.location.href = `${process.env.APP_ENV}/fin/price`;
+  window.location.href = `${process.env.APP_ENV}/fin/items`;
 });

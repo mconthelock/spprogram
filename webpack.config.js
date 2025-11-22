@@ -42,6 +42,8 @@ module.exports = {
     fin_items: "./assets/script/fin/items.js",
     fin_inquiry: "./assets/script/fin/inquiry.js",
     fin_inqdetail: "./assets/script/fin/inquiry_detail.js",
+    fin_pricelist: "./assets/script/fin/pricelist.js",
+    fin_report: "./assets/script/fin/report.js",
   },
   output: {
     filename: "[name].js",

@@ -1,7 +1,7 @@
 @extends('layouts/template')
 
 @section('contents')
-    <h2 class="card-title text-2xl">Price Management</h2>
+    <h2 class="card-title text-2xl">Items Management</h2>
     <input type="text" id="itemid" class="hidden" value="{{ $id }}" />
     <div class="divider m-0"></div>
     <div class="flex gap-8">

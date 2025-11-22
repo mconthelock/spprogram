@@ -15,4 +15,8 @@ class Inquiry extends MY_Controller {
             'id' => $id,
         ));
     }
+
+    public function report(){
+        $this->views('fin/inquiry/report');
+    }
 }

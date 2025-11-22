@@ -169,6 +169,9 @@
     content: "\fba7";
     transform: rotate(180deg);
   } */
+  .table thead th {
+    @apply !text-center !bg-slate-500 !text-gray-300 !text-xs;
+  }
 
   .table-second {
     border-collapse: separate;

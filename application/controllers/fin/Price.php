@@ -5,10 +5,6 @@ class Price extends MY_Controller {
     }
 
     public function index(){
-        $this->views('fin/items/index');
-    }
-
-    public function detail($id = ''){
-        $this->views('fin/items/detail', array('id' => $id));
+        $this->views('fin/price/index');
     }
 }

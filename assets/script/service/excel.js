@@ -16,28 +16,33 @@ export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
   newRow.height = sourceRow.height;
 };
 
-export const exportExcel = async (data, template, filename = "export.xlsx") => {
+export const exportExcel = async (data, template, options = {}) => {
+  const opt = {
+    filename: `export.xlsx`,
+    rowstart: 2,
+    ...options,
+  };
   daterange = await getCalendar(data);
   const file = template.buffer;
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(file).then(async (workbook) => {
     const sheet_data = workbook.worksheets[1];
     const columns = await exportFormat(sheet_data);
-    const rowstart = 2;
     const sheet = workbook.worksheets[0];
     let row1 = 0;
     let str = 0;
 
     const colCount = sheet.columnCount;
     data.forEach(async (el, i) => {
-      str = i + rowstart;
-      if (str > rowstart + 1) {
+      str = i + opt.rowstart;
+      if (str > opt.rowstart + 1) {
         cloneRows(sheet, row1, str);
-        row1 = str % 2 == 0 ? rowstart + 1 : rowstart;
+        row1 = str % 2 == 0 ? opt.rowstart + 1 : opt.rowstart;
       }
 
       for (let j = 1; j <= colCount; j++) {
         const format = columns.find((item) => item[1] == j);
+        if (format == undefined) continue;
         let value = "";
         if (format[3] == null) continue;
         if (format[2] == "Func") {
@@ -70,6 +75,11 @@ export const exportExcel = async (data, template, filename = "export.xlsx") => {
       }
     });
 
+    // Excute more options (if any)
+    if (opt.execute != null && typeof opt.execute == "function") {
+      await opt.execute(workbook, sheet);
+    }
+
     // Remove all sheets except the first one
     while (workbook.worksheets.length > 1) {
       workbook.removeWorksheet(workbook.worksheets[1].id);
@@ -80,7 +90,7 @@ export const exportExcel = async (data, template, filename = "export.xlsx") => {
       });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = filename;
+      link.download = opt.filename;
       link.click();
     });
   });
@@ -124,3 +134,27 @@ function nextWorkingDay(data, param) {
   });
   return moment(current, "YYYYMMDD").format("YYYY-MM-DD");
 }
+
+export const getTemplate = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/attachments/export/template/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (res) {
+        const binaryData = atob(res.content);
+        const buffer = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          buffer[i] = binaryData.charCodeAt(i);
+        }
+        res.buffer = buffer;
+        resolve(res);
+      },
+      error: function (error) {
+        console.log(`Do error`);
+        reject(error);
+      },
+    });
+  });
+};

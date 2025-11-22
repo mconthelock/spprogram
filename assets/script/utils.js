@@ -116,7 +116,7 @@ export const tableOpt = {
       last: '<i class="fi fi-rs-angle-double-small-right"></i>',
     },
     search: "",
-    searchPlaceholder: "Search...",
+    searchPlaceholder: "Filter records...",
     loadingRecords: `<span class="loading loading-spinner loading-xl"></span>`,
     emptyTable: `<span class="text-[14px] text-gray-600 font-medium">Have no record found</span>`,
     zeroRecords: "ไม่พบข้อมูลที่ต้องการ",
@@ -148,28 +148,45 @@ export const creatBtn = async (option = {}) => {
     id: "btn-save",
     title: "Save Changes",
     icon: "icofont-save text-xl",
-    className: "btn-primary",
+    className: "from-blue-500 to-blue-600 text-white",
     ...option,
   };
 
   if (opt.type == "link") {
     return `<a class="btn rounded-none transition delay-100 duration-300 ease-in-out ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
-            <div class="loading loading-spinner hidden"></div>
-            <div class="flex items-center gap-2">
-                <i class="${opt.icon}"></i>
-                <div>${opt.title}</div>
-            </div>
-        </a>`;
+				<div class="loading loading-spinner hidden"></div>
+				<div class="flex items-center gap-2">
+					<i class="${opt.icon}"></i>
+					<div>${opt.title}</div>
+				</div>
+			</a>`;
   }
 
-  return `<button class="btn rounded-none transition delay-100 duration-300 ease-in-out ${opt.className}" type="button" id="${opt.id}">
-            <div class="loading loading-spinner hidden"></div>
-            <div class="flex items-center gap-2">
-                <i class="${opt.icon}"></i>
-                <div>${opt.title}</div>
-            </div>
-        </button>`;
+  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-8 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}">
+		<div class="items-center gap-2 btn-loader hidden">
+			<span class="loading loading-spinner"></span>
+			Processing...
+		</div>
+		<div class="flex items-center gap-2 btn-name">
+        	<i class="${opt.icon}"></i>
+            <div>${opt.title}</div>
+        </div>
+		<div class="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white/20 transition-transform duration-300 ease-out group-hover:scale-[3.5] active:duration-150"></div>
+	</button>`;
 };
+
+export function activatedBtn(obj, activate = true) {
+  if (activate) {
+    obj.find(".btn-loader").removeClass("hidden").addClass("flex");
+    obj.find(".btn-name").addClass("hidden");
+    obj.prop("disabled", true);
+  } else {
+    obj.find(".btn-loader").addClass("hidden").removeClass("flex");
+    obj.find(".btn-name").removeClass("hidden");
+    obj.prop("disabled", false);
+  }
+  return;
+}
 
 export const intVal = function (i) {
   return typeof i === "string"
