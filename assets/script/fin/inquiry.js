@@ -5,13 +5,20 @@ import { createTable } from "@public/_dataTable.js";
 import { statusColors } from "../inquiry/detail.js";
 import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
 import * as utils from "../utils.js";
-import * as service from "../service/inquiry.js";
+import { getInquiry } from "../service/inquiry.js";
 import dayjs from "dayjs";
 var table;
 $(async function () {
   try {
     await utils.initApp();
-    const data = await service.getInquiry({ INQ_STATUS: ">= 30 && < 43" });
+    const pageId = $("#pageid").val() || 1;
+    let data;
+    if (pageId == 1) {
+      data = await getInquiry({ INQ_STATUS: ">= 30 && < 43" });
+    } else {
+      data = await getInquiry({ INQ_STATUS: ">= 43 && < 50" });
+    }
+
     const opt = await tableOptions(data);
     table = await createTable(opt);
   } catch (error) {
@@ -23,8 +30,11 @@ $(async function () {
 });
 
 async function tableOptions(data) {
+  const pageId = $("#pageid").val() || 1;
   const colors = await statusColors();
   const opt = await tableInquiry(data);
+  opt.pageLength = 15;
+  opt.order = [[0, "desc"]];
   opt.columns = [
     { data: "timeline.MAR_SEND", className: "hidden" },
     {
@@ -65,28 +75,57 @@ async function tableOptions(data) {
     },
     {
       data: "timeline.MAR_SEND",
-      className: "",
+      className: "text-center text-nowrap",
       title: "MAR. Sent Date",
       render: (data) => {
-        console.log(data);
-        return dayjs(data).format("YYYY-MM-DD HH:mm:ss");
+        return dayjs(data).format("YYYY-MM-DD HH:mm");
       },
     },
     {
-      data: "INQ_ID",
-      className: "",
+      data: "timeline.DE_CONFIRM",
+      className: "text-center text-nowrap",
+      title: "Design Finish",
+      render: (data) => {
+        if (data == null) return "";
+        return dayjs(data).format("YYYY-MM-DD HH:mm");
+      },
+    },
+    {
+      data: "timeline.BM_CONFIRM",
+      className: "text-center text-nowrap",
       title: "B/M Date",
       render: (data) => {
-        //return dayjs(data).format("YYYY-MM-DD HH:mm:ss");
-        return data;
+        if (data == null) return "";
+        return dayjs(data).format("YYYY-MM-DD HH:mm");
+      },
+    },
+    {
+      data: "timeline.FIN_CONFIRM",
+      className: `text-center text-nowrap ${pageId == 1 ? "hidden" : ""}`,
+      title: "Fin Confirmed",
+      render: (data) => {
+        if (data == null) return "";
+        return dayjs(data).format("YYYY-MM-DD HH:mm");
+      },
+    },
+    {
+      data: "timeline.FMN_CONFIRM",
+      className: `text-center text-nowrap ${pageId == 1 ? "hidden" : ""}`,
+      title: "Fin Finish",
+      render: (data) => {
+        if (data == null) return "";
+        return dayjs(data).format("YYYY-MM-DD HH:mm");
       },
     },
     {
       data: "INQ_FIN_REMARK",
       sortable: false,
+      className: `${pageId == 2 ? "hidden" : ""}`,
       title: "Note",
       render: (data) => {
-        return `<textarea class="w-full min-w-[200px] !h-[52px] border border-slate-300 rounded-sm" rows="1">${data}</textarea>`;
+        return `<textarea class="w-full min-w-[200px] !h-[52px] border border-slate-300 rounded-sm p-2" rows="1">${
+          data == null ? "" : data
+        }</textarea>`;
       },
     },
     {
@@ -95,9 +134,23 @@ async function tableOptions(data) {
       className: "text-center",
       title: `<div class="text-xl flex justify-center"><i class="fi fi-rr-settings-sliders"></i></div>`,
       render: (data) => {
-        return `<a class="btn btn-sm btn-primary text-white" href="${process.env.APP_ENV}/fin/inquiry/detail/${data}">Process</a>`;
+        if (pageId == 2)
+          return `<a class="btn btn-sm btn-neutral text-white" href="${process.env.APP_ENV}/fin/inquiry/view/${data}"><i class="fi fi-ts-assessment text-xl"></i>View</a>`;
+        return `<a class="btn btn-sm btn-accent text-white" href="${process.env.APP_ENV}/fin/inquiry/detail/${data}"><i class="fi fi-sr-arrow-small-right text-xl"></i>Process</a>`;
       },
     },
   ];
+
+  opt.initComplete = async function () {
+    const export1 = await utils.creatBtn({
+      id: "export1",
+      title: "Export",
+      icon: "fi fi-tr-file-excel text-xl",
+      className: `bg-accent text-white hover:shadow-lg`,
+    });
+    $(".table-info").append(`<div class="flex gap-2">
+          ${export1}
+       </div>`);
+  };
   return opt;
 }

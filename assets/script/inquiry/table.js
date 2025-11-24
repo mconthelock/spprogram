@@ -163,32 +163,32 @@ export async function tableInquiry(data, options = {}) {
   //     },
   //   ];
 
-  opt.initComplete = function () {
-    $(".table-option")
-      .append(`<div class="dropdown dropdown-end dropdown-hover">
-        <div tabindex="0" role="button" class="btn btn-outline btn-neutral m-1">New Inquiry</div>
-        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-            <li><a href="${process.env.APP_ENV}/mar/inquiry/create/">SP Inquiry</a></li>
-            <li><a href="${process.env.APP_ENV}/mar/stockpart/create">Stock Part</a></li>
-        </ul>
-        </div>`);
+  //   opt.initComplete = function () {
+  //     $(".table-option")
+  //       .append(`<div class="dropdown dropdown-end dropdown-hover">
+  //         <div tabindex="0" role="button" class="btn btn-outline btn-neutral m-1">New Inquiry</div>
+  //         <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+  //             <li><a href="${process.env.APP_ENV}/mar/inquiry/create/">SP Inquiry</a></li>
+  //             <li><a href="${process.env.APP_ENV}/mar/stockpart/create">Stock Part</a></li>
+  //         </ul>
+  //         </div>`);
 
-    const export1 = `<button class="btn btn-accent rounded-none text-white items-center hover:bg-accent/70" id="export-detail" type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Detail</span>
-        </button>`;
-    const export2 = `<button class="btn btn-neutral rounded-none text-white items-center hover:bg-neutral/70" id="export-list" type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>Export list</span>
-        </button>`;
-    const back = `<a href="#" class="btn btn-outline btn-neutral rounded-none text-neutral hover:text-white hover:bg-neutral/70 flex gap-3" id="back-report"><i class="fi fi-rr-arrow-circle-left text-xl"></i>Back</a>`;
+  //     const export1 = `<button class="btn btn-accent rounded-none text-white items-center hover:bg-accent/70" id="export-detail" type="button">
+  //             <span class="loading loading-spinner hidden"></span>
+  //             <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Detail</span>
+  //         </button>`;
+  //     const export2 = `<button class="btn btn-neutral rounded-none text-white items-center hover:bg-neutral/70" id="export-list" type="button">
+  //             <span class="loading loading-spinner hidden"></span>
+  //             <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>Export list</span>
+  //         </button>`;
+  //     const back = `<a href="#" class="btn btn-outline btn-neutral rounded-none text-neutral hover:text-white hover:bg-neutral/70 flex gap-3" id="back-report"><i class="fi fi-rr-arrow-circle-left text-xl"></i>Back</a>`;
 
-    $(".table-info").append(`<div class="flex gap-2">
-        ${export1}
-        ${export2}
-        ${options.backReportBtn !== undefined ? back : ""}
-     </div>`);
-  };
+  //     $(".table-info").append(`<div class="flex gap-2">
+  //         ${export1}
+  //         ${export2}
+  //         ${options.backReportBtn !== undefined ? back : ""}
+  //      </div>`);
+  //   };
   return opt;
 }
 

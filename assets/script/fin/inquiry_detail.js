@@ -156,6 +156,7 @@ async function tableDetailOptions(data) {
       },
     },
   ];
+  opt.initComplete = function () {};
   return opt;
 }
 

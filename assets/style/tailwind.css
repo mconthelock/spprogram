@@ -208,6 +208,14 @@
 
   .table-edit tbody > tr > td:not(.dt-empty) {
     padding: 3px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .dt-paging-button:not(.first):not(.last):not(.previous):not(.next) {
+    @apply !text-white;
+  }
+  .dt-paging-button:not(.first):not(.last):not(.previous):not(.next):hover {
+    @apply !shadow-sm;
   }
 
   /*

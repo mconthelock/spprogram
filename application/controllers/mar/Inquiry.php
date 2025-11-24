@@ -4,9 +4,11 @@ class Inquiry extends MY_Controller {
         parent::__construct();
     }
 
-    public function index(){
-        $data = array('title' => 'On-Process Inquiry', 'prebm' => '0');
-        $this->views('mar/inquiry/index', $data);
+    public function index($id = 1){
+        $this->views('mar/inquiry/index', array(
+            'title' => $id == 1 ? 'On-Process Inquiry' : 'Pending pre-BM Inquiry',
+            'id' => $id,
+        ));
     }
 
     public function prebm(){
