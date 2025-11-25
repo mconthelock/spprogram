@@ -3,6 +3,21 @@ import ExcelJS from "exceljs";
 import { getExportTemplate, getInquiryID } from "../service/inquiry.js";
 import { cloneRows } from "../service/excel.js";
 
+export const statusColors = () => {
+  return [
+    { id: 1, color: "bg-gray-300 text-gray-600" }, //Draft
+    { id: 2, color: "bg-teal-500 text-white" }, //New
+    { id: 9, color: "bg-yellow-400" }, //revise
+    { id: 19, color: "bg-cyan-500" }, //SE
+    { id: 29, color: "bg-blue-500 text-white" }, //DE
+    { id: 39, color: "bg-slate-500 text-white" }, //IS
+    { id: 49, color: "bg-amber-500 text-white" }, //FIN
+    { id: 59, color: "bg-teal-500 text-white" }, //MAR [Post process]
+    { id: 98, color: "bg-red-500 text-white" }, //Cancel
+    { id: 99, color: "bg-primary text-white" }, //Finish
+  ];
+};
+
 $(document).on("mouseenter", ".detail-log", function () {
   const data = $(this).closest("td").find("ul");
   const content = $("#tip1");

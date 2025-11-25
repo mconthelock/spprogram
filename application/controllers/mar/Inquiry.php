@@ -11,11 +11,6 @@ class Inquiry extends MY_Controller {
         ));
     }
 
-    public function prebm(){
-        $data = array('title' => 'Pending Pre-BM Inquiry', 'prebm' => '1');
-        $this->views('mar/inquiry/index', $data);
-    }
-
     public function create(){
         $this->views('mar/inquiry/detail');
     }

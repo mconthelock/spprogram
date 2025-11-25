@@ -105,6 +105,9 @@ export const showLoader = (opt = { show: true }) => {
 };
 
 export const tableOpt = {
+  dom: `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`,
+  order: [[0, "desc"]],
+  pageLength: 25,
   responsive: false,
   language: {
     info: "Showing _START_ to _END_ from _TOTAL_ records",
@@ -154,7 +157,7 @@ export const creatBtn = async (option = {}) => {
   };
 
   if (opt.type == "link") {
-    return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
+    return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
 		<div class="items-center gap-2 btn-loader hidden">
 			<span class="loading loading-spinner"></span>
 			Processing...
@@ -167,7 +170,7 @@ export const creatBtn = async (option = {}) => {
 	</a>`;
   }
 
-  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-8 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}">
+  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}">
 		<div class="items-center gap-2 btn-loader hidden">
 			<span class="loading loading-spinner"></span>
 			Processing...

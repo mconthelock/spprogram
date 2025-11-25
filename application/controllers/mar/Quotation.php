@@ -4,10 +4,12 @@ class Quotation extends MY_Controller {
         parent::__construct();
     }
 
-    public function index(){
-        $this->views('mar/quotation/index', array('title'=> 'Issue Quotation List'));
+    public function index($id = 1){
+        $this->views('mar/quotation/index', array(
+            'title' => $id == 1 ? 'Issue Quotation List' : 'Quotation List',
+            'id' => $id,
+        ));
     }
-
     public function released(){
         $this->views('mar/quotation/index', array('title'=> 'Quotation List'));
     }

@@ -18,7 +18,7 @@
             <div class="divider divider-start divider-primary">
                 <span class="font-extrabold text-md text-primary ps-3">History</span>
             </div>
-            <table id="history" class="table table-zebra table-second display text-sm"></table>
+            <table id="history" class="table table-zebra table-second display text-xs"></table>
         </div>
         <div class="flex-1 relative">
             <div class="divider divider-start divider-primary">
