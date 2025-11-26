@@ -105,10 +105,48 @@ async function tableInquiryOption(data) {
     {
       data: "INQ_PKC_REQ",
       title: "Weight Req.",
-      className: `text-center ${pageid == "3" ? "hidden" : ""}`,
-      render: (data) => {
+      className: `${pageid == "3" ? "hidden" : ""}`,
+      render: (data, type, row) => {
         if (data == "0") return "";
-        return `<i class="fi fi-ts-check-circle text-primary text-xl"></i>`;
+        return `<i class="fi fi-ss-check-circle text-xl justify-center ${
+          row.timeline.PKC_CONFIRM != null ? "text-primary" : ""
+        }"></i>`;
+      },
+    },
+    {
+      data: "INQ_ID",
+      className: `w-fit !max-w-[110px] !text-center ${
+        pageid == "3" ? "hidden" : ""
+      }`,
+      sortable: false,
+      title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
+      render: (data, type, row) => {
+        if (row.INQ_PKC_REQ == "1" && row.timeline.PKC_CONFIRM == null)
+          return `<a class="btn btn-sm btn-neutral/50 text-white min-w-[100px]" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-rr-arrow-up-right-from-square text-lg"></i>View</a>`;
+        return `<a class="btn btn-sm btn-accent text-white min-w-[100px]" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-sr-arrow-circle-right text-xl"></i>Process</a>`;
+      },
+    },
+    {
+      data: "INQ_ID",
+      className: `w-fit !justify-end ${pageid == "3" ? "" : "hidden"}`,
+      sortable: false,
+      title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
+      render: (data, type, row) => {
+        const edit = `<a class="btn btn-sm btn-accent text-white" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-tr-file-edit text-lg"></i>Edit</a>`;
+        const excel = `<a class="btn btn-sm btn-neutral text-white"><i class="fi fi-tr-file-excel text-lg"></i>Export</a>`;
+        const order = `<a class=""><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
+        const sparq = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
+        const revise = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>Revise Inquiry</a>`;
+        const dropdown = `<div class="dropdown  dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
+            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
+                <li>${sparq}</li>
+                <li>${order}</li>
+                <li>${revise}</li>
+            </ul>
+        </div>`;
+
+        return `<div class="flex justify-end gap-2">${edit}${excel}${dropdown}</div>`;
       },
     },
   ];
