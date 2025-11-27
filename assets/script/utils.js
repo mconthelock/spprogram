@@ -126,6 +126,15 @@ export const tableOpt = {
     lengthMenu: "_MENU_",
     infoFiltered: "(กรองข้อมูลจากทั้งหมด _MAX_ รายการ)",
   },
+  drawCallback: function (settings) {
+    const api = this.api();
+    const pagination = $(this).closest(".dt-container").find(".dt-paging");
+    if (api.page.info().pages <= 1) {
+      pagination.addClass("hidden");
+    } else {
+      pagination.removeClass("hidden");
+    }
+  },
 };
 
 export const showConfirm = (
