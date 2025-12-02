@@ -25,6 +25,8 @@ $(document).ready(async () => {
 async function tableOpt(data) {
   const quotype = await getQuotationType();
   const shipments = await getShipments();
+  console.log(shipments);
+
   const terms = await getDeliveryTerm();
   const opt = { ...utils.tableOpt };
   opt.order = [
@@ -46,7 +48,18 @@ async function tableOpt(data) {
     {
       data: "CNT_QUOTATION",
       title: "Quotation Type",
-      render: (data) => {
+      render: (data, type, row) => {
+        if (row.isNew !== undefined) {
+          let str = `<option value="" disabled selected>Select Quotation Type</option>`;
+          quotype.forEach((item) => {
+            str += `<option value="${item.QUOTYPE_ID}" ${
+              item.QUOTYPE_ID == data ? "selected" : ""
+            }>${item.QUOTYPE_DESC}</option>`;
+          });
+          return `<select class="select select-bordered w-full max-w-xs text-xs quotation-type">${str}
+          </select>
+          `;
+        }
         const quotation = quotype.find((item) => item.QUOTYPE_ID == data);
         return quotation.QUOTYPE_DESC;
       },
@@ -54,7 +67,18 @@ async function tableOpt(data) {
     {
       data: "CNT_TERM",
       title: "Delivery Term",
-      render: (data) => {
+      render: (data, type, row) => {
+        if (row.isNew !== undefined) {
+          let str = `<option value="" disabled selected>Select Delivery Term</option>`;
+          terms.forEach((item) => {
+            str += `<option value="${item.TERM_ID}" ${
+              item.TERM_ID == data ? "selected" : ""
+            }>${item.TERM_DESC}</option>`;
+          });
+          return `<select class="select select-bordered w-full max-w-xs text-xs delivery-term">${str}
+            </select>
+            `;
+        }
         const term = terms.find((item) => item.TERM_ID == data);
         return term.TERM_DESC;
       },
@@ -62,7 +86,18 @@ async function tableOpt(data) {
     {
       data: "CNT_METHOD",
       title: "Delivery Method",
-      render: (data) => {
+      render: (data, type, row) => {
+        if (row.isNew !== undefined) {
+          let str = `<option value="" disabled selected>Select Delivery Term</option>`;
+          shipments.forEach((item) => {
+            str += `<option value="${item.SHIPMENT_ID}" ${
+              item.SHIPMENT_ID == data ? "selected" : ""
+            }>${item.SHIPMENT_DESC}</option>`;
+          });
+          return `<select class="select select-bordered w-full max-w-xs text-xs delivery-term">${str}
+            </select>
+            `;
+        }
         const shipment = shipments.find((item) => item.SHIPMENT_ID == data);
         return shipment.SHIPMENT_DESC;
       },
@@ -70,16 +105,20 @@ async function tableOpt(data) {
     {
       data: "CNT_WEIGHT",
       title: "Weight",
-      className: "text-center",
-      render: (data) => {
+      sortable: false,
+      render: (data, type, row) => {
+        if (row.isNew !== undefined) {
+          return `<input type="checkbox" checked="checked" class="checkbox checkbox-primary justify-center" />`;
+        }
         return data == 1
-          ? `<i class="fi fi-rr-check-circle text-xl text-success"></i>`
+          ? `<i class="fi fi-rr-check-circle text-xl text-success justify-center"></i>`
           : "";
       },
     },
     {
       data: "CNT_PREFIX",
-      className: "hidden",
+      className: "",
+      sortable: false,
       title: `<div class="flex justify-center"><i class='fi fi-br-settings-sliders text-lg'></i></div>`,
       render: function (data, type, row) {
         return `
@@ -95,5 +134,40 @@ async function tableOpt(data) {
       },
     },
   ];
+  opt.initComplete = async function () {
+    const export1 = await utils.creatBtn({
+      id: "export-btn",
+      title: "Export",
+      icon: "fi fi-tr-file-excel text-xl",
+      className: `from-accent/90 to-accent text-white hover:shadow-lg`,
+    });
+    $(".table-page").append(`<div class="mt-5 gap-3">${export1}</div>`);
+  };
   return opt;
 }
+
+$(document).on("click", ".edit-row", async function () {
+  try {
+    await utils.showLoader({ show: true });
+    const row = table.row($(this).closest("tr"));
+    const rowData = row.data();
+    rowData.isNew = true;
+    table.row(row).data(rowData).draw();
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  } finally {
+    await utils.showLoader({ show: false });
+  }
+});
+
+$(document).on("click", "#export-btn", async function (e) {
+  e.preventDefault();
+  try {
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  } finally {
+    await utils.showLoader({ show: false });
+  }
+});

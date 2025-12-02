@@ -201,7 +201,7 @@ async function tableInquiryOption(data) {
       id: "export1",
       title: "Export Inquiry",
       icon: "fi fi-tr-file-excel text-xl",
-      className: `btn-accent text-white hover:shadow-lg`,
+      className: `from-accent/90 to-accent text-white hover:shadow-lg`,
     });
     const export2 = await utils.creatBtn({
       id: "export1",

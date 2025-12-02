@@ -118,8 +118,7 @@ module.exports = {
     process.env.STATE === "production"
       ? false
       : {
-          type: "filesystem",
-          //   cacheDirectory: path.resolve(__dirname, '.cache/webpack'),
+          type: "filesystem", //cacheDirectory: path.resolve(__dirname, '.cache/webpack'),
           buildDependencies: {
             config: [__filename],
           },
