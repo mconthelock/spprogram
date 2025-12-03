@@ -198,6 +198,22 @@ export const getControl = async () => {
   });
 };
 
+export const updateController = async () => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/controler/`,
+      type: "POST",
+      dataType: "json",
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 export const getReason = async () => {
   return new Promise((resolve, reject) => {
     $.ajax({

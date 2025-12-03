@@ -135,10 +135,14 @@ function nextWorkingDay(data, param) {
   return moment(current, "YYYYMMDD").format("YYYY-MM-DD");
 }
 
-export const getTemplate = async (data) => {
+export const getTemplate = async (filename) => {
+  const data = {
+    path: `${process.env.FILE_TEMPLATE}/${filename}`,
+    name: filename,
+  };
   return new Promise((resolve, reject) => {
     $.ajax({
-      url: `${process.env.APP_API}/sp/attachments/export/template/`,
+      url: `${process.env.APP_API}/files/template/read/`,
       type: "POST",
       dataType: "json",
       data: data,
@@ -152,7 +156,6 @@ export const getTemplate = async (data) => {
         resolve(res);
       },
       error: function (error) {
-        console.log(`Do error`);
         reject(error);
       },
     });

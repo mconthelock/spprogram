@@ -23,7 +23,7 @@ export const initApp = async (opt = {}) => {
   return;
 };
 
-export function showMessage(msg, type = "error") {
+export const showMessage = async (msg, type = "error") => {
   const prop = [
     {
       id: "error",
@@ -69,9 +69,9 @@ export function showMessage(msg, type = "error") {
   setTimeout(() => {
     $(".msg-close").click();
   }, 8000);
-}
+};
 
-export const errorMessage = async function (error) {
+export const errorMessage = async (error) => {
   if (error.responseJSON) {
     const message = error.responseJSON.message;
     if (typeof message == "string") {
@@ -192,7 +192,7 @@ export const creatBtn = async (option = {}) => {
 	</button>`;
 };
 
-export function activatedBtn(obj, activate = true) {
+export const activatedBtn = async (obj, activate = true) => {
   if (activate) {
     obj.find(".btn-loader").removeClass("hidden").addClass("flex");
     obj.find(".btn-name").addClass("hidden");
@@ -203,9 +203,9 @@ export function activatedBtn(obj, activate = true) {
     obj.prop("disabled", false);
   }
   return;
-}
+};
 
-export const intVal = function (i) {
+export const intVal = async (i) => {
   return typeof i === "string"
     ? i.replace(/[\$,]/g, "") * 1
     : typeof i === "number"
@@ -213,7 +213,7 @@ export const intVal = function (i) {
     : 0;
 };
 
-export const digits = function (n, digit) {
+export const digits = async (n, digit) => {
   var str = "";
   n = intVal(n);
   if (digit > 0) {
@@ -280,30 +280,6 @@ export const revision_code = (current) => {
     if (chars[i] != "A") break;
   }
   return chars.join("");
-};
-
-export const fileExtension = (fileName) => {
-  const dotIndex = fileName.lastIndexOf(".");
-  if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
-    return fileName.substring(dotIndex + 1);
-  } else {
-    return null;
-  }
-};
-
-export const fileIcons = () => {
-  return [
-    { ext: "xlsx", icon: `${process.env.APP_IMG}/fileicon/excel.png` },
-    { ext: "csv", icon: `${process.env.APP_IMG}/fileicon/excel.png` },
-    { ext: "docx", icon: `${process.env.APP_IMG}/fileicon/word.png` },
-    { ext: "pptx", icon: `${process.env.APP_IMG}/fileicon/powerpoint.png` },
-    { ext: "pdf", icon: `${process.env.APP_IMG}/fileicon/pdf.png` },
-    { ext: "txt", icon: `${process.env.APP_IMG}/fileicon/txt-file.png` },
-    { ext: "dwg", icon: `${process.env.APP_IMG}/fileicon/dwg-extension.png` },
-    { ext: "tiff", icon: `${process.env.APP_IMG}/fileicon/dwg-extension.png` },
-    { ext: "jpg", icon: `${process.env.APP_IMG}/fileicon/jpg.png` },
-    { ext: "png", icon: `${process.env.APP_IMG}/fileicon/png.png` },
-  ];
 };
 
 export const setInquiryNo = (val) => {
@@ -382,3 +358,28 @@ export async function userInfo() {
     group: user.attr("groupcode"),
   };
 }
+
+// File Functions
+export const fileExtension = (fileName) => {
+  const dotIndex = fileName.lastIndexOf(".");
+  if (dotIndex !== -1 && dotIndex < fileName.length - 1) {
+    return fileName.substring(dotIndex + 1);
+  } else {
+    return null;
+  }
+};
+
+export const fileIcons = () => {
+  return [
+    { ext: "xlsx", icon: `${process.env.APP_IMG}/fileicon/excel.png` },
+    { ext: "csv", icon: `${process.env.APP_IMG}/fileicon/excel.png` },
+    { ext: "docx", icon: `${process.env.APP_IMG}/fileicon/word.png` },
+    { ext: "pptx", icon: `${process.env.APP_IMG}/fileicon/powerpoint.png` },
+    { ext: "pdf", icon: `${process.env.APP_IMG}/fileicon/pdf.png` },
+    { ext: "txt", icon: `${process.env.APP_IMG}/fileicon/txt-file.png` },
+    { ext: "dwg", icon: `${process.env.APP_IMG}/fileicon/dwg-extension.png` },
+    { ext: "tiff", icon: `${process.env.APP_IMG}/fileicon/dwg-extension.png` },
+    { ext: "jpg", icon: `${process.env.APP_IMG}/fileicon/jpg.png` },
+    { ext: "png", icon: `${process.env.APP_IMG}/fileicon/png.png` },
+  ];
+};

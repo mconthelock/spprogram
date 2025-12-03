@@ -1,10 +1,12 @@
-import * as utils from "../utils.js";
 import { createTable } from "@public/_dataTable.js";
+import { getTemplate, exportExcel } from "../service/excel";
+import * as utils from "../utils.js";
 import {
   getControl,
   getShipments,
   getQuotationType,
   getDeliveryTerm,
+  updateController,
 } from "../service/master.js";
 
 var table;
@@ -25,8 +27,6 @@ $(document).ready(async () => {
 async function tableOpt(data) {
   const quotype = await getQuotationType();
   const shipments = await getShipments();
-  console.log(shipments);
-
   const terms = await getDeliveryTerm();
   const opt = { ...utils.tableOpt };
   opt.order = [
@@ -56,7 +56,7 @@ async function tableOpt(data) {
               item.QUOTYPE_ID == data ? "selected" : ""
             }>${item.QUOTYPE_DESC}</option>`;
           });
-          return `<select class="select select-bordered w-full max-w-xs text-xs quotation-type">${str}
+          return `<select class="select select-bordered w-full text-xs edit-val" name="CNT_QUOTATION">${str}
           </select>
           `;
         }
@@ -75,7 +75,7 @@ async function tableOpt(data) {
               item.TERM_ID == data ? "selected" : ""
             }>${item.TERM_DESC}</option>`;
           });
-          return `<select class="select select-bordered w-full max-w-xs text-xs delivery-term">${str}
+          return `<select class="select select-bordered w-full text-xs edit-val" name="CNT_TERM">${str}
             </select>
             `;
         }
@@ -94,7 +94,7 @@ async function tableOpt(data) {
               item.SHIPMENT_ID == data ? "selected" : ""
             }>${item.SHIPMENT_DESC}</option>`;
           });
-          return `<select class="select select-bordered w-full max-w-xs text-xs delivery-term">${str}
+          return `<select class="select select-bordered w-full max-w-xs text-xs edit-val" name="CNT_METHOD">${str}
             </select>
             `;
         }
@@ -108,7 +108,9 @@ async function tableOpt(data) {
       sortable: false,
       render: (data, type, row) => {
         if (row.isNew !== undefined) {
-          return `<input type="checkbox" checked="checked" class="checkbox checkbox-primary justify-center" />`;
+          return `<div class="flex justify-center"><input type="checkbox" class="checkbox checkbox-primary text-white edit-val" name="CNT_WEIGHT" ${
+            data == 1 ? "checked" : ""
+          } /></div>`;
         }
         return data == 1
           ? `<i class="fi fi-rr-check-circle text-xl text-success justify-center"></i>`
@@ -161,9 +163,58 @@ $(document).on("click", ".edit-row", async function () {
   }
 });
 
+$(document).on("click", ".save-row", async function (e) {
+  e.preventDefault();
+  try {
+    const row = table.row($(this).closest("tr"));
+    const rowData = row.data();
+    console.log(rowData);
+
+    const $tr = $(this).closest("tr");
+    const formdata = $tr.find(".edit-val").serializeArray();
+    formdata.forEach((item) => {
+      if (item.name === "CNT_WEIGHT") {
+        rowData[item.name] = 1;
+      } else {
+        rowData[item.name] = item.value;
+      }
+    });
+
+    const saveData = await updateController(rowData);
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  } finally {
+    await utils.showLoader({ show: false });
+  }
+});
+
 $(document).on("click", "#export-btn", async function (e) {
   e.preventDefault();
   try {
+    const data = table.data().toArray();
+    const quotype = await getQuotationType();
+    const shipments = await getShipments();
+    const terms = await getDeliveryTerm();
+
+    // Merge quotation type, shipments, and delivery terms descriptions into data
+    const mergedData = data.map((item) => {
+      const quotation = quotype.find((q) => q.QUOTYPE_ID == item.CNT_QUOTATION);
+      const shipment = shipments.find((s) => s.SHIPMENT_ID == item.CNT_METHOD);
+      const term = terms.find((t) => t.TERM_ID == item.CNT_TERM);
+      return {
+        ...item,
+        QUOTATION_DESC: quotation?.QUOTYPE_DESC || "",
+        SHIPMENT_DESC: shipment?.SHIPMENT_DESC || "",
+        TERM_DESC: term?.TERM_DESC || "",
+        CNT_WEIGHT: item.CNT_WEIGHT == 1 ? "Yes" : "No",
+      };
+    });
+
+    const template = await getTemplate("export_inquiry_controller.xlsx");
+    await exportExcel(mergedData, template, {
+      filename: "Inquiry_Controller.xlsx",
+    });
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
