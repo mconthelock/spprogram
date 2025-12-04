@@ -198,12 +198,13 @@ export const getControl = async () => {
   });
 };
 
-export const updateController = async () => {
+export const updateController = async (data) => {
   return new Promise((resolve, reject) => {
     $.ajax({
-      url: `${process.env.APP_API}/sp/controler/`,
+      url: `${process.env.APP_API}/sp/controler/update/`,
       type: "POST",
       dataType: "json",
+      data: data,
       success: function (response) {
         resolve(response);
       },

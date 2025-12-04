@@ -168,19 +168,23 @@ $(document).on("click", ".save-row", async function (e) {
   try {
     const row = table.row($(this).closest("tr"));
     const rowData = row.data();
-    console.log(rowData);
-
     const $tr = $(this).closest("tr");
     const formdata = $tr.find(".edit-val").serializeArray();
+    let isWeight = false;
     formdata.forEach((item) => {
       if (item.name === "CNT_WEIGHT") {
         rowData[item.name] = 1;
+        isWeight = true;
       } else {
         rowData[item.name] = item.value;
       }
     });
 
+    if (!isWeight) {
+      rowData["CNT_WEIGHT"] = 0;
+    }
     const saveData = await updateController(rowData);
+    table.row(row).data(saveData).draw();
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
