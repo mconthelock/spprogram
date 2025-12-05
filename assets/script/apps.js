@@ -2,8 +2,14 @@ import "@flaticon/flaticon-uicons/css/all/all.css";
 import moment from "moment";
 
 $(document).on("click", ".msg-close", function (e) {
-  const msgbox = $(this).closest(".alert");
-  msgbox.remove();
+  e.preventDefault();
+  //   console.log("Close");
+  const alertBox = $(this).closest(".alert");
+  alertBox.removeClass("opacity-100");
+  alertBox.addClass("opacity-0");
+  setTimeout(() => {
+    alertBox.remove();
+  }, 700);
 });
 
 $(document).on("click", ".mainmenu summary", function () {

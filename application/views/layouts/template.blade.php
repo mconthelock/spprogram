@@ -88,10 +88,7 @@
         </div>
     </dialog>
 
-    <div class="toast toast-end z-[1099] alert-message w-80 max-w-80 transition-all duration-500 ease-in-out"
-        id="toast-message">
-    </div>
-
+    <div class="toast toast-end z-50 min-w-80" id="toast-alert"></div>
     <script src="{{ $_ENV['APP_JS'] }}/apps.js?ver={{ $GLOBALS['version'] }}"></script>
     @section('scripts')
     @show

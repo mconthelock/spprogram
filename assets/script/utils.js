@@ -23,7 +23,7 @@ export const initApp = async (opt = {}) => {
   return;
 };
 
-export const showMessage = async (msg, type = "error") => {
+export function showMessage(msg, opt = { type: "error" }) {
   const prop = [
     {
       id: "error",
@@ -37,7 +37,7 @@ export const showMessage = async (msg, type = "error") => {
       bg: "bg-green-800",
       text: "text-white",
       title: "Processing completed!",
-      icon: `<i class="fi fi-tr-not-found"></i>`,
+      icon: `<i class="fi fi-tr-badget-check-alt"></i>`,
     },
     {
       id: "info",
@@ -54,41 +54,49 @@ export const showMessage = async (msg, type = "error") => {
       icon: `<i class="fi fi-tr-not-found"></i>`,
     },
   ];
-  const dt = prop.find((x) => x.id == type);
-  const toast = `<div class="alert flex flex-col gap-2 overflow-hidden relative ${dt.bg} transition-all duration-1000 ease-in-out">
-        <div class="msg-title text-xl font-semibold block w-full text-left ${dt.text}">${dt.title}</div>
-        <div class="msg-txt block w-full text-left max-w-80 text-wrap ${dt.text}">${msg}</div>
+  const dt = prop.find((x) => x.id == opt.type);
+  const option = { ...dt, ...opt };
+  const toast = `<div class="alert flex flex-col gap-2 overflow-hidden relative ${option.bg} transition-all duration-1000 ease-in-out">
+        <div class="msg-title text-xl font-semibold block w-full text-left ${option.text}">${option.title}</div>
+        <div class="msg-txt block w-full text-left max-w-80 text-wrap ${option.text}">${msg}</div>
         <div class="absolute right-[-10px] top-[0px] text-[120px] z-0 opacity-20">
-            ${dt.icon}
+            ${option.icon}
         </div>
         <div class="absolute right-[10px] top-[10px] text-md z-0">
             <button class="msg-close btn btn-sm btn-ghost btn-circle hover:bg-transparent">X</button>
         </div>
     </div>`;
-  $("#toast-message").append(toast);
+  $("#toast-alert").append(toast);
   setTimeout(() => {
-    $(".msg-close").click();
-  }, 8000);
-};
+    //console.log($(toast).find(".msg-close").length);
+    $("#toast-alert").find(".alert:last .msg-close").click();
+  }, 5000);
+}
 
-export const errorMessage = async (error) => {
-  if (error.responseJSON) {
-    const message = error.responseJSON.message;
-    if (typeof message == "string") {
-      await showMessage(message);
+export const errorMessage = async function (error) {
+  try {
+    let str = `<ul class="list-disc ml-5">`;
+    const respose = error.responseJSON;
+    const title = respose.message.error;
+    if (typeof respose.message.message === "string") {
+      str += `<li>${respose.message.message}</li>`;
+      str += `</ul>`;
+      await showMessage(str, { type: "error", title });
       return;
     }
-    let msg = ``;
-    error.responseJSON.message.map((val) => {
-      for (const [key, value] of Object.entries(val)) {
-        msg += `<li>${value}</li>`;
+
+    for (const [key, value] of Object.entries(respose.message.message)) {
+      for (const [k, val] of Object.entries(value)) {
+        str += `<li>${val}</li>`;
       }
-    });
-    await showMessage(msg);
+    }
+    str += `</ul>`;
+    await showMessage(str, { type: "error", title });
     return;
-  } else {
-    console.log(error.message);
-    await showMessage(error.message);
+  } catch (e) {
+    console.log(e);
+    showMessage("An unexpected error occurred.");
+    return;
   }
 };
 
@@ -155,7 +163,7 @@ export const showConfirm = (
   }
 };
 
-export const creatBtn = async (option = {}) => {
+export const creatBtn = (option = {}) => {
   const opt = {
     id: "btn-save",
     title: "Save Changes",
@@ -192,7 +200,7 @@ export const creatBtn = async (option = {}) => {
 	</button>`;
 };
 
-export const activatedBtn = async (obj, activate = true) => {
+export const activatedBtn = (obj, activate = true) => {
   if (activate) {
     obj.find(".btn-loader").removeClass("hidden").addClass("flex");
     obj.find(".btn-name").addClass("hidden");
@@ -205,7 +213,7 @@ export const activatedBtn = async (obj, activate = true) => {
   return;
 };
 
-export const intVal = async (i) => {
+export const intVal = (i) => {
   return typeof i === "string"
     ? i.replace(/[\$,]/g, "") * 1
     : typeof i === "number"
@@ -213,7 +221,7 @@ export const intVal = async (i) => {
     : 0;
 };
 
-export const digits = async (n, digit) => {
+export const digits = (n, digit) => {
   var str = "";
   n = intVal(n);
   if (digit > 0) {

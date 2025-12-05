@@ -35,9 +35,9 @@ async function tableOpt(data) {
   const trader = data.map((val) => val.TRADER);
   const currency = data.map((val) => val.CURRENCY);
 
-  const opt = utils.tableOpt;
+  const opt = { ...utils.tableOpt };
   opt.data = data;
-  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
+  opt.order = [[0, "asc"]];
   opt.columns = [
     { data: "ID", className: "hidden" },
     {
@@ -58,7 +58,6 @@ async function tableOpt(data) {
         return row.isNew !== undefined ? "" : data.QUOTYPE_DESC;
       },
     },
-
     {
       data: "TRADER",
       className: "text-nowrap",
@@ -286,7 +285,7 @@ $(document).on("click", ".save-row", async function (e) {
       if (val == "" || val == null || val == 0) isBlank = true;
     });
   if (isBlank) {
-    showMessage(`Please fill all required field.`);
+    utils.showMessage(`Please fill all required field.`, { type: "warning" });
     return;
   }
   //Save Quotation Type
@@ -303,7 +302,8 @@ $(document).on("click", ".save-row", async function (e) {
       const res = await createQuotationType(quoTypeVal);
       data.quotype = res.QUOTYPE_ID;
     } catch (error) {
-      await errorMessage(error);
+      console.log(error);
+      await utils.errorMessage(error);
     }
   }
 
@@ -325,7 +325,8 @@ $(document).on("click", ".save-row", async function (e) {
     row.data(result[0]);
     row.draw(false);
   } catch (error) {
-    await errorMessage(error);
+    console.log(error);
+    await utils.errorMessage(error);
   }
 });
 
@@ -364,8 +365,8 @@ $(document).on("click", "#export-list", async function (e) {
   data.forEach((val) => {
     val.statusText = val.STATUS == 1 ? "Active" : "Inactive";
   });
-  const template = await getExportTemplate({
-    name: "Import_price_ratio_template.xlsx",
+  const template = await getTemplate("export_priceratio.xlsx");
+  await exportExcel(mergedData, template, {
+    filename: "priceratio.xlsx",
   });
-  await exportExcel(data, template, "price_ratio_list.xlsx");
 });
