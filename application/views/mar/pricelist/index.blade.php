@@ -13,16 +13,21 @@
                 <th rowspan="2">Variable</th>
                 <th rowspan="2">Class</th>
                 <th rowspan="2">Unit</th>
-                <th colspan="3" id="current-period"></th>
-                <th colspan="3" id="last-period"></th>
+                <th rowspan="2">Curency</th>
+                <th colspan="5" id="current-period"></th>
+                <th colspan="5" id="last-period"></th>
             </tr>
             <tr>
                 <th>Factory Cost</th>
-                <th>%</th>
+                <th>%FC</th>
                 <th>Total Cost</th>
+                <th>%TC</th>
+                <th>Unit Price</th>
                 <th>Factory Cost</th>
-                <th>%</th>
+                <th>%FC</th>
                 <th>Total Cost</th>
+                <th>%TC</th>
+                <th>Unit Price</th>
             </tr>
         </thead>
     </table>

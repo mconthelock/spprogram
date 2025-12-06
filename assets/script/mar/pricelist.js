@@ -6,14 +6,14 @@ import * as utils from "../utils.js";
 import { createTable } from "@public/_dataTable.js";
 import { setSelect2 } from "@public/_select2.js";
 import { getItems, currentPeriod } from "../service/items.js";
-// import * as service from "../service/pricelist.js";
+import { findPriceRatio } from "../service/master.js";
 import { getCustomer } from "../service/customers.js";
 
 var table;
 $(async function () {
   try {
     await utils.initApp({ submenu: ".navmenu-price" });
-    const data = await getItems();
+    const data = await setData();
     const opt = await tableOpt(data);
     table = await createTable(opt);
     // const customers = await cus.getCustomer();
@@ -33,7 +33,25 @@ $(async function () {
 
 async function setData() {
   const items = await getItems();
-  console.log(data);
+  const customers = await getCustomer();
+  const customer = customers.find(
+    (cus) => cus.CUS_ID == $("#selected-customer").val()
+  );
+  const selected = $("#selected-customer").val();
+  const ratio = await findPriceRatio({
+    SUPPLIER: "AMEC",
+    TRADER: "Direct",
+    QUOTATION: customer.CUS_QUOTATION,
+  });
+  const data = items
+    .filter((item) => {
+      return item.itemscustomer.some((cus) => cus.CUSTOMER_ID == selected);
+    })
+    .map((item) => ({
+      ...item,
+      ratio: ratio,
+    }));
+  return data;
 }
 
 async function tableOpt(data) {
@@ -55,11 +73,18 @@ async function tableOpt(data) {
     },
     { data: "ITEM_CLASS" },
     { data: "ITEM_UNIT" },
+    {
+      data: "ITEM_ID",
+      render: (data, type, row) => {
+        return row.ratio !== null ? row.ratio[0].CURRENCY : "-";
+      },
+    },
     //Current pepiod
     {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
+        //FC Cost
         const current = period.current;
         const price = row.prices.find(
           (p) =>
@@ -76,6 +101,7 @@ async function tableOpt(data) {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
+        //FC Base
         const current = period.current;
         const price = row.prices.find(
           (p) =>
@@ -92,6 +118,7 @@ async function tableOpt(data) {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
+        //TC Cost
         const current = period.current;
         const price = row.prices.find(
           (p) =>
@@ -104,6 +131,35 @@ async function tableOpt(data) {
         return pricePeriod;
       },
     },
+    {
+      data: "ITEM_ID",
+      className: "border-l bg-primary/10",
+      render: (data, type, row) => {
+        //Ratio
+        return row.ratio !== null ? utils.digits(row.ratio[0].FORMULA, 2) : "-";
+      },
+    },
+
+    {
+      data: "ITEM_ID",
+      className: "border-l bg-primary/10",
+      render: (data, type, row) => {
+        //TC Cost
+        const current = period.current;
+        const price = row.prices.find(
+          (p) =>
+            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
+        );
+        let pricePeriod = "-";
+        if (price !== undefined) {
+          const ratio = row.ratio !== null ? row.ratio[0].FORMULA : 1;
+          const tccost = Math.ceil(price.TCCOST * ratio);
+          pricePeriod = utils.digits(tccost);
+        }
+        return pricePeriod;
+      },
+    },
+
     //Last pepiod
     {
       data: "ITEM_ID",
@@ -153,6 +209,15 @@ async function tableOpt(data) {
         return pricePeriod;
       },
     },
+    {
+      data: "ITEM_ID",
+      className: "border-l bg-accent/10",
+    },
+
+    {
+      data: "ITEM_ID",
+      className: "border-l bg-accent/10",
+    },
   ];
 
   opt.initComplete = async function () {
@@ -168,10 +233,13 @@ async function tableOpt(data) {
     $(".table-option").html(`
       <div class="flex items-center gap-3">
         <label for="selected-customer" class="whitespace-nowrap font-semibold">Customer:</label>
-        <select class="s2 select select2-sm">${cusSelect}</select>
+        <select id="customer-option" class="s2 select select2-sm">${cusSelect}</select>
       </div>
     `);
-    await setSelect2();
+    //await setSelect2();
+    // $("#customer-option").on("change", function () {
+    //   alert($(this).val());
+    // });
     // Table Footer Buttons
     const export1 = await utils.creatBtn({
       id: "export1",
@@ -192,3 +260,8 @@ async function tableOpt(data) {
   };
   return opt;
 }
+
+$(document).on("change", "#customer-option", function () {
+  const cus = $(this).val();
+  window.location.href = `${process.env.APP_ENV}/mar/price/index/${cus}`;
+});
