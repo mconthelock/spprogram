@@ -37,7 +37,6 @@ async function tableOpt(data) {
     [1, "desc"],
   ];
   opt.data = data;
-  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option">><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-auto"t><"flex my-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
   opt.columns = [
     {
       data: "CURR_YEAR",

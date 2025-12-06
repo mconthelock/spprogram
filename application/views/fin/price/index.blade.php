@@ -19,7 +19,6 @@
                 <th>Factory Cost</th>
                 <th>%</th>
                 <th>Total Cost</th>
-
                 <th>Factory Cost</th>
                 <th>%</th>
                 <th>Total Cost</th>

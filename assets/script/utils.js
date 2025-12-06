@@ -349,10 +349,14 @@ export const foundError = async (error) => {
 export const displayname = (val) => {
   if (val == null) return "";
   const fullname = val.toLowerCase();
-  const name = fullname.split(/\s+/);
+  const name = fullname.split(/\s+/).filter((n) => n.length > 0);
+  if (name.length === 0) return { sname: "", fname: "", lname: "" };
   const fname = name[0].charAt(0).toUpperCase() + name[0].slice(1);
-  const lname = name[1].charAt(0).toUpperCase() + name[1].slice(1);
-  return { sname: `${fname} ${lname}`, fname, lname };
+  const lname =
+    name[1] && name[1].length > 0
+      ? name[1].charAt(0).toUpperCase() + name[1].slice(1)
+      : "";
+  return { sname: `${fname}${lname ? " " + lname : ""}`.trim(), fname, lname };
 };
 
 export async function userInfo() {

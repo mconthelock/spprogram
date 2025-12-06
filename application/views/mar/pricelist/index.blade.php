@@ -4,19 +4,25 @@
     <input type="text" id="selected-customer" value="{{ $customer }}">
     <h2 class="card-title text-2xl" id="page-title">Price List</h2>
     <div class="divider m-0"></div>
-    <table id="table" class="table table-zebra display text-xs">
+    <table id="table" class="table table-zebra display text-xs table-second">
         <thead>
             <tr>
-                <th rowspan="2">Customer</th>
-                <th rowspan="2">Agent</th>
-                <th rowspan="2">Country</th>
                 <th rowspan="2">Item</th>
-                <th colspan="3">FY 2025</th>
+                <th rowspan="2">Part Name</th>
+                <th rowspan="2">Drawing</th>
+                <th rowspan="2">Variable</th>
+                <th rowspan="2">Class</th>
+                <th rowspan="2">Unit</th>
+                <th colspan="3" id="current-period"></th>
+                <th colspan="3" id="last-period"></th>
             </tr>
             <tr>
-                <th>FC</th>
-                <th>Base</th>
-                <th>TC</th>
+                <th>Factory Cost</th>
+                <th>%</th>
+                <th>Total Cost</th>
+                <th>Factory Cost</th>
+                <th>%</th>
+                <th>Total Cost</th>
             </tr>
         </thead>
     </table>
