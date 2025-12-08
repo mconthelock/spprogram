@@ -36,3 +36,39 @@
 @section('scripts')
     <script src="{{ $_ENV['APP_JS'] }}/mar_pricelist.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection
+
+@section('styles')
+    <style>
+        .price-up,
+        .price-down {
+            animation: price-move 1s ease-in-out;
+        }
+
+        .price-down::before,
+        .price-up::before {
+            position: absolute;
+            left: 5px;
+            font-weight: bold;
+        }
+
+        .price-up::before {
+            content: "↑";
+            color: green;
+        }
+
+        .price-down::before {
+            content: "↓";
+            color: red;
+        }
+
+        @keyframes price-move {
+            0% {
+                background-color: #fbbf24;
+            }
+
+            100% {
+                background-color: transparent;
+            }
+        }
+    </style>
+@endsection

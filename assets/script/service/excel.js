@@ -37,7 +37,7 @@ export const exportExcel = async (data, template, options = {}) => {
       str = i + opt.rowstart;
       if (str > opt.rowstart + 1) {
         cloneRows(sheet, row1, str);
-        row1 = str % 2 == 0 ? opt.rowstart + 1 : opt.rowstart;
+        row1 = str % 2 == 0 ? opt.rowstart : opt.rowstart + 1;
       }
 
       for (let j = 1; j <= colCount; j++) {

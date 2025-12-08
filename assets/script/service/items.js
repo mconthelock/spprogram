@@ -121,7 +121,7 @@ export const getItemsCustomer = async (data) => {
 };
 
 export async function currentPeriod() {
-  const cyear = dayjs().year() - 2;
+  const cyear = dayjs().year();
   const month = dayjs().month() + 1;
   if (month >= 4 && month <= 9) {
     return {

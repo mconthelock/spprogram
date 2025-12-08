@@ -4,6 +4,7 @@ import "@styles/datatable.min.css";
 
 import * as utils from "../utils.js";
 import { createTable } from "@public/_dataTable.js";
+import { getTemplate, exportExcel } from "../service/excel";
 import { setSelect2 } from "@public/_select2.js";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
@@ -34,6 +35,7 @@ $(async function () {
 async function setData() {
   const items = await getItems();
   const customers = await getCustomer();
+  const period = await currentPeriod();
   const customer = customers.find(
     (cus) => cus.CUS_ID == $("#selected-customer").val()
   );
@@ -47,31 +49,46 @@ async function setData() {
     .filter((item) => {
       return item.itemscustomer.some((cus) => cus.CUSTOMER_ID == selected);
     })
-    .map((item) => ({
-      ...item,
-      ratio: ratio,
-    }));
+    .map((item) => {
+      const current = period.current;
+      const currentprice = item.prices.find(
+        (p) => p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
+      );
+
+      const last = period.last;
+      const lastprice = item.prices.find(
+        (p) => p.FYYEAR == last.year && parseInt(p.PERIOD) == last.period
+      );
+      return {
+        ...item,
+        customer: customer,
+        currentprice: currentprice,
+        lastprice: lastprice,
+        ratio: ratio,
+      };
+    });
   return data;
 }
 
 async function tableOpt(data) {
+  console.log(data);
   const period = await currentPeriod();
   $("#current-period").text(`${period.current.year}-${period.current.period}H`);
   $("#last-period").text(`${period.last.year}-${period.last.period}H`);
   const opt = { ...utils.tableOpt };
-  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
+  opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
   opt.data = data;
   opt.order = [[0, "asc"]];
-  opt.pageLength = 25;
+  opt.pageLength = 15;
   opt.columns = [
-    { data: "ITEM_NO" },
-    { data: "ITEM_NAME", className: "max-w-[175px]" },
-    { data: "ITEM_DWG", className: "max-w-[175px]" },
+    { data: "ITEM_NO", className: "sticky-column" },
+    { data: "ITEM_NAME", className: "w-[175px] min-w-[175px] sticky-column" },
+    { data: "ITEM_DWG", className: "w-[225px] min-w-[225px] sticky-column" },
     {
       data: "ITEM_VARIABLE",
-      className: "max-w-[175px] break-all",
+      className: "min-w-[225px] max-w-[225px] break-all",
     },
-    { data: "ITEM_CLASS" },
+    { data: "ITEM_CLASS", className: "text-nowrap" },
     { data: "ITEM_UNIT" },
     {
       data: "ITEM_ID",
@@ -84,79 +101,43 @@ async function tableOpt(data) {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
-        //FC Cost
-        const current = period.current;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          pricePeriod = utils.digits(price.FCCOST);
-        }
-        return pricePeriod;
+        if (row.currentprice === undefined) return "-";
+        return utils.digits(row.currentprice.FCCOST);
       },
     },
     {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
-        //FC Base
-        const current = period.current;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          pricePeriod = utils.digits(price.FCBASE, 2);
-        }
-        return pricePeriod;
+        if (row.currentprice === undefined) return "-";
+        return utils.digits(row.currentprice.FCBASE, 2);
       },
     },
     {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
-        //TC Cost
-        const current = period.current;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          pricePeriod = utils.digits(price.TCCOST);
-        }
-        return pricePeriod;
+        if (row.currentprice === undefined) return "-";
+        return utils.digits(row.currentprice.TCCOST);
       },
     },
     {
       data: "ITEM_ID",
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
-        //Ratio
+        if (row.currentprice === undefined) return "-";
         return row.ratio !== null ? utils.digits(row.ratio[0].FORMULA, 2) : "-";
       },
     },
 
     {
       data: "ITEM_ID",
-      className: "border-l bg-primary/10",
+      className: "border-l bg-primary/10 relative price-move",
       render: (data, type, row) => {
-        //TC Cost
-        const current = period.current;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          const ratio = row.ratio !== null ? row.ratio[0].FORMULA : 1;
-          const tccost = Math.ceil(price.TCCOST * ratio);
-          pricePeriod = utils.digits(tccost);
-        }
-        return pricePeriod;
+        if (row.currentprice === undefined) return "-";
+        const ratio = row.ratio !== null ? row.ratio[0].FORMULA : 1;
+        const tccost = Math.ceil(row.currentprice.TCCOST * ratio);
+        return utils.digits(tccost);
       },
     },
 
@@ -165,60 +146,67 @@ async function tableOpt(data) {
       data: "ITEM_ID",
       className: "border-l bg-accent/10",
       render: (data, type, row) => {
-        const current = period.last;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          pricePeriod = utils.digits(price.FCCOST);
-        }
-        return pricePeriod;
+        if (row.lastprice === undefined) return "-";
+        return utils.digits(row.lastprice.FCCOST);
       },
     },
     {
       data: "ITEM_ID",
       className: "border-l bg-accent/10",
       render: (data, type, row) => {
-        const current = period.last;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          pricePeriod = utils.digits(price.FCBASE, 2);
-        }
-        return pricePeriod;
+        if (row.lastprice === undefined) return "-";
+        return utils.digits(row.lastprice.FCBASE, 2);
       },
     },
     {
       data: "ITEM_ID",
       className: "border-l bg-accent/10",
       render: (data, type, row) => {
-        const current = period.last;
-        const price = row.prices.find(
-          (p) =>
-            p.FYYEAR == current.year && parseInt(p.PERIOD) == current.period
-        );
-        let pricePeriod = "-";
-        if (price !== undefined) {
-          pricePeriod = utils.digits(price.TCCOST);
-        }
-        return pricePeriod;
+        if (row.lastprice === undefined) return "-";
+        return utils.digits(row.lastprice.TCCOST);
       },
     },
     {
       data: "ITEM_ID",
       className: "border-l bg-accent/10",
+      render: (data, type, row) => {
+        if (row.lastprice === undefined) return "-";
+        return row.ratio !== null ? utils.digits(row.ratio[0].FORMULA, 2) : "-";
+      },
     },
 
     {
       data: "ITEM_ID",
       className: "border-l bg-accent/10",
+      render: (data, type, row) => {
+        if (row.lastprice === undefined) return "-";
+        const ratio = row.ratio !== null ? row.ratio[0].FORMULA : 1;
+        const tccost = Math.ceil(row.lastprice.TCCOST * ratio);
+        return utils.digits(tccost);
+      },
     },
   ];
+
+  opt.createdRow = function (row, data, dataIndex) {
+    if (data.currentprice == undefined && data.lastprice == undefined) {
+      console.log(data);
+      $(row).remove();
+    }
+
+    if (data.ITEM_STATUS == 0) {
+      $(row).addClass("bg-red-100!");
+    }
+
+    if (data.currentprice != undefined && data.lastprice != undefined) {
+      if (data.currentprice.TCCOST < data.lastprice.TCCOST) {
+        $(row).find("td").eq(11).addClass("price-down");
+      }
+
+      if (data.currentprice.TCCOST > data.lastprice.TCCOST) {
+        $(row).find("td").eq(11).addClass("price-up");
+      }
+    }
+  };
 
   opt.initComplete = async function () {
     //Table Right Options
@@ -236,13 +224,9 @@ async function tableOpt(data) {
         <select id="customer-option" class="s2 select select2-sm">${cusSelect}</select>
       </div>
     `);
-    //await setSelect2();
-    // $("#customer-option").on("change", function () {
-    //   alert($(this).val());
-    // });
     // Table Footer Buttons
     const export1 = await utils.creatBtn({
-      id: "export1",
+      id: "export-btn",
       title: "Export",
       icon: "fi fi-tr-file-excel text-xl",
       className: `bg-accent text-white hover:shadow-lg`,
@@ -264,4 +248,19 @@ async function tableOpt(data) {
 $(document).on("change", "#customer-option", function () {
   const cus = $(this).val();
   window.location.href = `${process.env.APP_ENV}/mar/price/index/${cus}`;
+});
+
+$(document).on("click", "#export-btn", async function (e) {
+  e.preventDefault();
+  try {
+    const template = await getTemplate("export_price_for_mar.xlsx");
+    const data = table.rows().data().toArray();
+    await exportExcel(data, template, {
+      filename: "Price List.xlsx",
+      rowstart: 3,
+    });
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  }
 });
