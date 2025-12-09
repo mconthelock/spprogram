@@ -17,13 +17,6 @@ $(async function () {
     const data = await setData();
     const opt = await tableOpt(data);
     table = await createTable(opt);
-    // const customers = await cus.getCustomer();
-    // const selected = $("#selected-customer").val();
-    // const customer = customers.find((cus) => cus.CUS_ID == selected);
-    // $("#page-title").html(`Price List for ${customer.CUS_DISPLAY}`);
-    // const pricelistdata = await service.getPriceList();
-    // const tbopt = await tableOpt(pricelistdata, customers, selected);
-    // table = await createTable(tbopt);
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
@@ -64,7 +57,7 @@ async function setData() {
         customer: customer,
         currentprice: currentprice,
         lastprice: lastprice,
-        ratio: ratio,
+        ratio: ratio[0] || null,
       };
     });
   return data;
@@ -93,7 +86,7 @@ async function tableOpt(data) {
     {
       data: "ITEM_ID",
       render: (data, type, row) => {
-        return row.ratio !== null ? row.ratio[0].CURRENCY : "-";
+        return row.ratio !== null ? row.ratio.CURRENCY : "-";
       },
     },
     //Current pepiod
@@ -126,7 +119,7 @@ async function tableOpt(data) {
       className: "border-l bg-primary/10",
       render: (data, type, row) => {
         if (row.currentprice === undefined) return "-";
-        return row.ratio !== null ? utils.digits(row.ratio[0].FORMULA, 2) : "-";
+        return row.ratio !== null ? utils.digits(row.ratio.FORMULA, 2) : "-";
       },
     },
 
@@ -135,7 +128,7 @@ async function tableOpt(data) {
       className: "border-l bg-primary/10 relative price-move",
       render: (data, type, row) => {
         if (row.currentprice === undefined) return "-";
-        const ratio = row.ratio !== null ? row.ratio[0].FORMULA : 1;
+        const ratio = row.ratio !== null ? row.ratio.FORMULA : 1;
         const tccost = Math.ceil(row.currentprice.TCCOST * ratio);
         return utils.digits(tccost);
       },
@@ -171,16 +164,15 @@ async function tableOpt(data) {
       className: "border-l bg-accent/10",
       render: (data, type, row) => {
         if (row.lastprice === undefined) return "-";
-        return row.ratio !== null ? utils.digits(row.ratio[0].FORMULA, 2) : "-";
+        return row.ratio !== null ? utils.digits(row.ratio.FORMULA, 2) : "-";
       },
     },
-
     {
       data: "ITEM_ID",
       className: "border-l bg-accent/10",
       render: (data, type, row) => {
         if (row.lastprice === undefined) return "-";
-        const ratio = row.ratio !== null ? row.ratio[0].FORMULA : 1;
+        const ratio = row.ratio !== null ? row.ratio.FORMULA : 1;
         const tccost = Math.ceil(row.lastprice.TCCOST * ratio);
         return utils.digits(tccost);
       },
@@ -224,6 +216,7 @@ async function tableOpt(data) {
         <select id="customer-option" class="s2 select select2-sm">${cusSelect}</select>
       </div>
     `);
+    await setSelect2("#customer-option");
     // Table Footer Buttons
     const export1 = await utils.creatBtn({
       id: "export-btn",
@@ -258,6 +251,10 @@ $(document).on("click", "#export-btn", async function (e) {
     await exportExcel(data, template, {
       filename: "Price List.xlsx",
       rowstart: 3,
+      static: [
+        { cols: "K1", text: $("#current-period").text() },
+        { cols: "P1", text: $("#last-period").text() },
+      ],
     });
   } catch (error) {
     console.log(error);

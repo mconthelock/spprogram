@@ -112,6 +112,7 @@ module.exports = {
       "@root": path.resolve(__dirname, "../form/assets/script"),
       "@public": path.resolve(__dirname, "../form/assets/script/public/v1.0.3"),
       "@styles": path.resolve(__dirname, "../form/assets/dist/css"),
+      jquery$: path.resolve(__dirname, "node_modules/jquery/src/jquery"),
     },
   },
   cache:

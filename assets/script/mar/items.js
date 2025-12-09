@@ -1,10 +1,9 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
 import "@styles/datatable.min.css";
-import moment from "moment";
-import ExcelJS from "exceljs";
 
 import { createTable } from "@public/_dataTable.js";
+import { getTemplate, exportExcel } from "../service/excel";
 import * as items from "../service/items.js";
 import * as utils from "../utils.js";
 var table;
@@ -24,8 +23,10 @@ $(async function () {
 });
 
 async function tableOpt(data) {
+  const result = data.filter((item) => item.category !== null);
   const opt = utils.tableOpt;
-  opt.data = data;
+  opt.data = result;
+  opt.pageLength = 15;
   opt.order = [[0, "asc"]];
   opt.columns = [
     { data: "ITEM_NO", title: "Item" },
@@ -36,11 +37,9 @@ async function tableOpt(data) {
       title: "Variable",
       className: "max-w-[175px] break-all",
     },
-    // { data: "ITEM_TYPE", title: "Part Name" },
     { data: "ITEM_CLASS", title: "Class" },
     { data: "ITEM_UNIT", title: "Unit" },
     { data: "ITEM_SUPPLIER", title: "Supplier" },
-    // { data: "CATEGORY", title: "Part Name" },
     { data: "ITEM_REMARK", title: "Remark" },
     {
       data: "ITEM_STATUS",
@@ -56,6 +55,7 @@ async function tableOpt(data) {
       data: "ITEM_ID",
       title: `<div class="text-2xl w-full flex justify-center"><i class="fi fi-tr-pen-field"></i></div>`,
       className: "text-center",
+      sortable: false,
       render: (data, type, row) => {
         return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
         <div class="flex items-center justify-center gap-2">
@@ -87,7 +87,8 @@ async function tableOpt(data) {
       },
     },
   ];
-  opt.initComplete = function (settings, json) {
+
+  opt.initComplete = async function () {
     $(".table-option").append(
       `<a href="${process.env.APP_ENV}/mar/items/detail" class="btn btn-outline btn-primary hover:text-white">New Item</a>`
     );
@@ -97,7 +98,30 @@ async function tableOpt(data) {
             <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export Data</span>
         </button>
     </div>`);
-    $(".table-paging").addClass("flex-col gap-3");
+    // $(".table-paging").addClass("flex-col gap-3");
+    const export1 = await utils.creatBtn({
+      id: "export-btn",
+      title: "Export",
+      icon: "fi fi-tr-file-excel text-xl",
+      className: `bg-accent text-white hover:shadow-lg`,
+    });
+    $(".table-info").append(`<div class="flex gap-2">
+        ${export1}
+     </div>`);
   };
   return opt;
 }
+
+$(document).on("click", "#export-btn", async function (e) {
+  e.preventDefault();
+  try {
+    const template = await getTemplate("export_item_directsale.xlsx");
+    const data = table.rows().data().toArray();
+    await exportExcel(data, template, {
+      filename: "Price List Drawing.xlsx",
+    });
+  } catch (error) {
+    console.log(error);
+    await utils.errorMessage(error);
+  }
+});

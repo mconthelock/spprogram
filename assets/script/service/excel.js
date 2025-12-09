@@ -1,7 +1,7 @@
-import moment from "moment";
 import ExcelJS from "exceljs";
 import { exportFormat } from "./inquiry.js";
 import { ameccaledar } from "../utils.js";
+import dayjs from "dayjs";
 var daterange;
 
 export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
@@ -29,15 +29,17 @@ export const exportExcel = async (data, template, options = {}) => {
     const sheet_data = workbook.worksheets[1];
     const columns = await exportFormat(sheet_data);
     const sheet = workbook.worksheets[0];
-    let row1 = 0;
-    let str = 0;
-
     const colCount = sheet.columnCount;
+    const white = opt.rowstart;
+    const gray = opt.rowstart + 1;
+    let color = white;
+
+    let target = opt.rowstart;
     data.forEach(async (el, i) => {
-      str = i + opt.rowstart;
-      if (str > opt.rowstart + 1) {
-        cloneRows(sheet, row1, str);
-        row1 = str % 2 == 0 ? opt.rowstart : opt.rowstart + 1;
+      target = i + opt.rowstart;
+      if (target > opt.rowstart + 1) {
+        cloneRows(sheet, color, target);
+        color = i % 2 == 0 ? gray : white;
       }
 
       for (let j = 1; j <= colCount; j++) {
@@ -49,7 +51,7 @@ export const exportExcel = async (data, template, options = {}) => {
           const param = format[4] ? JSON.parse(format[4]) : {};
           value = eval(format[3])(el, param);
         } else if (format[2] == "Formula") {
-          value = { formula: format[3].replaceAll("{x}", str) };
+          value = { formula: format[3].replaceAll("{x}", target) };
         } else {
           if (format[3].includes(".")) {
             value = el;
@@ -63,17 +65,23 @@ export const exportExcel = async (data, template, options = {}) => {
         }
 
         if (format[2] === "Date" && value) {
-          sheet.getCell(str, format[1]).value =
-            moment(value).format("YYYY-MM-DD");
+          sheet.getCell(target, format[1]).value =
+            dayjs(value).format("YYYY-MM-DD");
         } else if (format[2] === "Datetime" && value) {
-          sheet.getCell(str, format[1]).value = moment(value).format(
+          sheet.getCell(target, format[1]).value = dayjs(value).format(
             "YYYY-MM-DD HH:mm:ss"
           );
         } else {
-          sheet.getCell(str, format[1]).value = value;
+          sheet.getCell(target, format[1]).value = value;
         }
       }
     });
+
+    if (opt.static) {
+      for (let rw of opt.static) {
+        sheet.getCell(rw.cols).value = rw.text;
+      }
+    }
 
     // Excute more options (if any)
     if (opt.execute != null && typeof opt.execute == "function") {
@@ -99,7 +107,7 @@ export const exportExcel = async (data, template, options = {}) => {
 async function getCalendar(data) {
   const minInqMoment = data.reduce((acc, item) => {
     if (!item || !item.INQ_DATE) return acc;
-    const m = moment(item.INQ_DATE);
+    const m = dayjs(item.INQ_DATE);
     if (!m.isValid()) return acc;
     return acc === null || m.isBefore(acc) ? m : acc;
   }, null);
@@ -107,7 +115,7 @@ async function getCalendar(data) {
   const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
   const daterange = await ameccaledar(
     minInqDate,
-    moment().add(10, "days").format("YYYYMMDD")
+    dayjs().add(10, "days").format("YYYYMMDD")
   );
   return daterange;
 }
@@ -119,7 +127,7 @@ function getEffect(data, param) {
 }
 
 function nextWorkingDay(data, param) {
-  const sdate = moment(data.timeline.MAR_SEND).format("YYYYMMDD");
+  const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
   const days = parseInt(param.days);
   daterange = daterange.filter(
     (item) => item.DAYOFF == 0 && item.WORKID >= sdate
@@ -132,7 +140,7 @@ function nextWorkingDay(data, param) {
     }
     i++;
   });
-  return moment(current, "YYYYMMDD").format("YYYY-MM-DD");
+  return dayjs(current, "YYYYMMDD").format("YYYY-MM-DD");
 }
 
 export const getTemplate = async (filename) => {
