@@ -118,7 +118,7 @@ $(document).on("click", "#export-btn", async function (e) {
     const template = await getTemplate("export_item_directsale.xlsx");
     const data = table.rows().data().toArray();
     await exportExcel(data, template, {
-      filename: "Price List Drawing.xlsx",
+      filename: "Price List Items master.xlsx",
     });
   } catch (error) {
     console.log(error);

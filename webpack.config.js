@@ -111,6 +111,7 @@ module.exports = {
     alias: {
       "@root": path.resolve(__dirname, "../form/assets/script"),
       "@public": path.resolve(__dirname, "../form/assets/script/public/v1.0.3"),
+      "@publicapi": path.resolve(__dirname, "../form/assets/script/api"),
       "@styles": path.resolve(__dirname, "../form/assets/dist/css"),
       jquery$: path.resolve(__dirname, "node_modules/jquery/src/jquery"),
     },

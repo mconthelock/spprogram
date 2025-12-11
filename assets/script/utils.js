@@ -174,7 +174,7 @@ export const creatBtn = (option = {}) => {
   };
 
   if (opt.type == "link") {
-    return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
+    return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
 		<div class="items-center gap-2 btn-loader hidden">
 			<span class="loading loading-spinner"></span>
 			Processing...
@@ -187,7 +187,7 @@ export const creatBtn = (option = {}) => {
 	</a>`;
   }
 
-  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold bg-gradient-to-r px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}">
+  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}">
 		<div class="items-center gap-2 btn-loader hidden">
 			<span class="loading loading-spinner"></span>
 			Processing...

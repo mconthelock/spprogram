@@ -4,6 +4,7 @@ import {
   dragDropListImage,
   handleFiles,
 } from "@public/_dragdrop";
+import { getBase64Image } from "@publicapi/file.js";
 import { getCustomer } from "../service/customers.js";
 import * as items from "../service/items.js";
 import { getPriceList, updatePriceList } from "../service/pricelist.js";
@@ -61,9 +62,12 @@ async function setItemDetail() {
     }
     let list = "";
     if (data[0].ITEM_THUMB) {
-      const images = await items.getItemsImage(data[0].ITEM_ID);
+      //   const images = await items.getItemsImage(data[0].ITEM_ID);
+      const filePath = `${process.env.FILE_IMG}/directsales/Screenshot 2025-12-11 164435.png`;
+      const images = await getBase64Image(filePath);
       list += await dragDropListImage({
         src: images,
+        fromDB: true,
       });
     }
 
@@ -74,6 +78,14 @@ async function setItemDetail() {
       multiple: false,
     });
     $("#image-dropzone").append(el);
+
+    const save = await utils.creatBtn({
+      id: "save-data",
+      title: "Save Data",
+      icon: "fi fi-sr-disk text-xl",
+      className: `bg-primary text-white`,
+    });
+    $("#action-row").append(`${save}`);
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);

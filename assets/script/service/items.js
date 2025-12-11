@@ -17,6 +17,7 @@ export const getItems = async (data) => {
 };
 
 export const getItemsImage = async (id) => {
+  //const res = await fetch(`${process.env.APP_API}/sp/items/photo/${id}`);
   const res = await fetch(`${process.env.APP_API}/sp/items/photo/${id}`);
   if (!res.ok) {
     await fetchMsgErr(res);

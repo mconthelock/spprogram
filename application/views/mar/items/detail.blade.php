@@ -118,8 +118,8 @@
                             </div>
                         </fieldset>
 
-                        <div class="flex mt-3 gap-3">
-                            <button class="btn btn-primary text-white items-center" id="save-data" type="button"
+                        <div class="flex mt-3 gap-3" id="action-row">
+                            {{-- <button class="btn btn-primary text-white items-center" id="save-data" type="button"
                                 data-action="{{ $id ? 'edit' : 'add' }}">
                                 <span class="loading loading-spinner hidden"></span>
                                 <span class="flex items-center"><i class="fi fi-sr-disk text-xl me-2"></i>Save
@@ -129,7 +129,7 @@
                                 <span class="loading loading-spinner hidden"></span>
                                 <span class="flex items-center"><i
                                         class="fi fi-ts-arrow-circle-left text-xl me-2"></i>Back</span>
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
 
@@ -169,12 +169,14 @@
             height: auto;
         }
 
-        .drop-remove {
+        .drop-remove,
+        .drop-remove-db {
             background: transparent !important;
             right: 5px;
         }
 
-        .drop-remove::before {
+        .drop-remove::before,
+        .drop-remove-db::before {
             content: "\f422";
             font-family: uicons-solid-rounded !important;
             font-style: normal;
