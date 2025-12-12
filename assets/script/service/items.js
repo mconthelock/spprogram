@@ -121,6 +121,23 @@ export const getItemsCustomer = async (data) => {
   });
 };
 
+export const updateItemsCustomer = async (data) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${process.env.APP_API}/sp/items-customer/update/`,
+      type: "POST",
+      dataType: "json",
+      data: data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (error) {
+        reject(error);
+      },
+    });
+  });
+};
+
 export async function currentPeriod() {
   const cyear = dayjs().year();
   const month = dayjs().month() + 1;

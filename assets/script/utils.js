@@ -59,10 +59,10 @@ export function showMessage(msg, opt = { type: "error" }) {
   const toast = `<div class="alert flex flex-col gap-2 overflow-hidden relative ${option.bg} transition-all duration-1000 ease-in-out">
         <div class="msg-title text-xl font-semibold block w-full text-left ${option.text}">${option.title}</div>
         <div class="msg-txt block w-full text-left max-w-80 text-wrap ${option.text}">${msg}</div>
-        <div class="absolute right-[-10px] top-[0px] text-[120px] z-0 opacity-20">
+        <div class="absolute right-2.5 top-0 text-[120px] z-0 opacity-20">
             ${option.icon}
         </div>
-        <div class="absolute right-[10px] top-[10px] text-md z-0">
+        <div class="absolute right-2.5 top-0 text-md z-0">
             <button class="msg-close btn btn-sm btn-ghost btn-circle hover:bg-transparent">X</button>
         </div>
     </div>`;
@@ -170,11 +170,12 @@ export const creatBtn = (option = {}) => {
     icon: "icofont-save text-xl",
     className: "from-blue-500 to-blue-600 text-white",
     href: "#",
+    other: "",
     ...option,
   };
 
   if (opt.type == "link") {
-    return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}">
+    return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}>
 		<div class="items-center gap-2 btn-loader hidden">
 			<span class="loading loading-spinner"></span>
 			Processing...
@@ -187,7 +188,7 @@ export const creatBtn = (option = {}) => {
 	</a>`;
   }
 
-  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}">
+  return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" ${opt.other}>
 		<div class="items-center gap-2 btn-loader hidden">
 			<span class="loading loading-spinner"></span>
 			Processing...

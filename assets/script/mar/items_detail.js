@@ -9,6 +9,7 @@ import { getCustomer } from "../service/customers.js";
 import * as items from "../service/items.js";
 import { getPriceList, updatePriceList } from "../service/pricelist.js";
 import * as utils from "../utils.js";
+import { type } from "jquery";
 
 $(async function () {
   try {
@@ -62,8 +63,7 @@ async function setItemDetail() {
     }
     let list = "";
     if (data[0].ITEM_THUMB) {
-      //   const images = await items.getItemsImage(data[0].ITEM_ID);
-      const filePath = `${process.env.FILE_IMG}/directsales/Screenshot 2025-12-11 164435.png`;
+      const filePath = `${process.env.FILE_IMG}/directsales/${data[0].ITEM_THUMB}`;
       const images = await getBase64Image(filePath);
       list += await dragDropListImage({
         src: images,
@@ -85,7 +85,17 @@ async function setItemDetail() {
       icon: "fi fi-sr-disk text-xl",
       className: `bg-primary text-white`,
     });
-    $("#action-row").append(`${save}`);
+
+    const back = await utils.creatBtn({
+      id: "back-to-list",
+      type: "link",
+      href: `${process.env.APP_ENV}/mar/items/`,
+      title: "Back to List",
+      icon: "fi fi-sr-arrow-left text-xl",
+      className: `bg-accent text-white`,
+      other: `data-action="${data[0].ITEM_ID == "" ? "add" : "edit"}"`,
+    });
+    $("#action-row").append(`${save}${back}`);
   } catch (error) {
     console.log(error);
     await utils.errorMessage(error);
@@ -125,7 +135,14 @@ async function listCategory() {
 }
 
 $(document).on("click", "#save-data", async function () {
-  await utils.showLoader();
+  //   await utils.showLoader();
+
+  $('#customer input[type="checkbox"]').each(function () {
+    console.log($(this).val(), $(this).is(":checked"));
+  });
+
+  return;
+
   let isValid = true;
   $(".field-data.req").each(function () {
     if ($(this).val() == "") {
@@ -207,8 +224,8 @@ $(document).on("click", "#save-data", async function () {
     };
     const responsePrice = await updatePriceList(prices);
     //Save Customer
-    // const response = await items.updateItems(payload);
-    // console.log(response);
+    //const response = await items.updateItems(payload);
+    console.log(payload);
     // await utils.successMessage("บันทึกข้อมูลเรียบร้อย");
   } catch (error) {
     console.log(error);
