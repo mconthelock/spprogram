@@ -13,16 +13,16 @@ import * as utils from "../utils.js";
 var table;
 $(document).ready(async () => {
   try {
-    await utils.initApp({ submenu: ".navmenu-quotation" });
-    let data;
-    if ($("#pageid").val() == "3") {
-      const validate = dayjs().format("YYYY-MM-DD");
-      data = await getInquiry({
-        INQ_STATUS: "> 50",
-        quotation: { QUO_VALIDITY: `>= ${validate}` },
+    await utils.initApp({ submenu: ".navmenu-newinq" });
+    let data = await getInquiry({ INQ_STATUS: "< 80" });
+    if ($("#pageid").val() == "2") {
+      data = data.filter((d) => {
+        const isAmec = d.details.some((dt) => {
+          if (dt.INQD_SUPPLIER == null) return false;
+          return dt.INQD_SUPPLIER.toUpperCase().includes("AMEC");
+        });
+        return isAmec && d.INQ_STATUS >= 28 && d.timeline.BM_CONFIRM == null;
       });
-    } else {
-      data = await getInquiry({ INQ_STATUS: ">= 46 && < 80" });
     }
     const opt = await tableInquiryOption(data);
     table = await createTable(opt);
