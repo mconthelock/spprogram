@@ -15,8 +15,8 @@
     <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/cube.png">
     <title>SPARE PART 🚀 DIRECT SALE PART [2025 Version]</title>
     <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css">
-    <link rel="stylesheet"
-        href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}">
+    {{-- <link rel="stylesheet"
+        href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}"> --}}
     <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">
     <script src="{{ $_ENV['APP_ENV'] }}/script.js"></script>
     @yield('styles')
@@ -63,7 +63,7 @@
                     </div>
                 </div>
             </div>
-            <div class="drawer-side z-[51]! md:px-3 md:py-5">
+            <div class="drawer-side z-51! md:px-3 md:py-5">
                 <div id="sidebar" class="max-h-[75vh]"></div>
             </div>
         </div>

@@ -1,167 +1,180 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark;
+	themes: light --default, dark --prefersdark;
 }
+
+/* view */
+@source "../../application/views/**/*.php";
+
+/* css */
+@source "../style/**/*.css";
+
+/* js */
+@source "../script/**/*.js";
+
+@source "../../node_modules/@amec/webasset/src/**/*.js";
 
 @plugin "daisyui/theme" {
-  name: "light";
-  default: true;
-  prefersdark: true;
-  color-scheme: "light";
-  --color-base-100: oklch(98% 0.003 247.858);
-  --color-base-200: oklch(96% 0.007 247.896);
-  --color-base-300: oklch(92% 0.013 255.508);
-  --color-base-content: oklch(0% 0.042 265.755);
-  --color-primary: oklch(0.7115 0.131 174.2);
-  --color-primary-content: oklch(0.6217 0.0587 190.68);
-  --color-secondary: oklch(80% 0.114 19.571);
-  --color-secondary: oklch(0.7876 0.165783 75.5064);
-  --color-secondary-content: oklch(25% 0.092 26.042);
-  --color-accent: oklch(0.2997 0.0749 267.29);
-  --color-accent-content: oklch(0.2997 0.0719 267.29);
-  --color-neutral: oklch(37% 0.044 257.287);
-  --color-neutral-content: oklch(98% 0.003 247.858);
-  --color-info: oklch(54% 0.245 262.881);
-  --color-info-content: oklch(97% 0.014 254.604);
-  --color-success: oklch(59% 0.145 163.225);
-  --color-success-content: oklch(97% 0.021 166.113);
-  --color-warning: oklch(64% 0.222 41.116);
-  --color-warning-content: oklch(98% 0.016 73.684);
-  --color-error: oklch(57% 0.245 27.325);
-  --color-error-content: oklch(97% 0.013 17.38);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.25rem;
-  --radius-box: 1rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 1;
-  --input-color: transparent;
+	name: "light";
+	default: true;
+	prefersdark: true;
+	color-scheme: "light";
+	--color-base-100: oklch(98% 0.003 247.858);
+	--color-base-200: oklch(96% 0.007 247.896);
+	--color-base-300: oklch(92% 0.013 255.508);
+	--color-base-content: oklch(0% 0.042 265.755);
+	--color-primary: oklch(0.7115 0.131 174.2);
+	--color-primary-content: oklch(0.6217 0.0587 190.68);
+	--color-secondary: oklch(80% 0.114 19.571);
+	--color-secondary: oklch(0.7876 0.165783 75.5064);
+	--color-secondary-content: oklch(25% 0.092 26.042);
+	--color-accent: oklch(0.2997 0.0749 267.29);
+	--color-accent-content: oklch(0.2997 0.0719 267.29);
+	--color-neutral: oklch(37% 0.044 257.287);
+	--color-neutral-content: oklch(98% 0.003 247.858);
+	--color-info: oklch(54% 0.245 262.881);
+	--color-info-content: oklch(97% 0.014 254.604);
+	--color-success: oklch(59% 0.145 163.225);
+	--color-success-content: oklch(97% 0.021 166.113);
+	--color-warning: oklch(64% 0.222 41.116);
+	--color-warning-content: oklch(98% 0.016 73.684);
+	--color-error: oklch(57% 0.245 27.325);
+	--color-error-content: oklch(97% 0.013 17.38);
+	--radius-selector: 0.5rem;
+	--radius-field: 0.25rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 1;
+	--noise: 1;
+	--input-color: transparent;
 }
 
 @font-face {
-  font-family: "LINE Seed EN";
-  src: url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff2") format("woff2"),
-    url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
+	font-family: "LINE Seed EN";
+	src: url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff2") format("woff2"),
+		url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff") format("woff");
+	font-weight: 400;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: "LINE Seed EN Bold";
-  src: url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff2") format("woff2"),
-    url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff") format("woff");
-  font-weight: 700;
-  font-style: bold;
+	font-family: "LINE Seed EN Bold";
+	src: url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff2") format("woff2"),
+		url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff") format("woff");
+	font-weight: 700;
+	font-style: bold;
 }
 
 @font-face {
-  font-family: "LINE Seed TH";
-  src: url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff2") format("woff2"),
-    url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
+	font-family: "LINE Seed TH";
+	src: url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff2")
+			format("woff2"),
+		url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff") format("woff");
+	font-weight: 400;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: "LINE Seed TH Bold";
-  src: url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff2") format("woff2"),
-    url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
+	font-family: "LINE Seed TH Bold";
+	src: url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff2")
+			format("woff2"),
+		url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff") format("woff");
+	font-weight: 700;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: "LINE Seed JP";
-  src: url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff2") format("woff2"),
-    url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
+	font-family: "LINE Seed JP";
+	src: url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff2") format("woff2"),
+		url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff") format("woff");
+	font-weight: 400;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: "LINE Seed JP Bold";
-  src: url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff2") format("woff2"),
-    url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
+	font-family: "LINE Seed JP Bold";
+	src: url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff2") format("woff2"),
+		url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff") format("woff");
+	font-weight: 700;
+	font-style: normal;
 }
 
 @layer base {
-  :root {
-    --font-sans: "LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
-      "LINE Seed TH Bold", "LINE Seed JP", "LINE Seed JP Bold", sans-serif;
-    --color-primary: 1, 71, 178;
-    --color-primary: 0, 0, 0;
-    --color-secondary: 107, 114, 128;
-    --color-accent: 232, 159, 2;
-    --color-card: 255, 255, 255;
-    --color-border: 216, 218, 223;
-    --color-body: 229, 231, 235;
+	:root {
+		--font-sans: "LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
+			"LINE Seed TH Bold", "LINE Seed JP", "LINE Seed JP Bold", sans-serif;
+		--color-primary: 1, 71, 178;
+		--color-primary: 0, 0, 0;
+		--color-secondary: 107, 114, 128;
+		--color-accent: 232, 159, 2;
+		--color-card: 255, 255, 255;
+		--color-border: 216, 218, 223;
+		--color-body: 229, 231, 235;
 
-    --bgcolor-dataTable-thead: var(--color-primary);
-    --bgcolor-dataTable-tbody: #fff;
-    --color-dataTable-thead: #fff;
-  }
+		--bgcolor-dataTable-thead: var(--color-primary);
+		--bgcolor-dataTable-tbody: #fff;
+		--color-dataTable-thead: #fff;
+	}
 
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
 
-  html,
-  body {
-    @apply font-sans;
-    background: #eeeeee;
-    scrollbar-gutter: stable;
-  }
+	html,
+	body {
+		@apply font-sans;
+		background: #eeeeee;
+		scrollbar-gutter: stable;
+	}
 
-  .input {
-    &:focus,
-    &:focus-within {
-      outline-offset: 0px !important;
-      outline: 1px solid var(--input-color) !important;
-    }
-  }
+	.input {
+		&:focus,
+		&:focus-within {
+			outline-offset: 0px !important;
+			outline: 1px solid var(--input-color) !important;
+		}
+	}
 
-  i.fi {
-    display: flex !important;
-  }
+	i.fi {
+		display: flex !important;
+	}
 
-  /* Table and Datatable Styles */
-  div.dt-container .dt-search input,
-  div.dt-container .dt-length select {
-    margin: 0 !important;
-  }
+	/* Table and Datatable Styles */
+	div.dt-container .dt-search input,
+	div.dt-container .dt-length select {
+		margin: 0 !important;
+	}
 
-  div.dt-container .dt-search input {
-    @apply !w-64 !rounded-md;
-  }
+	div.dt-container .dt-search input {
+		@apply !w-64 !rounded-md;
+	}
 
-  /* Sort Column */
-  .dt-orderable-asc,
-  .dt-orderable-desc {
-    @apply !cursor-pointer relative;
-  }
+	/* Sort Column */
+	.dt-orderable-asc,
+	.dt-orderable-desc {
+		@apply !cursor-pointer relative;
+	}
 
-  .dt-orderable-asc::after,
-  .dt-orderable-desc::after {
-    font-family: uicons-thin-rounded !important;
-    font-size: 1.2rem;
-    color: var(--color-white);
-    position: absolute;
-    right: 0.5rem;
-    top: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
+	.dt-orderable-asc::after,
+	.dt-orderable-desc::after {
+		font-family: uicons-thin-rounded !important;
+		font-size: 1.2rem;
+		color: var(--color-white);
+		position: absolute;
+		right: 0.5rem;
+		top: 0;
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}
 
-  /* .dt-ordering-asc::after {
+	/* .dt-ordering-asc::after {
     content: "\fba7";
   }
 
@@ -169,56 +182,56 @@
     content: "\fba7";
     transform: rotate(180deg);
   } */
-  .table thead th {
-    @apply !text-center !bg-slate-500 !text-gray-300 !text-xs;
-  }
+	.table thead th {
+		@apply !text-center !bg-slate-500 !text-gray-300 !text-xs;
+	}
 
-  .table-second {
-    border-collapse: separate;
-    border-spacing: 0;
-  }
+	.table-second {
+		border-collapse: separate;
+		border-spacing: 0;
+	}
 
-  .table-second > thead > tr {
-    @apply !bg-gray-300 !text-gray-600 !text-xs;
-  }
+	.table-second > thead > tr {
+		@apply !bg-gray-300 !text-gray-600 !text-xs;
+	}
 
-  .table-second > tbody > tr > td:not(.dt-empty) {
-    @apply !border-r !border-gray-300;
-  }
+	.table-second > tbody > tr > td:not(.dt-empty) {
+		@apply !border-r !border-gray-300;
+	}
 
-  .table-second > tbody > tr > td > .cell-input {
-    width: 100%;
-    border-bottom: transparent 1px solid;
-    background-color: transparent;
-    padding: 5px;
-    border-radius: 0;
-    transition: all 0.2s ease-in-out;
-    font-size: var(--text-xs);
-  }
+	.table-second > tbody > tr > td > .cell-input {
+		width: 100%;
+		border-bottom: transparent 1px solid;
+		background-color: transparent;
+		padding: 5px;
+		border-radius: 0;
+		transition: all 0.2s ease-in-out;
+		font-size: var(--text-xs);
+	}
 
-  .table-second > tbody > tr > td.cell-edit {
-    @apply bg-yellow-100!;
-  }
-  .table-second > tbody > tr > td > .cell-input:focus,
-  .table-second > tbody > tr > td > .cell-input:hover {
-    outline: #3b82f6 1px solid;
-    background-color: #eff6ff;
-    cursor: pointer;
-  }
+	.table-second > tbody > tr > td.cell-edit {
+		@apply bg-yellow-100!;
+	}
+	.table-second > tbody > tr > td > .cell-input:focus,
+	.table-second > tbody > tr > td > .cell-input:hover {
+		outline: #3b82f6 1px solid;
+		background-color: #eff6ff;
+		cursor: pointer;
+	}
 
-  .table-edit tbody > tr > td:not(.dt-empty) {
-    padding: 3px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-  }
-  .dt-paging-button:not(.first):not(.last):not(.previous):not(.next) {
-    @apply !text-white;
-  }
-  .dt-paging-button:not(.first):not(.last):not(.previous):not(.next):hover {
-    @apply !shadow-sm;
-  }
+	.table-edit tbody > tr > td:not(.dt-empty) {
+		padding: 3px !important;
+		padding-left: 8px !important;
+		padding-right: 8px !important;
+	}
+	.dt-paging-button:not(.first):not(.last):not(.previous):not(.next) {
+		@apply !text-white;
+	}
+	.dt-paging-button:not(.first):not(.last):not(.previous):not(.next):hover {
+		@apply !shadow-sm;
+	}
 
-  /*
+	/*
   table > thead > tr > th {
     @apply !text-center;
   }
@@ -237,26 +250,26 @@
   }
 
   /* .table tbody > tr > td:not(.dt-empty), */
-  /* .table-edit tbody > tr > td:not(.dt-empty) {
+	/* .table-edit tbody > tr > td:not(.dt-empty) {
     border: 1px solid var(--color-gray-300) !important;
   } */
 
-  /* .table tbody > tr > td:nth-child(2), */
-  /* .table-edit tbody > tr > td:nth-child(2) {
+	/* .table tbody > tr > td:nth-child(2), */
+	/* .table-edit tbody > tr > td:nth-child(2) {
     border-left: none !important;
   } */
 
-  /* .table tbody > tr > td:last-child, */
-  /* .table-edit tbody > tr > td:last-child {
+	/* .table tbody > tr > td:last-child, */
+	/* .table-edit tbody > tr > td:last-child {
     border-right: none !important;
   } */
 
-  /* Edit Table */
-  /* .table-edit tbody > tr > td:not(.dt-empty) {
+	/* Edit Table */
+	/* .table-edit tbody > tr > td:not(.dt-empty) {
     padding: 3px !important;
   } */
 
-  /* .cell-input {
+	/* .cell-input {
     width: 100%;
     border-bottom: transparent 1px solid;
     background-color: transparent;
@@ -266,7 +279,7 @@
     font-size: var(--text-xs);
   } */
 
-  /* .cell-input:focus,
+	/* .cell-input:focus,
   .cell-input:hover {
     outline: none;
     border-bottom: #3b82f6 1px solid;
@@ -274,51 +287,51 @@
     cursor: pointer;
   } */
 
-  /* .dt-empty {
+	/* .dt-empty {
     padding-top: 8px;
     padding-bottom: 8px;
   } */
 
-  /* Style for sticky table */
-  /* #table {
+	/* Style for sticky table */
+	/* #table {
     border-collapse: separate;
     border-spacing: 0;
   } */
 
-  /* .table-all-cell-border th,
+	/* .table-all-cell-border th,
   .table-all-cell-border td {
     border-right: 1px solid #d1d5db !important;
     padding-left: 0.25rem !important;
     padding-right: 0.25rem !important;
   } */
 
-  #select-dt-rows-all {
-    @apply !checkbox-neutral !text-neutral;
-  }
+	#select-dt-rows-all {
+		@apply !checkbox-neutral !text-neutral;
+	}
 
-  .select-dt-row {
-    @apply !text-white;
-  }
+	.select-dt-row {
+		@apply !text-white;
+	}
 
-  /* Overwrite Select2 */
-  .select2-container--default .select2-selection--single {
-    border: 1px solid var(--color-gray-300) !important;
-    background-color: #fff !important;
-  }
+	/* Overwrite Select2 */
+	.select2-container--default .select2-selection--single {
+		border: 1px solid var(--color-gray-300) !important;
+		background-color: #fff !important;
+	}
 
-  .select2-error.select2-container--default .select2-selection--single {
-    border: 1px solid var(--color-red-500) !important;
-    background-color: #fff !important;
-  }
+	.select2-error.select2-container--default .select2-selection--single {
+		border: 1px solid var(--color-red-500) !important;
+		background-color: #fff !important;
+	}
 
-  .day-off:not(.selected) {
-    background-color: var(--color-gray-400) !important;
-    color: var(--color-gray-900) !important;
-  }
+	.day-off:not(.selected) {
+		background-color: var(--color-gray-400) !important;
+		color: var(--color-gray-900) !important;
+	}
 
-  /* Tooltip */
-  .tooltip::before {
-    font-size: 0.75rem !important;
-    max-width: 25rem !important;
-  }
+	/* Tooltip */
+	.tooltip::before {
+		font-size: 0.75rem !important;
+		max-width: 25rem !important;
+	}
 }
