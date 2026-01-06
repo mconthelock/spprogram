@@ -1,6 +1,6 @@
 import moment from "moment";
 import ExcelJS from "exceljs";
-import { displayEmpInfo, fillImages } from "@indexDB";
+import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as source from "./source.js";

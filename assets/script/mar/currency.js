@@ -1,10 +1,10 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import "select2";
 import dayjs from "dayjs";
 import * as utils from "../utils.js";
-import { createTable } from "@public/dataTable";
+import { createTable } from "@amec/webasset/dataTable";
 import { getCurrency, updateCurrency } from "../service/master.js";
 
 var table;

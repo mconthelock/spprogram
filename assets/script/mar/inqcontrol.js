@@ -1,4 +1,4 @@
-import { createTable } from "@public/dataTable";
+import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as utils from "../utils.js";
 import {

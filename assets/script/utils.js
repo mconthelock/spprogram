@@ -1,8 +1,8 @@
 import moment from "moment";
 import ExcelJS from "exceljs";
 import { exportFormat } from "./service/inquiry.js";
-import { initAuthen } from "@public/authen";
-import { displayEmpInfo } from "@indexDB";
+import { initAuthen } from "@amec/webasset/authen";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
 
 export const initApp = async (opt = {}) => {
 	try {

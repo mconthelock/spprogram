@@ -1,4 +1,4 @@
-import { displayEmpInfo } from "@indexDB";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
 export function getPriceRatio() {
 	return new Promise((resolve, reject) => {
 		$.ajax({

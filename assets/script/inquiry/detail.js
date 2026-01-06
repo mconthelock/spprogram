@@ -7,13 +7,13 @@ Funtion contents
 005 - Verify form before save
 */
 import "select2/dist/css/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import "select2";
 import moment from "moment";
 import formData from "../../files/formData.json";
-import { createTable, destroyTable } from "@public/dataTable";
-import { readInput } from "@public/excel";
-import { displayEmpInfo } from "@indexDB";
+import { createTable, destroyTable } from "@amec/webasset/dataTable";
+import { readInput } from "@amec/webasset/excel";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { getReason } from "../service/master";
 import { getElmesItem } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";

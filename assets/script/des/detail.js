@@ -1,9 +1,9 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 
-import { createTable } from "@public/dataTable";
-import { setDatePicker } from "@public/flatpickr";
+import { createTable } from "@amec/webasset/dataTable";
+import { setDatePicker } from "@amec/webasset/flatpickr";
 import * as inqservice from "../service/inquiry.js";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";

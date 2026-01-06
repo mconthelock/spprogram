@@ -11,12 +11,12 @@ Funtion contents
 011 - Delete attached file
 */
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/flatpickr.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/flatpickr.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 
-import { createTable } from "@public/dataTable";
-import { setDatePicker, fpkDayOff } from "@public/flatpickr";
+import { createTable } from "@amec/webasset/dataTable";
+import { setDatePicker, fpkDayOff } from "@amec/webasset/flatpickr";
 import * as inqservice from "../service/inquiry.js";
 import * as quoservice from "../service/quotation.js";
 import * as items from "../service/items.js";

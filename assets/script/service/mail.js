@@ -1,6 +1,6 @@
 import moment from "moment";
 import * as mst from "./master.js";
-import { displayEmpInfo } from "@indexDB";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { getDesigner } from "../des/data.js";
 
 export const sendGLD = async (data) => {

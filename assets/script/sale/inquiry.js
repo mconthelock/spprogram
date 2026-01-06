@@ -1,7 +1,7 @@
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
-import { createTable } from "@public/dataTable";
-import { showbgLoader } from "@public/preloader";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
+import { createTable } from "@amec/webasset/dataTable";
+import { showbgLoader } from "@amec/webasset/preloader";
 import { tableOpt } from "./table.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";

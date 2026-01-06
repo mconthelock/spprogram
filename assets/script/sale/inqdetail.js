@@ -17,11 +17,11 @@ Funtion contents
 015 - Update and send to AS400
 */
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import moment from "moment";
 
-import { createTable } from "@public/dataTable";
+import { createTable } from "@amec/webasset/dataTable";
 import * as inqservice from "../service/inquiry.js";
 import * as mail from "../service/mail.js";
 import * as utils from "../utils.js";

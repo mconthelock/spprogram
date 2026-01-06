@@ -1,9 +1,9 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import moment from "moment";
 import ExcelJS from "exceljs";
-import { createTable, destroyTable } from "@public/dataTable";
+import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";

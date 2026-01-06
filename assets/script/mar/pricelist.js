@@ -1,11 +1,11 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 
 import * as utils from "../utils.js";
-import { createTable } from "@public/dataTable";
+import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
-import { setSelect2 } from "@public/select2";
+import { setSelect2 } from "@amec/webasset/select2";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
 import { getCustomer } from "../service/customers.js";

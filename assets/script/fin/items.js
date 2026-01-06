@@ -1,8 +1,8 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 
-import { createTable } from "@public/dataTable";
+import { createTable } from "@amec/webasset/dataTable";
 import * as utils from "../utils.js";
 import { exportExcel, getTemplate } from "../service/excel.js";
 import { getItems } from "../service/items.js";

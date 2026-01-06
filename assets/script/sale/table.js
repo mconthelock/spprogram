@@ -1,5 +1,5 @@
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import moment from "moment";
 import { statusColors } from "../inquiry/detail.js";
 import { exportExcel } from "../service/excel.js";

@@ -1,12 +1,12 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import "select2";
 import moment from "moment";
 import ExcelJS from "exceljs";
 
-import { setDatePicker } from "@public/flatpickr";
-import { createTable, destroyTable } from "@public/dataTable";
+import { setDatePicker } from "@amec/webasset/flatpickr";
+import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { tableInquiry } from "../inquiry/table.js";
 import { getFormHeader } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";

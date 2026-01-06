@@ -1,9 +1,9 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 import moment from "moment";
-import { createTable } from "@public/dataTable";
-import { displayEmpInfo, fillImages } from "@indexDB";
+import { createTable } from "@amec/webasset/dataTable";
+import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
 import * as service from "../service/master.js";
 import * as utils from "../utils.js";
 import { getDesigner } from "./data.js";

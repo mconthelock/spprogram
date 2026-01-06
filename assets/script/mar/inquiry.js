@@ -1,9 +1,9 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/select2.min.css";
-import "@styles/dataTable.min.css";
+import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
-import { createTable } from "@public/dataTable";
+import { createTable } from "@amec/webasset/dataTable";
 import { statusColors } from "../inquiry/ui.js";
 import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
 import { getInquiry } from "../service/inquiry.js";

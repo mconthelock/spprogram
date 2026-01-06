@@ -1,6 +1,10 @@
 import dayjs from "dayjs";
-import { dragDropInit, dragDropListImage, handleFiles } from "@public/dragdrop";
-import { getBase64Image } from "@api/file";
+import {
+	dragDropInit,
+	dragDropListImage,
+	handleFiles,
+} from "@amec/webasset/dragdrop";
+import { getBase64Image } from "@amec/webasset/api/file";
 import { getCustomer } from "../service/customers.js";
 import * as items from "../service/items.js";
 import { getPriceList, updatePriceList } from "../service/pricelist.js";

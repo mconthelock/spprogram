@@ -101,10 +101,8 @@ module.exports = {
 	],
 	resolve: {
 		alias: {
-			"@public": "@amec/webasset",
-			"@indexDB": "@amec/webasset/indexDB",
-			"@api": "@amec/webasset/api",
-			"@styles": "@amec/webasset/css",
+			"@amec/webasset/css": "@amec/webasset/css",
 		},
+		extensions: [".js", ".json", ".css"],
 	},
 };
