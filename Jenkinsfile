@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         NAS_PATH = "\\\\172.21.255.188\\amecweb\\wwwroot\\development"
+        GIT_SSL_NO_VERIFY = 'true'
     }
 
     tools {
