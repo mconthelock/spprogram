@@ -1,5 +1,5 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@styles/datatable.min.css";
+import "@styles/dataTable.min.css";
 import "@styles/select2.min.css";
 import "select2";
 

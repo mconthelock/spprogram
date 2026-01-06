@@ -7,7 +7,7 @@ Funtion contents
 005 - Verify form before save
 */
 import "select2/dist/css/select2.min.css";
-import "@styles/datatable.min.css";
+import "@styles/dataTable.min.css";
 import "select2";
 import moment from "moment";
 import formData from "../../files/formData.json";

@@ -1,6 +1,6 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
-import "@styles/datatable.min.css";
+import "@styles/dataTable.min.css";
 import "select2";
 import * as utils from "../utils.js";
 import { createTable } from "@public/dataTable";

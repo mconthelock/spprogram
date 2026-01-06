@@ -1,6 +1,6 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@styles/select2.min.css";
-import "@styles/datatable.min.css";
+import "@styles/dataTable.min.css";
 import { createTable } from "@public/dataTable";
 import { statusColors } from "../inquiry/detail.js";
 import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";

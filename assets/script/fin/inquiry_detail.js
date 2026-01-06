@@ -1,5 +1,5 @@
 import "@styles/select2.min.css";
-import "@styles/datatable.min.css";
+import "@styles/dataTable.min.css";
 import { createTable } from "@public/dataTable";
 import * as utils from "../utils.js";
 import * as service from "../service/inquiry.js";
