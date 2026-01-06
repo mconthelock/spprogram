@@ -90,8 +90,8 @@ pipeline {
                         --exclude='.gitignore' \
                         --exclude='.env-sample' \
                         --exclude='Jenkinsfile' \
-                        --exclude='application/cache/*' \
-                        --exclude='application/logs/*' \
+                        --exclude='application/cache' \
+                        --exclude='application/logs' \
                         ./ ${TARGET_DIR}/
                 '''
             }
