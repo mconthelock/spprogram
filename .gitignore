@@ -1,12 +1,11 @@
 .DS_Store
 .env
-package-lock.json
+.env.production
+.env.development
 /node_modules
 /system
 assets/dist
 assets/script/public
 application/cache
-application/config
 application/logs
 application/vendor
-application/composer.lock
