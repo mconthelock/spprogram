@@ -8,7 +8,5 @@ assets/script/public
 application/cache
 application/config
 application/logs
-application/third_party
 application/vendor
 application/composer.lock
-
