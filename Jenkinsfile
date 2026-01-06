@@ -88,6 +88,8 @@ pipeline {
                         --exclude='node_modules' \
                         --exclude='.git' \
                         --exclude='.gitignore' \
+                        --exclude='.env-sample' \
+                        --exclude='README.md' \
                         ./ ${TARGET_DIR}/
                 '''
             }

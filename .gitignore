@@ -3,9 +3,7 @@
 .env.production
 .env.development
 /node_modules
-/system
 assets/dist
-assets/script/public
 application/cache
 application/logs
 application/vendor
