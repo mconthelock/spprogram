@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/cube.png">
     <title>SPARE PART 🚀 DIRECT SALE PART [2025 Version]</title>
-    <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css">
+    {{-- <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css"> --}}
     {{-- <link rel="stylesheet"
         href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}"> --}}
     <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">
@@ -24,7 +24,7 @@
 
 <body class="flex flex-col min-h-screen">
     <div id="small-screen" class="w-screen h-screen items-center justify-center flex md:hidden">
-        <div class="card w-96 card-xl shadow-md border-1 border-primary/50 ">
+        <div class="card w-96 card-xl shadow-md border border-primary/50 ">
             <div class="card-body overflow-hidden relative">
                 <div class="absolute w-full top-3 flex justify-end">
                     <i class="fi fi-tr-screen text-[12rem] text-gray-700/20"></i>
@@ -41,7 +41,7 @@
         <input type="checkbox" id="loading-box" class="modal-toggle" checked />
         <div class="modal" role="dialog" id="loading-box-modal">
             <div
-                class="modal-box !w-[100vw] !max-w-[100vw] !h-[100vh] !max-h-[100vh] !rounded-none flex items-center justify-center glass bg-white/5 ">
+                class="modal-box w-screen! max-w-[100vw]! h-screen! max-h-screen! rounded-none! flex items-center justify-center glass bg-white/5 ">
                 <div class="">
                     <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-28" />
                     <h1 class="text-center text-white text-lg font-bold">Loading....</h1>

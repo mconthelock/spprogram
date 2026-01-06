@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "@rspack/cli": "^1.7.1",
+    "@rspack/core": "^1.7.1",
     "@tailwindcss/cli": "^4.1.1",
     "compression-webpack-plugin": "^11.1.0",
     "css-loader": "^7.1.2",
@@ -37,12 +39,13 @@
     "path": "^0.12.7",
     "select2": "^4.1.0-rc.0"
   },
-  "scripts": {
-    "webpack:build": "webpack --mode production",
-    "tailwind:build": "tailwindcss -i ./assets/style/tailwind.css -o ./assets/dist/css/tailwind.css --minify",
-    "build": "npm-run-all --serial tailwind:build webpack:build",
-    "webpack:watch": "webpack --watch --mode development",
-    "tailwind:watch": "tailwindcss -i ./assets/style/tailwind.css -o ./assets/dist/css/tailwind.css --watch",
-    "watch": "npm-run-all --parallel tailwind:watch webpack:watch"
-  }
+    "scripts": {
+        "build:css": "tailwindcss -i ./assets/style/tailwind.css -o ./assets/dist/css/tailwind.css --minify",
+        "build:js": "webpack --mode production",
+        "build": "run-s build:css build:js",
+        "watch:css": "tailwindcss -i ./assets/style/tailwind.css -o ./assets/dist/css/tailwind.css --watch",
+        "watch:js": "webpack --watch --mode development",
+        "watch": "run-p watch:css watch:js",
+        "dev": "npm run watch"
+    }
 }
