@@ -6,11 +6,14 @@
         "guzzlehttp/guzzle": "6.5"
     },
     "config": {
-        "allow-plugins": {
-            "kylekatarnls/update-helper": true
+        "platform": {
+            "php": "7.2.15"
         },
         "audit": {
             "block-insecure": false
+        },
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
         }
     }
 }
