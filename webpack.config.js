@@ -4,6 +4,10 @@ const Dotenv = require("dotenv-webpack");
 const CompressionPlugin = require("compression-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const { defaultConfig } = require("@amec/webasset/default.config");
+require("dotenv").config({
+	path: require("path").resolve(__dirname, "./.env"),
+});
 module.exports = {
 	entry: {
 		apps: "./assets/script/apps.js",
@@ -80,6 +84,9 @@ module.exports = {
 	},
 	plugins: [
 		new Dotenv(),
+		new webpack.DefinePlugin({
+			__WEBASSET_CONFIG__: JSON.stringify(defaultConfig({})),
+		}),
 		new CompressionPlugin({
 			algorithm: "gzip", // หรือใช้ "brotliCompress" ก็ได้
 			test: /\.(js|css|html|svg)$/,
