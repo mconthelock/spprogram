@@ -51,11 +51,18 @@ pipeline {
         stage('Install & Build') {
             steps {
                 withCredentials([file(credentialsId: "${env.ENV_CRED_ID}", variable: 'ENV_FILE')]) {
-                    sh '''
-                        cp ${ENV_FILE} .env
-                        npm install
-                        npm run build
-                    '''
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-auth-id', passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
+                        sh '''
+                            cp ${ENV_FILE} .env
+
+                            git config --global url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf "https://webhub.mitsubishielevatorasia.co.th/"
+
+                            npm install
+                            npm run build
+
+                            git config --global --unset url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf
+                        '''
+                    }
                 }
             }
         }
