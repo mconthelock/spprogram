@@ -13,11 +13,11 @@
                         <fieldset class="fieldset flex gap-4">
                             <div class="flex-none">
                                 <legend class="fieldset-legend">Item No.<span class="text-red-500">*</span></legend>
-                                <input type="text" class="input w-full field-data" data-map="ITEM_NO" />
+                                <input type="text" class="input w-full field-data req" data-map="ITEM_NO" />
                             </div>
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Part Name<span class="text-red-500">*</span></legend>
-                                <input type="text" class="input w-full field-data" data-map="ITEM_NAME" />
+                                <input type="text" class="input w-full field-data req" data-map="ITEM_NAME" />
                             </div>
                         </fieldset>
 
@@ -103,18 +103,20 @@
                         <fieldset class="fieldset flex gap-4">
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Factory Cost</legend>
-                                <input type="text" class="input w-full field-data" data-map="FCCOST" />
+                                <input type="text" class="input w-full field-data price-change" data-map="FCCOST"
+                                    id="fccost" />
                             </div>
 
                             <div class="flex-1">
                                 <legend class="fieldset-legend">%</legend>
-                                <input type="text" class="input w-full field-data" data-map="FCBASE" value="1.3"
-                                    readonly />
+                                <input type="text" class="input w-full field-data price-change" data-map="FCBASE"
+                                    value="1.3" id="fcrate" />
                             </div>
 
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Total Cost</legend>
-                                <input type="text" class="input w-full field-data" data-map="TCCOST" />
+                                <input type="text" class="input w-full field-data" data-map="TCCOST" readonly
+                                    id="tccost" />
                             </div>
                         </fieldset>
 

@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import * as mst from "./master.js";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { getDesigner } from "../des/data.js";

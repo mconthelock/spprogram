@@ -1,5 +1,5 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@amec/webasset/css/select2.min.css";
+// import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";

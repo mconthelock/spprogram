@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { exportFormat } from "./service/inquiry.js";
 import { initAuthen } from "@amec/webasset/authen";
@@ -7,8 +7,8 @@ import { displayEmpInfo } from "@amec/webasset/indexDB";
 export const initApp = async (opt = {}) => {
 	try {
 		await initAuthen({
-			//icon: `${process.env.APP_ENV}/assets/images/cube.png`,
-			//iconLogo: `${process.env.APP_ENV}/assets/images/cube.png`,
+			icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+			iconLogo: `${process.env.APP_ENV}/assets/images/cube.png`,
 			programName: "SP PROGRAM",
 			sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
 		});
@@ -250,8 +250,8 @@ export const amecschdule = (data) => {
 		{ id: "30", val: "Z" },
 		{ id: "31", val: "Z" },
 	];
-	const fd = moment(data).format("YYYYMM");
-	const dd = moment(data).format("DD");
+	const fd = dayjs(data).format("YYYYMM");
+	const dd = dayjs(data).format("DD");
 	const letter = schd.find((x) => x.id == dd);
 	return `${fd}${letter.val}`;
 };

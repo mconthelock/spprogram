@@ -48,9 +48,6 @@ module.exports = {
 		clean: true,
 	},
 	mode: process.env.STATE || "development",
-	optimization: {
-		minimize: process.env.STATE === "production",
-	},
 	module: {
 		rules: [
 			{
@@ -63,6 +60,9 @@ module.exports = {
 				type: "asset/source",
 			},
 		],
+	},
+	optimization: {
+		minimize: process.env.STATE === "production",
 	},
 	plugins: [
 		new Dotenv(),
@@ -96,13 +96,10 @@ module.exports = {
 				},
 			],
 		}),
-		// สำหรับ Compression ถ้าต้องการใช้เหมือนเดิม สามารถ import plugin เดิมมาใส่ได้เลย
-		// แต่ Rspack แนะนำให้ใช้ plugin ที่รองรับกันได้
 	],
 	resolve: {
 		alias: {
-			"@amec/webasset/css": "@amec/webasset/css",
+			jquery: require.resolve("jquery"),
 		},
-		extensions: [".js", ".json", ".css"],
 	},
 };

@@ -1,7 +1,7 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import moment from "moment";
+import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker } from "@amec/webasset/flatpickr";

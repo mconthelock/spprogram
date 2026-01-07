@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
 import { statusColors } from "../inquiry/detail.js";

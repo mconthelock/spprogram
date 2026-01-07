@@ -1,6 +1,6 @@
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import moment from "moment";
+import dayjs from "dayjs";
 import { statusColors } from "../inquiry/detail.js";
 import { exportExcel } from "../service/excel.js";
 import * as utils from "../utils.js";

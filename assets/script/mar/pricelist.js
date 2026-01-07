@@ -5,10 +5,12 @@ import "@amec/webasset/css/dataTable.min.css";
 import * as utils from "../utils.js";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
+import select2 from "select2";
 import { setSelect2 } from "@amec/webasset/select2";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
 import { getCustomer } from "../service/customers.js";
+select2();
 
 var table;
 $(async function () {
@@ -26,7 +28,7 @@ $(async function () {
 });
 
 async function setData() {
-	const items = await getItems();
+	const items = await getItems({ ITEM_ID: 1529 });
 	const customers = await getCustomer();
 	const period = await currentPeriod();
 	const customer = customers.find(
@@ -46,11 +48,17 @@ async function setData() {
 		})
 		.map((item) => {
 			const current = period.current;
-			const currentprice = item.prices.find(
+			const currentprices = item.prices.filter(
 				(p) =>
 					p.FYYEAR == current.year &&
 					parseInt(p.PERIOD) == current.period
 			);
+			const currentprice =
+				currentprices.length > 0
+					? currentprices.reduce((max, p) =>
+							p.STARTIN > max.STARTIN ? p : max
+					  )
+					: undefined;
 
 			const last = period.last;
 			const lastprice = item.prices.find(
@@ -69,7 +77,6 @@ async function setData() {
 }
 
 async function tableOpt(data) {
-	console.log(data);
 	const period = await currentPeriod();
 	$("#current-period").text(
 		`${period.current.year}-${period.current.period}H`
@@ -233,7 +240,7 @@ async function tableOpt(data) {
         <select id="customer-option" class="s2 select select2-sm">${cusSelect}</select>
       </div>
     `);
-		await setSelect2("#customer-option");
+		await setSelect2({ width: "200px", allowClear: false });
 		// Table Footer Buttons
 		const export1 = await utils.creatBtn({
 			id: "export-btn",

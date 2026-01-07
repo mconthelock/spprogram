@@ -8,18 +8,17 @@
     <meta name="base_url" content="{{ $_ENV['APP_ENV'] }}">
     <meta name="appname" content="{{ $_ENV['APP_NAME'] }}">
     <meta name="appstatus" content="{{ $_ENV['STATE'] }}">
-    <link rel="manifest" href="{{ $_ENV['APP_ENV'] }}/manifest.json">
     <meta name="theme-color" content="#C0C0C0">
+    <title>SPARE PART 🚀 DIRECT SALE PART [2025 Version]</title>
+
+    <link rel="manifest" href="{{ $_ENV['APP_ENV'] }}/manifest.json">
     <link rel="shortcut icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-icon" href="{{ $_ENV['APP_IMG'] }}/favicon.ico">
     <link rel="apple-touch-startup-image" href="{{ $_ENV['APP_IMG'] }}/cube.png">
-    <title>SPARE PART 🚀 DIRECT SALE PART [2025 Version]</title>
-    {{-- <link rel="stylesheet" href="{{ $_ENV['APP_CDN'] }}/select2/css/select2.min.css"> --}}
-    {{-- <link rel="stylesheet"
-        href="{{ $_ENV['APP_HOST'] }}/form/assets/dist/css/v1.0.1.min.css?ver={{ $GLOBALS['version'] }}"> --}}
     <link rel="stylesheet" href="{{ $_ENV['APP_CSS'] }}/tailwind.css?ver={{ $GLOBALS['version'] }}">
-    <script src="{{ $_ENV['APP_ENV'] }}/script.js"></script>
     @yield('styles')
+
+    <script src="{{ $_ENV['APP_ENV'] }}/script.js"></script>
 </head>
 
 <body class="flex flex-col min-h-screen">

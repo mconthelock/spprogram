@@ -8,8 +8,10 @@ Funtion contents
 */
 import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import "select2";
-import moment from "moment";
+
+import select2 from "select2";
+import { setSelect2 } from "@amec/webasset/select2";
+import dayjs from "dayjs";
 import formData from "../../files/formData.json";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { readInput } from "@amec/webasset/excel";
@@ -21,6 +23,7 @@ import * as utils from "../utils.js";
 import * as dwg from "../drawing.js";
 import * as source from "./source";
 import * as tb from "./table.js";
+select2();
 
 export const statusColors = () => {
 	return [
@@ -83,8 +86,8 @@ export async function createFormCard(cardData, data = {}) {
 	if (Object.keys(data).length === 0) {
 		data = {
 			...data,
-			INQ_DATE: moment().format("YYYY-MM-DD"),
-			INQ_CUSTRQS: moment().add(61, "days").format("YYYY-MM-DD"),
+			INQ_DATE: dayjs().format("YYYY-MM-DD"),
+			INQ_CUSTRQS: dayjs().add(61, "days").format("YYYY-MM-DD"),
 			INQ_STATUS: 2,
 			status: { id: 2, STATUS_DESC: "New" },
 			INQ_MAR_PIC: $("#user-login").attr("empno"),
@@ -164,7 +167,7 @@ export async function setFieldValue(field, data = {}) {
 	if (field.type == "status") field = await dspStatus(data, field);
 
 	if (field.class && field.class.includes("fdate"))
-		field.value = moment(field.value).format("YYYY-MM-DD");
+		field.value = dayjs(field.value).format("YYYY-MM-DD");
 
 	if (field.class && field.class.includes("agent"))
 		field.value = `${data["INQ_AGENT"]} (${data["INQ_COUNTRY"]})`;
@@ -220,9 +223,14 @@ export async function createFieldInput(field) {
 			}">${optStr}</select>`;
 			inputContainer.innerHTML = selectInput;
 			elementToListen = inputContainer.querySelector(`#${field.id}`);
-			setTimeout(() => {
+			setTimeout(async () => {
 				const jQueryElement = $(`#${field.id}`);
-				jQueryElement.select2({ width: "100%" });
+				//jQueryElement.select2({ width: "100%" });
+				await setSelect2({
+					element: `#${field.id}`,
+					placeholder: field.label || "",
+					// allowClear: false,
+				});
 				jQueryElement.removeAttr("aria-hidden");
 				if (field.onChange && source.events[field.onChange]) {
 					jQueryElement.on("change", source.events[field.onChange]);
@@ -323,7 +331,7 @@ export async function freightTable() {
     <tbody>`;
 	weightTypes.forEach((type) => {
 		freightTable += `<tr>
-        <td class="!px-3">${type.text}</td>
+        <td class="px-3!">${type.text}</td>
         <td><input type="text" class="${type.id}-value freight-value" /></td>
         <td><input type="text" class="${type.id}-voulumn" readonly /></td>
         <td><input type="text" class="${type.id}-total" readonly /></td>
@@ -620,7 +628,7 @@ export async function elmesComponent() {
 
 	const str = `<input type="checkbox" id="showElmes" class="modal-toggle" />
     <div class="modal" role="dialog">
-        <div class="modal-box w-[100vw] max-w-[100vw] h-[100vh] overflow-y-scroll">
+        <div class="modal-box w-screen max-w-[100vw] h-screen overflow-y-scroll">
             <table id="tableElmes" class="table w-full"></table>
             <input type="hidden" id="elmes-target"/>
             <div class="flex gap-2 mt-3">${confirmBtn}${cancelBtn}</div>

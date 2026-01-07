@@ -6,10 +6,9 @@ import {
 } from "@amec/webasset/dragdrop";
 import { getBase64Image } from "@amec/webasset/api/file";
 import { getCustomer } from "../service/customers.js";
-import * as items from "../service/items.js";
 import { getPriceList, updatePriceList } from "../service/pricelist.js";
+import * as items from "../service/items.js";
 import * as utils from "../utils.js";
-import { type } from "jquery";
 
 $(async function () {
 	try {
@@ -26,6 +25,24 @@ $(async function () {
 });
 
 async function setItemDetail() {
+	const save = await utils.creatBtn({
+		id: "save-data",
+		title: "Save Data",
+		icon: "fi fi-sr-disk text-xl",
+		className: `bg-primary text-white`,
+		other: `data-action="${$("#itemid").val() == "" ? "add" : "edit"}"`,
+	});
+
+	const back = await utils.creatBtn({
+		id: "back-to-list",
+		type: "link",
+		href: `${process.env.APP_ENV}/mar/items/`,
+		title: "Back to List",
+		icon: "fi fi-sr-arrow-left text-xl",
+		className: `bg-accent text-white`,
+	});
+	$("#action-row").append(`${save}${back}`);
+
 	if ($("#itemid").val() == "") {
 		const el = await dragDropInit({
 			showImg: true,
@@ -78,24 +95,6 @@ async function setItemDetail() {
 			multiple: false,
 		});
 		$("#image-dropzone").append(el);
-
-		const save = await utils.creatBtn({
-			id: "save-data",
-			title: "Save Data",
-			icon: "fi fi-sr-disk text-xl",
-			className: `bg-primary text-white`,
-		});
-
-		const back = await utils.creatBtn({
-			id: "back-to-list",
-			type: "link",
-			href: `${process.env.APP_ENV}/mar/items/`,
-			title: "Back to List",
-			icon: "fi fi-sr-arrow-left text-xl",
-			className: `bg-accent text-white`,
-			other: `data-action="${data[0].ITEM_ID == "" ? "add" : "edit"}"`,
-		});
-		$("#action-row").append(`${save}${back}`);
 	} catch (error) {
 		console.log(error);
 		await utils.errorMessage(error);
@@ -135,14 +134,6 @@ async function listCategory() {
 }
 
 $(document).on("click", "#save-data", async function () {
-	//   await utils.showLoader();
-
-	$('#customer input[type="checkbox"]').each(function () {
-		console.log($(this).val(), $(this).is(":checked"));
-	});
-
-	return;
-
 	let isValid = true;
 	$(".field-data.req").each(function () {
 		if ($(this).val() == "") {
@@ -213,7 +204,7 @@ $(document).on("click", "#save-data", async function () {
 			PERIOD: maxPeriod,
 			ITEM: payload.ITEM_ID,
 			STATUS: 1,
-			STARTIN: dayjs().format("YYYY-MM-DD"),
+			STARTIN: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			INQUIRY: null,
 			FCCOST: payload.FCCOST,
 			FCBASE: payload.FCBASE,
@@ -223,10 +214,40 @@ $(document).on("click", "#save-data", async function () {
 			CREATE_AT: new Date().toISOString(),
 		};
 		const responsePrice = await updatePriceList(prices);
+
 		//Save Customer
-		//const response = await items.updateItems(payload);
-		console.log(payload);
-		// await utils.successMessage("บันทึกข้อมูลเรียบร้อย");
+		const currentCustomers = await items.getItemsCustomer({
+			ITEMS_ID: $("#itemid").val(),
+		});
+		$('#customer input[type="checkbox"]').each(async function () {
+			const customerId = $(this).val();
+			const isChecked = $(this).is(":checked");
+			const existsInDb = currentCustomers.some(
+				(c) => c.CUSTOMER_ID == customerId
+			);
+
+			if (isChecked && !existsInDb) {
+				// Insert new customer
+				const newCusItem = {
+					ITEMS_ID: $("#itemid").val(),
+					CUSTOMER_ID: customerId,
+					CREATE_BY: $("#user-login").attr("empname"),
+					CREATE_AT: new Date().toISOString(),
+				};
+				await items.createItemsCustomer(newCusItem);
+				console.log("Insert new customer", customerId);
+			} else if (!isChecked && existsInDb) {
+				// Delete existing customer
+				await items.deleteItemsCustomer({
+					ITEMS_ID: $("#itemid").val(),
+					CUSTOMER_ID: customerId,
+				});
+				console.log("Delete existing customer", customerId);
+			}
+		});
+		await utils.showMessage("Direct Sale's item saved successfully", {
+			type: "success",
+		});
 	} catch (error) {
 		console.log(error);
 		await utils.errorMessage(error);
@@ -235,7 +256,7 @@ $(document).on("click", "#save-data", async function () {
 	}
 });
 
-$(document).on("blur", ".price-change", async function (e) {
+$(document).on("change", ".price-change", async function (e) {
 	e.preventDefault();
 	const fccost = parseFloat($("#fccost").val()) || 0;
 	const fcrate = parseFloat($("#fcrate").val()) || 0;
