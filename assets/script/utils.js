@@ -7,7 +7,8 @@ import { displayEmpInfo } from "@amec/webasset/indexDB";
 export const initApp = async (opt = {}) => {
 	try {
 		await initAuthen({
-			icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+			//icon: `${process.env.APP_ENV}/assets/images/cube.png`,
+			//iconLogo: `${process.env.APP_ENV}/assets/images/cube.png`,
 			programName: "SP PROGRAM",
 			sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
 		});
