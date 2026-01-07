@@ -92,6 +92,7 @@ pipeline {
                         --exclude='Jenkinsfile' \
                         --exclude='application/cache' \
                         --exclude='application/logs' \
+                        --exclude='*@tmp' \
                         ./ ${TARGET_DIR}/
                 '''
             }
