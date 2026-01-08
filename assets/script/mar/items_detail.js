@@ -135,8 +135,11 @@ async function listCategory() {
 
 $(document).on("click", "#save-data", async function () {
 	let isValid = true;
+	let id;
 	$(".field-data.req").each(function () {
-		if ($(this).val() == "") {
+		console.log($(this).val());
+
+		if ($(this).val() == "" || $(this).val() == null) {
 			isValid = false;
 			$(this).addClass("input-error");
 		} else {
@@ -144,9 +147,7 @@ $(document).on("click", "#save-data", async function () {
 		}
 	});
 	if (!isValid) {
-		await utils.errorMessage({
-			message: "Please fill in all required fields.",
-		});
+		await utils.showMessage("Please fill in all required fields.");
 		await utils.showLoader({ show: false });
 		return;
 	}
@@ -170,6 +171,10 @@ $(document).on("click", "#save-data", async function () {
 			};
 			const newitem = await items.createItems(payload);
 			payload.ITEM_ID = newitem.ITEM_ID;
+			await savePrice(payload);
+			await saveImage(payload);
+			await saveCustomer(payload);
+			window.location.href = `${process.env.APP_ENV}/mar/items/detail/${payload.ITEM_ID}`;
 		} else {
 			payload = {
 				...payload,
@@ -178,76 +183,13 @@ $(document).on("click", "#save-data", async function () {
 				UPDATE_BY: $("#user-login").attr("empname"),
 			};
 			const updated = await items.updateItems(payload);
+			await savePrice(payload);
+			await saveImage(payload);
+			await saveCustomer(payload);
+			await utils.showMessage("Direct Sale's item saved successfully", {
+				type: "success",
+			});
 		}
-
-		//Save Item Detail
-		const files = $("#files")[0].files;
-		if (files.length > 0) {
-			const photo = new FormData();
-			photo.append("files", files[0], files[0].name);
-			photo.append("ITEM_ID", payload.ITEM_ID);
-			const responsePhoto = await items.uploadItemsPhoto(photo);
-		}
-		//Save Price
-		let maxYear =
-			dayjs().format("M") < 4
-				? dayjs().format("YYYY") - 1
-				: dayjs().format("YYYY");
-		let maxPeriod = dayjs().format("M") < 4 ? 2 : 1;
-		const lastest = await getPriceList({ LATEST: 1 });
-		if (lastest.length > 0) {
-			maxYear = Math.max(...lastest.map((p) => p.FYYEAR));
-			maxPeriod = Math.max(...lastest.map((p) => p.PERIOD));
-		}
-		const prices = {
-			FYYEAR: maxYear,
-			PERIOD: maxPeriod,
-			ITEM: payload.ITEM_ID,
-			STATUS: 1,
-			STARTIN: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-			INQUIRY: null,
-			FCCOST: payload.FCCOST,
-			FCBASE: payload.FCBASE,
-			TCCOST: payload.TCCOST,
-			LATEST: 1,
-			CREATE_BY: $("#user-login").attr("empname"),
-			CREATE_AT: new Date().toISOString(),
-		};
-		const responsePrice = await updatePriceList(prices);
-
-		//Save Customer
-		const currentCustomers = await items.getItemsCustomer({
-			ITEMS_ID: $("#itemid").val(),
-		});
-		$('#customer input[type="checkbox"]').each(async function () {
-			const customerId = $(this).val();
-			const isChecked = $(this).is(":checked");
-			const existsInDb = currentCustomers.some(
-				(c) => c.CUSTOMER_ID == customerId
-			);
-
-			if (isChecked && !existsInDb) {
-				// Insert new customer
-				const newCusItem = {
-					ITEMS_ID: $("#itemid").val(),
-					CUSTOMER_ID: customerId,
-					CREATE_BY: $("#user-login").attr("empname"),
-					CREATE_AT: new Date().toISOString(),
-				};
-				await items.createItemsCustomer(newCusItem);
-				console.log("Insert new customer", customerId);
-			} else if (!isChecked && existsInDb) {
-				// Delete existing customer
-				await items.deleteItemsCustomer({
-					ITEMS_ID: $("#itemid").val(),
-					CUSTOMER_ID: customerId,
-				});
-				console.log("Delete existing customer", customerId);
-			}
-		});
-		await utils.showMessage("Direct Sale's item saved successfully", {
-			type: "success",
-		});
 	} catch (error) {
 		console.log(error);
 		await utils.errorMessage(error);
@@ -255,6 +197,82 @@ $(document).on("click", "#save-data", async function () {
 		await utils.showLoader({ show: false });
 	}
 });
+
+async function savePrice(payload) {
+	//Save Price
+	let maxYear =
+		dayjs().format("M") < 4
+			? dayjs().format("YYYY") - 1
+			: dayjs().format("YYYY");
+	let maxPeriod = dayjs().format("M") < 4 ? 2 : 1;
+	const lastest = await getPriceList({ LATEST: 1 });
+	if (lastest.length > 0) {
+		maxYear = Math.max(...lastest.map((p) => p.FYYEAR));
+		maxPeriod = Math.max(...lastest.map((p) => p.PERIOD));
+	}
+	const prices = {
+		FYYEAR: maxYear,
+		PERIOD: maxPeriod,
+		ITEM: payload.ITEM_ID,
+		STATUS: 1,
+		STARTIN: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+		INQUIRY: null,
+		FCCOST: payload.FCCOST,
+		FCBASE: payload.FCBASE,
+		TCCOST: payload.TCCOST,
+		LATEST: 1,
+		CREATE_BY: $("#user-login").attr("empname"),
+		CREATE_AT: new Date().toISOString(),
+	};
+	const responsePrice = await updatePriceList(prices);
+	return responsePrice;
+}
+
+async function saveImage(payload) {
+	//Save Item Detail
+	const files = $("#files")[0].files;
+	if (files.length > 0) {
+		const photo = new FormData();
+		photo.append("files", files[0], files[0].name);
+		photo.append("ITEM_ID", payload.ITEM_ID);
+		const responsePhoto = await items.uploadItemsPhoto(photo);
+	}
+	return;
+}
+
+async function saveCustomer(pageload) {
+	//Save Customer
+	const currentCustomers = await items.getItemsCustomer({
+		ITEMS_ID: pageload.ITEM_ID,
+	});
+	$('#customer input[type="checkbox"]').each(async function () {
+		const customerId = $(this).val();
+		const isChecked = $(this).is(":checked");
+		const existsInDb = currentCustomers.some(
+			(c) => c.CUSTOMER_ID == customerId
+		);
+
+		if (isChecked && !existsInDb) {
+			// Insert new customer
+			const newCusItem = {
+				ITEMS_ID: pageload.ITEM_ID,
+				CUSTOMER_ID: customerId,
+				CREATE_BY: $("#user-login").attr("empname"),
+				CREATE_AT: new Date().toISOString(),
+			};
+			await items.createItemsCustomer(newCusItem);
+			console.log("Insert new customer", customerId);
+		} else if (!isChecked && existsInDb) {
+			// Delete existing customer
+			await items.deleteItemsCustomer({
+				ITEMS_ID: pageload.ITEM_ID,
+				CUSTOMER_ID: customerId,
+			});
+			console.log("Delete existing customer", customerId);
+		}
+	});
+	return;
+}
 
 $(document).on("change", ".price-change", async function (e) {
 	e.preventDefault();

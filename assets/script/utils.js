@@ -79,14 +79,14 @@ export const errorMessage = async function (error) {
 		let str = `<ul class="list-disc ml-5">`;
 		const respose = error.responseJSON;
 		const title = respose.message.error;
-		if (typeof respose.message.message === "string") {
-			str += `<li>${respose.message.message}</li>`;
+		if (typeof respose.message === "string") {
+			str += `<li>${respose.message}</li>`;
 			str += `</ul>`;
 			await showMessage(str, { type: "error", title });
 			return;
 		}
 
-		for (const [key, value] of Object.entries(respose.message.message)) {
+		for (const [key, value] of Object.entries(respose.message)) {
 			for (const [k, val] of Object.entries(value)) {
 				str += `<li>${val}</li>`;
 			}
@@ -95,7 +95,7 @@ export const errorMessage = async function (error) {
 		await showMessage(str, { type: "error", title });
 		return;
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 		showMessage("An unexpected error occurred.");
 		return;
 	}

@@ -13,7 +13,8 @@
                         <fieldset class="fieldset flex gap-4">
                             <div class="flex-none">
                                 <legend class="fieldset-legend">Item No.<span class="text-red-500">*</span></legend>
-                                <input type="text" class="input w-full field-data req" data-map="ITEM_NO" />
+                                <input type="text" class="input w-full field-data req" data-map="ITEM_NO"
+                                    maxlength="3" />
                             </div>
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Part Name<span class="text-red-500">*</span></legend>
@@ -23,20 +24,19 @@
 
                         <fieldset class="fieldset">
                             <legend class="fieldset-legend">Drawing No.<span class="text-red-500">*</span></legend>
-                            <input type="text" class="input w-full field-data" data-map="ITEM_DWG" />
+                            <input type="text" class="input w-full field-data req uppercase" data-map="ITEM_DWG" />
                         </fieldset>
 
                         <fieldset class="fieldset">
                             <legend class="fieldset-legend">Variable:</legend>
-                            <textarea class="textarea w-full field-data" data-map="ITEM_VARIABLE"></textarea>
+                            <textarea class="textarea w-full field-data uppercase" data-map="ITEM_VARIABLE"></textarea>
                         </fieldset>
 
                         <fieldset class="fieldset flex gap-4">
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Item Type</legend>
-                                <select class="select w-full field-data" id="item-type" data-map="ITEM_TYPE">
-                                    <option disabled selected value=""></option>
-                                    <option value="1">Elevator Part</option>
+                                <select class="select w-full field-data" data-map="ITEM_TYPE">
+                                    <option value="1" selected>Elevator Part</option>
                                     <option value="2">Escalator Part</option>
                                 </select>
                             </div>
@@ -62,7 +62,7 @@
                         <fieldset class="fieldset flex gap-4">
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Supplier<span class="text-red-500">*</span></legend>
-                                <select class="select w-full field-data" id="item-supplier" data-map="ITEM_SUPPLIER">
+                                <select class="select w-full field-data req" id="item-supplier" data-map="ITEM_SUPPLIER">
                                     <option value=""></option>
                                     <option value="AMEC" {{ $id ? '' : 'selected' }}>AMEC</option>
                                     <option value="MELINA">MELINA</option>
@@ -71,8 +71,8 @@
                             </div>
 
                             <div class="flex-1">
-                                <legend class="fieldset-legend">Category</legend>
-                                <select class="select w-full field-data" id="item-category" data-map="CATEGORY">
+                                <legend class="fieldset-legend">Category<span class="text-red-500">*</span></legend>
+                                <select class="select w-full field-data req" id="item-category" data-map="CATEGORY">
                                     <option disabled selected value=""></option>
                                 </select>
                             </div>
@@ -102,20 +102,20 @@
 
                         <fieldset class="fieldset flex gap-4">
                             <div class="flex-1">
-                                <legend class="fieldset-legend">Factory Cost</legend>
-                                <input type="text" class="input w-full field-data price-change" data-map="FCCOST"
+                                <legend class="fieldset-legend">Factory Cost<span class="text-red-500">*</span></legend>
+                                <input type="text" class="input w-full field-data req price-change" data-map="FCCOST"
                                     id="fccost" />
                             </div>
 
                             <div class="flex-1">
-                                <legend class="fieldset-legend">%</legend>
-                                <input type="text" class="input w-full field-data price-change" data-map="FCBASE"
+                                <legend class="fieldset-legend">%<span class="text-red-500">*</span></legend>
+                                <input type="text" class="input w-full field-data req price-change" data-map="FCBASE"
                                     value="1.3" id="fcrate" />
                             </div>
 
                             <div class="flex-1">
                                 <legend class="fieldset-legend">Total Cost</legend>
-                                <input type="text" class="input w-full field-data" data-map="TCCOST" readonly
+                                <input type="text" class="input w-full field-data req" data-map="TCCOST" readonly
                                     id="tccost" />
                             </div>
                         </fieldset>

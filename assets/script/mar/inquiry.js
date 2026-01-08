@@ -1,13 +1,11 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-// import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-
 import dayjs from "dayjs";
 import { createTable } from "@amec/webasset/dataTable";
 import { statusColors } from "../inquiry/ui.js";
 import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
 import { getInquiry } from "../service/inquiry.js";
 import * as utils from "../utils.js";
+
 var table;
 $(async function () {
 	try {
@@ -211,7 +209,7 @@ async function tableInquiryOption(data) {
 			id: "export1",
 			title: "Export Inquiry",
 			icon: "fi fi-tr-file-excel text-xl",
-			className: `from-accent/90 to-accent text-white hover:shadow-lg`,
+			className: `btn-neutral text-white hover:shadow-lg`,
 		});
 		const export2 = await utils.creatBtn({
 			id: "export1",
@@ -227,16 +225,3 @@ async function tableInquiryOption(data) {
 	};
 	return opt;
 }
-
-// $(document).on(
-//   "click",
-//   "#confirm_accept.deleteinqs:not(disabled)",
-//   async function (e) {
-//     e.preventDefault();
-//     await confirmDeleteInquiry(table);
-//   }
-// );
-
-// $(document).on("click", "#export-list", async function (e) {
-//   e.preventDefault();
-// });

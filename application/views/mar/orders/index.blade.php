@@ -8,5 +8,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/mar_inquiry.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/mar_orders.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection
