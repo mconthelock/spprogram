@@ -5,167 +5,192 @@ import dayjs from "dayjs";
 var daterange;
 
 export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
-  const sourceRow = worksheet.getRow(sourceRowNum);
-  const newRow = worksheet.insertRow(targetRowNum);
-  sourceRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    const newCell = newRow.getCell(colNumber);
-    if (cell.style) {
-      newCell.style = { ...cell.style };
-    }
-  });
-  newRow.height = sourceRow.height;
+	const sourceRow = worksheet.getRow(sourceRowNum);
+	const newRow = worksheet.insertRow(targetRowNum);
+	sourceRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+		const newCell = newRow.getCell(colNumber);
+		if (cell.style) {
+			newCell.style = { ...cell.style };
+			//newCell.style = JSON.parse(JSON.stringify(cell.style));
+		}
+	});
+	newRow.height = sourceRow.height;
+};
+
+export const copyMergedRow = async (worksheet, sourceRange, targetRange) => {
+	// 1. ดึงข้อมูลจาก Cell แรกของ Source (Master Cell)
+	const sourceMasterCell = worksheet.getCell(sourceRange.split(":")[0]); // ดึง A17
+	const targetMasterCell = worksheet.getCell(targetRange.split(":")[0]); // ดึง A25
+
+	// 2. สั่ง Merge ที่ตำแหน่งใหม่
+	worksheet.mergeCells(targetRange);
+
+	// 3. Copy Value และ Style จาก Master ไปยัง Master ใหม่
+	targetMasterCell.value = sourceMasterCell.value;
+
+	if (sourceMasterCell.style) {
+		targetMasterCell.style = JSON.parse(
+			JSON.stringify(sourceMasterCell.style)
+		);
+	}
+
+	// 4. (Optional) ปรับความสูงของแถวให้เท่ากัน
+	const sourceRow = worksheet.getRow(sourceMasterCell.row);
+	const targetRow = worksheet.getRow(targetMasterCell.row);
+	targetRow.height = sourceRow.height;
 };
 
 export const exportExcel = async (data, template, options = {}) => {
-  const opt = {
-    filename: `export.xlsx`,
-    rowstart: 2,
-    ...options,
-  };
-  daterange = await getCalendar(data);
-  const file = template.buffer;
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(file).then(async (workbook) => {
-    const sheet_data = workbook.worksheets[1];
-    const columns = await exportFormat(sheet_data);
-    const sheet = workbook.worksheets[0];
-    const colCount = sheet.columnCount;
-    const white = opt.rowstart;
-    const gray = opt.rowstart + 1;
-    let color = white;
+	const opt = {
+		filename: `export.xlsx`,
+		rowstart: 2,
+		...options,
+	};
+	daterange = await getCalendar(data);
+	const file = template.buffer;
+	const workbook = new ExcelJS.Workbook();
+	await workbook.xlsx.load(file).then(async (workbook) => {
+		const sheet_data = workbook.worksheets[1];
+		const columns = await exportFormat(sheet_data);
+		const sheet = workbook.worksheets[0];
+		const colCount = sheet.columnCount;
+		const white = opt.rowstart;
+		const gray = opt.rowstart + 1;
+		let color = white;
 
-    let target = opt.rowstart;
-    data.forEach(async (el, i) => {
-      target = i + opt.rowstart;
-      if (target > opt.rowstart + 1) {
-        cloneRows(sheet, color, target);
-        color = i % 2 == 0 ? gray : white;
-      }
+		let target = opt.rowstart;
+		data.forEach(async (el, i) => {
+			target = i + opt.rowstart;
+			if (target > opt.rowstart + 1) {
+				cloneRows(sheet, color, target);
+				color = i % 2 == 0 ? gray : white;
+			}
 
-      for (let j = 1; j <= colCount; j++) {
-        const format = columns.find((item) => item[1] == j);
-        if (format == undefined) continue;
-        let value = "";
-        if (format[3] == null) continue;
-        if (format[2] == "Func") {
-          const param = format[4] ? JSON.parse(format[4]) : {};
-          value = eval(format[3])(el, param);
-        } else if (format[2] == "Formula") {
-          value = { formula: format[3].replaceAll("{x}", target) };
-        } else {
-          if (format[3].includes(".")) {
-            value = el;
-            const keys = format[3].split(".");
-            for (const key of keys) {
-              value = value[key] !== undefined ? value[key] : "";
-            }
-          } else {
-            value = el[format[3]] !== undefined ? el[format[3]] : "";
-          }
-        }
+			for (let j = 1; j <= colCount; j++) {
+				const format = columns.find((item) => item[1] == j);
+				if (format == undefined) continue;
+				let value = "";
+				if (format[3] == null) continue;
+				if (format[2] == "Func") {
+					const param = format[4] ? JSON.parse(format[4]) : {};
+					value = eval(format[3])(el, param);
+				} else if (format[2] == "Formula") {
+					value = { formula: format[3].replaceAll("{x}", target) };
+				} else {
+					if (format[3].includes(".")) {
+						value = el;
+						const keys = format[3].split(".");
+						for (const key of keys) {
+							value = value[key] !== undefined ? value[key] : "";
+						}
+					} else {
+						value =
+							el[format[3]] !== undefined ? el[format[3]] : "";
+					}
+				}
 
-        if (format[2] === "Date" && value) {
-          sheet.getCell(target, format[1]).value =
-            dayjs(value).format("YYYY-MM-DD");
-        } else if (format[2] === "Datetime" && value) {
-          sheet.getCell(target, format[1]).value = dayjs(value).format(
-            "YYYY-MM-DD HH:mm:ss"
-          );
-        } else {
-          sheet.getCell(target, format[1]).value = value;
-        }
-      }
-    });
+				if (format[2] === "Date" && value) {
+					sheet.getCell(target, format[1]).value =
+						dayjs(value).format("YYYY-MM-DD");
+				} else if (format[2] === "Datetime" && value) {
+					sheet.getCell(target, format[1]).value = dayjs(
+						value
+					).format("YYYY-MM-DD HH:mm:ss");
+				} else {
+					sheet.getCell(target, format[1]).value = value;
+				}
+			}
+		});
 
-    if (opt.static) {
-      for (let rw of opt.static) {
-        sheet.getCell(rw.cols).value = rw.text;
-      }
-    }
+		if (opt.static) {
+			for (let rw of opt.static) {
+				sheet.getCell(rw.cols).value = rw.text;
+			}
+		}
 
-    // Excute more options (if any)
-    if (opt.execute != null && typeof opt.execute == "function") {
-      await opt.execute(workbook, sheet);
-    }
+		// Excute more options (if any)
+		if (opt.execute != null && typeof opt.execute == "function") {
+			await opt.execute(workbook, sheet);
+		}
 
-    // Remove all sheets except the first one
-    while (workbook.worksheets.length > 1) {
-      workbook.removeWorksheet(workbook.worksheets[1].id);
-    }
-    await workbook.xlsx.writeBuffer().then(function (buffer) {
-      const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = opt.filename;
-      link.click();
-    });
-  });
+		// Remove all sheets except the first one
+		while (workbook.worksheets.length > 1) {
+			workbook.removeWorksheet(workbook.worksheets[1].id);
+		}
+		await workbook.xlsx.writeBuffer().then(function (buffer) {
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			const link = document.createElement("a");
+			link.href = URL.createObjectURL(blob);
+			link.download = opt.filename;
+			link.click();
+		});
+	});
 };
 
 async function getCalendar(data) {
-  const minInqMoment = data.reduce((acc, item) => {
-    if (!item || !item.INQ_DATE) return acc;
-    const m = dayjs(item.INQ_DATE);
-    if (!m.isValid()) return acc;
-    return acc === null || m.isBefore(acc) ? m : acc;
-  }, null);
+	const minInqMoment = data.reduce((acc, item) => {
+		if (!item || !item.INQ_DATE) return acc;
+		const m = dayjs(item.INQ_DATE);
+		if (!m.isValid()) return acc;
+		return acc === null || m.isBefore(acc) ? m : acc;
+	}, null);
 
-  const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
-  const daterange = await ameccaledar(
-    minInqDate,
-    dayjs().add(10, "days").format("YYYYMMDD")
-  );
-  return daterange;
+	const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
+	const daterange = await ameccaledar(
+		minInqDate,
+		dayjs().add(10, "days").format("YYYYMMDD")
+	);
+	return daterange;
 }
 
 function getEffect(data, param) {
-  const inqgroup = data.inqgroup;
-  const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
-  return des.length > 0 ? "Y" : "";
+	const inqgroup = data.inqgroup;
+	const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
+	return des.length > 0 ? "Y" : "";
 }
 
 function nextWorkingDay(data, param) {
-  const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
-  const days = parseInt(param.days);
-  daterange = daterange.filter(
-    (item) => item.DAYOFF == 0 && item.WORKID >= sdate
-  );
-  let i = 1;
-  let current = sdate;
-  daterange.forEach((item) => {
-    if (i == days) {
-      current = item.WORKID;
-    }
-    i++;
-  });
-  return dayjs(current, "YYYYMMDD").format("YYYY-MM-DD");
+	const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
+	const days = parseInt(param.days);
+	daterange = daterange.filter(
+		(item) => item.DAYOFF == 0 && item.WORKID >= sdate
+	);
+	let i = 1;
+	let current = sdate;
+	daterange.forEach((item) => {
+		if (i == days) {
+			current = item.WORKID;
+		}
+		i++;
+	});
+	return dayjs(current, "YYYYMMDD").format("YYYY-MM-DD");
 }
 
 export const getTemplate = async (filename) => {
-  const data = {
-    path: `${process.env.FILE_TEMPLATE}/${filename}`,
-    name: filename,
-  };
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: `${process.env.APP_API}/files/template/read/`,
-      type: "POST",
-      dataType: "json",
-      data: data,
-      success: function (res) {
-        const binaryData = atob(res.content);
-        const buffer = new Uint8Array(binaryData.length);
-        for (let i = 0; i < binaryData.length; i++) {
-          buffer[i] = binaryData.charCodeAt(i);
-        }
-        res.buffer = buffer;
-        resolve(res);
-      },
-      error: function (error) {
-        reject(error);
-      },
-    });
-  });
+	const data = {
+		path: `${process.env.FILE_TEMPLATE}/${filename}`,
+		name: filename,
+	};
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: `${process.env.APP_API}/files/template/read/`,
+			type: "POST",
+			dataType: "json",
+			data: data,
+			success: function (res) {
+				const binaryData = atob(res.content);
+				const buffer = new Uint8Array(binaryData.length);
+				for (let i = 0; i < binaryData.length; i++) {
+					buffer[i] = binaryData.charCodeAt(i);
+				}
+				res.buffer = buffer;
+				resolve(res);
+			},
+			error: function (error) {
+				reject(error);
+			},
+		});
+	});
 };
