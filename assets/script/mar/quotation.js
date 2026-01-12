@@ -8,21 +8,25 @@ import { statusColors } from "../inquiry/ui.js";
 import { getInquiry } from "../service/inquiry.js";
 import * as utils from "../utils.js";
 
-// import { tableQuotation } from "../quotation/table.js";
-// import * as service from "../service/inquiry.js";
 var table;
 $(document).ready(async () => {
 	try {
-		await utils.initApp({ submenu: ".navmenu-quotation" });
 		let data;
+		await utils.initApp({ submenu: ".navmenu-quotation" });
 		if ($("#pageid").val() == "3") {
-			const validate = dayjs().format("YYYY-MM-DD");
-			data = await getInquiry({
+			const q = {
+				quotation: {
+					QUO_VALIDITY: `>= ${dayjs().format("YYYY-MM-DD")}`,
+				},
+				IS_QUOTATION: true,
 				INQ_STATUS: "> 50",
-				quotation: { QUO_VALIDITY: `>= ${validate}` },
-			});
+			};
+			data = await getInquiry(q);
 		} else {
-			data = await getInquiry({ INQ_STATUS: ">= 46 && < 80" });
+			data = await getInquiry({
+				INQ_STATUS: ">= 46 && < 80",
+				IS_TIMELINE: true,
+			});
 		}
 		const opt = await tableInquiryOption(data);
 		table = await createTable(opt);
@@ -112,9 +116,10 @@ async function tableInquiryOption(data) {
 			className: `${pageid == "3" ? "hidden" : ""}`,
 			render: (data, type, row) => {
 				if (data == "0") return "";
-				return `<i class="fi fi-ss-check-circle text-xl justify-center ${
-					row.timeline.PKC_CONFIRM != null ? "text-primary" : ""
-				}"></i>`;
+				let process = "";
+				// prettier-ignore
+				if(row.timeline !== undefined && row.timeline.PKC_CONFIRM != null) process = 'text-primary';
+				return `<i class="fi fi-ss-check-circle text-xl justify-center ${process}"></i>`;
 			},
 		},
 		{
@@ -125,9 +130,12 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				if (row.INQ_PKC_REQ == "1" && row.timeline.PKC_CONFIRM == null)
-					return `<a class="btn btn-sm btn-neutral/50 text-white min-w-[100px]" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-rr-arrow-up-right-from-square text-lg"></i>View</a>`;
-				return `<a class="btn btn-sm btn-accent text-white min-w-[100px]" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-sr-arrow-circle-right text-xl"></i>Process</a>`;
+				let timelines = false;
+				// prettier-ignore
+				if(row.timeline !== undefined && row.timeline.PKC_CONFIRM != null && row.INQ_PKC_REQ == "1") timelines = true;
+				if (timelines)
+					return `<a class="btn btn-sm btn-neutral/50 text-white min-w-25" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-rr-arrow-up-right-from-square text-lg"></i>View</a>`;
+				return `<a class="btn btn-sm btn-accent text-white min-w-25" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-sr-arrow-circle-right text-xl"></i>Process</a>`;
 			},
 		},
 		{
@@ -140,7 +148,7 @@ async function tableInquiryOption(data) {
 				const excel = `<a class="btn btn-sm btn-neutral text-white"><i class="fi fi-tr-file-excel text-lg"></i>Export</a>`;
 				const order = `<a class=""><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const sparq = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
-				const revise = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>Revise Inquiry</a>`;
+				const revise = `<a class=""><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
 				const dropdown = `<div class="dropdown  dropdown-end">
             <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
@@ -149,10 +157,33 @@ async function tableInquiryOption(data) {
                 <li>${revise}</li>
             </ul>
         </div>`;
-
 				return `<div class="flex justify-end gap-2">${edit}${excel}${dropdown}</div>`;
 			},
 		},
 	];
+
+	opt.initComplete = async function () {
+		const export1 = await utils.creatBtn({
+			id: "export1",
+			title: "Export to Excel",
+			icon: "fi fi-tr-file-excel text-xl",
+			className: `btn-neutral text-white hover:shadow-lg`,
+		});
+		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
+	};
 	return opt;
 }
+
+$(document).on("click", "#export1", async function (e) {
+	e.preventDefault();
+	try {
+		const template = await getTemplate("export_secure_orders.xlsx");
+		const data = table.rows().data().toArray();
+		await exportExcel(data, template, {
+			filename: "Secure Orders.xlsx",
+		});
+	} catch (error) {
+		console.log(error);
+		await utils.errorMessage(error);
+	}
+});

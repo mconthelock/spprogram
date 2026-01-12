@@ -2,14 +2,15 @@ import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { createTable } from "@amec/webasset/dataTable";
-import { getTemplate, exportExcel, copyMergedRow } from "../service/excel";
+import { getInquiryReport } from "../service/inquiry.js";
+import { getTemplate, exportExcel, cloneRows } from "../service/excel";
 import * as utils from "../utils.js";
 
 var table;
 $(async function () {
 	try {
 		await utils.initApp();
-		const data = await loadTableData({
+		const data = await getInquiryReport({
 			SINQ_DATE: dayjs().subtract(3, "month").format("YYYY-MM-DD"),
 			IS_ORDERS: 1,
 		});
@@ -147,13 +148,13 @@ $(document).on("click", ".export-docs", async function (e) {
 	}
 });
 
-$(document).on("click", "#export-btn", async function (e) {
+$(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
-		const template = await getTemplate("export_item_directsale.xlsx");
+		const template = await getTemplate("export_secure_orders.xlsx");
 		const data = table.rows().data().toArray();
 		await exportExcel(data, template, {
-			filename: "Price List Items master.xlsx",
+			filename: "Secure Orders.xlsx",
 		});
 	} catch (error) {
 		console.log(error);
@@ -167,9 +168,9 @@ async function exportDocument(template, data) {
 	await workbook.xlsx.load(file).then(async (workbook) => {
 		//Process sheets
 		await sheet1(workbook, data);
-		await sheet2(workbook);
-		await sheet3(workbook);
-		await sheet4(workbook);
+		await sheet2(workbook, data);
+		await sheet3(workbook, data);
+		await sheet4(workbook, data);
 
 		//Save to file
 		await workbook.xlsx.writeBuffer().then(function (buffer) {
@@ -202,65 +203,108 @@ async function sheet1(workbook, data) {
 	sheet.getCell("S13").value = data[0].SHIP;
 	sheet.getCell("Z11").value = data[0].PT;
 
-	const rowNum = 17;
-	const mergeDetails = sheet._merges; // เข้าถึงข้อมูลการ Merge ทั้งหมดใน Sheet
-	const foundMerge = Object.values(mergeDetails).find(
-		(m) => m.top <= rowNum && m.bottom >= rowNum && m.left === 1 // left 1 คือ Column A
-	);
-	if (foundMerge) {
-		console.log(`พบการ Merge ที่: ${foundMerge.shortAddr}`);
-		// จะได้ค่าอย่างเช่น "A17:AA17"
-	}
-	// let i = 17;
-	// let j = 1;
-	// data.forEach((val) => {
-	// 	if (j >= 14) {
-	// 		cloneRows(sheet, 18, i);
-	// 	}
-	// 	sheet.getCell(i, 1).value = j;
-	// 	sheet.getCell(i, 2).value = val.CAR_NO;
-	// 	sheet.getCell(i, 3).value = val.INQD_ITEM;
-	// 	sheet.getCell(i, 5).value = val.INQD_PARTNAME;
-	// 	sheet.getCell(i, 8).value = val.INQD_DRAWING;
-	// 	sheet.getCell(i, 11).value = val.INQD_VARIABLE;
-	// 	sheet.getCell(i, 14).value = val.CSQTY;
-	// 	sheet.getCell(i, 15).value = val.INQD_UNIT;
-	// 	sheet.getCell(i, 16).value = "";
-	// 	sheet.getCell(i, 18).value = val.MFGNO;
-	// 	sheet.getCell(i, 21).value = getSchedule(val.MARREQPRDN);
-	// 	sheet.getCell(i, 23).value = getSchedule(val.AMEC_SCHDL);
-	// 	sheet.getCell(i, 25).value = val.REMARK;
-	// 	i++;
-	// 	j++;
-	// });
+	let i = 17;
+	let j = 1;
+	data.forEach((val) => {
+		if (j > 14) {
+			cloneRows(sheet, 17, i);
+			mergedCells(sheet, i);
+		}
+		sheet.getCell(i, 1).value = j;
+		sheet.getCell(i, 2).value = val.CAR_NO;
+		sheet.getCell(i, 3).value = val.INQD_ITEM;
+		sheet.getCell(i, 5).value = val.INQD_PARTNAME;
+		sheet.getCell(i, 8).value = val.INQD_DRAWING;
+		sheet.getCell(i, 11).value = val.INQD_VARIABLE;
+		sheet.getCell(i, 14).value = val.CSQTY;
+		sheet.getCell(i, 15).value = val.INQD_UM;
+		sheet.getCell(i, 16).value = "";
+		sheet.getCell(i, 18).value = val.MFGNO;
+		sheet.getCell(i, 21).value = getSchedule(val.MARREQPRDN);
+		sheet.getCell(i, 23).value = getSchedule(val.AMEC_SCHDL);
+		sheet.getCell(i, 25).value = val.REMARK;
+		i++;
+		j++;
+	});
 
-	// let page = 0;
-	// if (j > 14) {
-	// 	page = Math.ceil((j - 14) / 28);
-	// }
+	let page = 0;
+	if (j > 14) page = Math.ceil((j - 14) / 28);
+	sheet.getCell("D4").value = page + 1;
+}
+
+function mergedCells(sheet, rows) {
+	const cells = [
+		{ from: "C", to: "D" },
+		{ from: "E", to: "G" },
+		{ from: "H", to: "J" },
+		{ from: "K", to: "M" },
+		{ from: "P", to: "Q" },
+		{ from: "R", to: "T" },
+		{ from: "U", to: "V" },
+		{ from: "W", to: "X" },
+		{ from: "Y", to: "AA" },
+	];
+	for (const cell of cells) {
+		sheet.mergeCells(`${cell.from}${rows}:${cell.to}${rows}`);
+	}
+	return;
 }
 
 //Sheet 2: Order list
-async function sheet2(workbook) {
+async function sheet2(workbook, data) {
 	const sheet = workbook.worksheets[1];
-	sheet.getCell(1, 1).value = "AAA";
+	sheet.name = data[0].PRJ_NO;
+	let i = 2;
+	data.forEach((val) => {
+		if (i > 25) cloneRows(sheet, 2, i);
+		sheet.getCell(i, 1).value = val.SERIES;
+		sheet.getCell(i, 2).value = val.INQ_TYPE;
+		sheet.getCell(i, 3).value = val.AGENT;
+		sheet.getCell(i, 4).value = "0";
+		sheet.getCell(i, 5).value = dayjs(val.IDS_DATE).format("YYYY-MM-DD");
+		sheet.getCell(i, 6).value = val.PRJ_NO;
+		sheet.getCell(i, 7).value = val.ORDER_NO;
+		sheet.getCell(i, 8).value = val.CAR_NO;
+		sheet.getCell(i, 9).value = val.TRADER;
+		sheet.getCell(i, 10).value = val.CSQTY;
+		sheet.getCell(i, 11).value = val.PRJ_NAME;
+		sheet.getCell(i, 12).value = val.DSTN;
+		sheet.getCell(i, 13).value = getSchedule(val.AMEC_SCHDL);
+		sheet.getCell(i, 14).value = dayjs(val.Cust_rqs).format("YYYY-MM-DD");
+		sheet.getCell(i, 15).value = val.PT;
+		sheet.getCell(i, 16).value = val.INQ_NO;
+		sheet.getCell(i, 17).value = val.MFGNO;
+		sheet.getCell(i, 18).value = val.PO_MELTEC;
+		sheet.getCell(i, 19).value = val.INQD_DRAWING;
+		sheet.getCell(i, 20).value = val.INQD_PARTNAME;
+		sheet.getCell(i, 21).value = ""; //amount usd
+		sheet.getCell(i, 22).value = "";
+		sheet.getCell(i, 23).value = "";
+		sheet.getCell(i, 24).value = "";
+		sheet.getCell(i, 25).value = "";
+		sheet.getCell(i, 26).value = "";
+		sheet.getCell(i, 27).value = "";
+		sheet.getCell(i, 28).value = "";
+		sheet.getCell(i, 29).value = "";
+		i++;
+	});
 }
 
 //Sheet 3: Form1
-async function sheet3(workbook) {
+async function sheet3(workbook, data) {
 	const sheet = workbook.worksheets[2];
-	sheet.getCell(1, 1).value = "AAA";
-	sheet.getCell(1, 1).value = "AAA";
-	sheet.getCell(1, 1).value = "AAA";
-	sheet.getCell(1, 1).value = "AAA";
+	sheet.getCell("J7").value = data[0].MFGNO;
+	sheet.getCell("J8").value = data[0].PRJ_NO;
+	sheet.getCell("J9").value = data[0].DSTN;
+	sheet.getCell("J10").value = data[0].TRADER;
 }
 
 //Sheet 4: Check Sheet
-async function sheet4(workbook) {
+async function sheet4(workbook, data) {
 	const sheet = workbook.worksheets[3];
-	sheet.getCell(1, 1).value = "AAA";
-	sheet.getCell(1, 1).value = "AAA";
-	sheet.getCell(1, 1).value = "AAA";
+	sheet.getCell("D2").value = data[0].PRJ_NO;
+	sheet.getCell("D3").value = data[0].MFGNO;
+	sheet.getCell("K4").value = data[0].CREATEBY;
 }
 
 function getSchedule(val) {

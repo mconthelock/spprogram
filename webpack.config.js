@@ -24,6 +24,7 @@ module.exports = {
 		mar_quodetail: "./assets/script/mar/quodetail.js",
 		mar_quoview: "./assets/script/mar/quoview.js",
 		mar_quoreport: "./assets/script/mar/quoreport.js",
+		//Master
 		priceratio: "./assets/script/mar/priceratio.js",
 		currency: "./assets/script/mar/currency.js",
 		inqcontrol: "./assets/script/mar/inqcontrol.js",

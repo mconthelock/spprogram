@@ -11,33 +11,9 @@ export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
 		const newCell = newRow.getCell(colNumber);
 		if (cell.style) {
 			newCell.style = { ...cell.style };
-			//newCell.style = JSON.parse(JSON.stringify(cell.style));
 		}
 	});
 	newRow.height = sourceRow.height;
-};
-
-export const copyMergedRow = async (worksheet, sourceRange, targetRange) => {
-	// 1. ดึงข้อมูลจาก Cell แรกของ Source (Master Cell)
-	const sourceMasterCell = worksheet.getCell(sourceRange.split(":")[0]); // ดึง A17
-	const targetMasterCell = worksheet.getCell(targetRange.split(":")[0]); // ดึง A25
-
-	// 2. สั่ง Merge ที่ตำแหน่งใหม่
-	worksheet.mergeCells(targetRange);
-
-	// 3. Copy Value และ Style จาก Master ไปยัง Master ใหม่
-	targetMasterCell.value = sourceMasterCell.value;
-
-	if (sourceMasterCell.style) {
-		targetMasterCell.style = JSON.parse(
-			JSON.stringify(sourceMasterCell.style)
-		);
-	}
-
-	// 4. (Optional) ปรับความสูงของแถวให้เท่ากัน
-	const sourceRow = worksheet.getRow(sourceMasterCell.row);
-	const targetRow = worksheet.getRow(targetMasterCell.row);
-	targetRow.height = sourceRow.height;
 };
 
 export const exportExcel = async (data, template, options = {}) => {
@@ -68,17 +44,18 @@ export const exportExcel = async (data, template, options = {}) => {
 
 			for (let j = 1; j <= colCount; j++) {
 				const format = columns.find((item) => item[1] == j);
-				if (format == undefined) continue;
+				if (format == undefined || format[3] == null) continue;
+				//console.log(format);
 				let value = "";
-				if (format[3] == null) continue;
 				if (format[2] == "Func") {
 					const param = format[4] ? JSON.parse(format[4]) : {};
 					value = eval(format[3])(el, param);
+					sheet.getCell(target, format[1]).value = value;
 				} else if (format[2] == "Formula") {
 					value = { formula: format[3].replaceAll("{x}", target) };
+					sheet.getCell(target, format[1]).value = value;
 				} else {
 					if (format[3].includes(".")) {
-						value = el;
 						const keys = format[3].split(".");
 						for (const key of keys) {
 							value = value[key] !== undefined ? value[key] : "";
@@ -87,17 +64,21 @@ export const exportExcel = async (data, template, options = {}) => {
 						value =
 							el[format[3]] !== undefined ? el[format[3]] : "";
 					}
-				}
 
-				if (format[2] === "Date" && value) {
-					sheet.getCell(target, format[1]).value =
-						dayjs(value).format("YYYY-MM-DD");
-				} else if (format[2] === "Datetime" && value) {
-					sheet.getCell(target, format[1]).value = dayjs(
-						value
-					).format("YYYY-MM-DD HH:mm:ss");
-				} else {
-					sheet.getCell(target, format[1]).value = value;
+					//Format Data
+					if (format[2] === "Date" && value) {
+						// prettier-ignore
+						sheet.getCell(target, format[1]).value = dayjs(value).toDate();
+						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd";
+					} else if (format[2] === "Datetime" && value) {
+						// prettier-ignore
+						sheet.getCell(target, format[1]).value = dayjs(value).toDate();
+						// prettier-ignore
+						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd hh:mm:ss";
+					} else {
+						sheet.getCell(target, format[1]).value = value;
+						sheet.getCell(target, format[1]).numFmt = "General";
+					}
 				}
 			}
 		});
@@ -145,13 +126,13 @@ async function getCalendar(data) {
 	return daterange;
 }
 
-function getEffect(data, param) {
+export function getEffect(data, param) {
 	const inqgroup = data.inqgroup;
 	const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
 	return des.length > 0 ? "Y" : "";
 }
 
-function nextWorkingDay(data, param) {
+export function nextWorkingDay(data, param) {
 	const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
 	const days = parseInt(param.days);
 	daterange = daterange.filter(
@@ -194,3 +175,32 @@ export const getTemplate = async (filename) => {
 		});
 	});
 };
+
+export function getSchedule(data, param) {
+	const val = data.AMEC_SCHDL;
+	if (val == "" || val == undefined || val == null) return "";
+
+	const str1 = dayjs(val).format("YYMM");
+	let jun = "";
+	switch (dayjs(val).format("DD")) {
+		case "05":
+			jun = `${str1}X`;
+			break;
+		case "10":
+			jun = `${str1}A`;
+			break;
+		case "15":
+			jun = `${str1}Y`;
+			break;
+		case "20":
+			jun = `${str1}B`;
+			break;
+		case "25":
+			jun = `${str1}Z`;
+			break;
+		default:
+			jun = `${str1}C`;
+			break;
+	}
+	return jun;
+}
