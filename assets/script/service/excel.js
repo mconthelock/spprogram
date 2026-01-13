@@ -1,5 +1,5 @@
+import { toExcelDate } from "@amec/webasset/dayjs";
 import ExcelJS from "exceljs";
-import { exportFormat } from "./inquiry.js";
 import { ameccaledar } from "../utils.js";
 import dayjs from "dayjs";
 var daterange;
@@ -34,13 +34,10 @@ export const exportExcel = async (data, template, options = {}) => {
 		const gray = opt.rowstart + 1;
 		let color = white;
 
-		let target = opt.rowstart;
+		let target = opt.rowstart + 2;
 		data.forEach(async (el, i) => {
-			target = i + opt.rowstart;
-			if (target > opt.rowstart + 1) {
-				cloneRows(sheet, color, target);
-				color = i % 2 == 0 ? gray : white;
-			}
+			cloneRows(sheet, color, target);
+			color = i % 2 == 0 ? gray : white;
 
 			for (let j = 1; j <= colCount; j++) {
 				const format = columns.find((item) => item[1] == j);
@@ -57,8 +54,12 @@ export const exportExcel = async (data, template, options = {}) => {
 				} else {
 					if (format[3].includes(".")) {
 						const keys = format[3].split(".");
-						for (const key of keys) {
-							value = value[key] !== undefined ? value[key] : "";
+						const item = el[keys[0]];
+						if (Array.isArray(item)) {
+							console.log(item[0][keys[1]]);
+							value = item !== undefined ? item[0][keys[1]] : "";
+						} else {
+							value = item !== undefined ? item[keys[1]] : "";
 						}
 					} else {
 						value =
@@ -68,11 +69,20 @@ export const exportExcel = async (data, template, options = {}) => {
 					//Format Data
 					if (format[2] === "Date" && value) {
 						// prettier-ignore
-						sheet.getCell(target, format[1]).value = dayjs(value).toDate();
+						sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').format('YYYY-MM-DD')).toDate();
 						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd";
 					} else if (format[2] === "Datetime" && value) {
 						// prettier-ignore
-						sheet.getCell(target, format[1]).value = dayjs(value).toDate();
+						sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').format('YYYY-MM-DD HH:mm:ss')).toDate();
+						console.log(
+							format[0],
+							dayjs(
+								dayjs(value)
+									.locale("th")
+									.format("YYYY-MM-DD HH:mm:ss")
+							).toDate()
+						);
+
 						// prettier-ignore
 						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd hh:mm:ss";
 					} else {
@@ -81,6 +91,7 @@ export const exportExcel = async (data, template, options = {}) => {
 					}
 				}
 			}
+			target = target + 1;
 		});
 
 		if (opt.static) {
@@ -93,6 +104,8 @@ export const exportExcel = async (data, template, options = {}) => {
 		if (opt.execute != null && typeof opt.execute == "function") {
 			await opt.execute(workbook, sheet);
 		}
+
+		sheet.spliceRows(opt.rowstart, 2);
 
 		// Remove all sheets except the first one
 		while (workbook.worksheets.length > 1) {
@@ -110,44 +123,17 @@ export const exportExcel = async (data, template, options = {}) => {
 	});
 };
 
-async function getCalendar(data) {
-	const minInqMoment = data.reduce((acc, item) => {
-		if (!item || !item.INQ_DATE) return acc;
-		const m = dayjs(item.INQ_DATE);
-		if (!m.isValid()) return acc;
-		return acc === null || m.isBefore(acc) ? m : acc;
-	}, null);
-
-	const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
-	const daterange = await ameccaledar(
-		minInqDate,
-		dayjs().add(10, "days").format("YYYYMMDD")
-	);
-	return daterange;
-}
-
-export function getEffect(data, param) {
-	const inqgroup = data.inqgroup;
-	const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
-	return des.length > 0 ? "Y" : "";
-}
-
-export function nextWorkingDay(data, param) {
-	const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
-	const days = parseInt(param.days);
-	daterange = daterange.filter(
-		(item) => item.DAYOFF == 0 && item.WORKID >= sdate
-	);
-	let i = 1;
-	let current = sdate;
-	daterange.forEach((item) => {
-		if (i == days) {
-			current = item.WORKID;
-		}
-		i++;
+export const exportFormat = (sheet) => {
+	const data_array = [];
+	sheet.eachRow({ includeEmpty: false }, function (row, rowNumber) {
+		const row_values = [];
+		row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
+			row_values.push(cell.value);
+		});
+		data_array.push(row_values);
 	});
-	return dayjs(current, "YYYYMMDD").format("YYYY-MM-DD");
-}
+	return data_array;
+};
 
 export const getTemplate = async (filename) => {
 	const data = {
@@ -204,3 +190,45 @@ export function getSchedule(data, param) {
 	}
 	return jun;
 }
+
+//Excel function
+function getEffect(data, param) {
+	const inqgroup = data.inqgroup;
+	const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
+	return des.length > 0 ? "Y" : "";
+}
+
+function nextWorkingDay(data, param) {
+	const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
+	const days = parseInt(param.days);
+	daterange = daterange.filter(
+		(item) => item.DAYOFF == 0 && item.WORKID >= sdate
+	);
+	let i = 1;
+	let current = sdate;
+	daterange.forEach((item) => {
+		if (i == days) {
+			current = item.WORKID;
+		}
+		i++;
+	});
+	return dayjs(current, "YYYYMMDD").format("YYYY-MM-DD");
+}
+
+async function getCalendar(data) {
+	const minInqMoment = data.reduce((acc, item) => {
+		if (!item || !item.INQ_DATE) return acc;
+		const m = dayjs(item.INQ_DATE);
+		if (!m.isValid()) return acc;
+		return acc === null || m.isBefore(acc) ? m : acc;
+	}, null);
+
+	const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
+	const daterange = await ameccaledar(
+		minInqDate,
+		dayjs().add(10, "days").format("YYYYMMDD")
+	);
+	return daterange;
+}
+
+function inquirySupplier(data, param) {}

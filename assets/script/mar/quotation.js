@@ -4,6 +4,7 @@ import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
 import { createTable } from "@amec/webasset/dataTable";
+import { getTemplate, exportExcel } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
 import { getInquiry } from "../service/inquiry.js";
 import * as utils from "../utils.js";
@@ -11,23 +12,9 @@ import * as utils from "../utils.js";
 var table;
 $(document).ready(async () => {
 	try {
-		let data;
 		await utils.initApp({ submenu: ".navmenu-quotation" });
-		if ($("#pageid").val() == "3") {
-			const q = {
-				quotation: {
-					QUO_VALIDITY: `>= ${dayjs().format("YYYY-MM-DD")}`,
-				},
-				IS_QUOTATION: true,
-				INQ_STATUS: "> 50",
-			};
-			data = await getInquiry(q);
-		} else {
-			data = await getInquiry({
-				INQ_STATUS: ">= 46 && < 80",
-				IS_TIMELINE: true,
-			});
-		}
+		const q = await tableCondition();
+		const data = await getInquiry(q);
 		const opt = await tableInquiryOption(data);
 		table = await createTable(opt);
 	} catch (error) {
@@ -37,6 +24,25 @@ $(document).ready(async () => {
 		await utils.showLoader({ show: false });
 	}
 });
+
+async function tableCondition() {
+	let q = {};
+	if ($("#pageid").val() == "3") {
+		q = {
+			INQ_STATUS: "> 50",
+			quotation: {
+				QUO_VALIDITY: `>= ${dayjs().format("YYYY-MM-DD")}`,
+			},
+			IS_QUOTATION: true,
+		};
+	} else {
+		q = {
+			INQ_STATUS: ">= 46 && < 80",
+			IS_TIMELINE: true,
+		};
+	}
+	return q;
+}
 
 async function tableInquiryOption(data) {
 	const pageid = $("#pageid").val();
@@ -169,7 +175,15 @@ async function tableInquiryOption(data) {
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-neutral text-white hover:shadow-lg`,
 		});
-		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
+		const export2 = await utils.creatBtn({
+			id: "export2",
+			title: "Export (Detail)",
+			icon: `fi fi fi-rr-layers text-xl`,
+			className: `btn-outline btn-neutral text-neutral hover:shadow-lg hover:text-white!`,
+		});
+		$(".table-info").append(
+			`<div class="flex gap-2">${export1}${export2}</div>`
+		);
 	};
 	return opt;
 }
@@ -177,13 +191,25 @@ async function tableInquiryOption(data) {
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
-		const template = await getTemplate("export_secure_orders.xlsx");
-		const data = table.rows().data().toArray();
+		await utils.activatedBtn($(this));
+		const q = await tableCondition();
+		const query = {
+			...q,
+			INQ_NO: "T-IEE-25-A0504",
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+			IS_TIMELINE: true,
+		};
+		const data = await getInquiry(query);
+		const template = await getTemplate("export_inquiry_list_template.xlsx");
 		await exportExcel(data, template, {
-			filename: "Secure Orders.xlsx",
+			filename: "Quotation List.xlsx",
+			rowstart: 3,
 		});
 	} catch (error) {
 		console.log(error);
 		await utils.errorMessage(error);
+	} finally {
+		await utils.activatedBtn($(this), false);
 	}
 });

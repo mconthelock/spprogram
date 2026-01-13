@@ -4,7 +4,6 @@ import "@amec/webasset/css/dataTable.min.css";
 import "select2";
 import * as utils from "../utils.js";
 import { createTable } from "@amec/webasset/dataTable";
-import { getExportTemplate } from "../service/inquiry.js";
 import { exportExcel } from "../service/excel.js";
 import {
 	getPriceRatio,
