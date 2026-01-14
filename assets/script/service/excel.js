@@ -17,12 +17,13 @@ export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
 };
 
 export const exportExcel = async (data, template, options = {}) => {
+	console.log(data);
 	const opt = {
 		filename: `export.xlsx`,
 		rowstart: 2,
 		...options,
 	};
-	daterange = await getCalendar(data);
+	//daterange = await getCalendar(data);
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (workbook) => {
@@ -30,15 +31,11 @@ export const exportExcel = async (data, template, options = {}) => {
 		const columns = await exportFormat(sheet_data);
 		const sheet = workbook.worksheets[0];
 		const colCount = sheet.columnCount;
-		const white = opt.rowstart;
-		const gray = opt.rowstart + 1;
-		let color = white;
 
+		let color = opt.rowstart;
 		let target = opt.rowstart + 2;
 		data.forEach(async (el, i) => {
 			cloneRows(sheet, color, target);
-			color = i % 2 == 0 ? gray : white;
-
 			for (let j = 1; j <= colCount; j++) {
 				const format = columns.find((item) => item[1] == j);
 				if (format == undefined || format[3] == null) continue;
@@ -49,40 +46,37 @@ export const exportExcel = async (data, template, options = {}) => {
 					value = eval(format[3])(el, param);
 					sheet.getCell(target, format[1]).value = value;
 				} else if (format[2] == "Formula") {
-					value = { formula: format[3].replaceAll("{x}", target) };
+					value = {
+						formula: format[3].replaceAll("{x}", target - 2),
+					};
 					sheet.getCell(target, format[1]).value = value;
 				} else {
 					if (format[3].includes(".")) {
 						const keys = format[3].split(".");
 						const item = el[keys[0]];
-						if (Array.isArray(item)) {
-							console.log(item[0][keys[1]]);
-							value = item !== undefined ? item[0][keys[1]] : "";
-						} else {
-							value = item !== undefined ? item[keys[1]] : "";
+						if (item !== undefined) {
+							if (Array.isArray(item)) {
+								// prettier-ignore
+								value = item !== undefined ? item[0][keys[1]] : "";
+							} else {
+								value = item !== undefined ? item[keys[1]] : "";
+							}
 						}
 					} else {
-						value =
-							el[format[3]] !== undefined ? el[format[3]] : "";
+						// prettier-ignore
+						value = el[format[3]] !== undefined ? el[format[3]] : "";
 					}
 
 					//Format Data
 					if (format[2] === "Date" && value) {
 						// prettier-ignore
-						sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').format('YYYY-MM-DD')).toDate();
+						sheet.getCell(target, format[1]).value = dayjs(value).add(7, 'hour').toDate();
+						// dayjs(dayjs(value).locale('th').add(7, 'hour').format('YYYY-MM-DD')).toDate();
 						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd";
 					} else if (format[2] === "Datetime" && value) {
 						// prettier-ignore
-						sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').format('YYYY-MM-DD HH:mm:ss')).toDate();
-						console.log(
-							format[0],
-							dayjs(
-								dayjs(value)
-									.locale("th")
-									.format("YYYY-MM-DD HH:mm:ss")
-							).toDate()
-						);
-
+						sheet.getCell(target, format[1]).value = dayjs(value).add(7, 'hour').toDate();
+						// sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').add(7, 'hour').format('YYYY-MM-DD HH:mm:ss')).toDate();
 						// prettier-ignore
 						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd hh:mm:ss";
 					} else {
@@ -92,6 +86,7 @@ export const exportExcel = async (data, template, options = {}) => {
 				}
 			}
 			target = target + 1;
+			color = color == opt.rowstart ? color + 1 : opt.rowstart;
 		});
 
 		if (opt.static) {
@@ -106,7 +101,6 @@ export const exportExcel = async (data, template, options = {}) => {
 		}
 
 		sheet.spliceRows(opt.rowstart, 2);
-
 		// Remove all sheets except the first one
 		while (workbook.worksheets.length > 1) {
 			workbook.removeWorksheet(workbook.worksheets[1].id);
@@ -230,5 +224,3 @@ async function getCalendar(data) {
 	);
 	return daterange;
 }
-
-function inquirySupplier(data, param) {}

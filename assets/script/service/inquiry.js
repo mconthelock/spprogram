@@ -121,7 +121,7 @@ export const getInquiryReport = async (data) => {
 	}
 };
 
-// Function to manage inquiry group
+//Function to manage inquiry group
 export const getInquiryGroup = async (data) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
@@ -173,7 +173,7 @@ export const updateInquiryGroup = async (data) => {
 	});
 };
 
-// Function to manage inquiry detail
+//Function to manage inquiry detail
 export const createInquiryDetail = async (data) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
@@ -286,3 +286,84 @@ export const updateInquiryTimeline = async (data) => {
 		});
 	});
 };
+
+//Align data for export excel
+export const dataExports = async (data) => {
+	const details = [];
+	data.forEach(async (el) => {
+		let row = {
+			...el,
+			inquirySupplier: await inquirySupplier(el),
+			inquirySecound: await inquirySecound(el),
+			inquiryCountDwg: await inquiryCountDwg(el),
+			inquiryValues: await inquiryValues(el),
+			SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
+			MARUSER: el.maruser.SNAME,
+			STATUS_DESC: el.status.STATUS_DESC,
+			PRJ_NO: el.orders[0].PRJ_NO,
+			ORDER_NO: el.orders[0].ORDER_NO,
+			IDS_DATE: el.orders[0].IDS_DATE,
+			CUST_RQS: el.orders[0].CUST_RQS,
+			DSTN: el.orders[0].DSTN,
+			FINUSER: el.timeline.finusers[0].SNAME,
+			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+		};
+
+		delete row.details;
+		delete row.maruser;
+		delete row.status;
+		delete row.shipment;
+		delete row.orders;
+		delete row.quotation;
+		delete row.quotation;
+		details.push(row);
+	});
+	return details;
+};
+
+async function inquirySupplier(data) {
+	let suplier = "";
+	const dt = data.details;
+	dt.forEach((item) => {
+		if (
+			item.INQD_SUPPLIER !== null &&
+			suplier.split(", ").indexOf(item.INQD_SUPPLIER) === -1
+		) {
+			suplier += item.INQD_SUPPLIER + ", ";
+		}
+	});
+	return suplier.replace(/, $/, "");
+}
+
+async function inquirySecound(data) {
+	const dt = data.details;
+	let secound = 0;
+	dt.forEach((item) => {
+		if (item.INQD_SENDPART !== null) secound += 1;
+	});
+	return secound;
+}
+
+async function inquiryCountDwg(data) {
+	const dt = data.details;
+	let countdwg = 0;
+	dt.forEach((item) => {
+		if (item.INQD_DRAWING !== null && item.INQD_UNREPLY == null)
+			countdwg += 1;
+	});
+	return countdwg;
+}
+
+async function inquiryValues(data) {
+	const dt = data.details;
+	let values = 0;
+	dt.forEach((item) => {
+		const qty = item.INQD_QTY !== null ? parseFloat(item.INQD_QTY) : 0;
+		const price =
+			item.INQD_UNIT_PRICE !== null
+				? parseFloat(item.INQD_UNIT_PRICE)
+				: 0;
+		values += qty * price;
+	});
+	return values;
+}

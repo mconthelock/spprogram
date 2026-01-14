@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
-import { getInquiry } from "../service/inquiry.js";
+import { getInquiry, dataExports } from "../service/inquiry.js";
 import * as utils from "../utils.js";
 
 var table;
@@ -195,14 +195,16 @@ $(document).on("click", "#export1", async function (e) {
 		const q = await tableCondition();
 		const query = {
 			...q,
-			INQ_NO: "T-IEE-25-A0504",
+			// INQ_NO: "T-IEE-25-A0504",
 			IS_DETAILS: true,
 			IS_ORDERS: true,
 			IS_TIMELINE: true,
+			IS_FIN: true,
 		};
 		const data = await getInquiry(query);
+		const result = await dataExports(data);
 		const template = await getTemplate("export_inquiry_list_template.xlsx");
-		await exportExcel(data, template, {
+		await exportExcel(result, template, {
 			filename: "Quotation List.xlsx",
 			rowstart: 3,
 		});
@@ -213,3 +215,64 @@ $(document).on("click", "#export1", async function (e) {
 		await utils.activatedBtn($(this), false);
 	}
 });
+
+$(document).on("click", "#export2", async function (e) {
+	e.preventDefault();
+	try {
+		await utils.activatedBtn($(this));
+		const q = await tableCondition();
+		const query = {
+			...q,
+			// INQ_NO: "T-IEE-25-A0504",
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+		};
+		const data = await getInquiry(query);
+		const result = await dataDetails(data);
+		const template = await getTemplate(
+			"export_inquiry_list_template_detail.xlsx"
+		);
+		await exportExcel(result, template, {
+			filename: "Quotation Detail.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await utils.errorMessage(error);
+	} finally {
+		await utils.activatedBtn($(this), false);
+	}
+});
+
+async function dataDetails(data) {
+	const details = [];
+	data.forEach((el) => {
+		let row = {};
+		const items = el.details;
+		const orders = el.orders;
+		items.map((dt) => {
+			row = {
+				...dt,
+				INQ_NO: el.INQ_NO,
+				INQ_DATE: el.INQ_DATE,
+				INQ_TRADER: el.INQ_TRADER,
+				INQ_AGENT: el.INQ_AGENT,
+				INQ_COUNTRY: el.INQ_COUNTRY,
+				MARUSER: el.maruser.SNAME,
+				INQ_SERIES: el.INQ_SERIES,
+				INQ_PRJNO: el.INQ_PRJNO,
+				INQ_PRJNAME: el.INQ_PRJNAME,
+				INQ_SHOPORDER: el.INQ_SHOPORDER,
+				SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
+				QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+			};
+			if (orders !== undefined) {
+				orders.map((or) => {
+					row = { ...row, ...or };
+				});
+			}
+			details.push(row);
+		});
+	});
+	return details;
+}
