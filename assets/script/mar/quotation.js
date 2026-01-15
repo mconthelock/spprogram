@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
-import { getInquiry, dataExports } from "../service/inquiry.js";
+import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
 import * as utils from "../utils.js";
 
 var table;
@@ -151,7 +151,7 @@ async function tableInquiryOption(data) {
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
 				const edit = `<a class="btn btn-sm btn-accent text-white" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-tr-file-edit text-lg"></i>Edit</a>`;
-				const excel = `<a class="btn btn-sm btn-neutral text-white"><i class="fi fi-tr-file-excel text-lg"></i>Export</a>`;
+				const excel = `<a class="btn btn-sm btn-neutral text-white export-excel" href="#"><i class="fi fi-tr-file-excel text-lg"></i>Export</a>`;
 				const order = `<a class=""><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const sparq = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
 				const revise = `<a class=""><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
@@ -187,6 +187,15 @@ async function tableInquiryOption(data) {
 	};
 	return opt;
 }
+
+$(document).on("click", ".export-excel", async function (e) {
+	e.preventDefault();
+	try {
+	} catch (error) {
+		console.log(error);
+		await utils.errorMessage(error);
+	}
+});
 
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
@@ -243,36 +252,3 @@ $(document).on("click", "#export2", async function (e) {
 		await utils.activatedBtn($(this), false);
 	}
 });
-
-async function dataDetails(data) {
-	const details = [];
-	data.forEach((el) => {
-		let row = {};
-		const items = el.details;
-		const orders = el.orders;
-		items.map((dt) => {
-			row = {
-				...dt,
-				INQ_NO: el.INQ_NO,
-				INQ_DATE: el.INQ_DATE,
-				INQ_TRADER: el.INQ_TRADER,
-				INQ_AGENT: el.INQ_AGENT,
-				INQ_COUNTRY: el.INQ_COUNTRY,
-				MARUSER: el.maruser.SNAME,
-				INQ_SERIES: el.INQ_SERIES,
-				INQ_PRJNO: el.INQ_PRJNO,
-				INQ_PRJNAME: el.INQ_PRJNAME,
-				INQ_SHOPORDER: el.INQ_SHOPORDER,
-				SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
-				QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
-			};
-			if (orders !== undefined) {
-				orders.map((or) => {
-					row = { ...row, ...or };
-				});
-			}
-			details.push(row);
-		});
-	});
-	return details;
-}

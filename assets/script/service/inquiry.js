@@ -300,12 +300,15 @@ export const dataExports = async (data) => {
 			SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
 			MARUSER: el.maruser.SNAME,
 			STATUS_DESC: el.status.STATUS_DESC,
-			PRJ_NO: el.orders[0].PRJ_NO,
-			ORDER_NO: el.orders[0].ORDER_NO,
-			IDS_DATE: el.orders[0].IDS_DATE,
-			CUST_RQS: el.orders[0].CUST_RQS,
-			DSTN: el.orders[0].DSTN,
-			FINUSER: el.timeline.finusers[0].SNAME,
+			PRJ_NO: el.orders.length == 0 ? null : el.orders[0].PRJ_NO,
+			ORDER_NO: el.orders.length == 0 ? null : el.orders[0].ORDER_NO,
+			IDS_DATE: el.orders.length == 0 ? null : el.orders[0].IDS_DATE,
+			CUST_RQS: el.orders.length == 0 ? null : el.orders[0].CUST_RQS,
+			DSTN: el.orders.length == 0 ? null : el.orders[0].DSTN,
+			FINUSER:
+				el.timeline.finusers.length == 0
+					? null
+					: el.timeline.finusers[0].SNAME,
 			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 		};
 
@@ -366,4 +369,37 @@ async function inquiryValues(data) {
 		values += qty * price;
 	});
 	return values;
+}
+
+export async function dataDetails(data) {
+	const details = [];
+	data.forEach((el) => {
+		let row = {};
+		const items = el.details;
+		const orders = el.orders;
+		items.map((dt) => {
+			row = {
+				...dt,
+				INQ_NO: el.INQ_NO,
+				INQ_DATE: el.INQ_DATE,
+				INQ_TRADER: el.INQ_TRADER,
+				INQ_AGENT: el.INQ_AGENT,
+				INQ_COUNTRY: el.INQ_COUNTRY,
+				MARUSER: el.maruser.SNAME,
+				INQ_SERIES: el.INQ_SERIES,
+				INQ_PRJNO: el.INQ_PRJNO,
+				INQ_PRJNAME: el.INQ_PRJNAME,
+				INQ_SHOPORDER: el.INQ_SHOPORDER,
+				SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
+				QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+			};
+			if (orders !== undefined) {
+				orders.map((or) => {
+					row = { ...row, ...or };
+				});
+			}
+			details.push(row);
+		});
+	});
+	return details;
 }
