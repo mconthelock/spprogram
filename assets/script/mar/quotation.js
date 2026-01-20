@@ -208,14 +208,35 @@ $(document).on("click", ".export-excel", async function (e) {
 	e.preventDefault();
 	try {
 		await activatedBtn($(this));
-		//const template = await getTemplate("cover_sheet_orders.xlsx");
+		const template = await getTemplate("export_quotation_detail.xlsx");
+		const data = await loadTableData({ PRJ_NO: docs, IS_ORDERS: 1 });
+		await exportDocument(template, data);
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		//await showLoader({ show: false });
+		await activatedBtn($(this), false);
 	}
 });
+
+async function exportDocument(template, data) {
+	const file = template.buffer;
+	const workbook = new ExcelJS.Workbook();
+	await workbook.xlsx.load(file).then(async (workbook) => {
+		//Process sheets
+
+		//Save to file
+		await workbook.xlsx.writeBuffer().then(function (buffer) {
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			const link = document.createElement("a");
+			link.href = URL.createObjectURL(blob);
+			link.download = "Cover Sheet Orders.xlsx";
+			link.click();
+		});
+	});
+}
 
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();

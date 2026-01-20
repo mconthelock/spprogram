@@ -3,7 +3,6 @@
 @section('contents')
     <input type="text" id="pageid" class="hidden" value="{{ $id }}">
     <h2 class="card-title text-2xl">{{ $title }}</h2>
-    <a class="btn" disabled="disabled">Disabled using attribute</a>
     <div class="divider m-0"></div>
     <table id="table" class="table table-zebra display text-xs"></table>
 @endsection
