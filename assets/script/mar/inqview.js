@@ -40,14 +40,14 @@ $(document).ready(async () => {
 });
 
 async function setupButton() {
-	const exportfile = await utils.creatBtn({
+	const exportfile = await creatBtn({
 		id: "export-detail",
 		title: "Export",
 		icon: "fi fi-tr-file-excel text-xl",
 		className: "btn-neutral text-white hover:shadow-lg hover:bg-neutral/70",
 	});
 
-	const back = await utils.creatBtn({
+	const back = await creatBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",

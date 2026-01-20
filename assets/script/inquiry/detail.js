@@ -500,11 +500,11 @@ export async function createReasonModal() {
 		}
 	});
 
-	const btnSave = await utils.creatBtn({
+	const btnSave = await creatBtn({
 		id: "save-reason",
 		className: "btn-outline  btn-primary  text-primary hover:text-white",
 	});
-	const btnCancel = await utils.creatBtn({
+	const btnCancel = await creatBtn({
 		id: "cancel-reason",
 		title: "Cancel",
 		icon: "icofont-close text-2xl",
@@ -613,13 +613,13 @@ export async function resetUnreplyForm() {
 
 //004: Search Elmes data
 export async function elmesComponent() {
-	const confirmBtn = await utils.creatBtn({
+	const confirmBtn = await creatBtn({
 		id: "elmes-confirm",
 		title: "Confirm",
 		icon: "",
 		className: "btn-primary btn-outline text-primary hover:text-white",
 	});
-	const cancelBtn = await utils.creatBtn({
+	const cancelBtn = await creatBtn({
 		id: "elmes-cancel",
 		title: "Cancel",
 		icon: "icofont-close text-2xl",

@@ -44,7 +44,7 @@ export async function tableOpt(data, options = {}) {
 			render: (data) => {
 				if (data == null) return "";
 				const statusColor = colors.find(
-					(item) => item.id >= data.STATUS_ID
+					(item) => item.id >= data.STATUS_ID,
 				);
 				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
@@ -54,7 +54,7 @@ export async function tableOpt(data, options = {}) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -73,8 +73,8 @@ export async function tableOpt(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -91,8 +91,8 @@ export async function tableOpt(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -109,8 +109,8 @@ export async function tableOpt(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -127,8 +127,8 @@ export async function tableOpt(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},

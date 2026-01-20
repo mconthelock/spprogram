@@ -97,8 +97,7 @@ async function tableOpt(data) {
 			data: "CURR_UPDATE_BY",
 			className: "text-start",
 			title: "Update By",
-			render: (data) =>
-				data == null ? "" : utils.displayname(data).sname,
+			render: (data) => (data == null ? "" : displayname(data).sname),
 		},
 		{
 			data: "CURR_CODE",

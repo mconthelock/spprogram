@@ -80,14 +80,14 @@ $(document).ready(async () => {
 });
 
 async function setupButton(mode) {
-	const issue = await utils.creatBtn({
+	const issue = await creatBtn({
 		id: "issue",
 		title: "Issue Quotation",
 		className: "btn-primary text-white shadow-lg",
 		icon: "fi fi-tr-paper-plane-top text-xl rotate-[-45deg]",
 	});
 
-	const reject = await utils.creatBtn({
+	const reject = await creatBtn({
 		id: "reject",
 		title: "Unable Process",
 		className:
@@ -95,7 +95,7 @@ async function setupButton(mode) {
 		icon: "fi fi-tr-circle-xmark text-xl",
 	});
 
-	const edit = await utils.creatBtn({
+	const edit = await creatBtn({
 		id: "edit",
 		title: "Revise",
 		type: "link",
@@ -107,7 +107,7 @@ async function setupButton(mode) {
 		icon: "fi fi-tr-feedback-cycle-loop text-xl",
 	});
 
-	const back = await utils.creatBtn({
+	const back = await creatBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",
@@ -137,11 +137,11 @@ $(document).on("change", ".inqprice", async function () {
 	await totalDetail();
 });
 
-$(document).on("change", ".freight-value", function () {
+$(document).on("change", ".freight-value", async function () {
 	const value = $(this).val();
 	if (isNaN(value) || value < 0) {
 		$(this).val(0);
-		utils.errorMessage("Please enter a valid number");
+		await showMessage("Please enter a valid number");
 		return;
 	}
 

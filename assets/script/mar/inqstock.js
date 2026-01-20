@@ -74,7 +74,7 @@ $(document).on("keyup", ".stockpart", async function (e) {
 });
 
 async function setupButton(mode) {
-	const additems = await utils.creatBtn({
+	const additems = await creatBtn({
 		id: "add-item",
 		title: "Add item",
 		icon: "fi fi-rr-shopping-cart text-xl",
@@ -82,7 +82,7 @@ async function setupButton(mode) {
 			"btn-neutral hover:bg-neutral/70 hover:shadow-lg btn-disabled",
 	});
 
-	const savedata = await utils.creatBtn({
+	const savedata = await creatBtn({
 		id: "savedata",
 		title: "Save Data",
 		icon: "fi fi-tr-envelope-open-text text-xl",
@@ -90,7 +90,7 @@ async function setupButton(mode) {
 			"btn-primary text-white hover:shadow-lg hover:bg-primary/70 btn-disabled",
 	});
 
-	const back = await utils.creatBtn({
+	const back = await creatBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",

@@ -46,7 +46,7 @@ export async function tableQuotation(data, options = {}) {
 			render: (data) => {
 				if (data == null) return "";
 				const statusColor = colors.find(
-					(item) => item.id >= data.STATUS_ID
+					(item) => item.id >= data.STATUS_ID,
 				);
 				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
@@ -56,7 +56,7 @@ export async function tableQuotation(data, options = {}) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -67,7 +67,7 @@ export async function tableQuotation(data, options = {}) {
 			title: "Pre-BM Date",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -78,7 +78,7 @@ export async function tableQuotation(data, options = {}) {
 			title: "Fin Date",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -89,7 +89,7 @@ export async function tableQuotation(data, options = {}) {
 			title: `Weight<br>Request`,
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -252,7 +252,7 @@ $(document).on("click", "#export-detail", async function (e) {
 			const link = document.createElement("a");
 			link.href = URL.createObjectURL(blob);
 			link.download = `SP Inquiry List ${moment().format(
-				"YYYY-MM-DD"
+				"YYYY-MM-DD",
 			)}.xlsx`;
 			link.click();
 		});

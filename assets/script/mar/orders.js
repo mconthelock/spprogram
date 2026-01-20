@@ -2,11 +2,12 @@ import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
+import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { showErrorMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { getInquiryReport } from "../service/inquiry.js";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-import { initApp, creatBtn, tableOpt, activatedBtn } from "../utils.js";
+import { initApp, tableOpt } from "../utils.js";
 
 var table;
 $(async function () {

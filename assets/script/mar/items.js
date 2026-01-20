@@ -100,7 +100,7 @@ async function tableOpt(data) {
         </button>
     </div>`);
 		// $(".table-paging").addClass("flex-col gap-3");
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",

@@ -71,7 +71,7 @@ async function tableOptions(data) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -146,7 +146,7 @@ async function tableOptions(data) {
 	];
 
 	opt.initComplete = async function () {
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export1",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",

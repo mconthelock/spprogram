@@ -82,7 +82,7 @@ async function tableInquiryOption(data) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;
@@ -198,7 +198,7 @@ async function tableInquiryOption(data) {
 	};
 
 	opt.initComplete = async function () {
-		const newinq = await utils.creatBtn({
+		const newinq = await creatBtn({
 			id: "add-new-inquiry",
 			type: "link",
 			href: `${process.env.APP_ENV}/mar/inquiry/create`,
@@ -206,13 +206,13 @@ async function tableInquiryOption(data) {
 			icon: "fi fi-tr-file-excel text-xl ",
 			className: `btn-outline btn-primary text-primary hover:shadow-lg  hover:text-white`,
 		});
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export1",
 			title: "Export Inquiry",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-neutral text-white hover:shadow-lg`,
 		});
-		const export2 = await utils.creatBtn({
+		const export2 = await creatBtn({
 			id: "export1",
 			title: "Export (With Detail)",
 			icon: "fi fi-rr-layers text-xl",

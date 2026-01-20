@@ -99,7 +99,7 @@ async function tableInquiry(data, options = {}) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME).sname;
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;

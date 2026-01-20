@@ -76,42 +76,42 @@ $(document).ready(async () => {
 });
 
 async function setupButton(mode) {
-	const sendDE = await utils.creatBtn({
+	const sendDE = await creatBtn({
 		id: "send-de",
 		title: "Send to Design",
 		icon: "fi fi-tr-envelope-open-text text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${mode}`,
 	});
 
-	const updateDE = await utils.creatBtn({
+	const updateDE = await creatBtn({
 		id: "update-de",
 		title: "Send to Design",
 		icon: "fi fi-tr-envelope-open-text text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${mode}`,
 	});
 
-	const sendIS = await utils.creatBtn({
+	const sendIS = await creatBtn({
 		id: "send-bm",
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
 	});
 
-	const updateIS = await utils.creatBtn({
+	const updateIS = await creatBtn({
 		id: "update-bm",
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
 	});
 
-	const draft = await utils.creatBtn({
+	const draft = await creatBtn({
 		id: "draft",
 		title: "Send Draft",
 		icon: "fi fi-ts-clipboard-list text-xl",
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg`,
 	});
 
-	const back = await utils.creatBtn({
+	const back = await creatBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",

@@ -26,7 +26,7 @@ $(async function () {
 });
 
 async function setItemDetail() {
-	const save = await utils.creatBtn({
+	const save = await creatBtn({
 		id: "save-data",
 		title: "Save Data",
 		icon: "fi fi-sr-disk text-xl",
@@ -34,7 +34,7 @@ async function setItemDetail() {
 		other: `data-action="${$("#itemid").val() == "" ? "add" : "edit"}"`,
 	});
 
-	const back = await utils.creatBtn({
+	const back = await creatBtn({
 		id: "back-to-list",
 		type: "link",
 		href: `${process.env.APP_ENV}/mar/items/`,

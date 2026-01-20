@@ -243,13 +243,13 @@ async function tableOpt(data) {
     `);
 		await setSelect2({ width: "200px", allowClear: false });
 		// Table Footer Buttons
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `bg-accent text-white hover:shadow-lg`,
 		});
-		const importprice = await utils.creatBtn({
+		const importprice = await creatBtn({
 			id: "importprice",
 			title: "Import Price",
 			icon: "fi fi-rr-add text-xl",

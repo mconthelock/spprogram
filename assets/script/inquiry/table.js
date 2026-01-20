@@ -266,7 +266,7 @@ export async function setupTableHistory(data = []) {
 			render: (data, type, row) => {
 				if (type === "display") {
 					const emp = row.users;
-					const dsp = utils.displayname(emp.SNAME);
+					const dsp = displayname(emp.SNAME);
 					const name = `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 						emp.SEMPNO
 					})`;

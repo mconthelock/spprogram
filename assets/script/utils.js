@@ -75,56 +75,56 @@ export const showConfirm = (
 	}
 };
 
-export const creatBtn = (option = {}) => {
-	const opt = {
-		id: "btn-save",
-		title: "Save Changes",
-		icon: "icofont-save text-xl",
-		className: "from-blue-500 to-blue-600 text-white",
-		href: "#",
-		other: "",
-		...option,
-	};
+// export const creatBtn = (option = {}) => {
+// 	const opt = {
+// 		id: "btn-save",
+// 		title: "Save Changes",
+// 		icon: "icofont-save text-xl",
+// 		className: "from-blue-500 to-blue-600 text-white",
+// 		href: "#",
+// 		other: "",
+// 		...option,
+// 	};
 
-	if (opt.type == "link") {
-		return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}>
-		<div class="items-center gap-2 btn-loader hidden">
-			<span class="loading loading-spinner"></span>
-			Processing...
-		</div>
-		<div class="flex items-center gap-2 btn-name">
-        	<i class="${opt.icon}"></i>
-            <div>${opt.title}</div>
-        </div>
-		<div class="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white/20 transition-transform duration-300 ease-out group-hover:scale-[3.5] active:duration-150"></div>
-	</a>`;
-	}
+// 	if (opt.type == "link") {
+// 		return `<a class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-3 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" href="${opt.href}"}>
+// 		<div class="items-center gap-2 btn-loader hidden">
+// 			<span class="loading loading-spinner"></span>
+// 			Processing...
+// 		</div>
+// 		<div class="flex items-center gap-2 btn-name">
+//         	<i class="${opt.icon}"></i>
+//             <div>${opt.title}</div>
+//         </div>
+// 		<div class="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white/20 transition-transform duration-300 ease-out group-hover:scale-[3.5] active:duration-150"></div>
+// 	</a>`;
+// 	}
 
-	return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" ${opt.other}>
-		<div class="items-center gap-2 btn-loader hidden">
-			<span class="loading loading-spinner"></span>
-			Processing...
-		</div>
-		<div class="flex items-center gap-2 btn-name">
-        	<i class="${opt.icon}"></i>
-            <div>${opt.title}</div>
-        </div>
-		<div class="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white/20 transition-transform duration-300 ease-out group-hover:scale-[3.5] active:duration-150"></div>
-	</button>`;
-};
+// 	return `<button class="btn group relative inline-flex items-center justify-center overflow-hidden font-bold px-4 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-gray-500/40 focus:outline-none focus:ring-4 focus:ring-gray-400/30 active:scale-80 ${opt.className}" type="button" id="${opt.id}" ${opt.other}>
+// 		<div class="items-center gap-2 btn-loader hidden">
+// 			<span class="loading loading-spinner"></span>
+// 			Processing...
+// 		</div>
+// 		<div class="flex items-center gap-2 btn-name">
+//         	<i class="${opt.icon}"></i>
+//             <div>${opt.title}</div>
+//         </div>
+// 		<div class="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white/20 transition-transform duration-300 ease-out group-hover:scale-[3.5] active:duration-150"></div>
+// 	</button>`;
+// };
 
-export const activatedBtn = (obj, activate = true) => {
-	if (activate) {
-		obj.find(".btn-loader").removeClass("hidden").addClass("flex");
-		obj.find(".btn-name").addClass("hidden");
-		obj.prop("disabled", true);
-	} else {
-		obj.find(".btn-loader").addClass("hidden").removeClass("flex");
-		obj.find(".btn-name").removeClass("hidden");
-		obj.prop("disabled", false);
-	}
-	return;
-};
+// export const activatedBtn = (obj, activate = true) => {
+// 	if (activate) {
+// 		obj.find(".btn-loader").removeClass("hidden").addClass("flex");
+// 		obj.find(".btn-name").addClass("hidden");
+// 		obj.prop("disabled", true);
+// 	} else {
+// 		obj.find(".btn-loader").addClass("hidden").removeClass("flex");
+// 		obj.find(".btn-name").removeClass("hidden");
+// 		obj.prop("disabled", false);
+// 	}
+// 	return;
+// };
 
 export const intVal = (i) => {
 	return typeof i === "string"
@@ -260,22 +260,22 @@ export const foundError = async (error) => {
 	//
 };
 
-export const displayname = (val) => {
-	if (val == null) return "";
-	const fullname = val.toLowerCase();
-	const name = fullname.split(/\s+/).filter((n) => n.length > 0);
-	if (name.length === 0) return { sname: "", fname: "", lname: "" };
-	const fname = name[0].charAt(0).toUpperCase() + name[0].slice(1);
-	const lname =
-		name[1] && name[1].length > 0
-			? name[1].charAt(0).toUpperCase() + name[1].slice(1)
-			: "";
-	return {
-		sname: `${fname}${lname ? " " + lname : ""}`.trim(),
-		fname,
-		lname,
-	};
-};
+// export const displayname = (val) => {
+// 	if (val == null) return "";
+// 	const fullname = val.toLowerCase();
+// 	const name = fullname.split(/\s+/).filter((n) => n.length > 0);
+// 	if (name.length === 0) return { sname: "", fname: "", lname: "" };
+// 	const fname = name[0].charAt(0).toUpperCase() + name[0].slice(1);
+// 	const lname =
+// 		name[1] && name[1].length > 0
+// 			? name[1].charAt(0).toUpperCase() + name[1].slice(1)
+// 			: "";
+// 	return {
+// 		sname: `${fname}${lname ? " " + lname : ""}`.trim(),
+// 		fname,
+// 		lname,
+// 	};
+// };
 
 export async function userInfo() {
 	const user = $("#user-login");

@@ -4,12 +4,14 @@ import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
+import { displayname } from "@amec/webasset/api/amec";
 import { showErrorMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
+import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
 import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
-import { initApp, tableOpt, displayname } from "../utils.js";
+import { initApp, tableOpt } from "../utils.js";
 
 var table;
 $(document).ready(async () => {
@@ -21,6 +23,7 @@ $(document).ready(async () => {
 		const opt = await tableInquiryOption(data);
 		table = await createTable(opt);
 	} catch (error) {
+		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	} finally {
@@ -95,10 +98,7 @@ async function tableInquiryOption(data) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = displayname(data.SNAME);
-				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
-					data.SEMPNO
-				})`;
+				return displayname(data.SNAME).sname;
 			},
 		},
 		{
@@ -153,32 +153,45 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				const edit = `<a class="btn btn-sm btn-accent text-white" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-tr-file-edit text-lg"></i>Edit</a>`;
-				const excel = `<a class="btn btn-sm btn-neutral text-white export-excel" href="#"><i class="fi fi-tr-file-excel text-lg"></i>Export</a>`;
-				const order = `<a class=""><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
+				const edit = creatBtn({
+					id: `edit-${data}`,
+					title: "Edit",
+					type: "link",
+					icon: "fi fi-tr-file-edit text-lg",
+					className: `btn-sm btn-accent text-white hover:shadow-lg`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+				});
+				const excel = creatBtn({
+					id: `export-${data}`,
+					title: `Export`,
+					type: "link",
+					icon: "fi fi-tr-file-excel text-lg",
+					className: `btn-sm btn-neutral ${row.status.STATUS_ID == "98" ? "btn-disabled text-gray-400" : "text-white export-excel"} hover:shadow-lg`,
+				});
 				const sparq = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
+				const order = `<a class=""><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const revise = `<a class=""><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
 				const dropdown = `<div class="dropdown  dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
-            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
-                <li>${sparq}</li>
-                <li>${order}</li>
-                <li>${revise}</li>
-            </ul>
-        </div>`;
+                    <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
+                    <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
+                        <li>${sparq}</li>
+                        <li>${order}</li>
+                        <li>${revise}</li>
+                    </ul>
+                </div>`;
 				return `<div class="flex justify-end gap-2">${edit}${excel}${dropdown}</div>`;
 			},
 		},
 	];
 
 	opt.initComplete = async function () {
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export1",
 			title: "Export to Excel",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-neutral text-white hover:shadow-lg`,
 		});
-		const export2 = await utils.creatBtn({
+		const export2 = await creatBtn({
 			id: "export2",
 			title: "Export (Detail)",
 			icon: `fi fi fi-rr-layers text-xl`,
@@ -194,8 +207,8 @@ async function tableInquiryOption(data) {
 $(document).on("click", ".export-excel", async function (e) {
 	e.preventDefault();
 	try {
-		await showLoader({ show: true });
-		const template = await getTemplate("cover_sheet_orders.xlsx");
+		await activatedBtn($(this));
+		//const template = await getTemplate("cover_sheet_orders.xlsx");
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
@@ -207,7 +220,7 @@ $(document).on("click", ".export-excel", async function (e) {
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
-		await utils.activatedBtn($(this));
+		await activatedBtn($(this));
 		const q = await tableCondition();
 		const query = {
 			...q,
@@ -228,14 +241,14 @@ $(document).on("click", "#export1", async function (e) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.activatedBtn($(this), false);
+		await activatedBtn($(this), false);
 	}
 });
 
 $(document).on("click", "#export2", async function (e) {
 	e.preventDefault();
 	try {
-		await utils.activatedBtn($(this));
+		await activatedBtn($(this));
 		const q = await tableCondition();
 		const query = {
 			...q,
@@ -256,6 +269,6 @@ $(document).on("click", "#export2", async function (e) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.activatedBtn($(this), false);
+		await activatedBtn($(this), false);
 	}
 });

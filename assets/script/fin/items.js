@@ -3,14 +3,14 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import { createTable } from "@amec/webasset/dataTable";
-import * as utils from "../utils.js";
 import { exportExcel, getTemplate } from "../service/excel.js";
 import { getItems } from "../service/items.js";
+import { initApp } from "../utils.js";
 
 var table;
 $(async function () {
 	try {
-		await utils.initApp({ submenu: ".navmenu-price" });
+		await initApp({ submenu: ".navmenu-price" });
 		const data = await getItems({ CATEGORY: 99 });
 		const opt = await tableOpt(data);
 		table = await createTable(opt);
@@ -90,7 +90,7 @@ async function tableOpt(data) {
 		$(".table-option").append(
 			`<a href="${process.env.APP_ENV}/fin/items/detail" class="btn btn-outline btn-primary hover:text-white">New Item</a>`,
 		);
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export1",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
@@ -106,7 +106,7 @@ async function tableOpt(data) {
 $(document).on("click", "#export1:not(.btn-disabled)", async function (e) {
 	e.preventDefault();
 	try {
-		await utils.activatedBtn($(this));
+		await activatedBtn($(this));
 		const data = table.data().toArray();
 		const template = await getTemplate({
 			name: `export_item_directsale.xlsx`,
@@ -119,6 +119,6 @@ $(document).on("click", "#export1:not(.btn-disabled)", async function (e) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.activatedBtn($(this), false);
+		await activatedBtn($(this), false);
 	}
 });

@@ -109,7 +109,7 @@ $(document).ready(async () => {
 
 async function setupButton(revise) {
 	const usergroup = $("#user-login").attr("groupcode");
-	const assign = await utils.creatBtn({
+	const assign = await creatBtn({
 		id: "assign-pic",
 		title: "Assign PIC",
 		icon: "fi fi-rs-user-check text-xl",
@@ -118,7 +118,7 @@ async function setupButton(revise) {
 		}`,
 	});
 
-	const forwardde = await utils.creatBtn({
+	const forwardde = await creatBtn({
 		id: "forward-de",
 		title: "Forward to DE",
 		icon: "fi fi-tr-share-square text-xl",
@@ -127,7 +127,7 @@ async function setupButton(revise) {
 		}`,
 	});
 
-	const sendIS = await utils.creatBtn({
+	const sendIS = await creatBtn({
 		id: "send-bm",
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
@@ -136,7 +136,7 @@ async function setupButton(revise) {
 		}`,
 	});
 
-	const confirm = await utils.creatBtn({
+	const confirm = await creatBtn({
 		id: "send-confirm",
 		title: "Confirm",
 		icon: "fi fi-tr-badge-check text-xl",
@@ -145,7 +145,7 @@ async function setupButton(revise) {
 		}`,
 	});
 
-	const back = await utils.creatBtn({
+	const back = await creatBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",
