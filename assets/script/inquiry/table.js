@@ -282,7 +282,7 @@ export async function setupTableHistory(data = []) {
 					emp.SEMPNO
 				}" target="_blank" class="text-nowrap font-bold">${name}</a>
                 <div class="text-nowrap text-gray-500">${moment(data).format(
-					"YYYY-MM-DD HH:mm:ss"
+					"YYYY-MM-DD HH:mm:ss",
 				)}</div>
             </div>
         </div>`;
@@ -326,7 +326,7 @@ export async function setupTableHistory(data = []) {
 		const $temp = $(
 			`<div id="temp-remark" class="text-xs" style="width:${
 				width - 25
-			}px;white-space:normal;">${remark}</div>`
+			}px;white-space:normal;">${remark}</div>`,
 		).appendTo("body");
 
 		const tempEl = $temp.get(0);
@@ -393,7 +393,7 @@ export async function setupTableAttachment(data = [], view = false) {
 			className: "text-xs py-[8px]",
 			render: (data) => {
 				return `<div class="line-clamp-1">${moment(data).format(
-					"YYYY-MM-DD HH:mm:ss"
+					"YYYY-MM-DD HH:mm:ss",
 				)}</div>`;
 			},
 		},
@@ -413,7 +413,7 @@ export async function setupTableAttachment(data = [], view = false) {
 			.closest(".dt-container")
 			.find(".table-option")
 			.append(
-				`<input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />`
+				`<input type="file" id="attachment-file" multiple class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.txt, .csv" />`,
 			);
 	};
 	//   opt.drawCallback = function (settings) {
@@ -438,7 +438,7 @@ export async function downloadClientFile(selectedFiles, fileName) {
 		document.body.removeChild(link);
 		URL.revokeObjectURL(fileUrl);
 	} else {
-		utils.showMessage(`File "${fileName}" not found for download.`);
+		await showMessage(`File "${fileName}" not found for download.`);
 	}
 }
 
@@ -472,7 +472,7 @@ export async function elmesTable(data) {
 			.closest(".dt-container")
 			.find(".table-search")
 			.append(
-				`<h1 class="font-semibold text-xl flex items-center">Part List</h1>`
+				`<h1 class="font-semibold text-xl flex items-center">Part List</h1>`,
 			);
 	};
 	return opt;
@@ -506,7 +506,7 @@ export async function confirmDeleteInquiry(table) {
 		// remove row from table
 		table
 			.row(
-				$(`button[data-id='${$("#confirm_key").val()}']`).parents("tr")
+				$(`button[data-id='${$("#confirm_key").val()}']`).parents("tr"),
 			)
 			.remove()
 			.draw();
@@ -528,6 +528,6 @@ $(document).on("click", ".delete-inquiry", async function (e) {
 		"Are you sure you want to delete this inquiry?",
 		`<i class="icofont-exclamation-circle text-4xl text-red-500"></i>`,
 		$(this).attr("data-id"),
-		true
+		true,
 	);
 });

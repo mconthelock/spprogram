@@ -245,7 +245,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 		const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
 			", ",
 		)}`;
-		utils.showMessage(msg);
+		await showMessage(msg);
 		return;
 	}
 
@@ -257,7 +257,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 	}
 
 	if (newdata == null) {
-		utils.showMessage("No data found in the file.");
+		await showMessage("No data found in the file.");
 		return;
 	}
 
@@ -317,7 +317,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 	e.preventDefault();
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
-		utils.showMessage("Please provide a remark for the revision.");
+		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}
@@ -344,7 +344,7 @@ $(document).on("click", "#forward-de", async function (e) {
 	e.preventDefault();
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
-		utils.showMessage("Please provide a remark for the revision.");
+		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}
@@ -368,7 +368,7 @@ $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
-		utils.showMessage("Please provide a remark for the revision.");
+		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}
@@ -392,7 +392,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 	e.preventDefault();
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
-		utils.showMessage("Please provide a remark for the revision.");
+		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}

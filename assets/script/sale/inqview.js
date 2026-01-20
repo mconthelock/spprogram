@@ -42,7 +42,7 @@ $(document).ready(async () => {
 		const btn = await setupButton();
 		$("#remark").closest(".grid").addClass("hidden");
 	} catch (error) {
-		utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	} finally {
 		await showLoader({ show: false });

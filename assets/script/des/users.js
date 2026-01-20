@@ -159,7 +159,7 @@ $(document).on("change", ".design-group", async function () {
 	const data = table.row(tr).data();
 	const group = $(this).val();
 	await updateDesigner(data.USERS_ID, { DES_GROUP: group });
-	await utils.showMessage("Update designer group successfully", "success");
+	await showMessage("Update designer group successfully", "success");
 });
 
 $(document).on("click", ".engineer", async function () {
@@ -167,7 +167,7 @@ $(document).on("click", ".engineer", async function () {
 	const data = table.row(tr).data();
 	const value = $(this).is(":checked") ? 1 : null;
 	await updateDesigner(data.USERS_ID, { DES_ENGINEER: value });
-	await utils.showMessage("Update designer group successfully", "success");
+	await showMessage("Update designer group successfully", "success");
 });
 
 $(document).on("click", ".checker", async function () {
@@ -175,7 +175,7 @@ $(document).on("click", ".checker", async function () {
 	const data = table.row(tr).data();
 	const value = $(this).is(":checked") ? 1 : null;
 	await updateDesigner(data.USERS_ID, { DES_CHECKER: value });
-	await utils.showMessage("Update designer group successfully", "success");
+	await showMessage("Update designer group successfully", "success");
 });
 
 async function updateDesigner(id, data) {

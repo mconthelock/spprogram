@@ -4,23 +4,24 @@ import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
+import { showErrorMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
 import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
-import * as utils from "../utils.js";
+import { initApp, tableOpt, displayname } from "../utils.js";
 
 var table;
 $(document).ready(async () => {
 	try {
 		await showLoader({ show: true });
-		await utils.initApp({ submenu: ".navmenu-quotation" });
+		await initApp({ submenu: ".navmenu-quotation" });
 		const q = await tableCondition();
 		const data = await getInquiry(q);
 		const opt = await tableInquiryOption(data);
 		table = await createTable(opt);
 	} catch (error) {
-		utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	} finally {
 		await showLoader({ show: false });
@@ -49,7 +50,7 @@ async function tableCondition() {
 async function tableInquiryOption(data) {
 	const pageid = $("#pageid").val();
 	const colors = await statusColors();
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.columns = [
 		{ data: "UPDATE_AT", className: "hidden" },
@@ -94,7 +95,7 @@ async function tableInquiryOption(data) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = utils.displayname(data.SNAME);
+				const dsp = displayname(data.SNAME);
 				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
 					data.SEMPNO
 				})`;

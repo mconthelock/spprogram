@@ -287,7 +287,7 @@ $(document).on("click", ".save-row", async function (e) {
 			if (val == "" || val == null || val == 0) isBlank = true;
 		});
 	if (isBlank) {
-		utils.showMessage(`Please fill all required field.`, {
+		await showMessage(`Please fill all required field.`, {
 			type: "warning",
 		});
 		return;

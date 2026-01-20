@@ -72,7 +72,7 @@ $(document).ready(async () => {
 		const btn = await setupButton("");
 		const date = await setDatePicker();
 	} catch (error) {
-		utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	} finally {
 		await showLoader({ show: false });

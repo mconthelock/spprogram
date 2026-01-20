@@ -194,8 +194,8 @@ export async function createFieldInput(field) {
 		case "textarea":
 			const textarea = `<textarea name="${field.name}"
         id="${field.id}" class="textarea w-full ${
-				field.class !== undefined ? field.class : ""
-			}" data-mapping="${field.mapping}"></textarea>`;
+			field.class !== undefined ? field.class : ""
+		}" data-mapping="${field.mapping}"></textarea>`;
 			inputContainer.innerHTML = textarea;
 			break;
 
@@ -246,8 +246,8 @@ export async function createFieldInput(field) {
             <input type="radio" name="${
 				field.name
 			}" class="radio radio-primary" ${
-					opt.value == value ? "checked" : ""
-				} value="${opt.value}"/> ${opt.text}
+				opt.value == value ? "checked" : ""
+			} value="${opt.value}"/> ${opt.text}
         </label>`;
 			});
 			const radioGroup = `<div class="flex items-center gap-4 h-full">${optionstr}</div>`;
@@ -305,7 +305,7 @@ export async function createFieldInput(field) {
 			) {
 				elementToListen.addEventListener(
 					"change",
-					source.events[field.onChange]
+					source.events[field.onChange],
 				);
 			}
 			break;
@@ -569,7 +569,7 @@ export async function saveUnreply(table) {
 	if (remark == "" || selected.val() == undefined) {
 		$(".text-comment").addClass("border-red-500");
 		$(".text-comment-err").html(
-			`Please explain reason, Why you can't reply this line.`
+			`Please explain reason, Why you can't reply this line.`,
 		);
 		return;
 	}
@@ -765,7 +765,7 @@ export async function verifyHeader(cls) {
 		});
 	}, 10000);
 
-	if (check == false) await utils.showMessage(`Please fill ${str}`);
+	if (check == false) await showMessage(`Please fill ${str}`);
 	return check;
 }
 
@@ -806,7 +806,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 		) {
 			check = false;
 			message.push(
-				`Please input item no. or item no should be number in range 100-999`
+				`Please input item no. or item no should be number in range 100-999`,
 			);
 			errorEl(row.find(".item-no"));
 			return;
@@ -826,7 +826,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			if (item.INQD_DRAWING == "" && hasAtt == 0) {
 				check = false;
 				message.push(
-					`Please input Drawing no. or add some attachement to reference declaring part`
+					`Please input Drawing no. or add some attachement to reference declaring part`,
 				);
 				errorEl(row.find(".drawing-line"));
 				return;
@@ -883,7 +883,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 export async function addAttached(e, selectedFilesMap) {
 	const file = e.target.files;
 	if (!file) {
-		utils.showMessage("Please select a file to upload.");
+		await showMessage("Please select a file to upload.");
 		return;
 	}
 
@@ -903,7 +903,7 @@ export async function addAttached(e, selectedFilesMap) {
 			};
 			files.push(fs);
 		} else {
-			utils.showMessage(`${file[i].name} not allowed to upload.(${ext})`);
+			await showMessage(`${file[i].name} not allowed to upload.(${ext})`);
 			return;
 		}
 	}

@@ -68,9 +68,7 @@ $(document).on("click", "#search", async function (e) {
 		);
 
 		if (Object.keys(formdata).length == 0) {
-			await utils.showMessage(
-				"Please select at least one filter criteria.",
-			);
+			await showMessage("Please select at least one filter criteria.");
 			return;
 		}
 

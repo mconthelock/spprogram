@@ -148,7 +148,7 @@ $(document).on("click", "#save-data", async function () {
 		}
 	});
 	if (!isValid) {
-		await utils.showMessage("Please fill in all required fields.");
+		await showMessage("Please fill in all required fields.");
 		await showLoader({ show: false });
 		return;
 	}
@@ -187,7 +187,7 @@ $(document).on("click", "#save-data", async function () {
 			await savePrice(payload);
 			await saveImage(payload);
 			await saveCustomer(payload);
-			await utils.showMessage("Direct Sale's item saved successfully", {
+			await showMessage("Direct Sale's item saved successfully", {
 				type: "success",
 			});
 		}

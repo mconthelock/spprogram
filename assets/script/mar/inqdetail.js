@@ -219,7 +219,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 		const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
 			", ",
 		)}`;
-		utils.showMessage(msg);
+		await showMessage(msg);
 		return;
 	}
 
@@ -231,7 +231,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 	}
 
 	if (newdata == null) {
-		utils.showMessage("No data found in the file.");
+		await showMessage("No data found in the file.");
 		return;
 	}
 
@@ -312,7 +312,7 @@ async function createPath(opt) {
 	const header = await inqs.getFormHeader();
 	const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
 	if (check_inq.length > 0) {
-		await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+		await showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
 		$("#inquiry-no").focus().select();
 		return;
 	}
@@ -358,7 +358,7 @@ async function createPath(opt) {
 $(document).on("click", "#update-de", async function (e) {
 	e.preventDefault();
 	if ($(this).hasClass("revise") && $("#remark").val() == "") {
-		await utils.showMessage("Please enter remark for revise inquiry.");
+		await showMessage("Please enter remark for revise inquiry.");
 		$("#remark").focus();
 		return;
 	}
@@ -374,7 +374,7 @@ $(document).on("click", "#update-de", async function (e) {
 $(document).on("click", "#update-bm", async function (e) {
 	e.preventDefault();
 	if ($(this).hasClass("revise") && $("#remark").val() == "") {
-		await utils.showMessage("Please enter remark for revise inquiry.");
+		await showMessage("Please enter remark for revise inquiry.");
 		$("#remark").focus();
 		return;
 	}
@@ -387,9 +387,7 @@ async function updatePath(opt) {
 	const header = await inqs.getFormHeader();
 	const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
 	if (check_inq.length == 0) {
-		await utils.showMessage(
-			`Inquiry ${header.INQ_NO} is not found on System!`,
-		);
+		await showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
 		$("#inquiry-no").focus().select();
 		return;
 	}

@@ -6,7 +6,7 @@ import { showErrorMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { getInquiryReport } from "../service/inquiry.js";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-import { initApp, creatBtn, tableOpt } from "../utils.js";
+import { initApp, creatBtn, tableOpt, activatedBtn } from "../utils.js";
 
 var table;
 $(async function () {
@@ -154,7 +154,7 @@ $(document).on("click", ".export-docs", async function (e) {
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
-		await utils.activatedBtn($(this));
+		await activatedBtn($(this));
 		const template = await getTemplate("export_secure_orders.xlsx");
 		const data = table.rows().data().toArray();
 		await exportExcel(data, template, {
@@ -164,7 +164,7 @@ $(document).on("click", "#export1", async function (e) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.activatedBtn($(this));
+		await activatedBtn($(this));
 	}
 });
 

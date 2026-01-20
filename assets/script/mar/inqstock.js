@@ -126,7 +126,7 @@ $(document).on("change", ".itemno", async function (e) {
 		(item) => item.itemdesc.ITEM_NO == itemno,
 	);
 	if (pricelist.length == 0) {
-		await utils.showMessage(`Item ${itemno} is not found on Price List!`);
+		await showMessage(`Item ${itemno} is not found on Price List!`);
 		$(this).val("").focus();
 		return;
 	}
@@ -149,7 +149,7 @@ $(document).on("click", "#price-list-confirm", async function (e) {
 	e.preventDefault();
 	const rows = tablePriceList.rows({ selected: true }).data().toArray();
 	if (rows.length == 0) {
-		await utils.showMessage(`Please select item to add!`);
+		await showMessage(`Please select item to add!`);
 		return;
 	}
 
@@ -251,7 +251,7 @@ $(document).on("click", "#savedata", async function (e) {
 	const header = await inqs.getFormHeader();
 	const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
 	if (check_inq.length > 0) {
-		await utils.showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+		await showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
 		$("#inquiry-no").focus().select();
 		return;
 	}

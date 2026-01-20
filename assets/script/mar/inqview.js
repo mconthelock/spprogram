@@ -32,7 +32,7 @@ $(document).ready(async () => {
 		tableAttach = await createTable(attachment, { id: "#attachment" });
 		const btn = await setupButton();
 	} catch (error) {
-		utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	} finally {
 		await showLoader({ show: false });
