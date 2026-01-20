@@ -22,6 +22,9 @@
 </head>
 
 <body class="flex flex-col min-h-screen">
+    <input type="hidden" id="appid" value="{{ $_ENV['APP_ID'] }}">
+    <input type="checkbox" id="loading-box" class="modal-toggle" checked />
+
     <div id="small-screen" class="w-screen h-screen items-center justify-center flex md:hidden">
         <div class="card w-96 card-xl shadow-md border border-primary/50 ">
             <div class="card-body overflow-hidden relative">
@@ -37,17 +40,6 @@
 
     {{-- Show on Big screen --}}
     <div id="big-screen" class="hidden md:block">
-        <input type="checkbox" id="loading-box" class="modal-toggle" checked />
-        <div class="modal" role="dialog" id="loading-box-modal">
-            <div
-                class="modal-box w-screen! max-w-[100vw]! h-screen! max-h-screen! rounded-none! flex items-center justify-center glass bg-white/5 ">
-                <div class="">
-                    <img src="{{ $_ENV['APP_IMG'] }}/preloader.gif" class="h-28" />
-                    <h1 class="text-center text-white text-lg font-bold">Loading....</h1>
-                </div>
-            </div>
-        </div>
-
         <!-- Navbar -->
         <div id="navbar" class=""></div>
         <div class="drawer md:drawer-open">

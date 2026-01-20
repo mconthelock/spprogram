@@ -1,5 +1,6 @@
 import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { statusColors } from "../inquiry/ui.js";
 import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
@@ -28,9 +29,9 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -71,7 +72,7 @@ async function tableInquiryOption(data) {
 			render: (data) => {
 				if (data == null) return "";
 				const statusColor = colors.find(
-					(item) => item.id >= data.STATUS_ID
+					(item) => item.id >= data.STATUS_ID,
 				);
 				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
@@ -94,7 +95,7 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -102,8 +103,8 @@ async function tableInquiryOption(data) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -114,7 +115,7 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -122,8 +123,8 @@ async function tableInquiryOption(data) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -134,7 +135,7 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -142,8 +143,8 @@ async function tableInquiryOption(data) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -154,7 +155,7 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -162,8 +163,8 @@ async function tableInquiryOption(data) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 9
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -220,7 +221,7 @@ async function tableInquiryOption(data) {
 
 		$(".table-option").append(`${newinq}`);
 		$(".table-info").append(
-			`<div class="flex gap-2">${export1}${export2}</div>`
+			`<div class="flex gap-2">${export1}${export2}</div>`,
 		);
 	};
 	return opt;

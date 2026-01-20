@@ -2,9 +2,10 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import "select2";
-import * as utils from "../utils.js";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { exportExcel } from "../service/excel.js";
+import * as utils from "../utils.js";
 import {
 	getPriceRatio,
 	findPriceRatio,
@@ -22,9 +23,9 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -46,7 +47,7 @@ async function tableOpt(data) {
 			render: function (data, type, row) {
 				if (type === "display" && row.isNew !== undefined) {
 					const activeTypes = types.filter(
-						(val) => val.QUOTYPE_STATUS == 1
+						(val) => val.QUOTYPE_STATUS == 1,
 					);
 					let options = `<option value=""></option>`;
 					activeTypes.map((val) => {
@@ -204,7 +205,7 @@ $(document).on("click", "#add-new-rate", async function (e) {
 		(prev, current) => {
 			return prev.ID > current.ID ? prev : current;
 		},
-		{ ID: 0 }
+		{ ID: 0 },
 	);
 	let id = lastRow.ID + 1;
 	const newRow = {
@@ -306,7 +307,7 @@ $(document).on("click", ".save-row", async function (e) {
 			data.quotype = res.QUOTYPE_ID;
 		} catch (error) {
 			console.log(error);
-			await utils.errorMessage(error);
+			await showErrorMessage(`Something went wrong.`, "2036");
 		}
 	}
 
@@ -329,7 +330,7 @@ $(document).on("click", ".save-row", async function (e) {
 		row.draw(false);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 });
 

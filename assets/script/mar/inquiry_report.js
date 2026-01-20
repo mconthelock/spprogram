@@ -5,6 +5,7 @@ import "select2";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 
+import { showLoader } from "@amec/webasset/preloader";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { tableInquiry } from "../inquiry/table.js";
@@ -37,9 +38,9 @@ $(async function () {
 		$("#form-container").removeClass("hidden");
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -63,12 +64,12 @@ $(document).on("click", "#search", async function (e) {
 		let formdata = await getFormHeader();
 
 		Object.keys(formdata).forEach(
-			(key) => formdata[key] == "" && delete formdata[key]
+			(key) => formdata[key] == "" && delete formdata[key],
 		);
 
 		if (Object.keys(formdata).length == 0) {
 			await utils.showMessage(
-				"Please select at least one filter criteria."
+				"Please select at least one filter criteria.",
 			);
 			return;
 		}
@@ -81,19 +82,21 @@ $(document).on("click", "#search", async function (e) {
 		localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
 export const setSeries = async () => {
 	const id = "#series";
 	const data = await mkt.getSeries();
-	$(`${id}`).empty().append(new Option("", "", false, false));
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
 	data.map((el) => {
 		$(`${id}`).append(
-			new Option(el.ABBREVIATION, el.ABBREVIATION, false, false)
+			new Option(el.ABBREVIATION, el.ABBREVIATION, false, false),
 		);
 	});
 };
@@ -116,7 +119,9 @@ export const setTrader = async () => {
 	const data = await mst.getPriceRatio();
 	const traders = data.map((item) => item.TRADER);
 	const uniqueTraders = [...new Set(traders)];
-	$(`${id}`).empty().append(new Option("", "", false, false));
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
 	uniqueTraders.map((el) => {
 		$(`${id}`).append(new Option(el, el, false, false));
 	});
@@ -129,7 +134,9 @@ export const setAgent = async () => {
 	const uniqueAgents = [
 		...new Map(agents.map((item) => [item.AGENT, item])).values(),
 	];
-	$(`${id}`).empty().append(new Option("", "", false, false));
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
 	uniqueAgents.map((el) => {
 		$(`${id}`).append(new Option(el.AGENT, el.AGENT, false, false));
 	});
@@ -138,7 +145,9 @@ export const setAgent = async () => {
 export const setCountry = async () => {
 	const id = "#country";
 	const data = await mkt.getCountries();
-	$(`${id}`).empty().append(new Option("", "", false, false));
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
 	data.map((el) => {
 		$(`${id}`).append(new Option(el.CTNAME, el.CTNAME, false, false));
 	});
@@ -147,10 +156,12 @@ export const setCountry = async () => {
 export const setStatus = async () => {
 	const id = "#status";
 	const data = await mst.getStatus();
-	$(`${id}`).empty().append(new Option("", "", false, false));
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
 	data.map((el) => {
 		$(`${id}`).append(
-			new Option(el.STATUS_ACTION, el.STATUS_ID, false, false)
+			new Option(el.STATUS_ACTION, el.STATUS_ID, false, false),
 		);
 	});
 };

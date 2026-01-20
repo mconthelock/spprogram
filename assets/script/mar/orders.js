@@ -1,15 +1,18 @@
 import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
+import { showLoader } from "@amec/webasset/preloader";
+import { showErrorMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { getInquiryReport } from "../service/inquiry.js";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-import * as utils from "../utils.js";
+import { initApp, creatBtn, tableOpt } from "../utils.js";
 
 var table;
 $(async function () {
 	try {
-		await utils.initApp();
+		await showLoader({ show: true });
+		await initApp();
 		const data = await getInquiryReport({
 			SINQ_DATE: dayjs().subtract(3, "month").format("YYYY-MM-DD"),
 			IS_ORDERS: 1,
@@ -18,9 +21,9 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -29,7 +32,7 @@ async function tableOrdersOption(data) {
 		const exists = acc.find(
 			(item) =>
 				item.INQUIRY_NO === current.INQUIRY_NO &&
-				item.PRJ_NO === current.PRJ_NO
+				item.PRJ_NO === current.PRJ_NO,
 		);
 		if (!exists) {
 			acc.push(current);
@@ -37,7 +40,7 @@ async function tableOrdersOption(data) {
 		return acc;
 	}, []);
 	data = uniqueData;
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.columns = [
 		{
@@ -102,7 +105,7 @@ async function tableOrdersOption(data) {
 		},
 	];
 	opt.initComplete = async function () {
-		const export1 = await utils.creatBtn({
+		const export1 = await creatBtn({
 			id: "export1",
 			title: "Export to Excel",
 			icon: "fi fi-tr-file-excel text-xl",
@@ -131,7 +134,7 @@ async function loadTableData(q) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 }
 
@@ -144,13 +147,14 @@ $(document).on("click", ".export-docs", async function (e) {
 		await exportDocument(template, data);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 });
 
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
+		await utils.activatedBtn($(this));
 		const template = await getTemplate("export_secure_orders.xlsx");
 		const data = table.rows().data().toArray();
 		await exportExcel(data, template, {
@@ -158,7 +162,9 @@ $(document).on("click", "#export1", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
+	} finally {
+		await utils.activatedBtn($(this));
 	}
 });
 

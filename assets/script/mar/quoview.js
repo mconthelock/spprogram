@@ -3,6 +3,7 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
@@ -23,10 +24,10 @@ $(document).ready(async () => {
 
 		$("#inquiry-title").html(inquiry.INQ_NO);
 		inquiry.QUO_DATE = moment(inquiry.quotation.QUO_DATE).format(
-			"YYYY-MM-DD"
+			"YYYY-MM-DD",
 		);
 		inquiry.QUO_VALIDITY = moment(inquiry.quotation.QUO_VALIDITY).format(
-			"YYYY-MM-DD"
+			"YYYY-MM-DD",
 		);
 		inquiry.QUO_NOTE =
 			inquiry.quotation.QUO_NOTE == null
@@ -34,14 +35,14 @@ $(document).ready(async () => {
 				: inquiry.quotation.QUO_NOTE.replace(/\n/g, "<br>");
 		const customers = await cus.getCustomer();
 		const customer = customers.find(
-			(c) => c.CUS_ID == inquiry.INQ_CUSTOMER
+			(c) => c.CUS_ID == inquiry.INQ_CUSTOMER,
 		);
 		inquiry.QUO_CUSTOMER = customer == undefined ? "" : customer.CUS_NAME;
 		const cards = await inqs.setupCard(inquiry);
 		const details = inquiry.details.filter((dt) => dt.INQD_LATEST == 1);
 		const tableContainer = await tbquo.setupTableDetail(
 			details,
-			inquiry.INQ_TYPE
+			inquiry.INQ_TYPE,
 		);
 		table = await createTable(tableContainer);
 
@@ -56,6 +57,6 @@ $(document).ready(async () => {
 		utils.errorMessage(error);
 		return;
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });

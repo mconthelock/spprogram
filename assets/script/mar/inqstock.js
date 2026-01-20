@@ -15,6 +15,7 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/flatpickr.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker, fpkDayOff } from "@amec/webasset/flatpickr";
 import * as inqservice from "../service/inquiry.js";
@@ -62,9 +63,9 @@ $(document).ready(async () => {
 		const date = await setDatePicker({ ...fpkDayOff() });
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -122,7 +123,7 @@ $(document).on("change", ".itemno", async function (e) {
 		CUSTOMER_ID: $("#customer").val(),
 	});
 	const pricelist = itemslist.filter(
-		(item) => item.itemdesc.ITEM_NO == itemno
+		(item) => item.itemdesc.ITEM_NO == itemno,
 	);
 	if (pricelist.length == 0) {
 		await utils.showMessage(`Item ${itemno} is not found on Price List!`);
@@ -267,7 +268,7 @@ $(document).on("click", "#savedata", async function (e) {
 			if (parseInt(parseInt(dt.INQD_ITEM) / 100) >= 6) isEso = true;
 		});
 		if (!qty) throw new Error("Please enter quantity for all items!");
-		await utils.showLoader({
+		await showLoader({
 			show: true,
 			title: "Saving data",
 			clsbox: `!bg-transparent`,
@@ -292,10 +293,10 @@ $(document).on("click", "#savedata", async function (e) {
 		});
 
 		window.location.replace(
-			`${process.env.APP_ENV}/mar/quotation/view/${inquiry.INQ_ID}`
+			`${process.env.APP_ENV}/mar/quotation/view/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 });

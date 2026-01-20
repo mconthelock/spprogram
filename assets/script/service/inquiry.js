@@ -117,7 +117,7 @@ export const getInquiryReport = async (data) => {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 };
 

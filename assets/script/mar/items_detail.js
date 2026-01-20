@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { showLoader } from "@amec/webasset/preloader";
 import {
 	dragDropInit,
 	dragDropListImage,
@@ -18,9 +19,9 @@ $(async function () {
 		const dropdown = await setItemDetail();
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -97,7 +98,7 @@ async function setItemDetail() {
 		$("#image-dropzone").append(el);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 }
 
@@ -113,7 +114,7 @@ async function listCustomer() {
 		$("#customer").html(customer_html);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 }
 
@@ -124,12 +125,12 @@ async function listCategory() {
 			.filter((cat) => cat != null)
 			.map((cat) => {
 				$("#item-category").append(
-					`<option class="text-xs" value="${cat.CATE_ID}">${cat.CATE_NAME}</option>`
+					`<option class="text-xs" value="${cat.CATE_ID}">${cat.CATE_NAME}</option>`,
 				);
 			});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 }
 
@@ -148,7 +149,7 @@ $(document).on("click", "#save-data", async function () {
 	});
 	if (!isValid) {
 		await utils.showMessage("Please fill in all required fields.");
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 		return;
 	}
 	try {
@@ -192,9 +193,9 @@ $(document).on("click", "#save-data", async function () {
 		}
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -249,7 +250,7 @@ async function saveCustomer(pageload) {
 		const customerId = $(this).val();
 		const isChecked = $(this).is(":checked");
 		const existsInDb = currentCustomers.some(
-			(c) => c.CUSTOMER_ID == customerId
+			(c) => c.CUSTOMER_ID == customerId,
 		);
 
 		if (isChecked && !existsInDb) {

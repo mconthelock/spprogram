@@ -1,7 +1,7 @@
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import { createTable } from "@amec/webasset/dataTable";
-import { showbgLoader } from "@amec/webasset/preloader";
+import { showLoader } from "@amec/webasset/preloader";
 import { tableOpt } from "./table.js";
 import * as service from "../service/inquiry.js";
 import * as utils from "../utils.js";
@@ -26,9 +26,9 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 

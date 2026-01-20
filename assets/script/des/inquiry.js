@@ -22,7 +22,7 @@ $(async function () {
 	} catch (error) {
 		console.log(error);
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -89,7 +89,7 @@ async function tableInquiry(data, options = {}) {
 			render: (data) => {
 				if (data == null) return "";
 				const statusColor = colors.find(
-					(item) => item.id >= data.STATUS_ID
+					(item) => item.id >= data.STATUS_ID,
 				);
 				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
@@ -113,7 +113,7 @@ async function tableInquiry(data, options = {}) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -121,8 +121,8 @@ async function tableInquiry(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 26
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -134,7 +134,7 @@ async function tableInquiry(data, options = {}) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -142,8 +142,8 @@ async function tableInquiry(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 26
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -155,7 +155,7 @@ async function tableInquiry(data, options = {}) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -163,8 +163,8 @@ async function tableInquiry(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 26
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},
@@ -176,7 +176,7 @@ async function tableInquiry(data, options = {}) {
 			sortable: false,
 			render: (data) => {
 				const des = data.filter(
-					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1
+					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
 
@@ -184,8 +184,8 @@ async function tableInquiry(data, options = {}) {
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
 						: des[0].INQG_STATUS >= 26
-						? "text-primary"
-						: "text-secondary";
+							? "text-primary"
+							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 			},
 		},

@@ -16,16 +16,16 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
 async function tableOpt(data) {
 	const period = await currentPeriod();
 	$("#current-period").text(
-		`${period.current.year}-${period.current.period}H`
+		`${period.current.year}-${period.current.period}H`,
 	);
 	$("#last-period").text(`${period.last.year}-${period.last.period}H`);
 
@@ -53,7 +53,7 @@ async function tableOpt(data) {
 				const price = row.prices.find(
 					(p) =>
 						p.FYYEAR == current.year &&
-						parseInt(p.PERIOD) == current.period
+						parseInt(p.PERIOD) == current.period,
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
@@ -70,7 +70,7 @@ async function tableOpt(data) {
 				const price = row.prices.find(
 					(p) =>
 						p.FYYEAR == current.year &&
-						parseInt(p.PERIOD) == current.period
+						parseInt(p.PERIOD) == current.period,
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
@@ -87,7 +87,7 @@ async function tableOpt(data) {
 				const price = row.prices.find(
 					(p) =>
 						p.FYYEAR == current.year &&
-						parseInt(p.PERIOD) == current.period
+						parseInt(p.PERIOD) == current.period,
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
@@ -105,7 +105,7 @@ async function tableOpt(data) {
 				const price = row.prices.find(
 					(p) =>
 						p.FYYEAR == current.year &&
-						parseInt(p.PERIOD) == current.period
+						parseInt(p.PERIOD) == current.period,
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
@@ -122,7 +122,7 @@ async function tableOpt(data) {
 				const price = row.prices.find(
 					(p) =>
 						p.FYYEAR == current.year &&
-						parseInt(p.PERIOD) == current.period
+						parseInt(p.PERIOD) == current.period,
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
@@ -139,7 +139,7 @@ async function tableOpt(data) {
 				const price = row.prices.find(
 					(p) =>
 						p.FYYEAR == current.year &&
-						parseInt(p.PERIOD) == current.period
+						parseInt(p.PERIOD) == current.period,
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
@@ -182,12 +182,12 @@ $(document).on("click", "#export1:not(.btn-disabled)", async function (e) {
 			const currentPrice = row.prices.find(
 				(p) =>
 					p.FYYEAR == period.current.year &&
-					parseInt(p.PERIOD) == period.current.period
+					parseInt(p.PERIOD) == period.current.period,
 			);
 			const lastPrice = row.prices.find(
 				(p) =>
 					p.FYYEAR == period.last.year &&
-					parseInt(p.PERIOD) == period.last.period
+					parseInt(p.PERIOD) == period.last.period,
 			);
 
 			return {
@@ -208,17 +208,15 @@ $(document).on("click", "#export1:not(.btn-disabled)", async function (e) {
 			filename: "Price List.xlsx",
 			rowstart: 3,
 			execute: async (workbook, sheet) => {
-				sheet.getCell(
-					"H1"
-				).value = `${period.current.year} - ${period.current.period}H`;
-				sheet.getCell(
-					"K1"
-				).value = `${period.last.year} - ${period.last.period}H`;
+				sheet.getCell("H1").value =
+					`${period.current.year} - ${period.current.period}H`;
+				sheet.getCell("K1").value =
+					`${period.last.year} - ${period.last.period}H`;
 			},
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
 		await utils.activatedBtn($(this), false);
 	}

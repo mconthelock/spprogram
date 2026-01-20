@@ -1,9 +1,11 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
 import "select2";
 import dayjs from "dayjs";
 import * as utils from "../utils.js";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { getCurrency, updateCurrency } from "../service/master.js";
 
@@ -24,9 +26,9 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -75,7 +77,7 @@ async function tableOpt(data) {
 				if (type === "display" && row.isNew !== undefined) {
 					return `<input type="number" class="input cell-input w-full input-dt" value="${utils.digits(
 						data,
-						2
+						2,
 					)}" min="0.01" step="0.01">`;
 				}
 				return utils.digits(data, 2);

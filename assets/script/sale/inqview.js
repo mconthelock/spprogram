@@ -3,6 +3,7 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import * as utils from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
@@ -44,7 +45,7 @@ $(document).ready(async () => {
 		utils.errorMessage(error);
 		return;
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 

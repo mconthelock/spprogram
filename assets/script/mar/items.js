@@ -2,6 +2,7 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as items from "../service/items.js";
@@ -16,9 +17,9 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -70,8 +71,8 @@ async function tableOpt(data) {
             <a href="${
 				process.env.APP_ENV
 			}/mar/items/detail/${data}" class="btn btn-sm btn-ghost btn-circle edit-row ${
-					row.isNew !== undefined ? "hidden" : ""
-				}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>
+				row.isNew !== undefined ? "hidden" : ""
+			}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>
 
             <button class="btn btn-sm btn-ghost btn-circle toggle-status
                 ${row.ITEM_STATUS === 0 ? "hidden" : ""}
@@ -90,7 +91,7 @@ async function tableOpt(data) {
 
 	opt.initComplete = async function () {
 		$(".table-option").append(
-			`<a href="${process.env.APP_ENV}/mar/items/detail" class="btn btn-outline btn-primary hover:text-white">New Item</a>`
+			`<a href="${process.env.APP_ENV}/mar/items/detail" class="btn btn-outline btn-primary hover:text-white">New Item</a>`,
 		);
 		$(".table-paging").append(`<div class="flex gap-2">
         <button class="btn btn-accent rounded-3xl text-white items-center" id="export-detail" type="button">
@@ -122,6 +123,6 @@ $(document).on("click", "#export-btn", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 });

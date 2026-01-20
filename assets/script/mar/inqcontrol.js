@@ -1,3 +1,4 @@
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as utils from "../utils.js";
@@ -18,9 +19,9 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -61,7 +62,7 @@ async function tableOpt(data) {
           `;
 				}
 				const quotation = quotype.find(
-					(item) => item.QUOTYPE_ID == data
+					(item) => item.QUOTYPE_ID == data,
 				);
 				return quotation.QUOTYPE_DESC;
 			},
@@ -101,7 +102,7 @@ async function tableOpt(data) {
             `;
 				}
 				const shipment = shipments.find(
-					(item) => item.SHIPMENT_ID == data
+					(item) => item.SHIPMENT_ID == data,
 				);
 				return shipment.SHIPMENT_DESC;
 			},
@@ -154,16 +155,16 @@ async function tableOpt(data) {
 
 $(document).on("click", ".edit-row", async function () {
 	try {
-		await utils.showLoader({ show: true });
+		await showLoader({ show: true });
 		const row = table.row($(this).closest("tr"));
 		const rowData = row.data();
 		rowData.isNew = true;
 		table.row(row).data(rowData).draw();
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -191,9 +192,9 @@ $(document).on("click", ".save-row", async function (e) {
 		table.row(row).data(saveData).draw();
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -208,10 +209,10 @@ $(document).on("click", "#export-btn", async function (e) {
 		// Merge quotation type, shipments, and delivery terms descriptions into data
 		const mergedData = data.map((item) => {
 			const quotation = quotype.find(
-				(q) => q.QUOTYPE_ID == item.CNT_QUOTATION
+				(q) => q.QUOTYPE_ID == item.CNT_QUOTATION,
 			);
 			const shipment = shipments.find(
-				(s) => s.SHIPMENT_ID == item.CNT_METHOD
+				(s) => s.SHIPMENT_ID == item.CNT_METHOD,
 			);
 			const term = terms.find((t) => t.TERM_ID == item.CNT_TERM);
 			return {
@@ -229,8 +230,8 @@ $(document).on("click", "#export-btn", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });

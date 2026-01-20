@@ -23,9 +23,9 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -61,7 +61,7 @@ async function tableOptions(data) {
 			render: (data) => {
 				if (data == null) return "";
 				const statusColor = colors.find(
-					(item) => item.id >= data.STATUS_ID
+					(item) => item.id >= data.STATUS_ID,
 				);
 				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},

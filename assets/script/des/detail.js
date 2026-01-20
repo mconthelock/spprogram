@@ -28,6 +28,6 @@ $(async function () {
 	} catch (error) {
 		console.log(error);
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });

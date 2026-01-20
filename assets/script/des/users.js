@@ -14,7 +14,7 @@ $(async function () {
 		await utils.initApp();
 		let users = await service.getAppUsers();
 		users = users.filter((u) =>
-			["LDE", "DE"].includes(u.appsgroups?.GROUP_CODE)
+			["LDE", "DE"].includes(u.appsgroups?.GROUP_CODE),
 		);
 		const opt = await createUserTable(users);
 		table = await createTable(opt, {
@@ -23,7 +23,7 @@ $(async function () {
 	} catch (error) {
 		console.log(error);
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -65,7 +65,7 @@ async function createUserTable(users = []) {
 			render: (data, type) => {
 				if (type === "display") {
 					const des = designer.find(
-						(d) => d.DES_USER === data && d.DES_GROUP === "1"
+						(d) => d.DES_USER === data && d.DES_GROUP === "1",
 					);
 					return `<input type="radio" name="radio-${data}" class="radio radio-neutral design-group" value="1" ${
 						des ? "checked" : ""
@@ -80,7 +80,7 @@ async function createUserTable(users = []) {
 			render: (data, type) => {
 				if (type === "display") {
 					const des = designer.find(
-						(d) => d.DES_USER === data && d.DES_GROUP === "2"
+						(d) => d.DES_USER === data && d.DES_GROUP === "2",
 					);
 					return `<input type="radio" name="radio-${data}" class="radio radio-neutral design-group" value="2" ${
 						des ? "checked" : ""
@@ -95,7 +95,7 @@ async function createUserTable(users = []) {
 			render: (data, type) => {
 				if (type === "display") {
 					const des = designer.find(
-						(d) => d.DES_USER === data && d.DES_GROUP === "3"
+						(d) => d.DES_USER === data && d.DES_GROUP === "3",
 					);
 					return `<input type="radio" name="radio-${data}" class="radio radio-neutral design-group" value="3" ${
 						des ? "checked" : ""
@@ -110,7 +110,7 @@ async function createUserTable(users = []) {
 			render: (data, type) => {
 				if (type === "display") {
 					const des = designer.find(
-						(d) => d.DES_USER === data && d.DES_GROUP === "6"
+						(d) => d.DES_USER === data && d.DES_GROUP === "6",
 					);
 					return `<input type="radio" name="radio-${data}" class="radio radio-neutral design-group" value="6" ${
 						des ? "checked" : ""

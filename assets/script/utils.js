@@ -24,95 +24,6 @@ export const initApp = async (opt = {}) => {
 	return;
 };
 
-export function showMessage(msg, opt = { type: "error" }) {
-	const prop = [
-		{
-			id: "error",
-			bg: "bg-red-800",
-			text: "text-white",
-			title: "Processing Fail!",
-			icon: `<i class="fi fi-tr-not-found"></i>`,
-		},
-		{
-			id: "success",
-			bg: "bg-green-800",
-			text: "text-white",
-			title: "Processing completed!",
-			icon: `<i class="fi fi-tr-badget-check-alt"></i>`,
-		},
-		{
-			id: "info",
-			bg: "bg-blue-800",
-			text: "text-white",
-			title: "More information!",
-			icon: `<i class="fi fi-tr-not-found"></i>`,
-		},
-		{
-			id: "warning",
-			bg: "bg-yellow-800",
-			text: "text-white",
-			title: "Warning!",
-			icon: `<i class="fi fi-tr-not-found"></i>`,
-		},
-	];
-	const dt = prop.find((x) => x.id == opt.type);
-	const option = { ...dt, ...opt };
-	const toast = `<div class="alert flex flex-col gap-2 overflow-hidden relative ${option.bg} transition-all duration-1000 ease-in-out">
-        <div class="msg-title text-xl font-semibold block w-full text-left ${option.text}">${option.title}</div>
-        <div class="msg-txt block w-full text-left max-w-80 text-wrap ${option.text}">${msg}</div>
-        <div class="absolute right-2.5 top-0 text-[120px] z-0 opacity-20">
-            ${option.icon}
-        </div>
-        <div class="absolute right-2.5 top-0 text-md z-0">
-            <button class="msg-close btn btn-sm btn-ghost btn-circle hover:bg-transparent">X</button>
-        </div>
-    </div>`;
-	$("#toast-alert").append(toast);
-	setTimeout(() => {
-		//console.log($(toast).find(".msg-close").length);
-		$("#toast-alert").find(".alert:last .msg-close").click();
-	}, 5000);
-}
-
-export const errorMessage = async function (error) {
-	try {
-		let str = `<ul class="list-disc ml-5">`;
-		const respose = error.responseJSON;
-		const title = respose.message.error;
-		if (typeof respose.message === "string") {
-			str += `<li>${respose.message}</li>`;
-			str += `</ul>`;
-			await showMessage(str, { type: "error", title });
-			return;
-		}
-
-		for (const [key, value] of Object.entries(respose.message)) {
-			for (const [k, val] of Object.entries(value)) {
-				str += `<li>${val}</li>`;
-			}
-		}
-		str += `</ul>`;
-		await showMessage(str, { type: "error", title });
-		return;
-	} catch (e) {
-		//console.log(e);
-		showMessage("An unexpected error occurred.");
-		return;
-	}
-};
-
-export const showLoader = (opt = { show: true }) => {
-	$("#loading-box").prop("checked", opt.show);
-	$("#loading-box-modal")
-		.find("h1")
-		.html(`${opt.title == undefined ? "Loading" : opt.title}`);
-	if (opt.clsbox !== undefined)
-		$("#loading-box-modal")
-			.find(".modal-box")
-			.addClass(opt.clsbox)
-			.removeClass("glass");
-};
-
 export const tableOpt = {
 	dom: `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`,
 	order: [[0, "desc"]],
@@ -152,7 +63,7 @@ export const showConfirm = (
 	message,
 	icon,
 	key = "",
-	text = false
+	text = false,
 ) => {
 	$("#confirm_accept").addClass(class_function);
 	$("#confirm_accept").attr("data-function", class_function);
@@ -219,8 +130,8 @@ export const intVal = (i) => {
 	return typeof i === "string"
 		? i.replace(/[\$,]/g, "") * 1
 		: typeof i === "number"
-		? i
-		: 0;
+			? i
+			: 0;
 };
 
 export const digits = (n, digit) => {

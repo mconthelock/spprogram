@@ -20,7 +20,7 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
-
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import * as inqservice from "../service/inquiry.js";
 import * as mail from "../service/mail.js";
@@ -86,7 +86,7 @@ $(document).ready(async () => {
 
 		const tableContainer = await tbsale.setupTableDetail(
 			details,
-			usergroup
+			usergroup,
 		);
 		table = await createTable(tableContainer);
 
@@ -101,9 +101,9 @@ $(document).ready(async () => {
 		const elmes = await inqs.elmesComponent();
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -243,7 +243,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 	const allow = ["xlsx", "tsv", "txt"];
 	if (!allow.includes(ext)) {
 		const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
-			", "
+			", ",
 		)}`;
 		utils.showMessage(msg);
 		return;
@@ -334,7 +334,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 		//   `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
 		// );
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 });
@@ -355,10 +355,10 @@ $(document).on("click", "#forward-de", async function (e) {
 			remark: $("#remark").val(),
 		});
 		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+			`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 });
@@ -379,10 +379,10 @@ $(document).on("click", "#send-bm", async function (e) {
 			remark: $("#remark").val(),
 		});
 		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+			`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 });
@@ -424,14 +424,14 @@ $(document).on("click", "#send-confirm", async function (e) {
 			};
 			const inqs = await inqservice.updateInquiryStatus(
 				fomdata,
-				$("#inquiry-id").val()
+				$("#inquiry-id").val(),
 			);
 			//   const email = await mail.sendPKC({
 			//     ...inqs,
 			//     remark: $("#remark").val(),
 			//   });
 			window.location.replace(
-				`${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`
+				`${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`,
 			);
 			return;
 		}
@@ -461,7 +461,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 		//   `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
 		// );
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 });
@@ -492,7 +492,7 @@ async function updatePath(status, level = 0) {
 		});
 	}
 
-	await utils.showLoader({
+	await showLoader({
 		show: true,
 		title: "Saving data",
 		clsbox: `!bg-transparent`,

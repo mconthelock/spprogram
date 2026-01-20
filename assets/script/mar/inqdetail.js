@@ -15,6 +15,7 @@ Funtion contents
 // import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 // import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import * as inqservice from "../service/inquiry.js";
@@ -68,9 +69,9 @@ $(document).ready(async () => {
 		const date = await setDatePicker();
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -216,7 +217,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 	const allow = ["xlsx", "tsv", "txt"];
 	if (!allow.includes(ext)) {
 		const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
-			", "
+			", ",
 		)}`;
 		utils.showMessage(msg);
 		return;
@@ -305,7 +306,7 @@ $(document).on("click", "#send-bm", async function (e) {
 
 async function createPath(opt) {
 	const chkheader = await inqs.verifyHeader(
-		opt.level == 0 ? ".req-1" : ".req-2"
+		opt.level == 0 ? ".req-1" : ".req-2",
 	);
 	if (!chkheader) return;
 	const header = await inqs.getFormHeader();
@@ -321,7 +322,7 @@ async function createPath(opt) {
 	const details = table.rows().data().toArray();
 	try {
 		await inqs.verifyDetail(table, details, opt.level);
-		await utils.showLoader({
+		await showLoader({
 			show: true,
 			title: "Saving data",
 			clsbox: `!bg-transparent`,
@@ -341,14 +342,14 @@ async function createPath(opt) {
 
 		if (opt.status == 1)
 			window.location.replace(
-				`${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
+				`${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`,
 			);
 		else
 			window.location.replace(
-				`${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+				`${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`,
 			);
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 }
@@ -387,7 +388,7 @@ async function updatePath(opt) {
 	const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
 	if (check_inq.length == 0) {
 		await utils.showMessage(
-			`Inquiry ${header.INQ_NO} is not found on System!`
+			`Inquiry ${header.INQ_NO} is not found on System!`,
 		);
 		$("#inquiry-no").focus().select();
 		return;
@@ -400,7 +401,7 @@ async function updatePath(opt) {
 	const details = table.rows().data().toArray();
 	try {
 		await inqs.verifyDetail(table, details, opt.level);
-		await utils.showLoader({
+		await showLoader({
 			show: true,
 			title: "Saving data",
 			clsbox: `!bg-transparent`,
@@ -440,10 +441,10 @@ async function updatePath(opt) {
 			await inqservice.createInquiryFile(attachment_form);
 		}
 		window.location.replace(
-			`${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`
+			`${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 		return;
 	}
 }

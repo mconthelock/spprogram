@@ -3,6 +3,7 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
@@ -12,6 +13,7 @@ import * as utils from "../utils.js";
 var table;
 $(document).ready(async () => {
 	try {
+		await showLoader({ show: true });
 		await utils.initApp({ submenu: ".navmenu-quotation" });
 		const q = await tableCondition();
 		const data = await getInquiry(q);
@@ -21,7 +23,7 @@ $(document).ready(async () => {
 		utils.errorMessage(error);
 		return;
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -82,7 +84,7 @@ async function tableInquiryOption(data) {
 			render: (data) => {
 				if (data == null) return "";
 				const statusColor = colors.find(
-					(item) => item.id >= data.STATUS_ID
+					(item) => item.id >= data.STATUS_ID,
 				);
 				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
@@ -182,7 +184,7 @@ async function tableInquiryOption(data) {
 			className: `btn-outline btn-neutral text-neutral hover:shadow-lg hover:text-white!`,
 		});
 		$(".table-info").append(
-			`<div class="flex gap-2">${export1}${export2}</div>`
+			`<div class="flex gap-2">${export1}${export2}</div>`,
 		);
 	};
 	return opt;
@@ -191,9 +193,13 @@ async function tableInquiryOption(data) {
 $(document).on("click", ".export-excel", async function (e) {
 	e.preventDefault();
 	try {
+		await showLoader({ show: true });
+		const template = await getTemplate("cover_sheet_orders.xlsx");
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
+	} finally {
+		//await showLoader({ show: false });
 	}
 });
 
@@ -219,7 +225,7 @@ $(document).on("click", "#export1", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
 		await utils.activatedBtn($(this), false);
 	}
@@ -239,7 +245,7 @@ $(document).on("click", "#export2", async function (e) {
 		const data = await getInquiry(query);
 		const result = await dataDetails(data);
 		const template = await getTemplate(
-			"export_inquiry_list_template_detail.xlsx"
+			"export_inquiry_list_template_detail.xlsx",
 		);
 		await exportExcel(result, template, {
 			filename: "Quotation Detail.xlsx",
@@ -247,7 +253,7 @@ $(document).on("click", "#export2", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
 		await utils.activatedBtn($(this), false);
 	}

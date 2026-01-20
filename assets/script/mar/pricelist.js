@@ -2,7 +2,7 @@ import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
-import * as utils from "../utils.js";
+import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel } from "../service/excel";
 import select2 from "select2";
@@ -10,6 +10,7 @@ import { setSelect2 } from "@amec/webasset/select2";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
 import { getCustomer } from "../service/customers.js";
+import * as utils from "../utils.js";
 select2();
 
 var table;
@@ -21,9 +22,9 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await utils.showLoader({ show: false });
+		await showLoader({ show: false });
 	}
 });
 
@@ -32,7 +33,7 @@ async function setData() {
 	const customers = await getCustomer();
 	const period = await currentPeriod();
 	const customer = customers.find(
-		(cus) => cus.CUS_ID == $("#selected-customer").val()
+		(cus) => cus.CUS_ID == $("#selected-customer").val(),
 	);
 	const selected = $("#selected-customer").val();
 	const ratio = await findPriceRatio({
@@ -43,7 +44,7 @@ async function setData() {
 	const data = items
 		.filter((item) => {
 			return item.itemscustomer.some(
-				(cus) => cus.CUSTOMER_ID == selected
+				(cus) => cus.CUSTOMER_ID == selected,
 			);
 		})
 		.map((item) => {
@@ -51,19 +52,19 @@ async function setData() {
 			const currentprices = item.prices.filter(
 				(p) =>
 					p.FYYEAR == current.year &&
-					parseInt(p.PERIOD) == current.period
+					parseInt(p.PERIOD) == current.period,
 			);
 			const currentprice =
 				currentprices.length > 0
 					? currentprices.reduce((max, p) =>
-							p.STARTIN > max.STARTIN ? p : max
-					  )
+							p.STARTIN > max.STARTIN ? p : max,
+						)
 					: undefined;
 
 			const last = period.last;
 			const lastprice = item.prices.find(
 				(p) =>
-					p.FYYEAR == last.year && parseInt(p.PERIOD) == last.period
+					p.FYYEAR == last.year && parseInt(p.PERIOD) == last.period,
 			);
 			return {
 				...item,
@@ -79,7 +80,7 @@ async function setData() {
 async function tableOpt(data) {
 	const period = await currentPeriod();
 	$("#current-period").text(
-		`${period.current.year}-${period.current.period}H`
+		`${period.current.year}-${period.current.period}H`,
 	);
 	$("#last-period").text(`${period.last.year}-${period.last.period}H`);
 	const opt = { ...utils.tableOpt };
@@ -282,6 +283,6 @@ $(document).on("click", "#export-btn", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await utils.errorMessage(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
 	}
 });
