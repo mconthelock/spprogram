@@ -36,10 +36,10 @@ async function tableCondition() {
 	if ($("#pageid").val() == "3") {
 		q = {
 			INQ_STATUS: "> 50",
+			IS_QUOTATION: true,
 			quotation: {
 				QUO_VALIDITY: `>= ${dayjs().format("YYYY-MM-DD")}`,
 			},
-			IS_QUOTATION: true,
 		};
 	} else {
 		q = {
@@ -207,9 +207,10 @@ async function tableInquiryOption(data) {
 $(document).on("click", ".export-excel", async function (e) {
 	e.preventDefault();
 	try {
+		const id = $(this).attr("id").split("-")[1];
 		await activatedBtn($(this));
 		const template = await getTemplate("export_quotation_detail.xlsx");
-		const data = await loadTableData({ PRJ_NO: docs, IS_ORDERS: 1 });
+		const data = await getInquiry({ INQ_ID: id });
 		await exportDocument(template, data);
 	} catch (error) {
 		console.log(error);
