@@ -3,12 +3,13 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
+import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
 import { displayname } from "@amec/webasset/api/amec";
 import { showErrorMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { getTemplate, exportExcel } from "../service/excel";
+import { getTemplate, exportExcel, cloneRows } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
 import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
 import { initApp, tableOpt } from "../utils.js";
@@ -207,11 +208,16 @@ async function tableInquiryOption(data) {
 $(document).on("click", ".export-excel", async function (e) {
 	e.preventDefault();
 	try {
-		const id = $(this).attr("id").split("-")[1];
+		const row = table.row($(this).closest("tr")).data();
+		const id = row.INQ_ID;
 		await activatedBtn($(this));
 		const template = await getTemplate("export_quotation_detail.xlsx");
-		const data = await getInquiry({ INQ_ID: id });
-		await exportDocument(template, data);
+		const data = await getInquiry({
+			INQ_ID: id,
+			IS_DETAILS: true,
+			IS_QUOTATION: true,
+		});
+		await exportDocument(template, data[0]);
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
@@ -221,19 +227,51 @@ $(document).on("click", ".export-excel", async function (e) {
 });
 
 async function exportDocument(template, data) {
+	console.log(data);
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
-	await workbook.xlsx.load(file).then(async (workbook) => {
-		//Process sheets
+	await workbook.xlsx.load(file).then(async (wk) => {
+		//Data Sheet
+		const sheet1 = wk.worksheets[0];
+		//Header Section
+		sheet1.getCell("K2").value = data.INQ_NO;
+		sheet1.getCell("K3").value = "Part Supply";
+		sheet1.getCell("K4").value = data.INQ_TRADER;
+		sheet1.getCell("B5").value = data.maruser.SRECMAIL;
 
+		sheet1.getCell("C11").value = displayname(data.maruser.SNAME).sname;
+		sheet1.getCell("C12").value = dayjs(data.INQ_DATE).format("YYYY-MM-DD");
+		sheet1.getCell("C13").value = data.INQ_AGENT;
+		sheet1.getCell("C14").value = data.INQ_COUNTRY;
+		sheet1.getCell("C15").value = data.INQ_PRJNO;
+		sheet1.getCell("C16").value = data.details[0].INQD_CAR;
+
+		sheet1.getCell("H11").value = dayjs(data.quotation.QUO_DATE).format(
+			"YYYY-MM-DD",
+		);
+		sheet1.getCell("H12").value = data.term.TERM_DESC;
+		sheet1.getCell("H13").value = data.method.METHOD_DESC;
+		sheet1.getCell("H14").value = data.shipment.SHIPMENT_DESC;
+		sheet1.getCell("H15").value = dayjs(data.quotation.QUO_VALIDITY).format(
+			"YYYY-MM-DD",
+		);
+		sheet1.getCell("H16").value = data.INQ_CUR;
+
+		//Details Section
+		if (data.details.length > 26) {
+			// sheet1.duplicateRow(27, data.details.length - 26, true);
+			cloneRows(sheet1, 20, 20);
+		}
+		//let rowStart = 20;
+		//Weight Sheet
 		//Save to file
-		await workbook.xlsx.writeBuffer().then(function (buffer) {
+		await wk.xlsx.writeBuffer().then(function (buffer) {
 			const blob = new Blob([buffer], {
 				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			});
 			const link = document.createElement("a");
 			link.href = URL.createObjectURL(blob);
-			link.download = "Cover Sheet Orders.xlsx";
+			link.download = `${data.INQ_NO}.xlsx`;
 			link.click();
 		});
 	});
