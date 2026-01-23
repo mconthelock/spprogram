@@ -231,6 +231,13 @@ async function exportDocument(template, data) {
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (wk) => {
+		//Weight Sheet
+		const sheet2 = wk.worksheets[1];
+		sheet2.getCell("T2").value = data.INQ_NO;
+		sheet2.getCell("T3").value = "Part Supply";
+		sheet2.getCell("T4").value = data.INQ_TRADER;
+		sheet2.getCell("B5").value = data.maruser.SRECMAIL;
+
 		//Data Sheet
 		const sheet1 = wk.worksheets[0];
 		//Header Section
@@ -258,13 +265,57 @@ async function exportDocument(template, data) {
 		sheet1.getCell("H16").value = data.INQ_CUR;
 
 		//Details Section
-		if (data.details.length > 26) {
-			// sheet1.duplicateRow(27, data.details.length - 26, true);
-			cloneRows(sheet1, 20, 20);
+		const details = data.details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
+		const rowStart = 20;
+		let rowEnd = 0;
+		const lt = data.shipment.SHIPMENT_VALUE;
+		details.forEach((item, i) => {
+			if (i > 24) {
+				cloneRows(sheet1, 22, rowStart + i);
+			}
+			sheet1.getCell(rowStart + i, 1).value = item.INQD_SEQ;
+			sheet1.getCell(rowStart + i, 2).value = item.INQD_CAR;
+			sheet1.getCell(rowStart + i, 3).value = item.INQD_MFGORDER;
+			sheet1.getCell(rowStart + i, 4).value = item.INQD_ITEM;
+			sheet1.getCell(rowStart + i, 5).value = item.INQD_PARTNAME;
+			sheet1.getCell(rowStart + i, 6).value = item.INQD_DRAWING;
+			sheet1.getCell(rowStart + i, 7).value = item.INQD_VARIABLE;
+			sheet1.getCell(rowStart + i, 8).value = lt; //L/T
+			sheet1.getCell(rowStart + i, 9).value = item.INQD_SUPPLIER;
+			sheet1.getCell(rowStart + i, 10).value =
+				item.INQD_SENDPART == null ? "" : "P";
+			sheet1.getCell(rowStart + i, 11).value = item.INQD_QTY;
+			sheet1.getCell(rowStart + i, 12).value = item.INQD_UM;
+			sheet1.getCell(rowStart + i, 13).value = item.INQD_UNIT_PRICE;
+			sheet1.getCell(rowStart + i, 14).value = {
+				formula: `M${rowStart + i}*K${rowStart + i}`,
+			}; //Amount
+			sheet1.getCell(rowStart + i, 15).value = item.INQD_MAR_REMARK;
+			sheet1.getCell(rowStart + i, 16).value = item.INQD_DES_REMARK;
+			sheet1.getCell(rowStart + i, 17).value = item.INQD_FIN_REMARK;
+			i++;
+			rowEnd = rowStart + i;
+		});
+
+		if (rowEnd > 45) {
+			sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
+			sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
+
+			sheet1.mergeCells(`A${rowEnd + 4}:G${rowEnd + 6}`);
+			sheet1.mergeCells(`H${rowEnd + 4}:I${rowEnd + 6}`);
+
+			sheet1.mergeCells(`J${rowEnd + 4}:K${rowEnd + 4}`);
+			sheet1.mergeCells(`J${rowEnd + 5}:K${rowEnd + 5}`);
+			sheet1.mergeCells(`J${rowEnd + 6}:K${rowEnd + 6}`);
 		}
-		//let rowStart = 20;
-		//Weight Sheet
+		sheet1.getCell(`A${rowEnd + 4}`).value = data.quotation.QUO_NOTE;
+		sheet1.getCell(`L${rowEnd + 4}`).value = data.quotation.QUO_SEA_TOTAL;
+		sheet1.getCell(`L${rowEnd + 5}`).value = data.quotation.QUO_AIR_TOTAL;
+		sheet1.getCell(`L${rowEnd + 6}`).value =
+			data.quotation.QUO_COURIER_TOTAL;
+
 		//Save to file
+		await sheet1.protect($("#user-login").attr("empno"));
 		await wk.xlsx.writeBuffer().then(function (buffer) {
 			const blob = new Blob([buffer], {
 				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
