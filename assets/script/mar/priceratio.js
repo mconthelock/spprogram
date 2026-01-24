@@ -4,6 +4,7 @@ import "@amec/webasset/css/dataTable.min.css";
 import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
+import { showMessage } from "@amec/webasset/utils";
 import { exportExcel } from "../service/excel.js";
 import * as utils from "../utils.js";
 import {
@@ -24,7 +25,7 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -308,7 +309,7 @@ $(document).on("click", ".save-row", async function (e) {
 			data.quotype = res.QUOTYPE_ID;
 		} catch (error) {
 			console.log(error);
-			await showErrorMessage(`Something went wrong.`, "2036");
+			await showMessage(error);
 		}
 	}
 
@@ -331,7 +332,7 @@ $(document).on("click", ".save-row", async function (e) {
 		row.draw(false);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	}
 });
 

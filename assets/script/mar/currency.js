@@ -1,14 +1,17 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import select2 from "select2";
 import dayjs from "dayjs";
-import * as utils from "../utils.js";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
+import { displayname } from "@amec/webasset/api/amec";
+import { showMessage } from "@amec/webasset/utils";
 import { getCurrency, updateCurrency } from "../service/master.js";
+import * as utils from "../utils.js";
 
+select2();
 var table;
 const curricon = [
 	{ code: "GBP", icon: `<i class="text-xl fi fi-bs-sterling-sign"></i>` },
@@ -26,7 +29,7 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}

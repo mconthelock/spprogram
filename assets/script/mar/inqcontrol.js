@@ -1,7 +1,10 @@
+import "select2/dist/css/select2.min.css";
+import "@amec/webasset/css/select2.min.css";
+import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { showErrorMessage, showMessage } from "@amec/webasset/utils";
+import { showMessage } from "@amec/webasset/utils";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as utils from "../utils.js";
 import {
@@ -11,6 +14,7 @@ import {
 	getDeliveryTerm,
 	updateController,
 } from "../service/master.js";
+select2();
 
 var table;
 $(document).ready(async () => {
@@ -21,7 +25,7 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -59,7 +63,7 @@ async function tableOpt(data) {
 							item.QUOTYPE_ID == data ? "selected" : ""
 						}>${item.QUOTYPE_DESC}</option>`;
 					});
-					return `<select class="select select-bordered w-full text-xs edit-val" name="CNT_QUOTATION">${str}
+					return `<select class="select2 w-full input-dt edit-val" name="CNT_QUOTATION">${str}
           </select>
           `;
 				}
@@ -80,7 +84,7 @@ async function tableOpt(data) {
 							item.TERM_ID == data ? "selected" : ""
 						}>${item.TERM_DESC}</option>`;
 					});
-					return `<select class="select select-bordered w-full text-xs edit-val" name="CNT_TERM">${str}
+					return `<select class="select2 w-full input-dt edit-val" name="CNT_TERM">${str}
             </select>
             `;
 				}
@@ -99,7 +103,7 @@ async function tableOpt(data) {
 							item.SHIPMENT_ID == data ? "selected" : ""
 						}>${item.SHIPMENT_DESC}</option>`;
 					});
-					return `<select class="select select-bordered w-full max-w-xs text-xs edit-val" name="CNT_METHOD">${str}
+					return `<select class="select2 w-full input-dt edit-val" name="CNT_METHOD">${str}
             </select>
             `;
 				}
@@ -161,10 +165,26 @@ $(document).on("click", ".edit-row", async function () {
 		const row = table.row($(this).closest("tr"));
 		const rowData = row.data();
 		rowData.isNew = true;
-		table.row(row).data(rowData).draw();
+		table.row(row).data(rowData).draw(false);
+
+		const jQueryElement = $(row.node()).find(".select2");
+		jQueryElement.select2({
+			tags: true,
+			createTag: function (params) {
+				const term = $.trim(params.term);
+				if (term === "") {
+					return null;
+				}
+				return {
+					id: term,
+					text: term,
+					newTag: true,
+				};
+			},
+		});
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -233,7 +253,7 @@ $(document).on("click", "#export-btn", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
