@@ -147,7 +147,7 @@ $(document).on("change", ".freight-value", async function () {
 
 	const voulumn = $(this).closest("tr").find("input").eq(1).val();
 	const total = voulumn * value;
-	$(this).closest("tr").find("input").eq(2).val(utils.digits(total, 0));
+	$(this).closest("tr").find("input").eq(2).val(digits(total, 0));
 });
 
 async function freightData(data) {
@@ -156,24 +156,22 @@ async function freightData(data) {
 
 	//Sae Freight Table
 	const sea = $("#table-freight").find(".sea-value").val();
-	$("#table-freight").find(".sea-voulumn").val(utils.digits(totalVolume, 0));
+	$("#table-freight").find(".sea-voulumn").val(digits(totalVolume, 0));
 	$("#table-freight")
 		.find(".sea-total")
-		.val(utils.digits(totalVolume * sea, 0) || 0);
+		.val(digits(totalVolume * sea, 0) || 0);
 	//Air Freight Table
 	const air = $("#table-freight").find(".sea-value").val();
-	$("#table-freight").find(".air-voulumn").val(utils.digits(totalWeight, 0));
+	$("#table-freight").find(".air-voulumn").val(digits(totalWeight, 0));
 	$("#table-freight")
 		.find(".air-total")
-		.val(utils.digits(totalWeight * air, 0) || 0);
+		.val(digits(totalWeight * air, 0) || 0);
 	//Courier Freight Table
 	const courier = $("#table-freight").find(".sea-value").val();
-	$("#table-freight")
-		.find(".courier-voulumn")
-		.val(utils.digits(totalWeight, 0));
+	$("#table-freight").find(".courier-voulumn").val(digits(totalWeight, 0));
 	$("#table-freight")
 		.find(".courier-total")
-		.val(utils.digits(totalWeight * courier, 0) || 0);
+		.val(digits(totalWeight * courier, 0) || 0);
 }
 
 async function totalDetail() {
@@ -190,13 +188,7 @@ async function totalDetail() {
 		grandtotal += unit;
 	});
 
-	$(table.table().footer())
-		.find(".total-tc")
-		.text(utils.digits(totalcost, 0));
-	$(table.table().footer())
-		.find(".total-unit")
-		.text(utils.digits(totalunit, 0));
-	$(table.table().footer())
-		.find(".grand-total")
-		.text(utils.digits(grandtotal, 0));
+	$(table.table().footer()).find(".total-tc").text(digits(totalcost, 0));
+	$(table.table().footer()).find(".total-unit").text(digits(totalunit, 0));
+	$(table.table().footer()).find(".grand-total").text(digits(grandtotal, 0));
 }

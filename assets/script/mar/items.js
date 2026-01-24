@@ -1,31 +1,34 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
+import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as items from "../service/items.js";
-import * as utils from "../utils.js";
+import { initApp, tableOpt } from "../utils.js";
 var table;
 
 $(async function () {
 	try {
-		await utils.initApp({ submenu: ".navmenu-price" });
+		await showLoader({ show: true });
+		await initApp({ submenu: ".navmenu-price" });
 		const data = await items.getItems();
-		const opt = await tableOpt(data);
+		const opt = await tableOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
 });
 
-async function tableOpt(data) {
+async function tableOption(data) {
 	const result = data.filter((item) => item.category !== null);
-	const opt = utils.tableOpt;
+	const opt = { ...tableOpt };
 	opt.data = result;
 	opt.pageLength = 15;
 	opt.order = [[0, "asc"]];

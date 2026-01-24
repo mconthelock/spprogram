@@ -178,7 +178,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 2)}</div>`;
 				}
 				return data;
 			},
@@ -189,7 +189,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 2)}</div>`;
 				}
 				return data;
 			},
@@ -200,7 +200,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 2)}</div>`;
 				}
 				return data;
 			},
@@ -211,7 +211,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 3)}</div>`;
 				}
 				return data;
 			},
@@ -222,7 +222,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 3)}</div>`;
 				}
 				return data;
 			},
@@ -233,7 +233,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type, row) {
 				const totalPrice = row.INQD_UNIT_PRICE * row.INQD_QTY;
 				if (type === "display") {
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						totalPrice,
 						3,
 					)}</div>`;
@@ -298,12 +298,12 @@ export async function setupTableDetail(data = [], type = "SP") {
             <th class="text-right" colspan="${
 				type === "SP" ? 12 : 8
 			}">Total</th>
-            <th class="text-right">${utils.digits(sumfcCost, 3)}</th>
+            <th class="text-right">${digits(sumfcCost, 3)}</th>
             <th class="text-right"></th>
-            <th class="text-right">${utils.digits(sumtcCost, 3)}</th>
+            <th class="text-right">${digits(sumtcCost, 3)}</th>
             <th class="text-right"></th>
-            <th class="text-right">${utils.digits(sumUnit, 3)}</th>
-            <th class="text-right">${utils.digits(sumTotal, 3)}</th>
+            <th class="text-right">${digits(sumUnit, 3)}</th>
+            <th class="text-right">${digits(sumTotal, 3)}</th>
             <th class="${type !== "SP" ? "hidden" : ""}"></th>
             <th class="${type !== "SP" ? "hidden" : ""}"></th>
           </tr>`;

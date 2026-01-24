@@ -185,7 +185,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 					if (row.INQD_SUPPLIER == "MELINA") {
 						return `<div class="px-2"><input type="text" class="w-full min-w-[55px] outline-0 text-right input-number inqprice" value="${data}"/></div>`;
 					}
-					return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 0)}</div>`;
 				}
 				return data;
 			},
@@ -197,7 +197,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 3)}</div>`;
 				}
 				return data;
 			},
@@ -209,7 +209,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : Math.ceil(data);
-					return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 0)}</div>`;
 				}
 				return data;
 			},
@@ -222,7 +222,7 @@ export async function setupTableDetail(data = [], type = "SP") {
 				const totalPrice =
 					Math.ceil(row.INQD_UNIT_PRICE) * row.INQD_QTY;
 				if (type === "display") {
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						totalPrice,
 						0,
 					)}</div>`;
@@ -303,10 +303,10 @@ export async function setupTableDetail(data = [], type = "SP") {
             <th class="text-right pr-5!" colspan="${
 				type === "SP" ? 12 : 8
 			}">Total</th>
-            <th class="text-right total-tc">${utils.digits(sumtcCost, 0)}</th>
+            <th class="text-right total-tc">${digits(sumtcCost, 0)}</th>
             <th class="text-right"></th>
-            <th class="text-right total-unit">${utils.digits(sumUnit, 0)}</th>
-            <th class="text-right grand-total">${utils.digits(sumTotal, 0)}</th>
+            <th class="text-right total-unit">${digits(sumUnit, 0)}</th>
+            <th class="text-right grand-total">${digits(sumTotal, 0)}</th>
             <th class="${type !== "SP" ? "hidden" : ""}"></th>
             <th class="${type !== "SP" ? "hidden" : ""}"></th>
           </tr>`;

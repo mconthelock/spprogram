@@ -1,11 +1,14 @@
 import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
 import select2 from "select2";
+import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
+import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { showMessage } from "@amec/webasset/utils";
-import { exportExcel } from "../service/excel.js";
+import { getTemplate, exportExcel, cloneRows } from "../service/excel";
 import * as utils from "../utils.js";
 import {
 	getPriceRatio,
@@ -127,7 +130,7 @@ async function tableOpt(data) {
 				if (type === "display" && row.isNew !== undefined) {
 					return `<input type="number" class="input cell-input w-full input-dt" data-key="formula" value="${data}" min="0.001" step="0.01">`;
 				}
-				return utils.digits(data, 3);
+				return digits(data, 3);
 			},
 		},
 		{
@@ -181,20 +184,23 @@ async function tableOpt(data) {
 		},
 	];
 
-	opt.initComplete = function (settings, json) {
-		const addnew = `<button class="btn btn-primary rounded-none text-white items-center hover:bg-primary/70" id="add-new-rate" type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="flex items-center"><i class="fi fi-tr-floor-layer text-lg me-2"></i>New Item</span>
-        </button>`;
-		const export2 = `<button class="btn btn-neutral rounded-none text-white items-center hover:bg-neutral/70" id="export-list" type="button">
-            <span class="loading loading-spinner hidden"></span>
-            <span class="flex items-center"><i class="fi fi-tr-file-excel text-lg me-2"></i>Export list</span>
-        </button>`;
-		const back = `<a href="#" class="btn btn-outline btn-neutral rounded-none text-neutral hover:text-white hover:bg-neutral/70 flex gap-3"><i class="fi fi-rr-arrow-circle-left text-xl"></i>Back</a>`;
+	opt.initComplete = async function (settings, json) {
+		const addnew = await creatBtn({
+			id: "add-new-rate",
+			title: "New Item",
+			icon: "fi fi-tr-floor-layer text-xl",
+			className: `btn-primary text-white hover:shadow-lg`,
+		});
+		const export1 = await creatBtn({
+			id: "export-list",
+			title: "Export Excel",
+			icon: "fi fi-tr-file-excel text-xl",
+			className: `btn-accent text-white hover:shadow-lg`,
+		});
 
 		$(".table-info").append(`<div class="flex gap-2">
         ${addnew}
-        ${export2}
+        ${export1}
      </div>`);
 	};
 	return opt;
@@ -289,9 +295,7 @@ $(document).on("click", ".save-row", async function (e) {
 			if (val == "" || val == null || val == 0) isBlank = true;
 		});
 	if (isBlank) {
-		await showMessage(`Please fill all required field.`, {
-			type: "warning",
-		});
+		await showMessage(`Please fill all required field.`, "warning");
 		return;
 	}
 	//Save Quotation Type
@@ -367,12 +371,21 @@ $(document).on("click", ".ignore-row", async function (e) {
 
 $(document).on("click", "#export-list", async function (e) {
 	e.preventDefault();
-	const data = table.rows().data().toArray();
-	data.forEach((val) => {
-		val.statusText = val.STATUS == 1 ? "Active" : "Inactive";
-	});
-	const template = await getTemplate("export_priceratio.xlsx");
-	await exportExcel(mergedData, template, {
-		filename: "priceratio.xlsx",
-	});
+	try {
+		await activatedBtn($(this));
+		const data = table.rows().data().toArray();
+		data.forEach((val) => {
+			val.statusText = val.STATUS == 1 ? "Active" : "Inactive";
+		});
+		const template = await getTemplate("export_priceratio.xlsx");
+		console.log(data);
+		await exportExcel(data, template, {
+			filename: `Price Ratio ${dayjs().format("YYYY-MM-DD")}.xlsx`,
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	} finally {
+		await activatedBtn($(this), false);
+	}
 });

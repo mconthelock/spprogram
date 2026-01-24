@@ -72,7 +72,7 @@ export async function setupTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					if (data % 1 !== 0) data = utils.digits(data, 2);
+					if (data % 1 !== 0) data = digits(data, 2);
 					const log = renderLog(data, row.logs, "INQD_SEQ");
 					const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
 						log ? "detail-log" : ""

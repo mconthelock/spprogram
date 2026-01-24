@@ -58,7 +58,7 @@ async function tableOpt(data) {
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
-					pricePeriod = utils.digits(price.FCCOST);
+					pricePeriod = digits(price.FCCOST);
 				}
 				return pricePeriod;
 			},
@@ -75,7 +75,7 @@ async function tableOpt(data) {
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
-					pricePeriod = utils.digits(price.FCBASE, 2);
+					pricePeriod = digits(price.FCBASE, 2);
 				}
 				return pricePeriod;
 			},
@@ -92,7 +92,7 @@ async function tableOpt(data) {
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
-					pricePeriod = utils.digits(price.TCCOST);
+					pricePeriod = digits(price.TCCOST);
 				}
 				return pricePeriod;
 			},
@@ -110,7 +110,7 @@ async function tableOpt(data) {
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
-					pricePeriod = utils.digits(price.FCCOST);
+					pricePeriod = digits(price.FCCOST);
 				}
 				return pricePeriod;
 			},
@@ -127,7 +127,7 @@ async function tableOpt(data) {
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
-					pricePeriod = utils.digits(price.FCBASE, 2);
+					pricePeriod = digits(price.FCBASE, 2);
 				}
 				return pricePeriod;
 			},
@@ -144,7 +144,7 @@ async function tableOpt(data) {
 				);
 				let pricePeriod = "-";
 				if (price !== undefined) {
-					pricePeriod = utils.digits(price.TCCOST);
+					pricePeriod = digits(price.TCCOST);
 				}
 				return pricePeriod;
 			},

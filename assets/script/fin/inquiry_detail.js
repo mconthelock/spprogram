@@ -49,7 +49,7 @@ async function tableDetailOptions(data) {
 			title: "No",
 			className: "sticky-column",
 			render: (data) => {
-				if (data % 1 !== 0) return utils.digits(data, 2);
+				if (data % 1 !== 0) return digits(data, 2);
 				return data;
 			},
 		},

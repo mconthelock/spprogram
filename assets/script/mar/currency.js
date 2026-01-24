@@ -78,12 +78,12 @@ async function tableOpt(data) {
 			title: "Rate",
 			render: function (data, type, row) {
 				if (type === "display" && row.isNew !== undefined) {
-					return `<input type="number" class="input cell-input w-full input-dt" value="${utils.digits(
+					return `<input type="number" class="input cell-input w-full input-dt" value="${digits(
 						data,
 						2,
 					)}" min="0.01" step="0.01">`;
 				}
-				return utils.digits(data, 2);
+				return digits(data, 2);
 			},
 		},
 		{

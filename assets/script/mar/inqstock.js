@@ -106,7 +106,7 @@ async function setupButton(mode) {
 //002: Add table detail rows
 $(document).on("click", "#add-item", async function (e) {
 	e.preventDefault();
-	const id = utils.digits(table.rows().data().length + 1);
+	const id = digits(table.rows().data().length + 1);
 	await tb.addRow({ id, seq: id }, table);
 	const rowNode = table.rows("tr:last").nodes();
 	$(rowNode).find(".itemno").focus();

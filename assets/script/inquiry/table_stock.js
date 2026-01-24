@@ -148,7 +148,7 @@ export async function setupTableDetail(data = []) {
 		//   render: function (data, type) {
 		//     if (type === "display") {
 		//       data = data == null ? "" : data;
-		//       return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+		//       return `<div class="px-2 text-right!">${digits(data, 2)}</div>`;
 		//     }
 		//     return data;
 		//   },
@@ -159,7 +159,7 @@ export async function setupTableDetail(data = []) {
 		//   render: function (data, type) {
 		//     if (type === "display") {
 		//       data = data == null ? "" : data;
-		//       return `<div class="px-2 text-right!">${utils.digits(data, 2)}</div>`;
+		//       return `<div class="px-2 text-right!">${digits(data, 2)}</div>`;
 		//     }
 		//     return data;
 		//   },
@@ -170,7 +170,7 @@ export async function setupTableDetail(data = []) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 0)}</div>`;
 				}
 				return data;
 			},
@@ -181,7 +181,7 @@ export async function setupTableDetail(data = []) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 3)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 3)}</div>`;
 				}
 				return data;
 			},
@@ -192,7 +192,7 @@ export async function setupTableDetail(data = []) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(data, 0)}</div>`;
+					return `<div class="px-2 text-right!">${digits(data, 0)}</div>`;
 				}
 				return data;
 			},
@@ -273,7 +273,7 @@ export async function setupTablePriceList(data) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						data[0].FCCOST,
 						2,
 					)}</div>`;
@@ -288,7 +288,7 @@ export async function setupTablePriceList(data) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						data[0].FCBASE,
 						2,
 					)}</div>`;
@@ -303,7 +303,7 @@ export async function setupTablePriceList(data) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						data[0].TCCOST,
 						0,
 					)}</div>`;
@@ -318,7 +318,7 @@ export async function setupTablePriceList(data) {
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						data.FORMULA,
 						3,
 					)}</div>`;
@@ -336,7 +336,7 @@ export async function setupTablePriceList(data) {
 				const price = formula * cost;
 				if (type === "display") {
 					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${utils.digits(
+					return `<div class="px-2 text-right!">${digits(
 						price,
 						3,
 					)}</div>`;

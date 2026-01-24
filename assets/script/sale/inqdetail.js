@@ -171,7 +171,7 @@ $(document).on("click", "#addRowBtn", async function (e) {
 $(document).on("click", ".add-sub-line", async function (e) {
 	e.preventDefault();
 	const data = table.row($(this).parents("tr")).data();
-	const id = utils.digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
+	const id = digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
 	await tb.addRow({ id, seq: id }, table);
 });
 

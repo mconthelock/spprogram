@@ -1,25 +1,31 @@
+import "select2/dist/css/select2.min.css";
+import "@amec/webasset/css/select2.min.css";
+
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
+import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { getBase64Image } from "@amec/webasset/api/file";
 import {
 	dragDropInit,
 	dragDropListImage,
 	handleFiles,
 } from "@amec/webasset/dragdrop";
-import { getBase64Image } from "@amec/webasset/api/file";
 import { getCustomer } from "../service/customers.js";
 import { getPriceList, updatePriceList } from "../service/pricelist.js";
 import * as items from "../service/items.js";
-import * as utils from "../utils.js";
+import { initApp } from "../utils.js";
 
 $(async function () {
 	try {
-		await utils.initApp({ submenu: ".navmenu-price" });
+		await showLoader({ show: true });
+		await initApp({ submenu: ".navmenu-price" });
 		const customer = await listCustomer();
 		const category = await listCategory();
 		const dropdown = await setItemDetail();
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -138,18 +144,15 @@ $(document).on("click", "#save-data", async function () {
 	let isValid = true;
 	let id;
 	$(".field-data.req").each(function () {
-		console.log($(this).val());
-
 		if ($(this).val() == "" || $(this).val() == null) {
-			isValid = false;
 			$(this).addClass("input-error");
+			isValid = false;
 		} else {
 			$(this).removeClass("input-error");
 		}
 	});
 	if (!isValid) {
-		await showMessage("Please fill in all required fields.");
-		await showLoader({ show: false });
+		await showMessage("Please fill in all required fields.", "warning");
 		return;
 	}
 	try {
@@ -187,9 +190,10 @@ $(document).on("click", "#save-data", async function () {
 			await savePrice(payload);
 			await saveImage(payload);
 			await saveCustomer(payload);
-			await showMessage("Direct Sale's item saved successfully", {
-				type: "success",
-			});
+			await showMessage(
+				"Direct Sale's item saved successfully",
+				"success",
+			);
 		}
 	} catch (error) {
 		console.log(error);
