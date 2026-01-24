@@ -372,14 +372,24 @@ async function inquiryValues(data) {
 }
 
 export async function dataDetails(data) {
-	const details = [];
+	const result = [];
 	data.forEach((el) => {
 		const orders = el.orders;
-		const items = el.details;
-		const values = items.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
+		const sheet = el.sheet;
+		const details = el.details;
+		const values = details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		values.map(async (dt) => {
+			const sh = sheet.filter((s) => s.LINENO === dt.INQD_SEQ);
+			const ord =
+				sh.length > 0
+					? orders.filter((o) => o.ELV_NO === sh[0].ELVNO)
+					: [];
 			let row = {
 				...dt,
+				...sh[0],
+				...ord[0],
+				...el.pcategory[0],
+				INQ_ID: el.INQ_ID,
 				INQ_NO: el.INQ_NO,
 				INQ_DATE: el.INQ_DATE,
 				INQ_TRADER: el.INQ_TRADER,
@@ -396,49 +406,44 @@ export async function dataDetails(data) {
 			};
 			const temps = await addOrdersData(row);
 			row = { ...row, ...temps };
-			if (orders !== undefined) {
-				orders.map((or) => {
-					row = { ...row, ...or, ORDER_LT: row.SHIPMENT_VALUE };
-				});
-			}
-			details.push(row);
+			result.push(row);
 		});
 	});
-	return details;
+	return result;
 }
 
 function addOrdersData(data) {
 	let values = {
-		PARTTYPE: "PARTG",
-		SERIES: "",
-		SPEC: "",
-		JJ: 800,
-		HH: 2100,
-		OPARATION: "2CSAI",
-		RECON: "FALSE",
-		PT: 1,
+		TEMP_PARTTYPE: "PARTG",
+		TEMP_SERIES: "",
+		TEMP_SPEC: "",
+		TEMP_JJ: 800,
+		TEMP_HH: 2100,
+		TEMP_OPARATION: "2CSAI",
+		TEMP_RECON: "FALSE",
+		TEMP_PT: 1,
 	};
 	const type = parseInt(data.INQD_ITEM / 100);
 	if (type < 6) {
 		values = {
 			...values,
-			SERIES: data.INQ_SERIES ? data.INQ_SERIES : "GPSXL",
-			SPEC:
+			TEMP_SERIES: data.INQ_SERIES ? data.INQ_SERIES : "GPSXL",
+			TEMP_SPEC:
 				data.INQ_SERIES == "G11L1"
 					? "P0630-CO-105,12S/O"
 					: "P0750-CO-060,05S/O",
-			CARNO: data.INQD_CAR != null ? data.INQD_CAR : "01",
+			TEMP_CARNO: data.INQD_CAR != null ? data.INQD_CAR : "01",
 		};
 	} else {
 		values = {
 			...values,
-			PARTTYPE: "PARTJ",
-			SERIES: data.INQ_SERIES ? data.INQ_SERIES : "JSWZ",
-			SPEC:
+			TEMP_PARTTYPE: "PARTJ",
+			TEMP_SERIES: data.INQ_SERIES ? data.INQ_SERIES : "JSWZ",
+			TEMP_SPEC:
 				data.INQ_SERIES == "JSWU"
 					? "S1000/U1JSE/05200/30"
 					: "S0600/ZJ-SE/05000/35",
-			CARNO: data.INQD_CAR != null ? data.INQD_CAR : "A1",
+			TEMP_CARNO: data.INQD_CAR != null ? data.INQD_CAR : "A1",
 		};
 	}
 	return values;

@@ -293,10 +293,11 @@ $(document).on("change", 'input[name="files"]', async function (e) {
 
 $(document).on("click", "#back-to-list", async function (e) {
 	e.preventDefault();
-	const user = await utils.userInfo();
-	if (user.group == "MAR") {
-		window.location.href = `${process.env.APP_ENV}/mar/items`;
+	const user = $("#user-login").attr("groupcode");
+	if (user != "MAR") {
+		window.location.href = `${process.env.APP_ENV}/fin/items`;
 		return;
 	}
-	window.location.href = `${process.env.APP_ENV}/fin/items`;
+
+	window.location.href = `${process.env.APP_ENV}/mar/items`;
 });

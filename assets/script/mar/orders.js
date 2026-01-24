@@ -3,10 +3,10 @@ import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
 import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { showErrorMessage } from "@amec/webasset/utils";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { getInquiryReport } from "../service/inquiry.js";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
+import { getInquiry, dataDetails } from "../service/inquiry.js";
 import { initApp, tableOpt } from "../utils.js";
 
 var table;
@@ -14,42 +14,32 @@ $(async function () {
 	try {
 		await showLoader({ show: true });
 		await initApp();
-		const data = await getInquiryReport({
-			SINQ_DATE: dayjs().subtract(3, "month").format("YYYY-MM-DD"),
-			IS_ORDERS: 1,
+		const data = await getInquiry({
+			INQ_DATE: `>= ${dayjs().subtract(3, "month").format("YYYY-MM-DD")}`,
+			IS_DETAILS: true,
+			IS_ORDERS: true,
 		});
 		const opt = await tableOrdersOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
 });
 
 async function tableOrdersOption(data) {
-	const uniqueData = data.reduce((acc, current) => {
-		const exists = acc.find(
-			(item) =>
-				item.INQUIRY_NO === current.INQUIRY_NO &&
-				item.PRJ_NO === current.PRJ_NO,
-		);
-		if (!exists) {
-			acc.push(current);
-		}
-		return acc;
-	}, []);
-	data = uniqueData;
+	data = data.filter((el) => el.orders.length > 0);
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.columns = [
 		{
-			data: "IDS_DATE",
+			data: "orders",
 			title: "IDS Date",
 			className: "text-center! text-nowrap sticky-column",
 			render: function (data, type, row) {
-				return dayjs(data).format("YYYY-MM-DD");
+				return dayjs(data[0].IDS_DATE).format("YYYY-MM-DD");
 			},
 		},
 		{
@@ -58,42 +48,60 @@ async function tableOrdersOption(data) {
 			className: "text-nowrap",
 		},
 		{
-			data: "PRJ_NO",
+			data: "orders",
 			title: "Project",
 			className: "text-nowrap",
-		},
-		{
-			data: "PCATE_NAME",
-			title: "PO Type",
-			className: "text-nowrap sticky-column",
-		},
-		{
-			data: "AGENT",
-			title: "Agent",
-			className: "text-nowrap",
-		},
-		{
-			data: "TRADER",
-			title: "Trader",
-			className: "text-nowrap",
-		},
-		{
-			data: "DSTN",
-			title: "Coutnry",
-			className: "text-nowrap",
-		},
-		{
-			data: "CUST_RQS",
-			title: "Cus. Rqs.",
-			className: "text-nowrap text-center!",
-			render: function (data, type, row) {
-				return dayjs(data).format("YYYY-MM-DD");
+			render: function (data) {
+				return data[0].PRJ_NO;
 			},
 		},
 		{
-			data: "CREATEBY",
+			data: "pcategory",
+			title: "PO Type",
+			className: "text-nowrap sticky-column",
+			render: function (data) {
+				return data.length > 0 ? data[0].PCATE_NAME : "";
+			},
+		},
+		{
+			data: "orders",
+			title: "Agent",
+			className: "text-nowrap",
+			render: function (data) {
+				return data[0].AGENT;
+			},
+		},
+		{
+			data: "orders",
+			title: "Trader",
+			className: "text-nowrap",
+			render: function (data) {
+				return data[0].TRADER;
+			},
+		},
+		{
+			data: "orders",
+			title: "Coutnry",
+			className: "text-nowrap",
+			render: function (data) {
+				return data[0].DSTN;
+			},
+		},
+		{
+			data: "orders",
+			title: "Cus. Rqs.",
+			className: "text-nowrap text-center!",
+			render: function (data) {
+				return dayjs(data[0].CUST_RQS).format("YYYY-MM-DD");
+			},
+		},
+		{
+			data: "orders",
 			title: "Inchage",
 			className: "text-nowrap",
+			render: function (data) {
+				return data[0].CREATEBY;
+			},
 		},
 		{
 			data: "INQ_NO",
@@ -108,64 +116,43 @@ async function tableOrdersOption(data) {
 	opt.initComplete = async function () {
 		const export1 = await creatBtn({
 			id: "export1",
-			title: "Export to Excel",
+			title: "Export Excel",
 			icon: "fi fi-tr-file-excel text-xl",
-			className: `btn-neutral text-white hover:shadow-lg`,
+			className: `btn-accent text-white hover:shadow-lg`,
 		});
 		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
 	};
 	return opt;
 }
 
-async function loadTableData(q) {
-	try {
-		return new Promise((resolve, reject) => {
-			$.ajax({
-				url: `${process.env.APP_API}/mkt/part/sp-orders`,
-				type: "POST",
-				dataType: "json",
-				data: q,
-				success: function (response) {
-					resolve(response);
-				},
-				error: function (error) {
-					reject(error);
-				},
-			});
-		});
-	} catch (error) {
-		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
-	}
-}
-
-$(document).on("click", ".export-docs", async function (e) {
-	e.preventDefault();
-	try {
-		const docs = table.row($(this).closest("tr")).data().PRJ_NO;
-		const data = await loadTableData({ PRJ_NO: docs, IS_ORDERS: 1 });
-		const template = await getTemplate("cover_sheet_orders.xlsx");
-		await exportDocument(template, data);
-	} catch (error) {
-		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
-	}
-});
-
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
 		await activatedBtn($(this));
-		const template = await getTemplate("export_secure_orders.xlsx");
+		const template = await getTemplate("export_orders.xlsx");
 		const data = table.rows().data().toArray();
-		await exportExcel(data, template, {
+		let result = await dataDetails(data);
+		result = result.filter((el) => el.LINENO !== undefined);
+		await exportExcel(result, template, {
 			filename: "Secure Orders.xlsx",
 		});
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await activatedBtn($(this));
+		await activatedBtn($(this), false);
+	}
+});
+
+$(document).on("click", ".export-docs", async function (e) {
+	e.preventDefault();
+	try {
+		const data = table.row($(this).closest("tr")).data();
+		const template = await getTemplate("export_orders_detail.xlsx");
+		await exportDocument(template, data);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
 	}
 });
 
@@ -186,7 +173,7 @@ async function exportDocument(template, data) {
 			});
 			const link = document.createElement("a");
 			link.href = URL.createObjectURL(blob);
-			link.download = "Cover Sheet Orders.xlsx";
+			link.download = `Cover Sheet Orders ${data.orders[0].PRJ_NO}.xlsx`;
 			link.click();
 		});
 	});
@@ -195,41 +182,44 @@ async function exportDocument(template, data) {
 //Sheet 1: Cover Page
 async function sheet1(workbook, data) {
 	const sheet = workbook.worksheets[0];
-	sheet.getCell("D2").value = dayjs(data[0].IDS_DATE).format("YYYY-MM-DD");
-	sheet.getCell("D3").value = data[0].CREATEBY;
-	sheet.getCell("D9").value = data[0].TRADER;
-	sheet.getCell("D10").value = data[0].PRJ_NO;
-	sheet.getCell("D11").value = data[0].PRJ_NAME;
-	sheet.getCell("D12").value = data[0].MFGNO;
-	sheet.getCell("D13").value = data[0].INQ_NO;
+	const ords = data.orders;
+	sheet.getCell("D2").value = dayjs(ords[0].IDS_DATE).format("YYYY-MM-DD");
+	sheet.getCell("D3").value = ords[0].CREATEBY;
+	sheet.getCell("D9").value = ords[0].TRADER;
+	sheet.getCell("D10").value = ords[0].PRJ_NO;
+	sheet.getCell("D11").value = ords[0].PRJ_NAME;
+	sheet.getCell("D12").value = ords[0].MFGNO;
+	sheet.getCell("D13").value = ords[0].INQUIRY_NO;
 
-	sheet.getCell("S9").value = data[0].AGENT;
-	sheet.getCell("S10").value = data[0].DSTN;
-	sheet.getCell("S11").value = data[0].AMEC_SCHDL;
-	sheet.getCell("S12").value = dayjs(data[0].CUST_RQS).format("YYYY-MM-DD");
-	sheet.getCell("S13").value = data[0].SHIP;
-	sheet.getCell("Z11").value = data[0].PT;
+	sheet.getCell("S9").value = ords[0].AGENT;
+	sheet.getCell("S10").value = ords[0].DSTN;
+	sheet.getCell("S11").value = ords[0].AMEC_SCHDL;
+	sheet.getCell("S12").value = dayjs(ords[0].CUST_RQS).format("YYYY-MM-DD");
+	sheet.getCell("S13").value = data.method.METHOD_DESC;
+	sheet.getCell("Z11").value = 1;
 
 	let i = 17;
 	let j = 1;
-	data.forEach((val) => {
+	const sheets = data.sheet;
+	sheets.forEach((val) => {
+		const item = data.details.find((el) => el.INQD_SEQ === val.LINENO);
+		const ordpart = data.orders.find((el) => el.ELV_NO === val.ELVNO);
 		if (j > 14) {
 			cloneRows(sheet, 17, i);
 			mergedCells(sheet, i);
 		}
-		sheet.getCell(i, 1).value = j;
-		sheet.getCell(i, 2).value = val.CAR_NO;
-		sheet.getCell(i, 3).value = val.INQD_ITEM;
-		sheet.getCell(i, 5).value = val.INQD_PARTNAME;
-		sheet.getCell(i, 8).value = val.INQD_DRAWING;
-		sheet.getCell(i, 11).value = val.INQD_VARIABLE;
+		sheet.getCell(i, 1).value = val.LINENO;
+		sheet.getCell(i, 2).value = val.ELVNO;
+		sheet.getCell(i, 3).value = item.INQD_ITEM;
+		sheet.getCell(i, 5).value = item.INQD_PARTNAME;
+		sheet.getCell(i, 8).value = item.INQD_DRAWING;
+		sheet.getCell(i, 11).value = item.INQD_VARIABLE;
 		sheet.getCell(i, 14).value = val.CSQTY;
-		sheet.getCell(i, 15).value = val.INQD_UM;
+		sheet.getCell(i, 15).value = item.INQD_UM;
 		sheet.getCell(i, 16).value = "";
-		sheet.getCell(i, 18).value = val.MFGNO;
+		sheet.getCell(i, 18).value = ordpart.MFGNO;
 		sheet.getCell(i, 21).value = getSchedule(val.MARREQPRDN);
-		sheet.getCell(i, 23).value = getSchedule(val.AMEC_SCHDL);
-		sheet.getCell(i, 25).value = val.REMARK;
+		sheet.getCell(i, 23).value = getSchedule(ordpart.AMEC_SCHDL);
 		i++;
 		j++;
 	});
@@ -259,59 +249,56 @@ function mergedCells(sheet, rows) {
 
 //Sheet 2: Order list
 async function sheet2(workbook, data) {
+	console.log(data);
+	const ords = data.orders;
+	const sheets = data.sheet;
 	const sheet = workbook.worksheets[1];
-	sheet.name = data[0].PRJ_NO;
+	sheet.name = ords[0].PRJ_NO;
 	let i = 2;
-	data.forEach((val) => {
+	ords.forEach((val) => {
+		const sh = sheets.filter((el) => el.ELVNO === val.ELV_NO);
 		if (i > 25) cloneRows(sheet, 2, i);
 		sheet.getCell(i, 1).value = val.SERIES;
-		sheet.getCell(i, 2).value = val.INQ_TYPE;
+		sheet.getCell(i, 2).value = data.INQ_SERIES;
 		sheet.getCell(i, 3).value = val.AGENT;
 		sheet.getCell(i, 4).value = "0";
 		sheet.getCell(i, 5).value = dayjs(val.IDS_DATE).format("YYYY-MM-DD");
 		sheet.getCell(i, 6).value = val.PRJ_NO;
 		sheet.getCell(i, 7).value = val.ORDER_NO;
-		sheet.getCell(i, 8).value = val.CAR_NO;
+		sheet.getCell(i, 8).value = val.ELV_NO;
 		sheet.getCell(i, 9).value = val.TRADER;
-		sheet.getCell(i, 10).value = val.CSQTY;
+		sheet.getCell(i, 10).value = sh.CSQTY;
 		sheet.getCell(i, 11).value = val.PRJ_NAME;
 		sheet.getCell(i, 12).value = val.DSTN;
 		sheet.getCell(i, 13).value = getSchedule(val.AMEC_SCHDL);
-		sheet.getCell(i, 14).value = dayjs(val.Cust_rqs).format("YYYY-MM-DD");
-		sheet.getCell(i, 15).value = val.PT;
-		sheet.getCell(i, 16).value = val.INQ_NO;
+		sheet.getCell(i, 14).value = dayjs(val.CUST_RQS).format("YYYY-MM-DD");
+		sheet.getCell(i, 15).value = sh.PT;
+		sheet.getCell(i, 16).value = data.INQ_NO;
 		sheet.getCell(i, 17).value = val.MFGNO;
 		sheet.getCell(i, 18).value = val.PO_MELTEC;
-		sheet.getCell(i, 19).value = val.INQD_DRAWING;
-		sheet.getCell(i, 20).value = val.INQD_PARTNAME;
-		sheet.getCell(i, 21).value = ""; //amount usd
-		sheet.getCell(i, 22).value = "";
-		sheet.getCell(i, 23).value = "";
-		sheet.getCell(i, 24).value = "";
-		sheet.getCell(i, 25).value = "";
-		sheet.getCell(i, 26).value = "";
-		sheet.getCell(i, 27).value = "";
-		sheet.getCell(i, 28).value = "";
-		sheet.getCell(i, 29).value = "";
+		sheet.getCell(i, 19).value = val.DWGNO_MELTEC;
+		sheet.getCell(i, 20).value = val.PARTNAME_MELTEC;
 		i++;
 	});
 }
 
 //Sheet 3: Form1
 async function sheet3(workbook, data) {
+	const ords = data.orders;
 	const sheet = workbook.worksheets[2];
-	sheet.getCell("J7").value = data[0].MFGNO;
-	sheet.getCell("J8").value = data[0].PRJ_NO;
-	sheet.getCell("J9").value = data[0].DSTN;
-	sheet.getCell("J10").value = data[0].TRADER;
+	sheet.getCell("J7").value = ords[0].MFGNO;
+	sheet.getCell("J8").value = ords[0].PRJ_NO;
+	sheet.getCell("J9").value = ords[0].DSTN;
+	sheet.getCell("J10").value = ords[0].TRADER;
 }
 
 //Sheet 4: Check Sheet
 async function sheet4(workbook, data) {
+	const ords = data.orders;
 	const sheet = workbook.worksheets[3];
-	sheet.getCell("D2").value = data[0].PRJ_NO;
-	sheet.getCell("D3").value = data[0].MFGNO;
-	sheet.getCell("K4").value = data[0].CREATEBY;
+	sheet.getCell("D2").value = ords[0].PRJ_NO;
+	sheet.getCell("D3").value = ords[0].MFGNO;
+	sheet.getCell("K4").value = ords[0].CREATEBY;
 }
 
 function getSchedule(val) {
