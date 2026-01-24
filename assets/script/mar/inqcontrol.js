@@ -1,5 +1,7 @@
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
+import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { showErrorMessage, showMessage } from "@amec/webasset/utils";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as utils from "../utils.js";
 import {
@@ -146,7 +148,7 @@ async function tableOpt(data) {
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
-			className: `from-accent/90 to-accent text-white hover:shadow-lg`,
+			className: `btn-accent text-white hover:shadow-lg`,
 		});
 		$(".table-page").append(`<div class="mt-5 gap-3">${export1}</div>`);
 	};
@@ -190,9 +192,10 @@ $(document).on("click", ".save-row", async function (e) {
 		}
 		const saveData = await updateController(rowData);
 		table.row(row).data(saveData).draw();
+		await showMessage("บันทึกข้อมูลเรียบร้อยแล้ว", "success");
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}

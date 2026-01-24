@@ -71,13 +71,17 @@ export const exportExcel = async (data, template, options = {}) => {
 						// prettier-ignore
 						sheet.getCell(target, format[1]).value = dayjs(value).add(7, 'hour').toDate();
 						// dayjs(dayjs(value).locale('th').add(7, 'hour').format('YYYY-MM-DD')).toDate();
-						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd";
+						sheet.getCell(target, format[1]).numFmt = format[4]
+							? format[4]
+							: "yyyy-mm-dd";
 					} else if (format[2] === "Datetime" && value) {
 						// prettier-ignore
 						sheet.getCell(target, format[1]).value = dayjs(value).add(7, 'hour').toDate();
 						// sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').add(7, 'hour').format('YYYY-MM-DD HH:mm:ss')).toDate();
 						// prettier-ignore
-						sheet.getCell(target, format[1]).numFmt = "yyyy-mm-dd hh:mm:ss";
+						sheet.getCell(target, format[1]).numFmt =  format[4]
+							? format[4]
+							:  "yyyy-mm-dd hh:mm:ss";
 					} else {
 						sheet.getCell(target, format[1]).value = value;
 						sheet.getCell(target, format[1]).numFmt = "General";
@@ -195,7 +199,7 @@ function nextWorkingDay(data, param) {
 	const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
 	const days = parseInt(param.days);
 	daterange = daterange.filter(
-		(item) => item.DAYOFF == 0 && item.WORKID >= sdate
+		(item) => item.DAYOFF == 0 && item.WORKID >= sdate,
 	);
 	let i = 1;
 	let current = sdate;
@@ -219,7 +223,7 @@ async function getCalendar(data) {
 	const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
 	const daterange = await ameccaledar(
 		minInqDate,
-		dayjs().add(10, "days").format("YYYYMMDD")
+		dayjs().add(10, "days").format("YYYYMMDD"),
 	);
 	return daterange;
 }

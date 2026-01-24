@@ -167,10 +167,11 @@ async function tableInquiryOption(data) {
 					title: `Export`,
 					type: "link",
 					icon: "fi fi-tr-file-excel text-lg",
-					className: `btn-sm btn-neutral ${row.status.STATUS_ID == "98" ? "btn-disabled text-gray-400" : "text-white export-excel"} hover:shadow-lg`,
+					// className: `btn-sm btn-neutral ${row.status.STATUS_ID == "98" ? "btn-disabled text-gray-400" : "text-white export-excel"} hover:shadow-lg`,
+					className: `btn-sm btn-neutral text-white export-excel hover:shadow-lg`,
 				});
-				const sparq = `<a class=""><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
-				const order = `<a class=""><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
+				const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
+				const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const revise = `<a class=""><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
 				const dropdown = `<div class="dropdown  dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
@@ -205,6 +206,60 @@ async function tableInquiryOption(data) {
 	return opt;
 }
 
+$(document).on("click", "#export1", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = await tableCondition();
+		const query = {
+			...q,
+			// INQ_NO: "T-IEE-25-A0504",
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+			IS_TIMELINE: true,
+			IS_FIN: true,
+		};
+		const data = await getInquiry(query);
+		const result = await dataExports(data);
+		const template = await getTemplate("export_inquiry_list_template.xlsx");
+		await exportExcel(result, template, {
+			filename: "Quotation List.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
+	} finally {
+		await activatedBtn($(this), false);
+	}
+});
+
+$(document).on("click", "#export2", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = await tableCondition();
+		const query = {
+			...q,
+			// INQ_NO: "T-IEE-25-A0504",
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+		};
+		const data = await getInquiry(query);
+		const result = await dataDetails(data);
+		const template = await getTemplate("export_inquiry_list_detail.xlsx");
+		await exportExcel(result, template, {
+			filename: "Quotation Detail List.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await showErrorMessage(`Something went wrong.`, "2036");
+	} finally {
+		await activatedBtn($(this), false);
+	}
+});
+
 $(document).on("click", ".export-excel", async function (e) {
 	e.preventDefault();
 	try {
@@ -216,6 +271,7 @@ $(document).on("click", ".export-excel", async function (e) {
 			INQ_ID: id,
 			IS_DETAILS: true,
 			IS_QUOTATION: true,
+			IS_WEIGHT: true,
 		});
 		await exportDocument(template, data[0]);
 	} catch (error) {
@@ -227,7 +283,6 @@ $(document).on("click", ".export-excel", async function (e) {
 });
 
 async function exportDocument(template, data) {
-	console.log(data);
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (wk) => {
@@ -237,6 +292,19 @@ async function exportDocument(template, data) {
 		sheet2.getCell("T3").value = "Part Supply";
 		sheet2.getCell("T4").value = data.INQ_TRADER;
 		sheet2.getCell("B5").value = data.maruser.SRECMAIL;
+
+		const weights = data.weight.sort((a, b) => a.SEQ_WEIGHT - b.SEQ_WEIGHT);
+		weights.forEach((wg, w) => {
+			sheet2.getCell(`A${w}`).value = wg.NO_WEIGHT;
+			sheet2.getCell(`D${w}`).value = wg.PACKAGE_TYPE;
+			sheet2.getCell(`J${w}`).value = wg.NET_WEIGHT;
+			sheet2.getCell(`L${w}`).value = wg.GROSS_WEIGHT;
+			sheet2.getCell(`O${w}`).value = wg.WIDTH_WEIGHT;
+			sheet2.getCell(`Q${w}`).value = wg.LENGTH_WEIGHT;
+			sheet2.getCell(`S${w}`).value = wg.HEIGHT_WEIGHT;
+			sheet2.getCell(`U${w}`).value = wg.VOLUMN_WEIGHT;
+			sheet2.getCell(`W${w}`).value = wg.ROUND_WEIGHT;
+		});
 
 		//Data Sheet
 		const sheet1 = wk.worksheets[0];
@@ -328,58 +396,110 @@ async function exportDocument(template, data) {
 	});
 }
 
-$(document).on("click", "#export1", async function (e) {
+$(document).on("click", ".export-sparq", async function (e) {
 	e.preventDefault();
 	try {
-		await activatedBtn($(this));
-		const q = await tableCondition();
-		const query = {
-			...q,
-			// INQ_NO: "T-IEE-25-A0504",
+		await showLoader();
+		const row = table.row($(this).closest("tr")).data();
+		const id = row.INQ_ID;
+		const data = await getInquiry({
+			INQ_ID: id,
 			IS_DETAILS: true,
-			IS_ORDERS: true,
-			IS_TIMELINE: true,
-			IS_FIN: true,
-		};
-		const data = await getInquiry(query);
-		const result = await dataExports(data);
-		const template = await getTemplate("export_inquiry_list_template.xlsx");
-		await exportExcel(result, template, {
-			filename: "Quotation List.xlsx",
-			rowstart: 3,
+			IS_QUOTATION: true,
 		});
+		const rows = [];
+		console.log(data);
+
+		const details = data[0].details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
+		details.forEach((item, i) => {
+			let remark = item.INQD_DES_REMARK,
+				unreply = 0,
+				unreplycode = "",
+				unreplyremark = "",
+				Pattern2Flg = "";
+
+			if (item.INQD_SUPPLIER == "MELINA") {
+				remark = "Original dwg no. is MELINA dwg no.";
+				unreply = 1;
+				unreplycode = 10;
+				unreplyremark = "Original dwg no. is MELINA dwg no.";
+				Pattern2Flg = 0;
+			} else if (item.INQD_UNREPLY != null) {
+				remark = item.INQD_DES_REMARK;
+				unreply = 1;
+				unreplycode = item.INQD_UNREPLY;
+				unreplyremark = item.INQD_DES_REMARK;
+			}
+			const row = [
+				data[0].INQ_NO,
+				item.INQD_RUNNO,
+				item.INQD_DRAWING,
+				item.INQD_PARTNAME,
+				item.INQD_QTY,
+				item.INQD_UM,
+				item.INQD_VARIABLE,
+				item.INQD_UNIT_PRICE,
+				remark,
+				data[0].shipment.SHIPMENT_VALUE,
+				dayjs(data[0].quotation.QUO_VALIDITY).format("YYYY/MM/DD"),
+				1,
+				item.INQD_MFGORDER,
+				item.INQD_CAR,
+				item.INQD_ITEM,
+				data[0].INQ_SERIES,
+				unreply,
+				unreplycode,
+				unreplyremark,
+				Pattern2Flg,
+				"", //Pattern2Sup
+				data[0].INQ_REV,
+				item.INQD_SEQ,
+			];
+			rows.push(row);
+		});
+		const tsvContent = rows.map((e) => e.join("\t")).join("\n");
+		// 3. สร้าง Blob object
+		const blob = new Blob([tsvContent], {
+			type: "text/tab-separated-values",
+		});
+		const url = URL.createObjectURL(blob);
+
+		// 4. สร้าง Link หลอกขึ้นมาเพื่อสั่ง Download
+		const link = document.createElement("a");
+		link.setAttribute("href", url);
+		link.setAttribute("download", `${data[0].INQ_NO}.txt`);
+		document.body.appendChild(link);
+
+		link.click();
+		document.body.removeChild(link);
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await activatedBtn($(this), false);
+		await showLoader({ show: false });
 	}
 });
 
-$(document).on("click", "#export2", async function (e) {
+$(document).on("click", ".export-order", async function (e) {
 	e.preventDefault();
 	try {
-		await activatedBtn($(this));
-		const q = await tableCondition();
-		const query = {
-			...q,
-			// INQ_NO: "T-IEE-25-A0504",
+		await showLoader();
+		const row = table.row($(this).closest("tr")).data();
+		const id = row.INQ_ID;
+		const template = await getTemplate("export_quotation_addorders.xlsx");
+		const data = await getInquiry({
+			INQ_ID: id,
 			IS_DETAILS: true,
-			IS_ORDERS: true,
-		};
-		const data = await getInquiry(query);
+			IS_QUOTATION: true,
+		});
 		const result = await dataDetails(data);
-		const template = await getTemplate(
-			"export_inquiry_list_template_detail.xlsx",
-		);
 		await exportExcel(result, template, {
-			filename: "Quotation Detail.xlsx",
-			rowstart: 3,
+			filename: `${data[0].INQ_NO}.xlsx`,
 		});
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
 	} finally {
-		await activatedBtn($(this), false);
+		await showLoader({ show: false });
 	}
 });

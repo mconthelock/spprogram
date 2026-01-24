@@ -374,11 +374,11 @@ async function inquiryValues(data) {
 export async function dataDetails(data) {
 	const details = [];
 	data.forEach((el) => {
-		let row = {};
-		const items = el.details;
 		const orders = el.orders;
-		items.map((dt) => {
-			row = {
+		const items = el.details;
+		const values = items.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
+		values.map(async (dt) => {
+			let row = {
 				...dt,
 				INQ_NO: el.INQ_NO,
 				INQ_DATE: el.INQ_DATE,
@@ -390,16 +390,56 @@ export async function dataDetails(data) {
 				INQ_PRJNO: el.INQ_PRJNO,
 				INQ_PRJNAME: el.INQ_PRJNAME,
 				INQ_SHOPORDER: el.INQ_SHOPORDER,
+				INQ_CUR: el.INQ_CUR,
 				SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
 				QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 			};
+			const temps = await addOrdersData(row);
+			row = { ...row, ...temps };
 			if (orders !== undefined) {
 				orders.map((or) => {
-					row = { ...row, ...or };
+					row = { ...row, ...or, ORDER_LT: row.SHIPMENT_VALUE };
 				});
 			}
 			details.push(row);
 		});
 	});
 	return details;
+}
+
+function addOrdersData(data) {
+	let values = {
+		PARTTYPE: "PARTG",
+		SERIES: "",
+		SPEC: "",
+		JJ: 800,
+		HH: 2100,
+		OPARATION: "2CSAI",
+		RECON: "FALSE",
+		PT: 1,
+	};
+	const type = parseInt(data.INQD_ITEM / 100);
+	if (type < 6) {
+		values = {
+			...values,
+			SERIES: data.INQ_SERIES ? data.INQ_SERIES : "GPSXL",
+			SPEC:
+				data.INQ_SERIES == "G11L1"
+					? "P0630-CO-105,12S/O"
+					: "P0750-CO-060,05S/O",
+			CARNO: data.INQD_CAR != null ? data.INQD_CAR : "01",
+		};
+	} else {
+		values = {
+			...values,
+			PARTTYPE: "PARTJ",
+			SERIES: data.INQ_SERIES ? data.INQ_SERIES : "JSWZ",
+			SPEC:
+				data.INQ_SERIES == "JSWU"
+					? "S1000/U1JSE/05200/30"
+					: "S0600/ZJ-SE/05000/35",
+			CARNO: data.INQD_CAR != null ? data.INQD_CAR : "A1",
+		};
+	}
+	return values;
 }

@@ -1,7 +1,7 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import "select2";
+import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { exportExcel } from "../service/excel.js";
@@ -14,6 +14,7 @@ import {
 	getQuotationType,
 	createQuotationType,
 } from "../service/master.js";
+select2();
 var table;
 $(document).ready(async () => {
 	try {
