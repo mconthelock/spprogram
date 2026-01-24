@@ -374,6 +374,7 @@ async function inquiryValues(data) {
 export async function dataDetails(data) {
 	const result = [];
 	data.forEach((el) => {
+		// console.log(el);
 		const orders = el.orders;
 		const sheet = el.sheet;
 		const details = el.details;
@@ -403,6 +404,7 @@ export async function dataDetails(data) {
 				INQ_CUR: el.INQ_CUR,
 				SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
 				QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+				ORDER_LT: ord.length > 0 ? el.shipment.SHIPMENT_VALUE : null,
 			};
 			const temps = await addOrdersData(row);
 			row = { ...row, ...temps };

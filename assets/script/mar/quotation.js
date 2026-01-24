@@ -102,6 +102,55 @@ async function tableInquiryOption(data) {
 				return displayname(data.SNAME).sname;
 			},
 		},
+		//Issuse Quotation
+		{
+			data: "INQ_PKC_REQ",
+			title: "Fin. Confirmed",
+		},
+		{
+			data: "timeline",
+			title: "Weight Req.",
+			className: `${pageid == "3" ? "hidden" : ""}`,
+			sortable: false,
+			render: (data, type, row) => {
+				if (row.INQ_PKC_REQ == "0") return "";
+				const process =
+					data.PKC_CONFIRM != null ? "text-primary" : "text-gray-400";
+				return `<i class="fi fi-ss-check-circle text-xl justify-center ${process}"></i>`;
+			},
+		},
+		{
+			data: "INQ_ID",
+			className: `w-fit !max-w-[110px] !text-center ${
+				pageid == "3" ? "hidden" : ""
+			}`,
+			sortable: false,
+			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
+			render: (data, type, row) => {
+				let timelines = false;
+				console.log(row.timeline.PKC_CONFIRM);
+
+				// prettier-ignore1
+				if (
+					row.timeline.PKC_CONFIRM == null &&
+					row.INQ_PKC_REQ == "1" &&
+					row.INQ_STATUS < 50
+				)
+					timelines = true;
+				const edit = creatBtn({
+					id: `edit-${data}`,
+					title: "Process",
+					type: "link",
+					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
+					className: `btn-sm btn-accent text-white hover:shadow-lg ${timelines ? "btn-disabled" : ""}`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+				});
+
+				return `<div class="flex justify-end gap-2">${edit}</div>`;
+			},
+		},
+
+		//Released Quotation
 		{
 			data: "quotation",
 			title: "Quo. Date",
@@ -120,34 +169,7 @@ async function tableInquiryOption(data) {
 				return dayjs(data.QUO_VALIDITY).format("YYYY-MM-DD");
 			},
 		},
-		{
-			data: "INQ_PKC_REQ",
-			title: "Weight Req.",
-			className: `${pageid == "3" ? "hidden" : ""}`,
-			render: (data, type, row) => {
-				if (data == "0") return "";
-				let process = "";
-				// prettier-ignore
-				if(row.timeline !== undefined && row.timeline.PKC_CONFIRM != null) process = 'text-primary';
-				return `<i class="fi fi-ss-check-circle text-xl justify-center ${process}"></i>`;
-			},
-		},
-		{
-			data: "INQ_ID",
-			className: `w-fit !max-w-[110px] !text-center ${
-				pageid == "3" ? "hidden" : ""
-			}`,
-			sortable: false,
-			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
-			render: (data, type, row) => {
-				let timelines = false;
-				// prettier-ignore
-				if(row.timeline !== undefined && row.timeline.PKC_CONFIRM != null && row.INQ_PKC_REQ == "1") timelines = true;
-				if (timelines)
-					return `<a class="btn btn-sm btn-neutral/50 text-white min-w-25" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-rr-arrow-up-right-from-square text-lg"></i>View</a>`;
-				return `<a class="btn btn-sm btn-accent text-white min-w-25" href="${process.env.APP_ENV}/mar/quotation/detail/${data}"><i class="fi fi-sr-arrow-circle-right text-xl"></i>Process</a>`;
-			},
-		},
+
 		{
 			data: "INQ_ID",
 			className: `w-fit !justify-end ${pageid == "3" ? "" : "hidden"}`,
@@ -189,15 +211,15 @@ async function tableInquiryOption(data) {
 	opt.initComplete = async function () {
 		const export1 = await creatBtn({
 			id: "export1",
-			title: "Export to Excel",
+			title: "Export Excel",
 			icon: "fi fi-tr-file-excel text-xl",
-			className: `btn-neutral text-white hover:shadow-lg`,
+			className: `btn-accent text-white hover:shadow-lg`,
 		});
 		const export2 = await creatBtn({
 			id: "export2",
 			title: "Export (Detail)",
 			icon: `fi fi fi-rr-layers text-xl`,
-			className: `btn-outline btn-neutral text-neutral hover:shadow-lg hover:text-white!`,
+			className: `btn-outline btn-accent text-accent hover:shadow-lg hover:text-white!`,
 		});
 		$(".table-info").append(
 			`<div class="flex gap-2">${export1}${export2}</div>`,
@@ -213,15 +235,17 @@ $(document).on("click", "#export1", async function (e) {
 		const q = await tableCondition();
 		const query = {
 			...q,
-			// INQ_NO: "T-IEE-25-A0504",
+			// INQ_NO: "T-MET-25-A1212",
 			IS_DETAILS: true,
 			IS_ORDERS: true,
 			IS_TIMELINE: true,
 			IS_FIN: true,
 		};
+		const template = await getTemplate("export_inquiry_list.xlsx");
 		const data = await getInquiry(query);
-		const result = await dataExports(data);
-		const template = await getTemplate("export_inquiry_list_template.xlsx");
+		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
+		let result = await dataExports(sortData);
+
 		await exportExcel(result, template, {
 			filename: "Quotation List.xlsx",
 			rowstart: 3,
@@ -241,12 +265,13 @@ $(document).on("click", "#export2", async function (e) {
 		const q = await tableCondition();
 		const query = {
 			...q,
-			// INQ_NO: "T-IEE-25-A0504",
+			// INQ_NO: "T-MET-25-A1212",
 			IS_DETAILS: true,
 			IS_ORDERS: true,
 		};
 		const data = await getInquiry(query);
 		const result = await dataDetails(data);
+		console.log(result);
 		const template = await getTemplate("export_inquiry_list_detail.xlsx");
 		await exportExcel(result, template, {
 			filename: "Quotation Detail List.xlsx",
