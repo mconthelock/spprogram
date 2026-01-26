@@ -26,6 +26,7 @@
     "dayjs": "^1.11.13",
     "exceljs": "^4.4.0",
     "flatpickr": "^4.6.13",
+    "fs": "^0.0.1-security",
     "jquery": "^3.7.1",
     "jssha": "^3.3.1",
     "mime-types": "^3.0.1",

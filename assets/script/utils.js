@@ -1,6 +1,4 @@
 import dayjs from "dayjs";
-import ExcelJS from "exceljs";
-import { exportFormat } from "./service/inquiry.js";
 import { initAuthen } from "@amec/webasset/authen";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
 

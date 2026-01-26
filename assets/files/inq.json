@@ -1,0 +1,61 @@
+{
+    "id": "info",
+    "title": "Inquiry Information",
+    "fields": [
+        {
+            "label": "Inquiry No.",
+            "id": "inquiry-no",
+            "type": "text",
+            "class": "uppercase req-1 req-2",
+            "name": "INQ_NO",
+            "mapping": "INQ_NO",
+            "onChange": "handleInquiryChange"
+        },
+        {
+            "label": "Revision",
+            "id": "revision",
+            "type": "readonly",
+            "class": "uppercase req-2",
+            "name": "INQ_REV"
+        },
+        {
+            "label": "Inquiry Date",
+            "id": "inquiry-date",
+            "type": "text",
+            "class": "fdate req-2",
+            "name": "INQ_DATE"
+        },
+        {
+            "label": "Trader",
+            "id": "trader",
+            "type": "select",
+            "name": "INQ_TRADER",
+            "class": "req-2",
+            "source": "getTraders"
+        },
+        {
+            "label": "Agent",
+            "id": "agent",
+            "type": "select",
+            "source": "getAgent",
+            "mapping": "AGENT",
+            "name": "INQ_AGENT" ,
+            "class": "req-2 agent"
+        },
+        {
+            "label": "Country",
+            "id": "country",
+            "type": "select",
+            "source": "getCountries",
+            "mapping": "DSTN" ,
+            "name": "INQ_COUNTRY",
+            "class": "req-2"
+        },
+        {
+            "label": "Status",
+            "id": "status",
+            "type": "status",
+            "name": "INQ_STATUS"
+        }
+    ]
+}

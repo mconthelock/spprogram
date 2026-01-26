@@ -1,0 +1,97 @@
+{
+    "id": "sale",
+    "title": "Sale Information",
+    "fields": [
+            {
+            "label": "MAR. In-charge",
+            "id":"mar-incharge",
+            "type": "staticText",
+            "class": "displayname",
+            "mapping":"INQ_MAR_PIC",
+            "name": "INQ_MAR_PIC"
+        },
+        {
+            "label": "Assigner",
+            "id":"sale-leader-incharge",
+            "type": "staticText",
+            "class": "setnesting displayname",
+            "topic": "timeline",
+            "name": "SG_USER",
+            "mapping":"SG_USER",
+            "input": true
+        },
+        {
+            "label": "Read",
+            "id": "sale-leader-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "name": "SG_READ",
+            "topic": "timeline",
+            "mapping": "SG_READ"
+        },
+        {
+            "label": "Confirm",
+            "id": "sale-leader-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SG_CONFIRM",
+            "mapping": "SG_CONFIRM"
+        },
+        {
+            "label": "Sale In-charge",
+            "id": "sale-incharge",
+            "type": "select",
+            "source": "getSalePerson",
+            "class": "req-1",
+            "name": "SE_USER"
+        },
+        {
+            "label": "SE Read",
+            "id": "sale-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SE_READ",
+            "mapping": "SE_READ"
+        },
+        {
+            "label": "SE Confirm",
+            "id": "sale-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SE_CONFIRM",
+            "mapping": "SE_CONFIRM"
+        },
+        {
+            "label": "Design Class",
+            "id": "des-class",
+            "type": "select",
+            "name": "SALE_CLASS",
+            "class": "req-1",
+            "options": [
+                {"id": "A", "text": "A"},
+                {"id": "B", "text": "B"},
+                {"id": "C", "text": "C"},
+                {"id": "D", "text": "D"},
+                {"id": "E", "text": "E"}
+            ]
+        },
+        {
+            "label": "Remark",
+            "id": "remark",
+            "type": "textarea" ,
+            "name": "INQ_REMARK"
+        },
+        {
+            "label": "MAR. Send",
+            "id": "mar-send",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "MAR_SEND",
+            "mapping": "MAR_SEND"
+        }
+    ]
+}

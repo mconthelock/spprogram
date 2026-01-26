@@ -28,6 +28,8 @@ module.exports = {
 		mar_items: "./assets/script/mar/items.js",
 		mar_items_detail: "./assets/script/mar/items_detail.js",
 		mar_pricelist: "./assets/script/mar/pricelist.js",
+		mar_outtoout: "./assets/script/mar/outtoout.js",
+		//For Sale User
 		se_inquiry: "./assets/script/sale/inquiry.js",
 		se_inqdetail: "./assets/script/sale/inqdetail.js",
 		se_inqviews: "./assets/script/sale/inqview.js",
@@ -82,7 +84,7 @@ module.exports = {
 				{
 					from: path.resolve(
 						__dirname,
-						"node_modules/@amec/webasset/src/fonts"
+						"node_modules/@amec/webasset/src/fonts",
 					),
 					to: path.resolve(__dirname, "assets/fonts"),
 					noErrorOnMissing: true,
@@ -90,7 +92,7 @@ module.exports = {
 				{
 					from: path.resolve(
 						__dirname,
-						"node_modules/@amec/webasset/src/images"
+						"node_modules/@amec/webasset/src/images",
 					),
 					to: path.resolve(__dirname, "assets/images"),
 					noErrorOnMissing: true,

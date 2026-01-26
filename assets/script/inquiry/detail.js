@@ -1,5 +1,6 @@
 /*
 Funtion contents
+000 - Read all field definition from json file
 001 - Card management
 002 - Import data from file
 003 - Unreply checkbox
@@ -7,12 +8,12 @@ Funtion contents
 005 - Verify form before save
 */
 import "select2/dist/css/select2.min.css";
+import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-
 import select2 from "select2";
 import { setSelect2 } from "@amec/webasset/select2";
 import dayjs from "dayjs";
-import formData from "../../files/formData.json";
+// import formData from "../../files/formData.json";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { readInput } from "@amec/webasset/excel";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
@@ -39,6 +40,16 @@ export const statusColors = () => {
 		{ id: 99, color: "bg-primary text-white" }, //Finish
 	];
 };
+// 000: Read all field definition from json file
+export async function fields() {
+	const jsonContext = require.context("../../files", false, /\.json$/);
+	let allfields = [];
+	jsonContext.keys().forEach((key) => {
+		const content = jsonContext(key);
+		allfields.push(content);
+	});
+	return allfields;
+}
 
 // 001: Create card
 export async function setupCard(data) {
@@ -47,6 +58,7 @@ export async function setupCard(data) {
 	const cardIds = carddata.split("|");
 	const cardPromises = cardIds.map(async (cardId) => {
 		return new Promise(async (resolve) => {
+			const formData = await fields();
 			const cardData = formData.find((item) => item.id === cardId);
 			if (cardData) {
 				const cardElement = await createFormCard(cardData, data);
@@ -229,7 +241,7 @@ export async function createFieldInput(field) {
 				await setSelect2({
 					element: `#${field.id}`,
 					placeholder: field.label || "",
-					// allowClear: false,
+					allowClear: false,
 				});
 				jQueryElement.removeAttr("aria-hidden");
 				if (field.onChange && source.events[field.onChange]) {

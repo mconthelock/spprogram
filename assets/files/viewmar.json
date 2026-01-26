@@ -1,0 +1,67 @@
+{
+    "id": "viewmar",
+    "title": "Marketing Information",
+    "fields": [
+        {
+            "label": "MAR. In-charge",
+            "id":"mar-incharge",
+            "type": "staticText",
+            "class": "displayname",
+            "mapping":"INQ_MAR_PIC",
+            "name": "INQ_MAR_PIC"
+        },
+        {
+            "label": "Weight Require",
+            "id": "weight-require",
+            "type": "staticText",
+            "class": "weight",
+            "mapping":"INQ_PKC_REQ",
+            "name": "INQ_PKC_REQ"
+        },
+        {
+            "label": "Quotation type",
+            "id": "quotation-type",
+            "type": "staticText",
+            "class": "shownesting",
+            "name": "INQ_QUOTATION_TYPE",
+            "topic": "quotype",
+            "mapping": "QUOTYPE_DESC"
+        },
+        {
+            "label": "Delivery Term",
+            "id": "delivery-term",
+            "type": "staticText",
+            "class": "shownesting",
+            "name": "INQ_DELIVERY_TERM" ,
+            "topic": "term",
+            "mapping":"TERM_DESC"
+        },
+        {
+            "label": "Delivery Method",
+            "id": "delivery-method",
+            "type": "staticText",
+            "class": "shownesting",
+            "name": "INQ_DELIVERY_METHOD",
+            "topic": "method",
+            "mapping":"METHOD_DESC"
+        },
+        {
+            "label": "Lead Time",
+            "id": "inq-leadtime",
+            "type": "staticText",
+            "class": "shownesting",
+            "name": "INQ_SHIPMENT",
+            "topic": "shipment",
+            "mapping":"SHIPMENT_DESC"
+        },
+        {
+            "label": "Currency",
+            "id": "currency",
+            "type": "staticText",
+            "class": "shownesting",
+            "topic": "currency",
+            "source": "getCurrency",
+            "name": "INQ_CUR"
+        }
+    ]
+}

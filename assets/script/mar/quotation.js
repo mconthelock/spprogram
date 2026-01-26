@@ -1,12 +1,11 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
 import { displayname } from "@amec/webasset/api/amec";
-import { showErrorMessage } from "@amec/webasset/utils";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
@@ -25,7 +24,7 @@ $(document).ready(async () => {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 		return;
 	} finally {
 		await showLoader({ show: false });
@@ -41,6 +40,13 @@ async function tableCondition() {
 			quotation: {
 				QUO_VALIDITY: `>= ${dayjs().format("YYYY-MM-DD")}`,
 			},
+		};
+	} else if ($("#pageid").val() == "2") {
+		q = {
+			INQ_STATUS: ">= 46 && < 50",
+			IS_TIMELINE: true,
+			INQ_PKC_REQ: "1",
+			timeline: { PKC_CONFIRM: "IS NULL" },
 		};
 	} else {
 		q = {
@@ -104,8 +110,14 @@ async function tableInquiryOption(data) {
 		},
 		//Issuse Quotation
 		{
-			data: "INQ_PKC_REQ",
+			data: "timeline",
 			title: "Fin. Confirmed",
+			className: `text-center}`,
+			render: (data, type, row) => {
+				return data.FMN_CONFIRM == null
+					? ""
+					: dayjs(data.FMN_CONFIRM).format("YYYY-MM-DD hh:mm");
+			},
 		},
 		{
 			data: "timeline",
@@ -128,8 +140,6 @@ async function tableInquiryOption(data) {
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
 				let timelines = false;
-				console.log(row.timeline.PKC_CONFIRM);
-
 				// prettier-ignore1
 				if (
 					row.timeline.PKC_CONFIRM == null &&
@@ -142,11 +152,19 @@ async function tableInquiryOption(data) {
 					title: "Process",
 					type: "link",
 					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
-					className: `btn-sm btn-accent text-white hover:shadow-lg ${timelines ? "btn-disabled" : ""}`,
+					className: `btn-sm btn-accent text-white hover:shadow-lg w-[100px]`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+				});
+				const view = creatBtn({
+					id: `edit-${data}`,
+					title: "View",
+					type: "link",
+					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
+					className: `btn-outline btn-sm btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
 
-				return `<div class="flex justify-end gap-2">${edit}</div>`;
+				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;
 			},
 		},
 
@@ -169,7 +187,6 @@ async function tableInquiryOption(data) {
 				return dayjs(data.QUO_VALIDITY).format("YYYY-MM-DD");
 			},
 		},
-
 		{
 			data: "INQ_ID",
 			className: `w-fit !justify-end ${pageid == "3" ? "" : "hidden"}`,
@@ -252,7 +269,7 @@ $(document).on("click", "#export1", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await activatedBtn($(this), false);
 	}
@@ -279,7 +296,7 @@ $(document).on("click", "#export2", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await activatedBtn($(this), false);
 	}
@@ -301,7 +318,7 @@ $(document).on("click", ".export-excel", async function (e) {
 		await exportDocument(template, data[0]);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await activatedBtn($(this), false);
 	}
@@ -499,7 +516,7 @@ $(document).on("click", ".export-sparq", async function (e) {
 		document.body.removeChild(link);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -523,7 +540,7 @@ $(document).on("click", ".export-order", async function (e) {
 		});
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await showLoader({ show: false });
 	}

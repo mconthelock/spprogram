@@ -1,24 +1,28 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
+import select2 from "select2";
 import dayjs from "dayjs";
-import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import * as utils from "../utils.js";
+import { initApp } from "../utils.js";
 import * as inqs from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
 import * as tbquo from "../quotation/table_view.js";
 import * as service from "../service/inquiry.js";
 import * as cus from "../service/customers.js";
+select2();
 var table;
 var tableAttach;
 
 $(document).ready(async () => {
 	try {
+		await showLoader({ show: true });
+		await initApp({ submenu: `.navmenu-${view}` });
 		const view =
 			$("#view-type").val() == "inquiry" ? "newinq" : "quotation";
-		await utils.initApp({ submenu: `.navmenu-${view}` });
 		const inquiry = await service.getInquiryID($("#inquiry-id").val());
 		if (inquiry.length == 0) throw new Error("Inquiry do not found");
 
@@ -54,7 +58,8 @@ $(document).ready(async () => {
 		const attachment = await tb.setupTableAttachment(file, true);
 		tableAttach = await createTable(attachment, { id: "#attachment" });
 	} catch (error) {
-		await showErrorMessage(`Something went wrong.`, "2036");
+		console.log(error);
+		await showMessage(error);
 		return;
 	} finally {
 		await showLoader({ show: false });

@@ -1,5 +1,4 @@
 import "@flaticon/flaticon-uicons/css/all/all.css";
-import dayjs from "dayjs";
 
 $(document).on("click", ".msg-close", function (e) {
 	e.preventDefault();

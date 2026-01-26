@@ -1,0 +1,83 @@
+{
+    "id": "viewsale",
+    "title": "Sale Information",
+    "fields": [
+            {
+            "label": "MAR. In-charge",
+            "id":"mar-incharge",
+            "type": "staticText",
+            "class": "displayname",
+            "mapping":"INQ_MAR_PIC",
+            "name": "INQ_MAR_PIC"
+        },
+        {
+            "label": "Assigner",
+            "id":"mar-incharge",
+            "type": "staticText",
+            "name": "SG_USER",
+            "mapping": "SG_USER",
+            "topic": "timeline",
+            "class": "setnesting displayname"
+        },
+        {
+            "label": "SG Read",
+            "id": "sale-leader-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "name": "SG_READ",
+            "topic": "timeline",
+            "mapping": "SG_READ"
+        },
+        {
+            "label": "SG Confirm",
+            "id": "sale-leader-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SG_CONFIRM",
+            "mapping": "SG_CONFIRM"
+        },
+        {
+            "label": "Sale In-charge",
+            "id": "sale-checker",
+            "type": "staticText",
+            "class": "setnesting displayname",
+            "topic": "timeline",
+            "name": "SE_USER",
+            "mapping": "SE_USER"
+        },
+        {
+            "label": "Design Class",
+            "id": "des-class",
+            "type": "staticText",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SALE_CLASS",
+            "mapping": "SALE_CLASS"
+        },
+        {
+            "label": "Remark",
+            "id": "remark",
+            "type": "textarea" ,
+            "name": "INQ_REMARK"
+        },
+        {
+            "label": "SE Read",
+            "id": "sale-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SE_READ",
+            "mapping": "SE_READ"
+        },
+        {
+            "label": "MAR. Send",
+            "id": "mar-send",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "MAR_SEND",
+            "mapping": "MAR_SEND"
+        }
+    ]
+}

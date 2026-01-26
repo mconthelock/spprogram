@@ -1,17 +1,24 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
+import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
+import select2 from "select2";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker } from "@amec/webasset/flatpickr";
-import * as utils from "../utils.js";
-import * as inqs from "../inquiry/detail.js";
+import { initApp } from "../utils.js";
+import { setupCard } from "../inquiry/detail.js";
 import * as tb from "../inquiry/table.js";
 import * as tbquo from "../quotation/table_detail.js";
 import * as tbweight from "../quotation/table_weight.js";
-import * as service from "../service/inquiry.js";
+import {
+	getInquiry,
+	getInquiryHistory,
+	getInquiryFile,
+} from "../service/inquiry.js";
 import * as cus from "../service/customers.js";
 var table;
 var tableAttach;
@@ -19,60 +26,60 @@ var tableWeight;
 
 $(document).ready(async () => {
 	try {
-		const view =
-			$("#view-type").val() == "inquiry" ? "newinq" : "quotation";
-		await utils.initApp({ submenu: `.navmenu-${view}` });
-		const inquiry = await service.getInquiryID($("#inquiry-id").val());
-		if (inquiry.length == 0) throw new Error("Inquiry do not found");
+		await showLoader({ show: true });
+		await initApp({ submenu: `.navmenu-quotation` });
+		const inq = await getInquiry({ INQ_ID: $("#inquiry-id").val() });
+		if (inq.length == 0) throw new Error("Inquiry do not found");
 
+		const inquiry = inq[0];
 		$("#inquiry-title").html(inquiry.INQ_NO);
-		inquiry.QUO_DATE = moment().format("YYYY-MM-DD");
-		const now = moment();
-		inquiry.QUO_VALIDITY = now.add(60, "days").format("YYYY-MM-DD");
-		inquiry.QUO_NOTE = "";
+		// inquiry.QUO_DATE = dayjs().format("YYYY-MM-DD");
+		// inquiry.QUO_NOTE = "";
 
-		const customers = await cus.getCustomer();
-		const customer = customers.find(
-			(c) => c.CUS_ID == inquiry.INQ_CUSTOMER,
-		);
-		inquiry.QUO_CUSTOMER = customer == undefined ? "" : customer.CUS_NAME;
-		const cards = await inqs.setupCard(inquiry);
-		if (inquiry.INQ_PKC_REQ == 0) {
-			$("#tabs-lift").remove();
-			$("#table-freight").remove();
-		} else {
-			$("#without-tab").remove();
-			await freightData(inquiry.weight);
-		}
+		// const customers = await cus.getCustomer();
+		// const customer = customers.find(
+		// 	(c) => c.CUS_ID == inquiry.INQ_CUSTOMER,
+		// );
+		// inquiry.QUO_CUSTOMER = customer == undefined ? "" : customer.CUS_NAME;
+		inquiry.QUO_VALIDITY = dayjs().add(60, "days").format("YYYY-MM-DD");
+		const cards = await setupCard(inquiry);
+		// if (inquiry.INQ_PKC_REQ == 0) {
+		// 	$("#tabs-lift").remove();
+		// 	$("#table-freight").remove();
+		// } else {
+		// 	$("#without-tab").remove();
+		// 	await freightData(inquiry.weight);
+		// }
 
-		//Inquiry Detail
-		const details = inquiry.details.filter((dt) => dt.INQD_LATEST == 1);
-		const tableContainer = await tbquo.setupTableDetail(
-			details,
-			inquiry.INQ_TYPE,
-		);
+		// //Inquiry Detail
+		// const details = inquiry.details.filter((dt) => dt.INQD_LATEST == 1);
+		// const tableContainer = await tbquo.setupTableDetail(
+		// 	details,
+		// 	inquiry.INQ_TYPE,
+		// );
 
-		//Weight Package
-		const weightContainer = await tbweight.setupTableDetail(inquiry.weight);
-		tableWeight = await createTable(weightContainer, {
-			id: "#table-weight",
-		});
+		// //Weight Package
+		// const weightContainer = await tbweight.setupTableDetail(inquiry.weight);
+		// tableWeight = await createTable(weightContainer, {
+		// 	id: "#table-weight",
+		// });
 
-		//Inquiry History
-		table = await createTable(tableContainer);
-		const logs = await service.getInquiryHistory(inquiry.INQ_NO);
-		const history = await tb.setupTableHistory(logs);
-		await createTable(history, { id: "#history" });
+		// //Inquiry History
+		// table = await createTable(tableContainer);
+		// const logs = await getInquiryHistory(inquiry.INQ_NO);
+		// const history = await tb.setupTableHistory(logs);
+		// await createTable(history, { id: "#history" });
 
-		const file = await service.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
-		const attachment = await tb.setupTableAttachment(file, true);
-		tableAttach = await createTable(attachment, { id: "#attachment" });
+		// const file = await getInquiryFile({ INQ_NO: inquiry.INQ_NO });
+		// const attachment = await tb.setupTableAttachment(file, true);
+		// tableAttach = await createTable(attachment, { id: "#attachment" });
 
-		//create button
-		const btn = await setupButton("");
-		const date = await setDatePicker();
+		// //create button
+		// const btn = await setupButton("");
+		await setDatePicker();
 	} catch (error) {
-		await showErrorMessage(`Something went wrong.`, "2036");
+		console.log(error);
+		await showMessage(`Something went wrong.`);
 		return;
 	} finally {
 		await showLoader({ show: false });

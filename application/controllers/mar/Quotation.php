@@ -17,4 +17,10 @@ class Quotation extends MY_Controller {
             'id' => $id,
         ));
     }
+
+    public function outtoout(){
+        $this->views('mar/quotation/out2out', array(
+            'title' => 'Import Out-Out Quotation',
+        ));
+    }
 }

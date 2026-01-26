@@ -1,0 +1,63 @@
+{
+    "id": "viewinfo",
+    "title": "Inquiry Information",
+    "fields": [
+        {
+            "label": "Inquiry No.",
+            "id": "inquiry-no",
+            "type": "staticText",
+            "class": "view-data",
+            "mapping": "INQ_NO",
+            "name": "INQ_NO",
+            "input": true
+        },
+        {
+            "label": "Revision",
+            "id": "revision",
+            "type": "staticText",
+            "class": "view-data",
+            "mapping": "INQ_REV",
+            "name": "INQ_REV",
+            "input": true
+        },
+        {
+            "label":
+            "Inquiry Date",
+            "id": "inquiry-date",
+            "type": "staticText",
+            "class": "view-data fdate",
+            "mapping": "INQ_DATE",
+            "name": "INQ_DATE"
+        },
+        {
+            "label": "Trader",
+            "id": "trader",
+            "type": "staticText",
+            "class": "view-data",
+            "mapping": "INQ_TRADER",
+            "name": "INQ_TRADER"
+        },
+        {
+            "label": "Agent",
+            "id": "agent",
+            "type": "staticText",
+            "class": "view-data",
+            "mapping": "INQ_AGENT",
+            "name": "INQ_AGENT"
+        },
+        {
+            "label": "Country",
+            "id": "country",
+            "type": "staticText",
+            "class": "view-data",
+            "mapping": "INQ_COUNTRY" ,
+            "name": "INQ_COUNTRY"
+        },
+        {
+            "label": "Status",
+            "id": "status",
+            "type": "status",
+            "name": "INQ_STATUS"
+        }
+    ]
+}

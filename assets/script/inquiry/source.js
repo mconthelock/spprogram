@@ -119,6 +119,25 @@ export const init = {
 		return options;
 	},
 
+	getMarPerson: async function () {
+		const data = await mst.getAppUsers();
+		const result = data.filter((x) =>
+			["MAR"].includes(x.appsgroups.GROUP_CODE),
+		);
+		let options = result.map((el) => {
+			const emp = el.data;
+			const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
+			const sname = name.split(" ");
+			const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
+			const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
+			return {
+				id: el.USERS_ID,
+				text: `${fname} ${lname}`,
+			};
+		});
+		return options;
+	},
+
 	getSalePerson: async function () {
 		const data = await mst.getAppUsers();
 		const result = data.filter((x) =>

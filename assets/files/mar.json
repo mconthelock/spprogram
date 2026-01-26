@@ -1,0 +1,67 @@
+{
+    "id": "mar",
+    "title": "Marketing Information",
+    "fields": [
+        {
+            "label": "MAR. In-charge",
+            "id":"mar-incharge",
+            "name": "INQ_MAR_PIC",
+            "class": "req-2",
+            "source": "getMarPerson",
+            "type": "select"
+
+        },
+        {
+            "label": "Weight Require",
+            "id": "weight-require",
+            "type": "radio",
+            "options": [{"value": "1", "text":"Yes"}, {"value": "0", "text":"No"}],
+            "name": "INQ_PKC_REQ"
+        },
+        {
+            "label": "Quotation type",
+            "id": "quotation-type",
+            "type": "select",
+            "source": "getQuoType" ,
+            "name": "INQ_QUOTATION_TYPE",
+            "class": "req-2"
+        },
+        {
+            "label": "Delivery Term",
+            "id": "delivery-term",
+            "type": "select",
+            "source": "getDeliveryTerm",
+            "name": "INQ_DELIVERY_TERM" ,
+            "class": "req-2"
+        },
+        {
+            "label": "Delivery Method",
+            "id": "delivery-method",
+            "type": "select",
+            "source": "getMethod" ,
+            "name": "INQ_DELIVERY_METHOD",
+            "class": "req-2"
+        },
+        {
+            "label": "Lead Time",
+            "id": "inq-leadtime",
+            "type": "select",
+            "source": "getShipment" ,
+            "name": "INQ_SHIPMENT",
+            "class": "req-2"
+        },
+        {
+            "label": "Currency",
+            "id": "currency",
+            "type": "select",
+            "source": "getCurrency",
+            "name": "INQ_CUR"
+        },
+        {
+            "label": "Remark",
+            "id": "remark",
+            "type": "textarea" ,
+            "name": "INQ_REMARK"
+        }
+    ]
+}

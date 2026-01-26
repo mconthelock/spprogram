@@ -1,0 +1,50 @@
+{
+    "id": "prjout",
+    "title": "Original Project",
+    "fields": [
+        {
+            "label": "Project No",
+            "id": "project-no",
+            "type": "text" ,
+            "class": "uppercase",
+            "onChange": "handleProjectChange",
+            "mapping": "PRJ_NO",
+            "name": "INQ_PRJNO"
+        },
+        {
+            "label": "Project Name",
+            "id": "project-name",
+            "type": "text" ,
+            "mapping": "PRJ_NAME",
+            "name": "INQ_PRJNAME"
+        },
+        {
+            "label": "Contractor",
+            "id": "shop-order",
+            "type": "text" ,
+            "mapping": "ORDER_NO",
+            "name": "INQ_SHOPORDER"
+        },
+        {
+            "label": "End user",
+            "id": "shop-order",
+            "type": "text" ,
+            "mapping": "ORDER_NO",
+            "name": "INQ_SHOPORDER"
+        },
+        {
+            "label": "Delivery Port",
+            "id": "shop-order",
+            "type": "text" ,
+            "mapping": "ORDER_NO",
+            "name": "INQ_SHOPORDER"
+        },
+        {
+            "label": "User of part",
+            "id": "shop-order",
+            "type": "text" ,
+            "mapping": "ORDER_NO",
+            "name": "INQ_SHOPORDER"
+        }
+    ]
+}
