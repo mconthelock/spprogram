@@ -10,10 +10,10 @@ Funtion contents
 import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+import dayjs from "dayjs";
 import select2 from "select2";
 import { setSelect2 } from "@amec/webasset/select2";
-import dayjs from "dayjs";
-// import formData from "../../files/formData.json";
+import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { readInput } from "@amec/webasset/excel";
 import { displayEmpInfo } from "@amec/webasset/indexDB";

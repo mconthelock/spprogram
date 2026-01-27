@@ -9,6 +9,12 @@ import { readInput } from "@amec/webasset/excel";
 import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import { setupCard } from "../inquiry/detail.js";
+import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
+import {
+	getDeliveryTerm,
+	getMethod,
+	findPriceRatio,
+} from "../service/master.js";
 import { initApp, tableOpt } from "../utils.js";
 
 var table;
@@ -17,7 +23,6 @@ $(document).ready(async () => {
 		await showLoader({ show: true });
 		await initApp({ submenu: `.navmenu-quotation` });
 		const cards = await setupCard();
-
 		const optDetail = await tableDetail();
 		table = createTable(optDetail);
 		setDatePicker({ dayOff: true });
@@ -156,6 +161,8 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 	try {
 		const fl = e.target.files;
 		const data = await readInput(fl[0]);
+		console.log(data);
+
 		let supplier;
 		if (data[0][14].richText.length > 0) {
 			const title = data[0][14].richText[1].text;
@@ -170,53 +177,89 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 			}
 		}
 
-		const eldate = {
-			agent: data[1][3],
-			prjno: data[2][3],
-			prjname: data[3][3],
-			contractor: data[4][3],
-			enduser: data[5][3],
-			country: data[6][3],
-			userpart: data[7][3],
-		};
+		const priceRatio = await findPriceRatio({
+			TRADER: data[1][3],
+			SUPPLIER: supplier,
+			QUOTATION: 25,
+		});
 
-		const detail = [];
-		for (let i = 11; i < data.length; i++) {
-			if (
-				data[i][3] != undefined &&
-				data[i][3] != null &&
-				data[i][3] != ""
-			) {
-				// prettier-ignore
-				{
-                const row = {
-                    INQD_CAR: typeof data[i][4] == "object" ? data[i][4].result : data[i][4],
-                    INQD_ITEM: typeof data[i][14] == "object" ? data[i][14].result : data[i][14],
-                    INQD_DRAWING: typeof data[i][15] == "object" ? data[i][15].result : data[i][15],
-                    INQD_PARTNAME: typeof data[i][16] == "object" ? data[i][16].result : data[i][16],
-                    INQD_VARIABLE: typeof data[i][17] == "object" ? data[i][17].result : data[i][17],
-                    INQD_SUPPLIER: supplier,
-                    INQD_QTY: typeof data[i][18] == "object" ? data[i][18].result : data[i][18],
-                    INQD_UM: typeof data[i][19] == "object" ? data[i][19].result : data[i][19],
-                    INQD_FC_COST: 0,
-                    INQD_FC_BASE: 1.3,
-                    INQD_TC_COST: 0,
-                    INQD_TC_BASE: 0,
-                    INQD_EXRATE: 0,
-                    INQD_UNIT_PRICE: 0,
-                    INQD_RUNNO: i+1,
-                    INQD_SEQ: i+1,
-                    port: typeof data[i][23] == "object" ? data[i][23].result : data[i][23],
-                    inqno: typeof data[i][11] == "object" ? data[i][11].result : data[i][11],
-                    fobprice: typeof data[i][22] == "object" ? data[i][22].result : data[i][22],
-                    shipby: typeof data[i][24] == "object" ? data[i][24].result : data[i][24],
-                };
-                detail.push({...eldate, ...row});
-                }
-			}
+		if (priceRatio.length == 0) {
+			await showMessage(`Not found price ratio for this Sale Company.`);
+			return;
 		}
-		const optDetail = await tableDetail(detail);
-		table = createTable(optDetail);
+
+		// prettier-ignore
+		{
+            const terms = await getDeliveryTerm();
+            const term = typeof data[11][22] == "object" ? data[11][22].result : data[11][22];
+            const termsData = terms.find(x => x.TERM_DESC == term);
+
+            const methods = await getMethod();
+            const method = typeof data[11][24] == "object" ? data[11][24].result : data[11][24];
+            const methodData = methods.find(x => x.METHOD_DESC == method);
+
+            const header = {
+                INQ_NO: data[11][3],
+                INQ_TRADER: data[1][3],
+                INQ_COUNTRY: data[6][3],
+                INQ_PRJNO: data[2][3],
+                INQ_PRJNAME: data[3][3],
+                INQ_CONTRACTOR: data[4][3],
+                INQ_ENDUSER: data[5][3],
+                INQ_USERPART: data[7][3],
+                INQ_TYPE: 'Out2out',
+                INQ_QUOTATION_TYPE: 25,
+                INQ_DELIVERY_TERM: termsData.TERM_ID,
+                INQ_DELIVERY_METHOD: methodData.METHOD_ID,
+            };
+
+            console.log(priceRatio);
+
+
+            const detail = [];
+            for (let i = 11; i < data.length; i++) {
+                if (
+                    data[i][3] != undefined &&
+                    data[i][3] != null &&
+                    data[i][3] != ""
+                ) {
+
+                    const row = {
+                        INQD_CAR: typeof data[i][4] == "object" ? data[i][4].result : data[i][4],
+                        INQD_ITEM: typeof data[i][14] == "object" ? data[i][14].result : data[i][14],
+                        INQD_DRAWING: typeof data[i][15] == "object" ? data[i][15].result : data[i][15],
+                        INQD_PARTNAME: typeof data[i][16] == "object" ? data[i][16].result : data[i][16],
+                        INQD_VARIABLE: typeof data[i][17] == "object" ? data[i][17].result : data[i][17],
+                        INQD_SUPPLIER: supplier,
+                        INQD_QTY: typeof data[i][18] == "object" ? data[i][18].result : data[i][18],
+                        INQD_UM: typeof data[i][19] == "object" ? data[i][19].result : data[i][19],
+                        INQD_FC_COST: 0,
+                        INQD_FC_BASE: 0,
+                        INQD_TC_COST: 0,
+                        INQD_TC_BASE: 0,
+                        INQD_EXRATE: 0,
+                        INQD_UNIT_PRICE: 0,
+                        INQD_RUNNO: i+1,
+                        INQD_SEQ: i+1,
+                    };
+                    detail.push(row);
+                }
+            }
+            const optDetail = await tableDetail(detail);
+            table = createTable(optDetail);
+
+            //Set Header Info
+            $("#trader").closest("div.grid").find("label").html("Sale Company");
+            const chkInq = await getInquiry({
+                INQ_NO: header.INQ_NO,
+                INQ_LATEST: 1,
+            });
+            if (chkInq.length > 0)
+                throw new Error(`Dupplicate inquiry No.: ${header.INQ_NO}`);
+
+            //Get ratio
+            //Get exchange rate
+        }
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

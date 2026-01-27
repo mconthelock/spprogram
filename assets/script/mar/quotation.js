@@ -112,8 +112,9 @@ async function tableInquiryOption(data) {
 		{
 			data: "timeline",
 			title: "Fin. Confirmed",
-			className: `text-center}`,
+			className: `text-center ${pageid == "3" ? "hidden" : ""}`,
 			render: (data, type, row) => {
+				if (data == undefined) return "";
 				return data.FMN_CONFIRM == null
 					? ""
 					: dayjs(data.FMN_CONFIRM).format("YYYY-MM-DD hh:mm");
@@ -125,6 +126,7 @@ async function tableInquiryOption(data) {
 			className: `${pageid == "3" ? "hidden" : ""}`,
 			sortable: false,
 			render: (data, type, row) => {
+				if (data == undefined) return "";
 				if (row.INQ_PKC_REQ == "0") return "";
 				const process =
 					data.PKC_CONFIRM != null ? "text-primary" : "text-gray-400";
@@ -139,6 +141,7 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
+				if (row.timeline == undefined) return "";
 				let timelines = false;
 				// prettier-ignore1
 				if (
@@ -206,12 +209,11 @@ async function tableInquiryOption(data) {
 					title: `Export`,
 					type: "link",
 					icon: "fi fi-tr-file-excel text-lg",
-					// className: `btn-sm btn-neutral ${row.status.STATUS_ID == "98" ? "btn-disabled text-gray-400" : "text-white export-excel"} hover:shadow-lg`,
 					className: `btn-sm btn-neutral text-white export-excel hover:shadow-lg`,
 				});
 				const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
 				const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
-				const revise = `<a class=""><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
+				const revise = `<a class="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
 				const dropdown = `<div class="dropdown  dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">

@@ -7,44 +7,43 @@
             "id": "project-no",
             "type": "text" ,
             "class": "uppercase",
-            "onChange": "handleProjectChange",
-            "mapping": "PRJ_NO",
+            "mapping": "INQ_PRJNO",
             "name": "INQ_PRJNO"
         },
         {
             "label": "Project Name",
             "id": "project-name",
             "type": "text" ,
-            "mapping": "PRJ_NAME",
+            "mapping": "INQ_PRJNAME",
             "name": "INQ_PRJNAME"
         },
         {
             "label": "Contractor",
-            "id": "shop-order",
+            "id": "contractor",
             "type": "text" ,
-            "mapping": "ORDER_NO",
-            "name": "INQ_SHOPORDER"
+            "mapping": "INQ_CONTRACTOR",
+            "name": "INQ_CONTRACTOR"
         },
         {
             "label": "End user",
-            "id": "shop-order",
+            "id": "end-user",
             "type": "text" ,
-            "mapping": "ORDER_NO",
-            "name": "INQ_SHOPORDER"
+            "mapping": "INQ_ENDUSER",
+            "name": "INQ_ENDUSER"
         },
         {
             "label": "Delivery Port",
-            "id": "shop-order",
+            "id": "delivery-port",
             "type": "text" ,
-            "mapping": "ORDER_NO",
-            "name": "INQ_SHOPORDER"
+            "mapping": "INQ_PORT",
+            "name": "INQ_PORT"
         },
         {
             "label": "User of part",
-            "id": "shop-order",
+            "id": "user-part",
             "type": "text" ,
-            "mapping": "ORDER_NO",
-            "name": "INQ_SHOPORDER"
+            "mapping": "INQ_USERPART",
+            "name": "INQ_USERPART"
         }
     ]
 }
