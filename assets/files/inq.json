@@ -30,7 +30,7 @@
             "id": "trader",
             "type": "select",
             "name": "INQ_TRADER",
-            "class": "req-2",
+            "class": "req-2 s2",
             "source": "getTraders"
         },
         {

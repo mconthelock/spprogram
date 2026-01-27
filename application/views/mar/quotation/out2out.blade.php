@@ -11,7 +11,7 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-second table-edit display text-xs"></table>
+        <table id="table" class="table table-zebra table-second table-edit display text-md!"></table>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
         <div class="flex-1">

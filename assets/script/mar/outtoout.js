@@ -14,7 +14,10 @@ import {
 	getDeliveryTerm,
 	getMethod,
 	findPriceRatio,
+	getCurrency,
 } from "../service/master.js";
+import { getAgent } from "../service/mkt.js";
+import { currentPeriod } from "../service/items.js";
 import { initApp, tableOpt } from "../utils.js";
 
 var table;
@@ -85,7 +88,7 @@ async function tableDetail(data = []) {
 			className: "text-right bg-primary/20",
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					const str = `<input type="text" class="w-full! text-end cell-input" value="${data == null ? "" : data}"/>`;
+					const str = `<input type="text" class="w-full! text-end text-md! cell-input" value="${data == null ? "" : data}"/>`;
 					return str;
 				}
 				return data;
@@ -182,14 +185,30 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 			SUPPLIER: supplier,
 			QUOTATION: 25,
 		});
-
 		if (priceRatio.length == 0) {
 			await showMessage(`Not found price ratio for this Sale Company.`);
 			return;
 		}
 
+		const chkInq = await getInquiry({
+			INQ_NO: data[11][3],
+			INQ_LATEST: 1,
+		});
+		if (chkInq.length > 0)
+			throw new Error(`Dupplicate inquiry No.: ${data[11][3]}`);
+
+		const period = await currentPeriod();
+		const currency = await getCurrency();
+		const exchange = currency.find(
+			(x) =>
+				x.CURR_CODE == priceRatio[0].CURRENCY &&
+				x.CURR_PERIOD == period.current.period &&
+				x.CURR_YEAR == period.current.year,
+		).CURR_RATE;
 		// prettier-ignore
 		{
+            //Set Header Info
+            $("#trader").closest("div.grid").find("label").html("Sale Company");
             const terms = await getDeliveryTerm();
             const term = typeof data[11][22] == "object" ? data[11][22].result : data[11][22];
             const termsData = terms.find(x => x.TERM_DESC == term);
@@ -198,10 +217,17 @@ $(document).on("change", "#importouttooutfile", async function (e) {
             const method = typeof data[11][24] == "object" ? data[11][24].result : data[11][24];
             const methodData = methods.find(x => x.METHOD_DESC == method);
 
+            const agents = await getAgent();
+            const country = typeof data[6][3] == "object" ? data[6][3].result : data[6][3];
+            const agn = agents.find(x => x.country.CTNAME == country.toUpperCase());
+            const agentData = agn != undefined ? `${agn.AGENT} (${agn.country.CTNAME})` : '';
+
             const header = {
                 INQ_NO: data[11][3],
+                INQ_REV: '*',
                 INQ_TRADER: data[1][3],
-                INQ_COUNTRY: data[6][3],
+                INQ_AGENT: agn.AGENT,
+                INQ_COUNTRY: country.toUpperCase(),
                 INQ_PRJNO: data[2][3],
                 INQ_PRJNAME: data[3][3],
                 INQ_CONTRACTOR: data[4][3],
@@ -211,10 +237,20 @@ $(document).on("change", "#importouttooutfile", async function (e) {
                 INQ_QUOTATION_TYPE: 25,
                 INQ_DELIVERY_TERM: termsData.TERM_ID,
                 INQ_DELIVERY_METHOD: methodData.METHOD_ID,
+                INQ_SHIPMENT: 1,
+                INQ_CUR: priceRatio[0].CURRENCY,
+                INQ_PORT: data[11][3],
+                INQ_STATUS: 2,
+                status: { id: 2, STATUS_DESC: "New" },
+                INQ_MAR_PIC: $("#user-login").attr("empno"),
             };
 
-            console.log(priceRatio);
+            //console.log(header);"MSL (LEBANON)" MSL (LEBANON)
 
+
+            $('#form-container').html(``);
+            const cards = await setupCard(header);
+            setDatePicker({ dayOff: true });
 
             const detail = [];
             for (let i = 11; i < data.length; i++) {
@@ -235,9 +271,9 @@ $(document).on("change", "#importouttooutfile", async function (e) {
                         INQD_UM: typeof data[i][19] == "object" ? data[i][19].result : data[i][19],
                         INQD_FC_COST: 0,
                         INQD_FC_BASE: 0,
-                        INQD_TC_COST: 0,
-                        INQD_TC_BASE: 0,
-                        INQD_EXRATE: 0,
+                        INQD_TC_COST: priceRatio[0].FORMULA,
+                        INQD_TC_BASE: priceRatio[0].FORMULA,
+                        INQD_EXRATE: exchange,
                         INQD_UNIT_PRICE: 0,
                         INQD_RUNNO: i+1,
                         INQD_SEQ: i+1,
@@ -247,18 +283,6 @@ $(document).on("change", "#importouttooutfile", async function (e) {
             }
             const optDetail = await tableDetail(detail);
             table = createTable(optDetail);
-
-            //Set Header Info
-            $("#trader").closest("div.grid").find("label").html("Sale Company");
-            const chkInq = await getInquiry({
-                INQ_NO: header.INQ_NO,
-                INQ_LATEST: 1,
-            });
-            if (chkInq.length > 0)
-                throw new Error(`Dupplicate inquiry No.: ${header.INQ_NO}`);
-
-            //Get ratio
-            //Get exchange rate
         }
 	} catch (error) {
 		console.log(error);

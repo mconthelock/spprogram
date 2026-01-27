@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-	themes: light --default, dark --prefersdark;
+	themes:
+		light --default,
+		dark --prefersdark;
 }
 
 /* view */
@@ -53,7 +55,8 @@
 
 @font-face {
 	font-family: "LINE Seed EN";
-	src: url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff2") format("woff2"),
+	src:
+		url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff2") format("woff2"),
 		url("../../fonts/lineseed/en/LINESeedSans_W_Rg.woff") format("woff");
 	font-weight: 400;
 	font-style: normal;
@@ -61,7 +64,8 @@
 
 @font-face {
 	font-family: "LINE Seed EN Bold";
-	src: url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff2") format("woff2"),
+	src:
+		url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff2") format("woff2"),
 		url("../../fonts/lineseed/en/LINESeedSans_W_Bd.woff") format("woff");
 	font-weight: 700;
 	font-style: bold;
@@ -69,8 +73,8 @@
 
 @font-face {
 	font-family: "LINE Seed TH";
-	src: url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff2")
-			format("woff2"),
+	src:
+		url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff2") format("woff2"),
 		url("../../fonts/lineseed/th/LINESeedSansTH_W_Rg.woff") format("woff");
 	font-weight: 400;
 	font-style: normal;
@@ -78,8 +82,8 @@
 
 @font-face {
 	font-family: "LINE Seed TH Bold";
-	src: url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff2")
-			format("woff2"),
+	src:
+		url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff2") format("woff2"),
 		url("../../fonts/lineseed/th/LINESeedSansTH_W_Bd.woff") format("woff");
 	font-weight: 700;
 	font-style: normal;
@@ -87,7 +91,8 @@
 
 @font-face {
 	font-family: "LINE Seed JP";
-	src: url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff2") format("woff2"),
+	src:
+		url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff2") format("woff2"),
 		url("../../fonts/lineseed/jp/LINESeedJP_OTF_Rg.woff") format("woff");
 	font-weight: 400;
 	font-style: normal;
@@ -95,7 +100,8 @@
 
 @font-face {
 	font-family: "LINE Seed JP Bold";
-	src: url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff2") format("woff2"),
+	src:
+		url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff2") format("woff2"),
 		url("../../fonts/lineseed/jp/LINESeedJP_OTF_Bd.woff") format("woff");
 	font-weight: 700;
 	font-style: normal;
@@ -103,7 +109,8 @@
 
 @layer base {
 	:root {
-		--font-sans: "LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
+		--font-sans:
+			"LINE Seed EN", "LINE Seed EN Bold", "LINE Seed TH",
 			"LINE Seed TH Bold", "LINE Seed JP", "LINE Seed JP Bold", sans-serif;
 		--color-primary: 1, 71, 178;
 		--color-primary: 0, 0, 0;
@@ -214,8 +221,9 @@
 	}
 	.table-second > tbody > tr > td > .cell-input:focus,
 	.table-second > tbody > tr > td > .cell-input:hover {
-		outline: #3b82f6 1px solid;
-		background-color: #eff6ff;
+		/* outline: #3b82f6 1px solid; */
+		outline: none;
+		/* background-color: #eff6ff; */
 		cursor: pointer;
 	}
 
