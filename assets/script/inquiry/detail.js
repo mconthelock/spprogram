@@ -212,8 +212,6 @@ export async function createFieldInput(field) {
 			break;
 
 		case "select":
-			console.log(field.value);
-
 			let options = [];
 			let optStr = "<option value=''></option>";
 			if (field.source) {

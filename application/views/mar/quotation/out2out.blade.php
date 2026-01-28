@@ -31,8 +31,18 @@
             <table id="attachment" class="table table-zebra table-second display text-xs"></table>
         </div>
     </div>
+    <div class="flex gap-2 my-3" id="btn-container"></div>
 @endsection
 
 @section('scripts')
     <script src="{{ $_ENV['APP_JS'] }}/mar_outtoout.js?ver={{ $GLOBALS['version'] }}"></script>
+@endsection
+
+@section('styles')
+    <style>
+        #table tfoot tr th {
+            background: #eee !important;
+            font-weight: bold;
+        }
+    </style>
 @endsection
