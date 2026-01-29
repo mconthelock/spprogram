@@ -8,8 +8,9 @@ import { setDatePicker } from "@amec/webasset/flatpickr";
 import { readInput } from "@amec/webasset/excel";
 import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
-import { setupCard } from "../inquiry/detail.js";
-import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
+import { setupCard, getFormHeader } from "../inquiry/detail.js";
+import { getInquiry, createInquiry } from "../service/inquiry.js";
+import { createQuotation } from "../service/quotation.js";
 import {
 	getDeliveryTerm,
 	getMethod,
@@ -23,9 +24,9 @@ import { initApp, tableOpt } from "../utils.js";
 var table;
 $(document).ready(async () => {
 	try {
-		await showLoader({ show: true });
+		await showLoader();
 		await initApp({ submenu: `.navmenu-quotation` });
-		const cards = await setupCard();
+		await setupCard();
 		const optDetail = await tableDetail();
 		table = await createTable(optDetail);
 		setDatePicker({ dayOff: true });
@@ -413,14 +414,27 @@ $(document).on("change", ".fccost ", async function () {
 $(document).on("click", "#savedata", async function () {
 	try {
 		await activatedBtn($(this));
-		const data = table.rows().data().toArray();
-		console.log(data);
-		return;
+		const details = table.rows().data().toArray();
+		let chkPrice = true;
+		details.map((el) => {
+			if (intVal(el.INQD_FC_COST) == 0) chkPrice = false;
+		});
+		if (!chkPrice) {
+			await showMessage(`Please check SPU Price again.`);
+			return;
+		}
 
-		// const header = dataExports();
-		// const details = dataDetails();
-		// console.log({ header, details });
-		// return;
+		const header = await getFormHeader();
+		const timelinedata = await setTimelineData();
+		const history = await setLogsData();
+		const fomdata = {
+			header: { ...header, INQ_STATUS: 99 },
+			details,
+			timelinedata,
+			history,
+		};
+		createInquiry(fomdata);
+		//createQuotation([]);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -429,3 +443,23 @@ $(document).on("click", "#savedata", async function () {
 		//await activatedBtn($(this), false);
 	}
 });
+
+async function setTimelineData() {
+	return {
+		INQ_NO: $("#inquiry-no").val(),
+		INQ_REV: $("#revision").val(),
+		MAR_USER: $("#user-login").attr("empno"),
+		MAR_SEND: new Date(),
+	};
+}
+
+async function setLogsData() {
+	return {
+		INQ_NO: $("#inquiry-no").val(),
+		INQ_REV: $("#revision").val(),
+		INQH_DATE: new Date(),
+		INQH_USER: $("#user-login").attr("empno"),
+		INQH_ACTION: 99,
+		INQH_REMARK: $("#remark").val(),
+	};
+}

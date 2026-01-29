@@ -23,22 +23,6 @@
 
 <body class="flex flex-col min-h-screen">
     <input type="hidden" id="appid" value="{{ $_ENV['APP_ID'] }}">
-    <input type="checkbox" id="loading-box" class="modal-toggle" checked />
-
-    <div id="small-screen" class="w-screen h-screen items-center justify-center flex md:hidden">
-        <div class="card w-96 card-xl shadow-md border border-primary/50 ">
-            <div class="card-body overflow-hidden relative">
-                <div class="absolute w-full top-3 flex justify-end">
-                    <i class="fi fi-tr-screen text-[12rem] text-gray-700/20"></i>
-                </div>
-
-                <h2 class="card-title">Connect to a Big Screen</h2>
-                <p>This site is unable to support a mobile size. Please use on computer.</p>
-            </div>
-        </div>
-    </div>
-
-    {{-- Show on Big screen --}}
     <div id="big-screen" class="hidden md:block">
         <!-- Navbar -->
         <div id="navbar" class=""></div>

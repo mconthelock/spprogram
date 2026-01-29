@@ -32,6 +32,10 @@
         </div>
     </div>
     <div class="flex gap-2 my-3" id="btn-container"></div>
+
+    <div class="bg-white">
+        <ul class="list-none p-8 ms-12" id="isdept"></ul>
+    </div>
 @endsection
 
 @section('scripts')

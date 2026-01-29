@@ -13,6 +13,7 @@
 
 /* js */
 @source "../script/**/*.js";
+@source "../../.env";
 
 @source "../../node_modules/@amec/webasset/src/**/*.js";
 

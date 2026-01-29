@@ -2,7 +2,6 @@ import "@flaticon/flaticon-uicons/css/all/all.css";
 
 $(document).on("click", ".msg-close", function (e) {
 	e.preventDefault();
-	//   console.log("Close");
 	const alertBox = $(this).closest(".alert");
 	alertBox.removeClass("opacity-100");
 	alertBox.addClass("opacity-0");
