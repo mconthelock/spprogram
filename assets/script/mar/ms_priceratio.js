@@ -6,10 +6,10 @@ import select2 from "select2";
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { showMessage } from "@amec/webasset/utils";
-import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-import * as utils from "../utils.js";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { showMessage, showDigits } from "@amec/webasset/utils";
+import { getTemplate, exportExcel, cloneRows } from "../service/excel.js";
+import { initApp, tableOpt } from "../utils.js";
 import {
 	getPriceRatio,
 	findPriceRatio,
@@ -22,9 +22,9 @@ select2();
 var table;
 $(document).ready(async () => {
 	try {
-		await utils.initApp({ submenu: ".navmenu-admin" });
+		await initApp({ submenu: ".navmenu-admin" });
 		const data = await getPriceRatio();
-		const opt = await tableOpt(data);
+		const opt = await tableOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
@@ -34,13 +34,13 @@ $(document).ready(async () => {
 	}
 });
 
-async function tableOpt(data) {
+async function tableOption(data) {
 	const types = await getQuotationType();
 	const supplier = data.map((val) => val.SUPPLIER);
 	const trader = data.map((val) => val.TRADER);
 	const currency = data.map((val) => val.CURRENCY);
 
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.order = [[0, "asc"]];
 	opt.columns = [
@@ -130,7 +130,7 @@ async function tableOpt(data) {
 				if (type === "display" && row.isNew !== undefined) {
 					return `<input type="number" class="input cell-input w-full input-dt" data-key="formula" value="${data}" min="0.001" step="0.01">`;
 				}
-				return digits(data, 3);
+				return showDigits(data, 3);
 			},
 		},
 		{
@@ -185,23 +185,22 @@ async function tableOpt(data) {
 	];
 
 	opt.initComplete = async function (settings, json) {
-		const addnew = await creatBtn({
+		const addnew = await createBtn({
 			id: "add-new-rate",
 			title: "New Item",
 			icon: "fi fi-tr-floor-layer text-xl",
 			className: `btn-primary text-white hover:shadow-lg`,
 		});
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export-list",
 			title: "Export Excel",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-accent text-white hover:shadow-lg`,
 		});
-
 		$(".table-info").append(`<div class="flex gap-2">
-        ${addnew}
-        ${export1}
-     </div>`);
+            ${addnew}
+            ${export1}
+        </div>`);
 	};
 	return opt;
 }
@@ -378,7 +377,6 @@ $(document).on("click", "#export-list", async function (e) {
 			val.statusText = val.STATUS == 1 ? "Active" : "Inactive";
 		});
 		const template = await getTemplate("export_priceratio.xlsx");
-		console.log(data);
 		await exportExcel(data, template, {
 			filename: `Price Ratio ${dayjs().format("YYYY-MM-DD")}.xlsx`,
 		});

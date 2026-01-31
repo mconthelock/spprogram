@@ -3,10 +3,10 @@ import "@amec/webasset/css/select2.min.css";
 import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { showMessage } from "@amec/webasset/utils";
-import { getTemplate, exportExcel } from "../service/excel";
-import * as utils from "../utils.js";
+import { getTemplate, exportExcel } from "../service/excel.js";
+import { initApp, tableOpt } from "../utils.js";
 import {
 	getControl,
 	getShipments,
@@ -19,9 +19,9 @@ select2();
 var table;
 $(document).ready(async () => {
 	try {
-		await utils.initApp({ submenu: ".navmenu-admin" });
+		await initApp({ submenu: ".navmenu-admin" });
 		const data = await getControl();
-		const opt = await tableOpt(data);
+		const opt = await tableOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
@@ -31,11 +31,11 @@ $(document).ready(async () => {
 	}
 });
 
-async function tableOpt(data) {
+async function tableOption(data) {
 	const quotype = await getQuotationType();
 	const shipments = await getShipments();
 	const terms = await getDeliveryTerm();
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.order = [
 		[1, "asc"],
 		[0, "desc"],
@@ -148,7 +148,7 @@ async function tableOpt(data) {
 		},
 	];
 	opt.initComplete = async function () {
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",

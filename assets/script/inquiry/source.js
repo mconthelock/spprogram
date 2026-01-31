@@ -1,3 +1,4 @@
+import { dateToSchedule } from "@amec/webasset/utils";
 import * as mst from "../service/master.js";
 import * as mkt from "../service/mkt.js";
 import * as inq from "../service/inquiry.js";
@@ -177,7 +178,7 @@ export const events = {
 				if ($('input[data-mapping="' + key + '"]').length > 0) {
 					const input = $('input[data-mapping="' + key + '"]');
 					if (input.attr("id") == "schedule") {
-						const val = await utils.amecschdule(values[key]);
+						const val = await dateToSchedule(values[key]);
 						input.val(val);
 					} else {
 						input.val(values[key]);

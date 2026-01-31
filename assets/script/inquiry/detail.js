@@ -10,13 +10,16 @@ Funtion contents
 import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
 import dayjs from "dayjs";
 import select2 from "select2";
 import { setSelect2 } from "@amec/webasset/select2";
-import { setDatePicker } from "@amec/webasset/flatpickr";
-import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { readInput } from "@amec/webasset/excel";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
+import { createTable, destroyTable } from "@amec/webasset/dataTable";
+import { createBtn } from "@amec/webasset/components/buttons";
+import { intVal } from "@amec/webasset/utils";
+
 import { getReason } from "../service/master";
 import { getElmesItem } from "../service/elmes.js";
 import { getMainProject } from "../service/mkt.js";
@@ -512,11 +515,11 @@ export async function createReasonModal() {
 		}
 	});
 
-	const btnSave = await creatBtn({
+	const btnSave = await createBtn({
 		id: "save-reason",
 		className: "btn-outline  btn-primary  text-primary hover:text-white",
 	});
-	const btnCancel = await creatBtn({
+	const btnCancel = await createBtn({
 		id: "cancel-reason",
 		title: "Cancel",
 		icon: "icofont-close text-2xl",
@@ -625,13 +628,13 @@ export async function resetUnreplyForm() {
 
 //004: Search Elmes data
 export async function elmesComponent() {
-	const confirmBtn = await creatBtn({
+	const confirmBtn = await createBtn({
 		id: "elmes-confirm",
 		title: "Confirm",
 		icon: "",
 		className: "btn-primary btn-outline text-primary hover:text-white",
 	});
-	const cancelBtn = await creatBtn({
+	const cancelBtn = await createBtn({
 		id: "elmes-cancel",
 		title: "Cancel",
 		icon: "icofont-close text-2xl",
@@ -685,7 +688,7 @@ export async function elmesConform(elmesData, increse, table) {
 	table.rows(rowid).remove().draw(); //Delete current row first
 	//Insert rows
 	let i = 0;
-	let id = utils.intVal(data.INQD_SEQ);
+	let id = intVal(data.INQD_SEQ);
 	elmesData.map((val) => {
 		if (val.selected !== undefined) {
 			let supplier = `AMEC`;
@@ -805,17 +808,14 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			seenKeys.add(item.INQD_SEQ);
 		}
 
-		if (utils.intVal(item.INQD_SEQ) <= 0) {
+		if (intVal(item.INQD_SEQ) <= 0) {
 			check = false;
 			message.push(`Please input seq no.`);
 			errorEl(row.find(".seqno"));
 			return;
 		}
 
-		if (
-			utils.intVal(item.INQD_ITEM) < 100 ||
-			utils.intVal(item.INQD_ITEM) > 1000
-		) {
+		if (intVal(item.INQD_ITEM) < 100 || intVal(item.INQD_ITEM) > 1000) {
 			check = false;
 			message.push(
 				`Please input item no. or item no should be number in range 100-999`,

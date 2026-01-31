@@ -198,7 +198,7 @@ async function tableInquiryOption(data) {
 	};
 
 	opt.initComplete = async function () {
-		const newinq = await creatBtn({
+		const newinq = await createBtn({
 			id: "add-new-inquiry",
 			type: "link",
 			href: `${process.env.APP_ENV}/mar/inquiry/create`,
@@ -206,13 +206,13 @@ async function tableInquiryOption(data) {
 			icon: "fi fi-tr-file-excel text-xl ",
 			className: `btn-outline btn-primary text-primary hover:shadow-lg  hover:text-white`,
 		});
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Inquiry",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-neutral text-white hover:shadow-lg`,
 		});
-		const export2 = await creatBtn({
+		const export2 = await createBtn({
 			id: "export1",
 			title: "Export (With Detail)",
 			icon: "fi fi-rr-layers text-xl",

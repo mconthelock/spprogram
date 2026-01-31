@@ -76,42 +76,42 @@ $(document).ready(async () => {
 });
 
 async function setupButton(mode) {
-	const sendDE = await creatBtn({
+	const sendDE = await createBtn({
 		id: "send-de",
 		title: "Send to Design",
 		icon: "fi fi-tr-envelope-open-text text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${mode}`,
 	});
 
-	const updateDE = await creatBtn({
+	const updateDE = await createBtn({
 		id: "update-de",
 		title: "Send to Design",
 		icon: "fi fi-tr-envelope-open-text text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${mode}`,
 	});
 
-	const sendIS = await creatBtn({
+	const sendIS = await createBtn({
 		id: "send-bm",
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
 	});
 
-	const updateIS = await creatBtn({
+	const updateIS = await createBtn({
 		id: "update-bm",
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
 	});
 
-	const draft = await creatBtn({
+	const draft = await createBtn({
 		id: "draft",
 		title: "Send Draft",
 		icon: "fi fi-ts-clipboard-list text-xl",
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:shadow-lg`,
 	});
 
-	const back = await creatBtn({
+	const back = await createBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",

@@ -82,10 +82,10 @@ export const updateInquiry = async (data) => {
 	});
 };
 
-export const updateInquiryStatus = async (data, id) => {
+export const updateInquiryHeader = async (data, id) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
-			url: `${process.env.APP_API}/sp/inquiry/update_status/${id}/`,
+			url: `${process.env.APP_API}/sp/inquiry/updateInquiry/${id}/`,
 			type: "POST",
 			dataType: "json",
 			data: data,

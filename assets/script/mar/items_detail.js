@@ -4,7 +4,7 @@ import "@amec/webasset/css/select2.min.css";
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getBase64Image } from "@amec/webasset/api/file";
 import {
 	dragDropInit,
@@ -32,7 +32,7 @@ $(async function () {
 });
 
 async function setItemDetail() {
-	const save = await creatBtn({
+	const save = await createBtn({
 		id: "save-data",
 		title: "Save Data",
 		icon: "fi fi-sr-disk text-xl",
@@ -40,7 +40,7 @@ async function setItemDetail() {
 		other: `data-action="${$("#itemid").val() == "" ? "add" : "edit"}"`,
 	});
 
-	const back = await creatBtn({
+	const back = await createBtn({
 		id: "back-to-list",
 		type: "link",
 		href: `${process.env.APP_ENV}/mar/items/`,
@@ -241,6 +241,12 @@ async function saveImage(payload) {
 		photo.append("files", files[0], files[0].name);
 		photo.append("ITEM_ID", payload.ITEM_ID);
 		const responsePhoto = await items.uploadItemsPhoto(photo);
+	} else {
+		console.log("No image to upload");
+		const updated = await items.updateItems({
+			ITEM_ID: $("#itemid").val(),
+			ITEM_THUMB: null,
+		});
 	}
 	return;
 }

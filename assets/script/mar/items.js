@@ -5,7 +5,7 @@ import "@amec/webasset/css/dataTable.min.css";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel } from "../service/excel";
 import * as items from "../service/items.js";
 import { initApp, tableOpt } from "../utils.js";
@@ -103,7 +103,7 @@ async function tableOption(data) {
         </button>
     </div>`);
 		// $(".table-paging").addClass("flex-col gap-3");
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",

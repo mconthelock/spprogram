@@ -4,16 +4,16 @@ import "@amec/webasset/css/dataTable.min.css";
 
 import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
-import { showMessage } from "@amec/webasset/utils";
+import { showMessage, showDigits } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { setSelect2 } from "@amec/webasset/select2";
 
 import { getTemplate, exportExcel } from "../service/excel";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
 import { getCustomer } from "../service/customers.js";
-import { tableOpt, initApp, digits } from "../utils.js";
+import { tableOpt, initApp } from "../utils.js";
 select2();
 
 var table;
@@ -120,7 +120,7 @@ async function tableOption(data) {
 			className: "border-l bg-primary/10",
 			render: (data, type, row) => {
 				if (row.currentprice === undefined) return "-";
-				return digits(row.currentprice.FCCOST);
+				return showDigits(row.currentprice.FCCOST);
 			},
 		},
 		{
@@ -128,7 +128,7 @@ async function tableOption(data) {
 			className: "border-l bg-primary/10",
 			render: (data, type, row) => {
 				if (row.currentprice === undefined) return "-";
-				return digits(row.currentprice.FCBASE, 2);
+				return showDigits(row.currentprice.FCBASE, 2);
 			},
 		},
 		{
@@ -136,7 +136,7 @@ async function tableOption(data) {
 			className: "border-l bg-primary/10",
 			render: (data, type, row) => {
 				if (row.currentprice === undefined) return "-";
-				return digits(row.currentprice.TCCOST);
+				return showDigits(row.currentprice.TCCOST);
 			},
 		},
 		{
@@ -144,7 +144,9 @@ async function tableOption(data) {
 			className: "border-l bg-primary/10",
 			render: (data, type, row) => {
 				if (row.currentprice === undefined) return "-";
-				return row.ratio !== null ? digits(row.ratio.FORMULA, 2) : "-";
+				return row.ratio !== null
+					? showDigits(row.ratio.FORMULA, 2)
+					: "-";
 			},
 		},
 
@@ -155,7 +157,7 @@ async function tableOption(data) {
 				if (row.currentprice === undefined) return "-";
 				const ratio = row.ratio !== null ? row.ratio.FORMULA : 1;
 				const tccost = Math.ceil(row.currentprice.TCCOST * ratio);
-				return digits(tccost);
+				return showDigits(tccost);
 			},
 		},
 
@@ -165,7 +167,7 @@ async function tableOption(data) {
 			className: "border-l bg-accent/10",
 			render: (data, type, row) => {
 				if (row.lastprice === undefined) return "-";
-				return digits(row.lastprice.FCCOST);
+				return showDigits(row.lastprice.FCCOST);
 			},
 		},
 		{
@@ -173,7 +175,7 @@ async function tableOption(data) {
 			className: "border-l bg-accent/10",
 			render: (data, type, row) => {
 				if (row.lastprice === undefined) return "-";
-				return digits(row.lastprice.FCBASE, 2);
+				return showDigits(row.lastprice.FCBASE, 2);
 			},
 		},
 		{
@@ -181,7 +183,7 @@ async function tableOption(data) {
 			className: "border-l bg-accent/10",
 			render: (data, type, row) => {
 				if (row.lastprice === undefined) return "-";
-				return digits(row.lastprice.TCCOST);
+				return showDigits(row.lastprice.TCCOST);
 			},
 		},
 		{
@@ -189,7 +191,9 @@ async function tableOption(data) {
 			className: "border-l bg-accent/10",
 			render: (data, type, row) => {
 				if (row.lastprice === undefined) return "-";
-				return row.ratio !== null ? digits(row.ratio.FORMULA, 2) : "-";
+				return row.ratio !== null
+					? showDigits(row.ratio.FORMULA, 2)
+					: "-";
 			},
 		},
 		{
@@ -199,7 +203,7 @@ async function tableOption(data) {
 				if (row.lastprice === undefined) return "-";
 				const ratio = row.ratio !== null ? row.ratio.FORMULA : 1;
 				const tccost = Math.ceil(row.lastprice.TCCOST * ratio);
-				return digits(tccost);
+				return showDigits(tccost);
 			},
 		},
 	];
@@ -242,13 +246,13 @@ async function tableOption(data) {
     `);
 		await setSelect2({ width: "200px", allowClear: false });
 		// Table Footer Buttons
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `bg-accent text-white hover:shadow-lg`,
 		});
-		const importprice = await creatBtn({
+		const importprice = await createBtn({
 			id: "importprice",
 			title: "Import Price",
 			icon: "fi fi-rr-add text-xl",

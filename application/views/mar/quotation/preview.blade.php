@@ -2,11 +2,9 @@
 
 @section('contents')
     <input type="text" id="inquiry-id" value="{{ $id }}" class="hidden">
-    <input type="text" id="inquiry-mode" value="{{ $mode }}" class="hidden">
     <h2 class="card-title text-2xl" id="inquiry-title"></h2>
     <div class="divider m-0"></div>
-    <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="{{ $list }}">
-    </main>
+    <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewquo|viewinfo|viewmar"></main>
     <div class="mt-6">
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>

@@ -3,7 +3,7 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import { createTable } from "@amec/webasset/dataTable";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getItems, currentPeriod } from "../service/items.js";
 import { exportExcel, getTemplate } from "../service/excel.js";
 import { initApp } from "../utils.js";
@@ -152,18 +152,18 @@ async function tableOpt(data) {
 	];
 
 	opt.initComplete = async function () {
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export1",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `bg-accent text-white hover:shadow-lg`,
-		});
-		const importprice = await creatBtn({
+		};
+		const importprice = await createBtn({
 			id: "importprice",
 			title: "Import Price",
 			icon: "fi fi-rr-add text-xl",
 			className: `bg-primary text-white hover:shadow-lg`,
-		});
+		};
 
 		$(".table-info").append(`<div class="flex gap-2">
         ${importprice}

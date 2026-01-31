@@ -2,7 +2,7 @@ import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
@@ -114,7 +114,7 @@ async function tableOrdersOption(data) {
 		},
 	];
 	opt.initComplete = async function () {
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Excel",
 			icon: "fi fi-tr-file-excel text-xl",

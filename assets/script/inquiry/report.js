@@ -1,6 +1,6 @@
 import { init } from "../inquiry/source.js";
 import { getStatus } from "../service/master.js";
-import { creatBtn } from "@amec/webasset/components/buttons";
+import {} from "@amec/webasset/components/buttons";
 
 export const setTrader = async () => {
 	const id = "#trader";
@@ -76,19 +76,19 @@ export const setOrderType = async () => {
 };
 
 export const setButton = async () => {
-	const search = await creatBtn({
+	const search = await createBtn({
 		id: "search",
 		title: "Search",
 		icon: "fi fi-ts-assessment text-xl",
 		className: `bg-accent text-white hover:shadow-lg`,
-	});
+	};
 
-	const reset = await creatBtn({
+	const reset = await createBtn({
 		id: "reset-report",
 		title: "Reset",
 		icon: "fi fi-ts-feedback-cycle-loop text-xl",
 		className: `btn-soft btn-accent border-accent  hover:shadow-lg hover:text-white`,
-	});
+	};
 	$("#btn-report").append(` ${search} ${reset}`);
 };
 

@@ -1,50 +1,53 @@
 const path = require("path");
 const rspack = require("@rspack/core");
 const Dotenv = require("dotenv-webpack");
+const { sync } = require("glob");
 const { defaultConfig } = require("@amec/webasset/default.config");
 
 require("dotenv").config({
 	path: path.resolve(__dirname, "./.env"),
 });
 
-module.exports = {
-	entry: {
+const getEntries = () => {
+	const baseEntries = {
 		apps: "./assets/script/apps.js",
-		home: "./assets/script/home.js",
-		inquiryui: "./assets/script/inquiry/ui.js",
-		mar_inquiry: "./assets/script/mar/inquiry.js",
-		mar_inqdetail: "./assets/script/mar/inqdetail.js",
-		mar_inqviews: "./assets/script/mar/inqview.js",
-		mar_inqstock: "./assets/script/mar/inqstock.js",
-		mar_inq_report: "./assets/script/mar/inquiry_report.js",
-		mar_quotation: "./assets/script/mar/quotation.js",
-		mar_quodetail: "./assets/script/mar/quodetail.js",
-		mar_quoview: "./assets/script/mar/quoview.js",
-		mar_quoreport: "./assets/script/mar/quoreport.js",
-		mar_orders: "./assets/script/mar/orders.js",
-		priceratio: "./assets/script/mar/priceratio.js",
-		currency: "./assets/script/mar/currency.js",
-		inqcontrol: "./assets/script/mar/inqcontrol.js",
-		mar_items: "./assets/script/mar/items.js",
-		mar_items_detail: "./assets/script/mar/items_detail.js",
-		mar_pricelist: "./assets/script/mar/pricelist.js",
-		mar_outtoout: "./assets/script/mar/outtoout.js",
-		//For Sale User
-		se_inquiry: "./assets/script/sale/inquiry.js",
-		se_inqdetail: "./assets/script/sale/inqdetail.js",
-		se_inqviews: "./assets/script/sale/inqview.js",
-		se_inq_report: "./assets/script/sale/report.js",
-		des_inquiry: "./assets/script/des/inquiry.js",
-		des_inqdetail: "./assets/script/des/detail.js",
-		des_inqviews: "./assets/script/des/view.js",
-		des_report: "./assets/script/des/report.js",
-		des_users: "./assets/script/des/users.js",
-		fin_items: "./assets/script/fin/items.js",
-		fin_inquiry: "./assets/script/fin/inquiry.js",
-		fin_inqdetail: "./assets/script/fin/inquiry_detail.js",
-		fin_pricelist: "./assets/script/fin/pricelist.js",
-		fin_report: "./assets/script/fin/report.js",
-	},
+		// home: "./assets/script/home/index.js",
+	};
+	const configFiles = sync("./assets/script/*/_entry.js");
+	const moduleEntries = configFiles.reduce((acc, file) => {
+		const moduleConfig = require(path.resolve(__dirname, file));
+		return { ...acc, ...moduleConfig };
+	}, {});
+	return { ...baseEntries, ...moduleEntries };
+};
+
+module.exports = {
+	// entry: {
+	// 	inquiryui: "./assets/script/inquiry/ui.js",
+	// 	mar_inquiry: "./assets/script/mar/inquiry.js",
+	// 	mar_inqdetail: "./assets/script/mar/inqdetail.js",
+	// 	mar_inqviews: "./assets/script/mar/inqview.js",
+	// 	mar_inqstock: "./assets/script/mar/inqstock.js",
+	// 	mar_inq_report: "./assets/script/mar/inquiry_report.js",
+	// 	mar_quoreport: "./assets/script/mar/quoreport.js",
+
+	// 	//For Sale User
+	// 	se_inquiry: "./assets/script/sale/inquiry.js",
+	// 	se_inqdetail: "./assets/script/sale/inqdetail.js",
+	// 	se_inqviews: "./assets/script/sale/inqview.js",
+	// 	se_inq_report: "./assets/script/sale/report.js",
+	// 	des_inquiry: "./assets/script/des/inquiry.js",
+	// 	des_inqdetail: "./assets/script/des/detail.js",
+	// 	des_inqviews: "./assets/script/des/view.js",
+	// 	des_report: "./assets/script/des/report.js",
+	// 	des_users: "./assets/script/des/users.js",
+	// 	fin_items: "./assets/script/fin/items.js",
+	// 	fin_inquiry: "./assets/script/fin/inquiry.js",
+	// 	fin_inqdetail: "./assets/script/fin/inquiry_detail.js",
+	// 	fin_pricelist: "./assets/script/fin/pricelist.js",
+	// 	fin_report: "./assets/script/fin/report.js",
+	// },
+	entry: getEntries(),
 	output: {
 		filename: "[name].js",
 		path: path.resolve(__dirname, "assets/dist/js"),

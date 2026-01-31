@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { createTable } from "@amec/webasset/dataTable";
 import { displayname } from "@amec/webasset/api/amec";
-import { showMessage } from "@amec/webasset/utils";
+import { showMessage, showDigits } from "@amec/webasset/utils";
 import { getCurrency, updateCurrency } from "../service/master.js";
 import * as utils from "../utils.js";
 
@@ -78,12 +78,12 @@ async function tableOpt(data) {
 			title: "Rate",
 			render: function (data, type, row) {
 				if (type === "display" && row.isNew !== undefined) {
-					return `<input type="number" class="input cell-input w-full input-dt" value="${digits(
+					return `<input type="number" class="input cell-input w-full input-dt" value="${showDigits(
 						data,
 						2,
 					)}" min="0.01" step="0.01">`;
 				}
-				return digits(data, 2);
+				return showDigits(data, 2);
 			},
 		},
 		{

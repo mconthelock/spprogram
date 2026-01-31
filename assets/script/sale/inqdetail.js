@@ -109,43 +109,43 @@ $(document).ready(async () => {
 
 async function setupButton(revise) {
 	const usergroup = $("#user-login").attr("groupcode");
-	const assign = await creatBtn({
+	const assign = await createBtn({
 		id: "assign-pic",
 		title: "Assign PIC",
 		icon: "fi fi-rs-user-check text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${
 			revise ? "revised" : ""
 		}`,
-	});
+	};
 
-	const forwardde = await creatBtn({
+	const forwardde = await createBtn({
 		id: "forward-de",
 		title: "Forward to DE",
 		icon: "fi fi-tr-share-square text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${
 			revise ? "revised" : ""
 		}`,
-	});
+	};
 
-	const sendIS = await creatBtn({
+	const sendIS = await createBtn({
 		id: "send-bm",
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${
 			revise ? "revised" : ""
 		}`,
-	});
+	};
 
-	const confirm = await creatBtn({
+	const confirm = await createBtn({
 		id: "send-confirm",
 		title: "Confirm",
 		icon: "fi fi-tr-badge-check text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${
 			revise ? "revised" : ""
 		}`,
-	});
+	};
 
-	const back = await creatBtn({
+	const back = await createBtn({
 		id: "goback",
 		title: "Back",
 		type: "link",
@@ -153,7 +153,7 @@ async function setupButton(revise) {
 		icon: "fi fi-rr-arrow-circle-left text-xl",
 		className:
 			"btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
-	});
+	};
 
 	if (usergroup == "SEG")
 		$("#btn-container").append(assign, forwardde, sendIS, back);

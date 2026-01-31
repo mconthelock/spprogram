@@ -127,7 +127,7 @@ async function tableOptions(data) {
 			className: `${pageId == 2 ? "hidden" : ""}`,
 			title: "Note",
 			render: (data) => {
-				return `<textarea class="w-full min-w-[200px] !h-[52px] border border-slate-300 rounded-sm p-2" rows="1">${
+				return `<textarea class="w-full min-w-50 h-13! border border-slate-300 rounded-sm p-2" rows="1">${
 					data == null ? "" : data
 				}</textarea>`;
 			},
@@ -146,7 +146,7 @@ async function tableOptions(data) {
 	];
 
 	opt.initComplete = async function () {
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export1",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",

@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <dialog id="confirm_box" class="modal">
+    {{-- <dialog id="confirm_box" class="modal">
         <div class="modal-box">
             <form method="dialog" class="">
                 <h3 class="text-lg font-bold flex items-center gap-3" id="confirm_title"></h3>
@@ -61,7 +61,7 @@
                 </div>
             </form>
         </div>
-    </dialog>
+    </dialog> --}}
 
     <div class="toast toast-end z-50 min-w-80" id="toast-alert"></div>
     <script src="{{ $_ENV['APP_JS'] }}/apps.js?ver={{ $GLOBALS['version'] }}"></script>

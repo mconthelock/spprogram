@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
+import { intVal, showConfirm, showMessage } from "@amec/webasset/utils";
 import { statusColors } from "../inquiry/detail.js";
 import * as service from "../service/inquiry.js";
 import * as source from "./source.js";
@@ -95,7 +96,7 @@ export async function changeCell(table, el) {
 	if ($(el).attr("type") === "checkbox" && !$(el).is(":checked"))
 		newValue = null;
 	if ($(el).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
-	if ($(el).attr("type") === "number") newValue = utils.intVal(newValue);
+	if ($(el).attr("type") === "number") newValue = intVal(newValue);
 	if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();
 	cell.data(newValue);
 	return table;
@@ -501,7 +502,7 @@ export async function confirmDeleteInquiry(table) {
 	});
 
 	if (!res.status) {
-		utils.foundError(res);
+		await showMessage(res);
 	} else {
 		// remove row from table
 		table
@@ -522,12 +523,5 @@ export async function confirmDeleteInquiry(table) {
 //Universal Event
 $(document).on("click", ".delete-inquiry", async function (e) {
 	e.preventDefault();
-	await utils.showConfirm(
-		"deleteinqs",
-		`<span class="text-red-500">Delete Inquiry</span>`,
-		"Are you sure you want to delete this inquiry?",
-		`<i class="icofont-exclamation-circle text-4xl text-red-500"></i>`,
-		$(this).attr("data-id"),
-		true,
-	);
+	await showConfirm();
 });

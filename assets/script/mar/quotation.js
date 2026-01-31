@@ -7,7 +7,7 @@ import { showLoader } from "@amec/webasset/preloader";
 import { displayname } from "@amec/webasset/api/amec";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { creatBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
 import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
@@ -150,7 +150,7 @@ async function tableInquiryOption(data) {
 					row.INQ_STATUS < 50
 				)
 					timelines = true;
-				const edit = creatBtn({
+				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Process",
 					type: "link",
@@ -158,7 +158,7 @@ async function tableInquiryOption(data) {
 					className: `btn-sm btn-accent text-white hover:shadow-lg w-[100px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
-				const view = creatBtn({
+				const view = createBtn({
 					id: `edit-${data}`,
 					title: "View",
 					type: "link",
@@ -166,7 +166,6 @@ async function tableInquiryOption(data) {
 					className: `btn-outline btn-sm btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
-
 				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;
 			},
 		},
@@ -196,7 +195,7 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				const edit = creatBtn({
+				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Edit",
 					type: "link",
@@ -204,7 +203,7 @@ async function tableInquiryOption(data) {
 					className: `btn-sm btn-accent text-white hover:shadow-lg`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
-				const excel = creatBtn({
+				const excel = createBtn({
 					id: `export-${data}`,
 					title: `Export`,
 					type: "link",
@@ -228,13 +227,13 @@ async function tableInquiryOption(data) {
 	];
 
 	opt.initComplete = async function () {
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Excel",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-accent text-white hover:shadow-lg`,
 		});
-		const export2 = await creatBtn({
+		const export2 = await createBtn({
 			id: "export2",
 			title: "Export (Detail)",
 			icon: `fi fi fi-rr-layers text-xl`,

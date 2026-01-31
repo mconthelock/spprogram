@@ -1,6 +1,7 @@
-import * as utils from "../utils.js";
-export async function setupTableDetail(data = []) {
-	const opt = { ...utils.tableOpt };
+import { showDigits } from "@amec/webasset/utils";
+import { tableOpt } from "../utils.js";
+export async function tableWeightOption(data = []) {
+	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.paging = false;
 	opt.lengthChange = false;
@@ -23,7 +24,7 @@ export async function setupTableDetail(data = []) {
 			className: "text-right!",
 			render: (data) => {
 				if (data == null) return "";
-				return digits(data, 4);
+				return showDigits(data, 4);
 			},
 		},
 		{ data: "ROUND_WEIGHT", className: "text-right!" },
@@ -41,7 +42,7 @@ export async function setupTableDetail(data = []) {
         <th class="text-right" colspan="2">Total</th>`;
 		for (let i = 2; i < this.api().columns().nodes().length; i++) {
 			const d = i == 8 ? 4 : 0;
-			footer += `<th class="text-right!">${digits(
+			footer += `<th class="text-right!">${showDigits(
 				sumary(api, i),
 				d,
 			)}</th>`;

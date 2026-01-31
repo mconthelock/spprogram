@@ -1,0 +1,39 @@
+{
+    "id": "quo_fact",
+    "title": "Quotation Information",
+    "fields": [
+        {
+            "label": "Series",
+            "type": "staticText",
+            "id": "series",
+            "mapping": "INQ_SERIES",
+            "name": "INQ_SERIES"
+        },
+        {
+            "label": "Issue Date",
+            "type": "text",
+            "id": "quodate",
+            "class": "fdate",
+            "mapping": "QUO_DATE",
+            "name": "QUO_DATE"
+        },
+        {
+            "label": "Offer Vadility",
+            "type": "text",
+            "id": "expiredate",
+            "class": "fdate",
+            "mapping": "QUO_VALIDITY",
+            "name": "QUO_VALIDITY"
+        },
+        {
+            "label": "Additional Notes",
+            "id": "quonote",
+            "type": "textarea" ,
+            "name": "QUO_NOTE"
+        },
+        {
+            "label": "",
+            "type": "table"
+        }
+    ]
+}

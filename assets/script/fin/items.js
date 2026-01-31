@@ -90,7 +90,7 @@ async function tableOpt(data) {
 		$(".table-option").append(
 			`<a href="${process.env.APP_ENV}/fin/items/detail" class="btn btn-outline btn-primary hover:text-white">New Item</a>`,
 		);
-		const export1 = await creatBtn({
+		const export1 = await createBtn({
 			id: "export1",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
