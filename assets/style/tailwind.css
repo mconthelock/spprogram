@@ -7,14 +7,9 @@
 
 /* view */
 @source "../../application/views/**/*.php";
-
-/* css */
 @source "../style/**/*.css";
-
-/* js */
 @source "../script/**/*.js";
 @source "../../.env";
-
 @source "../../node_modules/@amec/webasset/src/**/*.js";
 
 @plugin "daisyui/theme" {
@@ -182,16 +177,8 @@
 		align-items: center;
 	}
 
-	/* .dt-ordering-asc::after {
-    content: "\fba7";
-  }
-
-  .dt-ordering-desc::after {
-    content: "\fba7";
-    transform: rotate(180deg);
-  } */
 	.table thead th {
-		@apply !text-center !bg-slate-500 !text-gray-300 !text-xs;
+		@apply text-center! bg-slate-500! text-gray-300! text-xs!;
 	}
 
 	.table-second {
@@ -200,11 +187,11 @@
 	}
 
 	.table-second > thead > tr {
-		@apply !bg-gray-300 !text-gray-600 !text-xs;
+		@apply bg-gray-300! text-gray-600! text-xs!;
 	}
 
 	.table-second > tbody > tr > td:not(.dt-empty) {
-		@apply !border-r !border-gray-300;
+		@apply border-r! border-gray-300!;
 	}
 
 	.table-second > tbody > tr > td > .cell-input {
@@ -234,10 +221,10 @@
 		padding-right: 8px !important;
 	}
 	.dt-paging-button:not(.first):not(.last):not(.previous):not(.next) {
-		@apply !text-white;
+		@apply text-white!;
 	}
 	.dt-paging-button:not(.first):not(.last):not(.previous):not(.next):hover {
-		@apply !shadow-sm;
+		@apply shadow-sm!;
 	}
 
 	/*

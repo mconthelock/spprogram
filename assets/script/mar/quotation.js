@@ -168,7 +168,6 @@ async function tableInquiryOption(data) {
 				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;
 			},
 		},
-
 		//Released Quotation
 		{
 			data: "quotation",

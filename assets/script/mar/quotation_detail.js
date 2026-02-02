@@ -13,14 +13,13 @@ import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { initApp } from "../utils.js";
 import { setupCard } from "../inquiry/detail.js";
 import { tableWeightOption } from "../quotation/table_weight.js";
-import * as tb from "../inquiry/table.js";
-import { tablePartOption } from "../quotation/view_part.js";
+import { setupTableHistory, setupTableAttachment } from "../inquiry/table.js";
+import { tablePartOption } from "../quotation/index.js";
 import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
 } from "../service/inquiry.js";
-import * as cus from "../service/customers.js";
 var table;
 var tableAttach;
 var tableWeight;
@@ -31,34 +30,43 @@ $(document).ready(async () => {
 		await initApp({ submenu: `.navmenu-quotation` });
 		const inq = await getInquiry({
 			INQ_ID: $("#inquiry-id").val(),
+			IS_DETAILS: true,
 			IS_QUOTATION: true,
 			IS_WEIGHT: true,
 		});
 		if (inq.length == 0) throw new Error("Inquiry do not found");
 
-		const inquiry = inq[0];
-		const quotation = inq[0].quotation;
-		const weight = inq[0].weight;
-		inquiry.INQ_DATE = dayjs(inquiry.INQ_DATE).format("YYYY-MM-DD");
-
+		inq[0].INQ_DATE = dayjs(inq[0].INQ_DATE).format("YYYY-MM-DD");
 		//1=New, 2=edit , 3=view
 		if ($("#inquiry-mode").val() == 1) {
-			$("#inquiry-title").html(`${inquiry.INQ_NO}`);
+			$("#inquiry-title").html(
+				`${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(New)</span>`,
+			);
+			inq[0].QUO_VALIDITY = dayjs().add(60, "day").format("YYYY-MM-DD");
 		} else {
-			$("#inquiry-title").html(`${inquiry.INQ_NO}`);
-			inquiry.QUO_DATE = quotation.QUO_DATE;
-			inquiry.QUO_VALIDITY = quotation.QUO_VALIDITY;
+			$("#inquiry-title").html(
+				`${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(Revise)</span>`,
+			);
+
+			inq[0].QUO_DATE = dayjs(inq[0].quotation.QUO_DATE).format(
+				"YYYY-MM-DD",
+			);
+			inq[0].QUO_VALIDITY = dayjs(inq[0].quotation.QUO_VALIDITY).format(
+				"YYYY-MM-DD",
+			);
 		}
 
-		if (inquiry.INQ_TYPE == "SP") {
-			await quotationPart(inquiry, weight);
-		} else if (inquiry.INQ_TYPE == "Out2out") {
+		if (inq[0].INQ_TYPE == "SP") {
+			if (inq[0].INQ_PKC_REQ == 0) $("#with-tab").remove();
+			await quotationPart(inq);
+		} else if (inq[0].INQ_TYPE == "Out2out") {
 			await quotationOut();
 		} else {
 			await quotationFactory();
 		}
-		await setupButton($("#inquiry-mode").val());
-		await setDatePicker();
+		// await setupButton($("#inquiry-mode").val());
+		// await setDatePicker();
+
 		// const customers = await cus.getCustomer();
 		// const customer = customers.find(
 		// 	(c) => c.CUS_ID == inquiry.INQ_CUSTOMER,
@@ -81,19 +89,19 @@ $(document).ready(async () => {
 		// );
 
 		//Weight Package
-		const weightContainer = await tableWeightOption(weight);
-		tableWeight = await createTable(weightContainer, {
-			id: "#table-weight",
-		});
+		// const weightContainer = await tableWeightOption(weight);
+		// tableWeight = await createTable(weightContainer, {
+		// 	id: "#table-weight",
+		// });
 
-		// //Inquiry History
-		// table = await createTable(tableContainer);
-		const logs = await getInquiryHistory(inquiry.INQ_NO);
-		const history = await tb.setupTableHistory(logs);
+		// // table = await createTable(tableContainer);
+		//Inquiry History
+		const logs = await getInquiryHistory(inq[0].INQ_NO);
+		const history = await setupTableHistory(logs);
 		await createTable(history, { id: "#history" });
 
-		const file = await getInquiryFile({ INQ_NO: inquiry.INQ_NO });
-		const attachment = await tb.setupTableAttachment(file, true);
+		const file = await getInquiryFile({ INQ_NO: inq[0].INQ_NO });
+		const attachment = await setupTableAttachment(file, true);
 		tableAttach = await createTable(attachment, { id: "#attachment" });
 	} catch (error) {
 		console.log(error);
@@ -104,14 +112,15 @@ $(document).ready(async () => {
 	}
 });
 
-async function quotationPart(inquiry, weight) {
+async function quotationPart(inq) {
 	const vlist = $("#form-container").attr("data");
 	const vstr = vlist.replace(/quotation/g, "quo_part");
 	$("#form-container").attr("data", vstr);
-	const card = await setupCard(inquiry);
-	const freight = await freightData(weight);
-	const optDetail = await tablePartOption();
+	const card = await setupCard(inq[0]);
+	const freight = await freightData(inq[0].weight);
+	const optDetail = await tablePartOption(inq[0].details);
 	const tableDetail = await createTable(optDetail);
+	await setupButton();
 }
 
 function quotationFactory() {}
