@@ -195,12 +195,22 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
+				console.log(row.INQ_TYPE);
+
 				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Edit",
 					type: "link",
 					icon: "fi fi-tr-file-edit text-lg",
-					className: `btn-sm btn-accent text-white hover:shadow-lg`,
+					className: `btn-sm btn-accent text-white hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+				});
+				const view = createBtn({
+					id: `edit-${data}`,
+					title: "View",
+					type: "link",
+					icon: "fi fi fi-rs-search text-lg",
+					className: `btn-sm btn-outline btn-accent text-accent hover:shadow-lg hover:text-white ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
 				const excel = createBtn({
@@ -221,7 +231,7 @@ async function tableInquiryOption(data) {
                         <li>${revise}</li>
                     </ul>
                 </div>`;
-				return `<div class="flex justify-end gap-2">${edit}${excel}${dropdown}</div>`;
+				return `<div class="flex justify-end gap-2">${edit}${view}${excel}${dropdown}</div>`;
 			},
 		},
 	];

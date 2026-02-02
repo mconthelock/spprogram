@@ -1,10 +1,10 @@
-import * as utils from "./utils.js";
+import { showbgLoader } from "@amec/webasset/preloader";
+import { initApp } from "./utils.js";
 $(async function () {
 	try {
-		await utils.initApp({ submenu: ".navmenu-newinq" });
+		await showbgLoader({ show: true });
+		await initApp({ submenu: ".navmenu-newinq" });
 	} catch (error) {
 		console.log(error);
-	} finally {
-		await showLoader({ show: false });
 	}
 });

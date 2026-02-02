@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { showbgLoader } from "@amec/webasset/preloader";
 import { initAuthen } from "@amec/webasset/authen";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
 
@@ -10,7 +11,6 @@ export const initApp = async (opt = {}) => {
 			programName: "SP PROGRAM",
 			sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
 		});
-
 		$(".mainmenu").find("details").attr("open", false);
 		if (opt.submenu !== undefined) {
 			$(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
@@ -18,7 +18,8 @@ export const initApp = async (opt = {}) => {
 	} catch (error) {
 		console.log(error);
 	}
-	await new Promise((r) => setTimeout(r, 1000));
+	await new Promise((r) => setTimeout(r, 500));
+	await showbgLoader({ show: false });
 	return;
 };
 
@@ -79,18 +80,6 @@ export const ameccaledar = async (sdate, edate) => {
 		});
 	});
 };
-
-export async function userInfo() {
-	const user = $("#user-login");
-	const info = await displayEmpInfo(user.attr("empno"));
-	return {
-		empno: info.SEMPNO,
-		username: info.SNAME,
-		displayname: displayname(info.SNAME),
-		info: info,
-		group: user.attr("groupcode"),
-	};
-}
 
 // File Functions
 export const fileExtension = (fileName) => {
