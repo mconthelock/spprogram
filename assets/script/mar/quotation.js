@@ -143,7 +143,6 @@ async function tableInquiryOption(data) {
 			render: (data, type, row) => {
 				if (row.timeline == undefined) return "";
 				let timelines = false;
-				// prettier-ignore1
 				if (
 					row.timeline.PKC_CONFIRM == null &&
 					row.INQ_PKC_REQ == "1" &&
@@ -154,16 +153,16 @@ async function tableInquiryOption(data) {
 					id: `edit-${data}`,
 					title: "Process",
 					type: "link",
-					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
+					icon: "fi fi-rr-edit text-lg",
 					className: `btn-sm btn-accent text-white hover:shadow-lg w-[100px]`,
-					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/1/`,
 				});
 				const view = createBtn({
-					id: `edit-${data}`,
+					id: `view-${data}`,
 					title: "View",
 					type: "link",
 					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
-					className: `btn-outline btn-sm btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
+					className: `btn-sm btn-outline btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
 				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;
@@ -195,23 +194,21 @@ async function tableInquiryOption(data) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				console.log(row.INQ_TYPE);
-
 				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Edit",
 					type: "link",
-					icon: "fi fi-tr-file-edit text-lg",
+					icon: "fi fi-rr-edit text-lg",
 					className: `btn-sm btn-accent text-white hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
-					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/2/`,
 				});
 				const view = createBtn({
-					id: `edit-${data}`,
+					id: `view-${data}`,
 					title: "View",
 					type: "link",
 					icon: "fi fi fi-rs-search text-lg",
 					className: `btn-sm btn-outline btn-accent text-accent hover:shadow-lg hover:text-white ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
-					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/3/`,
 				});
 				const excel = createBtn({
 					id: `export-${data}`,
@@ -223,7 +220,7 @@ async function tableInquiryOption(data) {
 				const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
 				const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const revise = `<a class="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
-				const dropdown = `<div class="dropdown  dropdown-end">
+				const dropdown = `<div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
                         <li>${sparq}</li>
@@ -235,6 +232,18 @@ async function tableInquiryOption(data) {
 			},
 		},
 	];
+
+	opt.drawCallback = function (settings) {
+		var api = this.api();
+		var count = api.rows({ page: "current" }).count();
+		let i = 0;
+		api.rows({ page: "current" }).every(function (rowIdx) {
+			if (i >= count - 3) {
+				$(this.node()).find(".dropdown").addClass("dropdown-top");
+			}
+			i++;
+		});
+	};
 
 	opt.initComplete = async function () {
 		const export1 = await createBtn({
