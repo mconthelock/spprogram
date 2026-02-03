@@ -2,7 +2,7 @@ import { showDigits, intVal } from "@amec/webasset/utils";
 import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
-export async function tablePartOption(data = []) {
+export async function tableViewFactOption(data = []) {
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.lengthChange = false;
@@ -18,25 +18,6 @@ export async function tablePartOption(data = []) {
 			data: "INQD_SEQ",
 			title: "No",
 			className: "sticky-column w-[50px] min-w-[50px]",
-		},
-		{
-			data: "INQD_CAR",
-			title: "CAR",
-			className: "sticky-column w-[50px] min-w-[50px]",
-		},
-		{
-			data: "INQD_MFGORDER",
-			title: "MFG NO.",
-			className:
-				"!px-[3px] w-[100px] min-w-[100px] max-w-[100px] sticky-column",
-			sortable: false,
-			render: function (data, type, row, meta) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
 		},
 		{
 			data: "INQD_ITEM",
@@ -98,42 +79,13 @@ export async function tablePartOption(data = []) {
 			},
 		},
 		{
-			data: "INQD_SENDPART",
-			title: "2nd",
-			className: "text-center!",
+			data: "INQD_QTY",
+			title: "Qty.",
+			footer: "Total",
 			render: function (data, type) {
 				if (type === "display") {
 					data = data == null ? "" : data;
 					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_UNREPLY",
-			title: "U/N",
-			className: "text-center!",
-			render: function (data, type) {
-				if (type === "display") {
-					data =
-						data == null
-							? ""
-							: `<i class="fi fi-sr-circle-xmark text-xl text-error"></i>`;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_QTY",
-			title: "Qty.",
-			className:
-				"px-[3px]! text-right bg-primary/20 min-w-[75px] INQD_QTY",
-			footer: "Total",
-			render: function (data, type) {
-				if (type === "display") {
-					const str = `<input type="text" class="w-full! text-end text-md! fccost cell-input" value="${data == null ? "" : showDigits(data, 0)}" onfocus="this.select();"/>`;
-					return str;
 				}
 				return data;
 			},
@@ -228,51 +180,6 @@ export async function tablePartOption(data = []) {
 				return data;
 			},
 		},
-		{
-			data: "INQD_MAR_REMARK",
-			title: "MAR Remark",
-			className: `min-w-50`,
-			render: function (data, type) {
-				if (type === "display") {
-					if (data == null) return "";
-					return `<div class="flex">
-            <div class="px-2 min-w-50 max-w-50 break-all text-xs line-clamp-1">${data}</div>
-            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
-          </div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_DES_REMARK",
-			title: "D/E Remark",
-			className: `min-w-50`,
-			render: function (data, type) {
-				if (type === "display") {
-					if (data == null) return "";
-					return `<div class="flex">
-            <div class="px-2 min-w-50 max-w-50 break-all text-xs line-clamp-1">${data}</div>
-            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
-          </div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_FIN_REMARK",
-			title: "FIN Remark",
-			className: `min-w-50`,
-			render: function (data, type) {
-				if (type === "display") {
-					if (data == null) return "";
-					return `<div class="flex">
-            <div class="px-2 min-w-50 max-w-50 break-all text-xs line-clamp-1">${data}</div>
-            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
-          </div>`;
-				}
-				return data;
-			},
-		},
 	];
 
 	opt.footerCallback = function () {
@@ -283,24 +190,23 @@ export async function tablePartOption(data = []) {
 		let totaltccost = 0;
 		let totalunit = 0;
 		let total = 0;
-		// let currency = ;
+		let currency = "";
 		data.map((el) => {
 			const price = calPrice(el);
+			console.log(price);
+
 			totalqty += intVal(el.INQD_QTY);
 			totalfccost += intVal(el.INQD_FC_COST);
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
 			total += intVal(price.amount);
+			currency = el.INQD_TCCUR == undefined ? "" : el.INQD_TCCUR;
 		});
 
-		// api.column(11).footer().innerHTML = showDigits(totalqty, 0);
-		//const currency =
-		api.column(11).footer().innerHTML = "";
-		api.column(13).footer().innerHTML = showDigits(totalfccost, 0);
-		api.column(15).footer().innerHTML = showDigits(totaltccost, 0);
-		api.column(17).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(18).footer().innerHTML = showDigits(total, 0);
-		// api.column(19).footer().innerHTML = currency;
+		api.column(7).footer().innerHTML = showDigits(totalqty, 0);
+		api.column(11).footer().innerHTML = showDigits(totaltccost, 0);
+		api.column(13).footer().innerHTML = showDigits(totalunit, 0);
+		api.column(14).footer().innerHTML = showDigits(total, 0);
 	};
 	return opt;
 }

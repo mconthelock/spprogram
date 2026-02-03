@@ -112,7 +112,7 @@ export async function createFormCard(cardData, data = {}) {
 	for (let field of cardData.fields) {
 		const fieldWrapper = document.createElement("div");
 		if (field.type == "table") {
-			fieldWrapper.className = `w-full mt-2`;
+			fieldWrapper.className = `w-full mt-2 ${data.INQ_PKC_REQ == 0 ? "hidden" : ""}`;
 			const inputElement = await freightTable();
 			fieldWrapper.innerHTML = inputElement;
 			body.appendChild(fieldWrapper);
@@ -163,7 +163,7 @@ export async function setFieldValue(field, data = {}) {
 	};
 
 	const showNesting = (data, field) => {
-		if (data[field.topic] == null) return field;
+		if (data[field.topic] == undefined) return field;
 		const values = data[field.topic][field.mapping];
 		field.display = values;
 		return field;
@@ -288,7 +288,7 @@ export async function createFieldInput(field) {
 			text = text == null ? "" : text;
 			let staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
 				field.class !== undefined ? field.class : ""
-			}">${text}</p>`;
+			}" data-id="${field.id}">${text}</p>`;
 			if (field.input)
 				staticText += `<input type="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
 			inputContainer.innerHTML = staticText;

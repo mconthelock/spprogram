@@ -1,0 +1,31 @@
+{
+    "id": "viewquo_fact",
+    "title": "Quotation Information",
+    "fields": [
+        {
+            "label": "Customer",
+            "type": "staticText",
+            "name": "QUO_CUSTOMER"
+        },
+        {
+            "label": "Project No",
+            "type": "staticText",
+            "name": "INQ_PRJNO"
+        },
+        {
+            "label": "Project Name",
+            "type": "staticText",
+            "name": "INQ_PRJNAME"
+        },
+        {
+            "label": "PO",
+            "type": "staticText",
+            "name": "INQ_ACTUAL_PO"
+        },
+        {
+            "label": "CUSTRQS",
+            "type": "staticText",
+            "name": "INQ_CUSTRQS"
+        }
+    ]
+}

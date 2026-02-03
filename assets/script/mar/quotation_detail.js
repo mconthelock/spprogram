@@ -12,9 +12,10 @@ import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { initApp } from "../utils.js";
 import { setupCard } from "../inquiry/detail.js";
-import { tableWeightOption } from "../quotation/table_weight.js";
 import { setupTableHistory, setupTableAttachment } from "../inquiry/table.js";
-import { tablePartOption } from "../quotation/index.js";
+import { tableWeightOption } from "../quotation/table_weight.js";
+import { tablePartOption, tableViewFactOption } from "../quotation/index.js";
+import { getCustomer } from "../service/customers.js";
 import {
 	getInquiry,
 	getInquiryHistory,
@@ -57,15 +58,12 @@ $(document).ready(async () => {
 		}
 
 		if (inq[0].INQ_TYPE == "SP") {
-			if (inq[0].INQ_PKC_REQ == 0) $("#with-tab").remove();
 			await quotationPart(inq);
 		} else if (inq[0].INQ_TYPE == "Out2out") {
 			await quotationOut();
 		} else {
-			await quotationFactory();
+			await quotationFactory(inq);
 		}
-		// await setupButton($("#inquiry-mode").val());
-		// await setDatePicker();
 
 		// const customers = await cus.getCustomer();
 		// const customer = customers.find(
@@ -113,19 +111,38 @@ $(document).ready(async () => {
 });
 
 async function quotationPart(inq) {
+	if (inq[0].INQ_PKC_REQ == 0) $("#with-tab").remove();
 	const vlist = $("#form-container").attr("data");
 	const vstr = vlist.replace(/quotation/g, "quo_part");
 	$("#form-container").attr("data", vstr);
+
 	const card = await setupCard(inq[0]);
-	const freight = await freightData(inq[0].weight);
 	const optDetail = await tablePartOption(inq[0].details);
 	const tableDetail = await createTable(optDetail);
+	const freight = await freightData(inq[0].weight);
 	await setupButton();
+	await setDatePicker();
 }
 
-function quotationFactory() {}
+async function quotationFactory(inq) {
+	$("#with-tab").remove();
+	const vlist = $("#form-container").attr("data");
+	const vstr = vlist.replace(/quotation/g, "viewquo_fact");
+	$("#form-container").attr("data", vstr);
 
-function quotationOut() {}
+	const customers = await getCustomer();
+	const customer = customers.find((c) => c.CUS_ID == inq[0].INQ_CUSTOMER);
+	inq[0].QUO_CUSTOMER = customer == undefined ? "" : customer.CUS_NAME;
+	inq[0].INQ_ACTUAL_PO = inq[0].INQ_ACTUAL_PO.toUpperCase();
+	inq[0].INQ_CUSTRQS = dayjs(inq[0].INQ_CUSTRQS).format("YYYY-MM-DD");
+	const card = await setupCard(inq[0]);
+	const optDetail = await tableViewFactOption(inq[0].details);
+	const tableDetail = await createTable(optDetail);
+}
+
+async function quotationOut() {
+	$("#with-tab").remove();
+}
 
 async function setupButton() {
 	const issue = await createBtn({
