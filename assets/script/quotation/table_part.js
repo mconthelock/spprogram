@@ -132,7 +132,7 @@ export async function tablePartOption(data = []) {
 			footer: "Total",
 			render: function (data, type) {
 				if (type === "display") {
-					const str = `<input type="text" class="w-full! text-end text-md! fccost cell-input" value="${data == null ? "" : showDigits(data, 0)}" onfocus="this.select();"/>`;
+					const str = `<input type="text" class="w-full! text-end text-md! fccost cell-input inqty" value="${data == null ? "" : showDigits(data, 0)}" onfocus="this.select();"/>`;
 					return str;
 				}
 				return data;
@@ -275,6 +275,12 @@ export async function tablePartOption(data = []) {
 		},
 	];
 
+	opt.createdRow = function (row, data, dataIndex) {
+		if (data.INQD_SUPPLIER === "MELINA")
+			$(row).find(".INQD_TC_COST").addClass("bg-yellow-100!");
+		return;
+	};
+
 	opt.footerCallback = function () {
 		const api = this.api();
 		const data = api.rows().data();
@@ -283,9 +289,9 @@ export async function tablePartOption(data = []) {
 		let totaltccost = 0;
 		let totalunit = 0;
 		let total = 0;
-		// let currency = ;
 		data.map((el) => {
-			const price = calPrice(el);
+			const type = el.INQD_SUPPLIER === "MELINA" ? 1 : 0;
+			const price = calPrice(el, type);
 			totalqty += intVal(el.INQD_QTY);
 			totalfccost += intVal(el.INQD_FC_COST);
 			totaltccost += intVal(price.tccost);
@@ -293,8 +299,6 @@ export async function tablePartOption(data = []) {
 			total += intVal(price.amount);
 		});
 
-		// api.column(11).footer().innerHTML = showDigits(totalqty, 0);
-		//const currency =
 		api.column(11).footer().innerHTML = "";
 		api.column(13).footer().innerHTML = showDigits(totalfccost, 0);
 		api.column(15).footer().innerHTML = showDigits(totaltccost, 0);

@@ -24,7 +24,8 @@
             "type": "select",
             "source": "getQuoType" ,
             "name": "INQ_QUOTATION_TYPE",
-            "class": "req-2"
+            "class": "req-2",
+            "onChange": "handleQuotationChange"
         },
         {
             "label": "Delivery Term",
@@ -56,6 +57,12 @@
             "type": "select",
             "source": "getCurrency",
             "name": "INQ_CUR"
+        },
+        {
+            "label": "Vendor Currency",
+            "id": "tccurrency",
+            "type": "hidden",
+            "name": "INQ_TCCUR"
         },
         {
             "label": "Remark",

@@ -12,7 +12,7 @@ class Quotation extends MY_Controller {
     }
 
     public function detail($id, $mode = 1){
-        $lists = array('quotation|viewinfo|maruser', 'quotation|viewinfo|maruser', 'quotation|viewinfo|viewmar');
+        $lists = array('quotation|viewinfo|mar', 'quotation|viewinfo|maruser', 'quotation|viewinfo|viewmar');
         $data = array(
             'id' => $id,
             'list' => $lists[$mode-1],

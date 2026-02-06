@@ -1,49 +1,73 @@
 import "@amec/webasset/css/dataTable.min.css";
+
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
+import { displayname } from "@amec/webasset/api/amec";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { getTemplate, exportExcel, cloneRows } from "../service/excel";
 import { statusColors } from "../inquiry/ui.js";
 import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
-import { getInquiry } from "../service/inquiry.js";
-import * as utils from "../utils.js";
+import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
+import { initApp, tableOpt } from "../utils.js";
 
 var table;
 $(async function () {
 	try {
-		await utils.initApp({ submenu: ".navmenu-newinq" });
-		let data = await getInquiry({ INQ_STATUS: "< 80" });
+		await initApp({ submenu: ".navmenu-newinq" });
+		let data;
 		if ($("#pageid").val() == "2") {
-			data = data.filter((d) => {
-				const isAmec = d.details.some((dt) => {
-					if (dt.INQD_SUPPLIER == null) return false;
-					return dt.INQD_SUPPLIER.toUpperCase().includes("AMEC");
-				});
-				return (
-					isAmec &&
-					d.INQ_STATUS >= 28 &&
-					d.timeline.BM_CONFIRM == null
-				);
+			data = await getInquiry({
+				INQ_STATUS: "< 80",
+				IS_GROUP: 1,
+				IS_DETAILS: 1,
+				IS_TIMELINE: 1,
+			});
+			data = await prebmdata(data);
+		} else {
+			data = await getInquiry({
+				INQ_STATUS: "< 80",
+				IS_GROUP: 1,
 			});
 		}
+		data = data.map((el) => {
+			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
+			return el;
+		});
 		const opt = await tableInquiryOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
 });
 
+async function prebmdata(data) {
+	data = data.filter((d) => {
+		const isAmec = d.details.some((dt) => {
+			if (dt.INQD_SUPPLIER == null) return false;
+			return dt.INQD_SUPPLIER.toUpperCase().includes("AMEC");
+		});
+		return isAmec && d.INQ_STATUS >= 28 && d.timeline.BM_CONFIRM == null;
+	});
+	return data;
+}
+
 async function tableInquiryOption(data) {
 	const colors = await statusColors();
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.data = data;
+	opt.orderFixed = [0, "desc"];
+	opt.order = [[1, "desc"]];
 	opt.columns = [
+		{ data: "priority", className: "hidden" },
 		{ data: "UPDATE_AT", className: "hidden" },
 		{
 			data: "INQ_DATE",
-			className: "text-center text-nowrap sticky-column",
+			className: "text-center! text-nowrap sticky-column",
 			title: "Inq. Date",
 			render: function (data, type, row, meta) {
 				return dayjs(data).format("YYYY-MM-DD");
@@ -51,8 +75,11 @@ async function tableInquiryOption(data) {
 		},
 		{
 			data: "INQ_NO",
-			className: "text-nowrap sticky-column",
+			className: "text-nowrap sticky-column INQ_NO",
 			title: "No.",
+			render: (data) => {
+				return `<span>${data}</span><span class="spark absolute ms-1"></span>`;
+			},
 		},
 		{
 			data: "INQ_REV",
@@ -83,9 +110,7 @@ async function tableInquiryOption(data) {
 			render: (data) => {
 				if (data == null) return "";
 				const dsp = displayname(data.SNAME).sname;
-				return `${dsp.fname} ${dsp.lname.substring(0, 1)}. (${
-					data.SEMPNO
-				})`;
+				return `${dsp} (${data.SEMPNO})`;
 			},
 		},
 		{
@@ -191,9 +216,13 @@ async function tableInquiryOption(data) {
 		},
 	];
 
-	opt.createdRow = function (row, data, dataIndex) {
+	opt.createdRow = function (row, data) {
 		if ([4, 27].includes(data.INQ_STATUS)) {
-			$(row).addClass("!bg-sky-200");
+			$(row).addClass("bg-sky-200!");
+			$(row).find(".spark").append(`<span class="relative flex size-3">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex size-3 rounded-full bg-red-400"></span>
+                </span>`);
 		}
 	};
 
@@ -210,13 +239,13 @@ async function tableInquiryOption(data) {
 			id: "export1",
 			title: "Export Inquiry",
 			icon: "fi fi-tr-file-excel text-xl",
-			className: `btn-neutral text-white hover:shadow-lg`,
+			className: `btn-accent text-white hover:shadow-lg`,
 		});
 		const export2 = await createBtn({
-			id: "export1",
+			id: "export2",
 			title: "Export (With Detail)",
 			icon: "fi fi-rr-layers text-xl",
-			className: `btn-neutral text-white hover:shadow-lg`,
+			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
 		});
 
 		$(".table-option").append(`${newinq}`);
@@ -226,3 +255,62 @@ async function tableInquiryOption(data) {
 	};
 	return opt;
 }
+
+$(document).on("click", "#export1", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = {};
+		const query = {
+			...q,
+			INQ_STATUS: "< 80",
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+			IS_TIMELINE: true,
+			IS_FIN: true,
+		};
+		const template = await getTemplate("export_inquiry_list.xlsx");
+		let data = await getInquiry(query);
+		if ($("#pageid").val() == "2") data = await prebmdata(data);
+		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
+		let result = await dataExports(sortData);
+
+		await exportExcel(result, template, {
+			filename: "Inquiry List.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await activatedBtn($(this), false);
+	}
+});
+
+$(document).on("click", "#export2", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = {};
+		const query = {
+			...q,
+			INQ_STATUS: "< 80",
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+			IS_TIMELINE: true,
+		};
+		let data = await getInquiry(query);
+		if ($("#pageid").val() == "2") data = await prebmdata(data);
+		const result = await dataDetails(data);
+		const template = await getTemplate("export_inquiry_list_detail.xlsx");
+		await exportExcel(result, template, {
+			filename: "Inquiry Detail List.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await activatedBtn($(this), false);
+	}
+});

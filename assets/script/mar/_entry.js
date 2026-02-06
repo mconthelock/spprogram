@@ -1,4 +1,6 @@
 module.exports = {
+	//Inquiry
+	mar_inquiry: "./assets/script/mar/inquiry.js",
 	//Quotation
 	mar_quotation: "./assets/script/mar/quotation.js",
 	mar_quodetail: "./assets/script/mar/quotation_detail.js",

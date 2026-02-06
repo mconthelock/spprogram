@@ -1,3 +1,4 @@
+import DataTable from "datatables.net-dt";
 import { dateToSchedule } from "@amec/webasset/utils";
 import * as mst from "../service/master.js";
 import * as mkt from "../service/mkt.js";
@@ -317,6 +318,39 @@ export const events = {
 
 		$("#add-item").removeClass("btn-disabled");
 		$("#inquiry-no").focus().select();
+	},
+
+	handleQuotationChange: async (e) => {
+		const obj = e.target;
+		const trader = $("#trader").val();
+		const quotation = obj.value;
+		const data = await mst.findPriceRatio({
+			QUOTATION: quotation,
+			TRADER: trader,
+		});
+
+		if ($.fn.dataTable.isDataTable("#table")) {
+			var tableEl = $("#table").DataTable();
+			if (data.length > 0) {
+				$("#currency").val(data[0].CURRENCY).trigger("change");
+				$("#tccurrency").val(data[0].SUPPLIER_CUR).trigger("change");
+				tableEl.rows().every(function () {
+					var d = this.data();
+					data.forEach((dm) => {
+						if (d.INQD_SUPPLIER == dm.SUPPLIER) {
+							d.INQD_TC_BASE = dm.FORMULA;
+							this.data(d).draw();
+						}
+					});
+				});
+			} else {
+				tableEl.rows().every(function () {
+					var d = this.data();
+					d.INQD_TC_BASE = 0;
+					this.data(d).draw();
+				});
+			}
+		}
 	},
 };
 

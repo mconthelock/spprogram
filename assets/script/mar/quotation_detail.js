@@ -6,7 +6,7 @@ import select2 from "select2";
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { showLoader } from "@amec/webasset/preloader";
-import { showMessage, showDigits } from "@amec/webasset/utils";
+import { showMessage, showDigits, intVal } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
@@ -14,17 +14,21 @@ import { initApp } from "../utils.js";
 import { setupCard } from "../inquiry/detail.js";
 import { setupTableHistory, setupTableAttachment } from "../inquiry/table.js";
 import { tableWeightOption } from "../quotation/table_weight.js";
-import { tablePartOption, tableViewFactOption } from "../quotation/index.js";
+import {
+	tablePartOption,
+	tableViewFactOption,
+	tableViewOutOption,
+} from "../quotation/index.js";
 import { getCustomer } from "../service/customers.js";
 import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
 } from "../service/inquiry.js";
+
 var table;
 var tableAttach;
 var tableWeight;
-
 $(document).ready(async () => {
 	try {
 		await showLoader({ show: true });
@@ -38,32 +42,27 @@ $(document).ready(async () => {
 		if (inq.length == 0) throw new Error("Inquiry do not found");
 
 		inq[0].INQ_DATE = dayjs(inq[0].INQ_DATE).format("YYYY-MM-DD");
-		//1=New, 2=edit , 3=view
-		if ($("#inquiry-mode").val() == 1) {
-			$("#inquiry-title").html(
-				`${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(New)</span>`,
-			);
-			inq[0].QUO_VALIDITY = dayjs().add(60, "day").format("YYYY-MM-DD");
-		} else {
-			$("#inquiry-title").html(
-				`${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(Revise)</span>`,
-			);
-
-			inq[0].QUO_DATE = dayjs(inq[0].quotation.QUO_DATE).format(
-				"YYYY-MM-DD",
-			);
-			inq[0].QUO_VALIDITY = dayjs(inq[0].quotation.QUO_VALIDITY).format(
-				"YYYY-MM-DD",
-			);
-		}
-
+		const mode = $("#inquiry-mode").val();
+		let title = `${inq[0].INQ_NO} `;
 		if (inq[0].INQ_TYPE == "SP") {
+			if (mode == 1) {
+				title = `${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(New)</span>`;
+				// prettier-ignore
+				inq[0].QUO_VALIDITY = dayjs().add(60, "day").format("YYYY-MM-DD");
+			} else if (mode == 2) {
+				title = `${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(Revise)</span>`;
+				// prettier-ignore
+				inq[0].QUO_DATE = dayjs(inq[0].quotation.QUO_DATE).format("YYYY-MM-DD");
+				// prettier-ignore
+				inq[0].QUO_VALIDITY = dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
+			}
 			await quotationPart(inq);
 		} else if (inq[0].INQ_TYPE == "Out2out") {
-			await quotationOut();
+			await quotationOut(inq);
 		} else {
 			await quotationFactory(inq);
 		}
+		$("#inquiry-title").html(title);
 
 		// const customers = await cus.getCustomer();
 		// const customer = customers.find(
@@ -93,14 +92,6 @@ $(document).ready(async () => {
 		// });
 
 		// // table = await createTable(tableContainer);
-		//Inquiry History
-		const logs = await getInquiryHistory(inq[0].INQ_NO);
-		const history = await setupTableHistory(logs);
-		await createTable(history, { id: "#history" });
-
-		const file = await getInquiryFile({ INQ_NO: inq[0].INQ_NO });
-		const attachment = await setupTableAttachment(file, true);
-		tableAttach = await createTable(attachment, { id: "#attachment" });
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -118,14 +109,24 @@ async function quotationPart(inq) {
 
 	const card = await setupCard(inq[0]);
 	const optDetail = await tablePartOption(inq[0].details);
-	const tableDetail = await createTable(optDetail);
+	table = await createTable(optDetail);
 	const freight = await freightData(inq[0].weight);
-	await setupButton();
 	await setDatePicker();
+
+	//Inquiry History
+	const logs = await getInquiryHistory(inq[0].INQ_NO);
+	const history = await setupTableHistory(logs);
+	await createTable(history, { id: "#history" });
+
+	const file = await getInquiryFile({ INQ_NO: inq[0].INQ_NO });
+	const attachment = await setupTableAttachment(file, true);
+	tableAttach = await createTable(attachment, { id: "#attachment" });
+	await setupButton();
 }
 
 async function quotationFactory(inq) {
 	$("#with-tab").remove();
+	$("#additional-info").remove();
 	const vlist = $("#form-container").attr("data");
 	const vstr = vlist.replace(/quotation/g, "viewquo_fact");
 	$("#form-container").attr("data", vstr);
@@ -138,13 +139,23 @@ async function quotationFactory(inq) {
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewFactOption(inq[0].details);
 	const tableDetail = await createTable(optDetail);
+	await setupButton("2");
 }
 
-async function quotationOut() {
+async function quotationOut(inq) {
 	$("#with-tab").remove();
+	$("#additional-info").remove();
+	const vlist = $("#form-container").attr("data");
+	const vstr = vlist.replace(/quotation/g, "viewquo_out");
+	$("#form-container").attr("data", vstr);
+
+	const card = await setupCard(inq[0]);
+	const optDetail = await tableViewOutOption(inq[0].details);
+	const tableDetail = await createTable(optDetail);
+	await setupButton("3");
 }
 
-async function setupButton() {
+async function setupButton(group) {
 	const issue = await createBtn({
 		id: "issue",
 		title: "Issue Quotation",
@@ -160,13 +171,9 @@ async function setupButton() {
 		icon: "fi fi-tr-circle-xmark text-xl",
 	});
 
-	const edit = await createBtn({
-		id: "edit",
-		title: "Revise Inquiry",
-		type: "link",
-		href: `${process.env.APP_ENV}/mar/inquiry/edit/${$(
-			"#inquiry-id",
-		).val()}`,
+	const returnfin = await createBtn({
+		id: "returnfin",
+		title: "Return to Finance",
 		className:
 			"btn-accent text-white shadow-lg hover:bg-transparent hover:text-accent",
 		icon: "fi fi-tr-feedback-cycle-loop text-xl",
@@ -176,12 +183,22 @@ async function setupButton() {
 		id: "goback",
 		title: "Back",
 		type: "link",
-		href: `#`,
+		href: `${process.env.APP_ENV}/mar/quotation`,
 		icon: "fi fi-rr-arrow-circle-left text-xl",
 		className:
 			"btn-outline btn-accent text-neutral hover:text-white hover:bg-accent",
 	});
-	$("#btn-container").append(issue, reject, edit, back);
+	switch (group) {
+		case "3":
+			$("#btn-container").append(back);
+			break;
+		case "2":
+			$("#btn-container").append(back);
+			break;
+		default:
+			$("#btn-container").append(issue, reject, returnfin, back);
+			break;
+	}
 }
 
 $(document).on("change", ".inqty", async function () {
@@ -189,16 +206,14 @@ $(document).on("change", ".inqty", async function () {
 	const row = table.row($(this).closest("tr")).data();
 	const data = { ...row, INQD_QTY: qty };
 	table.row($(this).closest("tr")).data(data).draw();
-	// await totalDetail();
 });
 
 $(document).on("change", ".inqprice", async function () {
-	const tccost = utils.intVal($(this).val());
+	const tccost = intVal($(this).val());
 	const row = table.row($(this).closest("tr")).data();
 	const unitprice = Math.ceil(tccost * row.INQD_TC_BASE);
 	const data = { ...row, INQD_TC_COST: tccost, INQD_UNIT_PRICE: unitprice };
 	table.row($(this).closest("tr")).data(data).draw();
-	// await totalDetail();
 });
 
 $(document).on("change", ".freight-value", async function () {
@@ -240,26 +255,3 @@ async function freightData(data) {
 		.find(".courier-total")
 		.val(showDigits(totalWeight * courier, 0) || 0);
 }
-
-// async function totalDetail() {
-// 	//Summary
-// 	let totalcost = 0;
-// 	let totalunit = 0;
-// 	let grandtotal = 0;
-
-// 	table.rows().every(function () {
-// 		const data = this.data();
-// 		totalcost += Math.ceil(data.INQD_TC_COST);
-// 		totalunit += Math.ceil(data.INQD_UNIT_PRICE);
-// 		const unit = Math.ceil(data.INQD_UNIT_PRICE) * data.INQD_QTY;
-// 		grandtotal += unit;
-// 	});
-
-// 	$(table.table().footer()).find(".total-tc").text(showDigits(totalcost, 0));
-// 	$(table.table().footer())
-// 		.find(".total-unit")
-// 		.text(showDigits(totalunit, 0));
-// 	$(table.table().footer())
-// 		.find(".grand-total")
-// 		.text(showDigits(grandtotal, 0));
-// }

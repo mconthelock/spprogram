@@ -1,0 +1,49 @@
+{
+    "id": "viewquo_out",
+    "title": "Original Project",
+    "fields": [
+        {
+            "label": "Project No",
+            "id": "project-no",
+            "type": "staticText",
+            "class": "uppercase",
+            "mapping": "INQ_PRJNO",
+            "name": "INQ_PRJNO"
+        },
+        {
+            "label": "Project Name",
+            "id": "project-name",
+           "type": "staticText",
+            "mapping": "INQ_PRJNAME",
+            "name": "INQ_PRJNAME"
+        },
+        {
+            "label": "Contractor",
+            "id": "contractor",
+            "type": "staticText",
+            "mapping": "INQ_CONTRACTOR",
+            "name": "INQ_CONTRACTOR"
+        },
+        {
+            "label": "End user",
+            "id": "end-user",
+            "type": "staticText",
+            "mapping": "INQ_ENDUSER",
+            "name": "INQ_ENDUSER"
+        },
+        {
+            "label": "Delivery Port",
+            "id": "delivery-port",
+            "type": "staticText",
+            "mapping": "INQ_PORT",
+            "name": "INQ_PORT"
+        },
+        {
+            "label": "User of part",
+            "id": "user-part",
+            "type": "staticText",
+            "mapping": "INQ_USERPART",
+            "name": "INQ_USERPART"
+        }
+    ]
+}

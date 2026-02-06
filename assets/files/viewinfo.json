@@ -35,7 +35,8 @@
             "type": "staticText",
             "class": "view-data",
             "mapping": "INQ_TRADER",
-            "name": "INQ_TRADER"
+            "name": "INQ_TRADER",
+            "input": true
         },
         {
             "label": "Agent",
