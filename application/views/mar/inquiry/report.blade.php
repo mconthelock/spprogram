@@ -10,7 +10,7 @@
                 <div class="divider divider-start font-bold text-primary">Search By Inquiry Information</div>
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Inquiry No.</legend>
-                    <input type="text" class="input w-full uppercase" name="LIKE_INQ_NO" placeholder="" />
+                    <input type="text" class="input w-full uppercase" name="INQ_NO" placeholder="" />
                 </fieldset>
 
                 <fieldset class="fieldset">
@@ -18,13 +18,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="GE_INQ_DATE" />
+                                name="START_INQ_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
-                                name="LE_INQ_DATE" />
+                                name="END_INQ_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -35,13 +35,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="timeline.GE_MAR_SEND" />
+                                name="timeline.START_MAR_SEND" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
-                                name="timeline.LE_MAR_SEND" />
+                                name="timeline.END_MAR_SEND" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -49,28 +49,28 @@
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Trader</legend>
-                    <select class="select w-full" id="trader" name="INQ_TRADER">
+                    <select class="select w-full s2" id="trader" name="INQ_TRADER">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Agent</legend>
-                    <select class="select w-full" id="agent" name="INQ_AGENT">
+                    <select class="select w-full s2" id="agent" name="INQ_AGENT">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Country</legend>
-                    <select class="select w-full" id="country" name="INQ_COUNTRY">
+                    <select class="select w-full s2" id="country" name="INQ_COUNTRY">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Status</legend>
-                    <select class="select w-full" id="status" name="INQ_STATUS">
+                    <select class="select w-full s2" id="status" name="INQ_STATUS">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
@@ -95,13 +95,13 @@
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Series</legend>
-                    <select class="select w-full" id="series" name="INQ_SERIES">
+                    <select class="select w-full s2" id="series" name="INQ_SERIES">
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Order Type</legend>
-                    <select class="select w-full" id="ordertype" name="INQ_ORDER_TYPE"></select>
+                    <select class="select w-full s2" id="ordertype" name="INQ_ORDER_TYPE"></select>
                 </fieldset>
 
                 <div class="divider divider-start font-bold text-primary">Search by Quotation Info.</div>

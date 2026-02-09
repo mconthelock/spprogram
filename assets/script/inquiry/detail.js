@@ -921,3 +921,43 @@ export async function addAttached(e, selectedFilesMap) {
 	}
 	return { files, selectedFilesMap };
 }
+
+//007: Search key
+export async function getSearchHeader(formdata) {
+	const like_key = ["INQ_NO", "INQ_PRJNO", "INQ_PRJNAME"];
+	like_key.forEach((key) => {
+		if (formdata[key]) {
+			const query = `LIKE ${formdata[key]}`;
+			delete formdata[key];
+			formdata[key] = query;
+		}
+	});
+
+	const date_key = ["START_INQ_DATE", "END_INQ_DATE"];
+	date_key.forEach((key) => {
+		if (formdata[key]) {
+			if (key.startsWith("START_")) formdata[key] = `>= ${formdata[key]}`;
+			else if (key.startsWith("END_"))
+				formdata[key] = `<= ${formdata[key]}`;
+		}
+	});
+
+	const timeline_key = ["timeline.START_MAR_SEND", "timeline.END_MAR_SEND"];
+	let timelies = {};
+	timeline_key.forEach((key) => {
+		if (formdata[key]) {
+			const vkey = key.replace("timeline.", "");
+			if (vkey.startsWith("START_"))
+				timelies = { ...timelies, [vkey]: `>= ${formdata[key]}` };
+			else if (vkey.startsWith("END_"))
+				timelies = { ...timelies, [vkey]: `<= ${formdata[key]}` };
+			delete formdata[key];
+		}
+	});
+	if (Object.keys(timelies).length > 0) {
+		formdata["timeline"] = timelies;
+		formdata["IS_TIMELINE"] = true;
+	}
+	formdata["IS_GROUP"] = true;
+	return formdata;
+}

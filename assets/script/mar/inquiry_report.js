@@ -1,31 +1,33 @@
 import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import select2 from "select2";
-import dayjs from "dayjs";
-import ExcelJS from "exceljs";
 
+import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
+import { setSelect2 } from "@amec/webasset/select2";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
-import { tableInquiry } from "../inquiry/table.js";
-import { getFormHeader } from "../inquiry/detail.js";
-import * as service from "../service/inquiry.js";
+import { getFormHeader, getSearchHeader } from "../inquiry/detail.js";
+import { getInquiry } from "../service/inquiry.js";
+import { tableInquiryOption } from "../inquiry/index.js";
 import * as mkt from "../service/mkt.js";
 import * as mst from "../service/master.js";
-import * as utils from "../utils.js";
+import { initApp } from "../utils.js";
+select2();
+
 var table;
 $(async function () {
 	try {
-		await utils.initApp({ submenu: ".navmenu-newinq" });
-		$(".select").select2({});
-		await setDatePicker();
+		await initApp({ submenu: ".navmenu-newinq" });
 		await setSeries();
 		await setOrderType();
 		await setTrader();
 		await setAgent();
 		await setCountry();
 		await setStatus();
+		await setDatePicker();
+		await setSelect2({ allowClear: false });
 		//const spinquiryquery = localStorage.getItem("spinquiryquery");
 		// if (spinquiryquery) {
 		//   const data = await service.getInquiry(JSON.parse(spinquiryquery));
@@ -38,7 +40,7 @@ $(async function () {
 		$("#form-container").removeClass("hidden");
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -62,25 +64,26 @@ $(document).on("click", "#search", async function (e) {
 	e.preventDefault();
 	try {
 		let formdata = await getFormHeader();
-
 		Object.keys(formdata).forEach(
 			(key) => formdata[key] == "" && delete formdata[key],
 		);
-
 		if (Object.keys(formdata).length == 0) {
 			await showMessage("Please select at least one filter criteria.");
 			return;
 		}
-
-		const data = await service.getInquiry(formdata);
-		const opt = await tableInquiry(data, { backReportBtn: true });
-		table = await createTable(opt);
+		formdata = await getSearchHeader(formdata);
+		const data = await getInquiry(formdata);
+		const table_option = await tableInquiryOption(data, {
+			new: false,
+			back: true,
+		});
+		await createTable(table_option);
 		$("#form-container").addClass("hidden");
 		$("#table").removeClass("hidden");
-		localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
+		// localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
 	}

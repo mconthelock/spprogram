@@ -81,14 +81,14 @@ export const setButton = async () => {
 		title: "Search",
 		icon: "fi fi-ts-assessment text-xl",
 		className: `bg-accent text-white hover:shadow-lg`,
-	};
+	});
 
 	const reset = await createBtn({
 		id: "reset-report",
 		title: "Reset",
 		icon: "fi fi-ts-feedback-cycle-loop text-xl",
 		className: `btn-soft btn-accent border-accent  hover:shadow-lg hover:text-white`,
-	};
+	});
 	$("#btn-report").append(` ${search} ${reset}`);
 };
 

@@ -1,4 +1,5 @@
 import "@flaticon/flaticon-uicons/css/all/all.css";
+import dayjs from "dayjs";
 
 $(document).on("click", ".msg-close", function (e) {
 	e.preventDefault();
@@ -49,7 +50,7 @@ $(document).on("change", ".fdate", function (e) {
 		const row = $(this).closest(".fieldset");
 		const edate = row.find(".edate-report").val();
 		if (edate == "") {
-			const newdate = moment($(this).val())
+			const newdate = dayjs($(this).val())
 				.add(30, "days")
 				.format("YYYY-MM-DD");
 			row.find(".edate-report").val(newdate);

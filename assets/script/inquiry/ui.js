@@ -35,7 +35,6 @@ $(document).on("mouseleave", ".detail-log", function () {
 
 $(document).on("click", "#add-attachment", async function (e) {
 	e.preventDefault();
-	console.log("Add attachment");
 	$("#attachment-file").click();
 });
 
@@ -75,10 +74,8 @@ $(document).on("click", "#export-detail", async function (e) {
 		sheet.getCell(2, 22).value = info.INQ_NO;
 		sheet.getCell(4, 22).value = info.INQ_TRADER;
 		sheet.getCell(5, 1).value = `Email: ${info.maruser.SRECMAIL}`;
-		sheet.getCell(
-			6,
-			1
-		).value = `Tel: +66 (038) 93 6600 Ext.${info.maruser.NTELNO}`;
+		sheet.getCell(6, 1).value =
+			`Tel: +66 (038) 93 6600 Ext.${info.maruser.NTELNO}`;
 
 		sheet.getCell(9, 5).value = info.maruser.SNAME;
 		sheet.getCell(10, 5).value = moment(info.INQ_DATE).format("DD/MM/YYYY");
@@ -86,7 +83,7 @@ $(document).on("click", "#export-detail", async function (e) {
 		sheet.getCell(12, 5).value = info.INQ_COUNTRY;
 
 		sheet.getCell(9, 19).value = moment(info.INQ_MAR_SENT).format(
-			"DD/MM/YYYY"
+			"DD/MM/YYYY",
 		);
 		sheet.getCell(10, 19).value = info.INQ_REV;
 		sheet.getCell(11, 19).value = info.INQ_PRJNO;

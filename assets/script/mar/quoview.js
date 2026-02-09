@@ -3,7 +3,6 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import select2 from "select2";
-import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
