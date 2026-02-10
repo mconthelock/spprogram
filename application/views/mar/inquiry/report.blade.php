@@ -140,14 +140,7 @@
                 </fieldset>
             </div>
         </div>
-        <div class="flex justify-start my-3 gap-3">
-            <a href="#" id="search" class="btn btn-primary rounded-none text-white">
-                <i class="fi fi-ts-assessment text-xl"></i>Search
-            </a>
-            <button type="reset" class="btn btn-outline btn-neutral rounded-none" id="reset-form">
-                <i class="fi fi-ts-feedback-cycle-loop text-xl"></i>Reset
-            </button>
-        </div>
+        <div class="flex justify-start my-3 gap-3" id="btn-report"></div>
     </form>
 @endsection
 

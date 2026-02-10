@@ -1,4 +1,3 @@
-import DataTable from "datatables.net-dt";
 import { dateToSchedule } from "@amec/webasset/utils";
 import * as mst from "../service/master.js";
 import * as mkt from "../service/mkt.js";

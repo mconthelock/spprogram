@@ -1,18 +1,22 @@
 import dayjs from "dayjs";
 
 import { displayname } from "@amec/webasset/api/amec";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn } from "@amec/webasset/components/buttons";
 import { statusColors } from "../inquiry/ui.js";
 import { tableOpt } from "../utils.js";
 
 export async function tableInquiryOption(data, extopt = {}) {
 	const colors = await statusColors();
 	const opt = { ...tableOpt };
+	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.data = data;
-	opt.orderFixed = [0, "desc"];
-	opt.order = [[1, "desc"]];
+	// opt.orderFixed = [0, "desc"];
+	opt.order = [
+		[0, "desc"],
+		[1, "desc"],
+	];
 	opt.columns = [
-		// { data: "priority", className: "hidden" },
+		{ data: "priority", className: "hidden" },
 		{ data: "UPDATE_AT", className: "hidden" },
 		{
 			data: "INQ_DATE",
@@ -144,23 +148,37 @@ export async function tableInquiryOption(data, extopt = {}) {
 		},
 		{
 			data: "INQ_ID",
-			className: "w-fit !max-w-[110px] !justify-center",
+			className: "text-center w-[120px]",
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				const viewurl =
-					row.INQ_TYPE == "SP"
-						? `${process.env.APP_ENV}/mar/inquiry/view/${data}`
-						: `${process.env.APP_ENV}/mar/quotation/viewinq/${data}`;
-				const view = `<a class="btn btn-xs btn-neutral btn-outline" href="${viewurl}">View</a>`;
+				const view = createBtn({
+					id: `view-${data}`,
+					title: "View",
+					type: "link",
+					icon: "fi fi-rr-search text-lg",
+					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
+					href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
+				});
 
-				const edit = `<a class="btn btn-xs btn-neutral ${
-					row.INQ_TYPE == "SP" ? "" : "btn-disabled"
-				}" href="${
-					process.env.APP_ENV
-				}/mar/inquiry/edit/${data}">Edit</a>`;
-				const deleteBtn = `<button class="btn btn-xs btn-ghost btn-circle text-red-500 hover:text-red-800 delete-inquiry" data-id="${data}" data-type="inquiry" onclick="confirm_box.showModal()"><i class="fi fi-br-trash text-2xl"></i></button>`;
-				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleteBtn}</div>`;
+				const edit = createBtn({
+					id: `edit-${data}`,
+					title: "Edit",
+					type: "link",
+					icon: "fi fi-rr-edit text-lg",
+					className: `btn-xs btn-accent text-white hover:shadow-lg`,
+					href: `${process.env.APP_ENV}/mar/inquiry/detail/${data}/`,
+				});
+
+				const deleted = createBtn({
+					id: `delete-${data}`,
+					title: ``,
+					type: "link",
+					icon: "fi fi-br-trash text-2xl",
+					className: `btn-xs btn-link text-error p-0! hover:bg-transparent! hover:shadow-none! delete-inquiry`,
+					href: `${process.env.APP_ENV}/mar/inquiry/view/${data}/`,
+				});
+				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleted}</div>`;
 			},
 		},
 	];

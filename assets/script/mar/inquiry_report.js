@@ -8,11 +8,21 @@ import { showMessage } from "@amec/webasset/utils";
 import { setSelect2 } from "@amec/webasset/select2";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
-import { getFormHeader, getSearchHeader } from "../inquiry/detail.js";
-import { getInquiry } from "../service/inquiry.js";
-import { tableInquiryOption } from "../inquiry/index.js";
-import * as mkt from "../service/mkt.js";
-import * as mst from "../service/master.js";
+import { activatedBtn } from "@amec/webasset/components/buttons";
+import {
+	tableInquiryOption,
+	setSeries,
+	setOrderType,
+	setTrader,
+	setAgent,
+	setCountry,
+	setStatus,
+	setReportButton,
+	getFormHeader,
+	getSearchHeader,
+} from "../inquiry/index.js";
+import { getTemplate, exportExcel } from "../service/excel";
+import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
 import { initApp } from "../utils.js";
 select2();
 
@@ -28,15 +38,7 @@ $(async function () {
 		await setStatus();
 		await setDatePicker();
 		await setSelect2({ allowClear: false });
-		//const spinquiryquery = localStorage.getItem("spinquiryquery");
-		// if (spinquiryquery) {
-		//   const data = await service.getInquiry(JSON.parse(spinquiryquery));
-		//   const opt = await tableInquiry(data, { backReportBtn: true });
-		//   table = await createTable(opt);
-		//   $("#form-container").addClass("hidden");
-		//   $("#table").removeClass("hidden");
-		//   return;
-		// }
+		await setReportButton();
 		$("#form-container").removeClass("hidden");
 	} catch (error) {
 		console.log(error);
@@ -46,10 +48,10 @@ $(async function () {
 	}
 });
 
-$(document).on("click", "#reset-form", async function (e) {
+$(document).on("click", "#reset-report", async function (e) {
 	e.preventDefault();
-	$("#form-container")[0].reset();
-	$(".select").val(null).trigger("change");
+	$("#form-container").find("select").val("").trigger("change");
+	$("#form-container").find("input").val("");
 	localStorage.removeItem("spinquiryquery");
 });
 
@@ -63,6 +65,7 @@ $(document).on("click", "#back-report", async function (e) {
 $(document).on("click", "#search", async function (e) {
 	e.preventDefault();
 	try {
+		await activatedBtn($(this));
 		let formdata = await getFormHeader();
 		Object.keys(formdata).forEach(
 			(key) => formdata[key] == "" && delete formdata[key],
@@ -72,7 +75,11 @@ $(document).on("click", "#search", async function (e) {
 			return;
 		}
 		formdata = await getSearchHeader(formdata);
-		const data = await getInquiry(formdata);
+		let data = await getInquiry(formdata);
+		data = data.map((el) => {
+			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
+			return el;
+		});
 		const table_option = await tableInquiryOption(data, {
 			new: false,
 			back: true,
@@ -80,89 +87,67 @@ $(document).on("click", "#search", async function (e) {
 		await createTable(table_option);
 		$("#form-container").addClass("hidden");
 		$("#table").removeClass("hidden");
-		// localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
+		localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
 	} finally {
-		await showLoader({ show: false });
+		await activatedBtn($(this), false);
 	}
 });
 
-export const setSeries = async () => {
-	const id = "#series";
-	const data = await mkt.getSeries();
-	$(`${id}`)
-		.empty()
-		.append(new Option("", "", false, false));
-	data.map((el) => {
-		$(`${id}`).append(
-			new Option(el.ABBREVIATION, el.ABBREVIATION, false, false),
-		);
-	});
-};
+$(document).on("click", "#export1", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
+		const query = {
+			...q,
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+			IS_TIMELINE: true,
+			IS_FIN: true,
+		};
+		let data = await getInquiry(query);
+		const template = await getTemplate("export_inquiry_list.xlsx");
+		if ($("#pageid").val() == "2") data = await prebmdata(data);
+		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
+		let result = await dataExports(sortData);
+		await exportExcel(result, template, {
+			filename: "Inquiry List.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await activatedBtn($(this), false);
+	}
+});
 
-export const setOrderType = async () => {
-	const id = "#ordertype";
-	const data = [
-		{ id: "", value: "All" },
-		{ id: "ELE", value: "Elevator" },
-		{ id: "ESO", value: "EScalator" },
-		{ id: "MOV", value: "Moving Walk" },
-	];
-	data.map((el) => {
-		$(`${id}`).append(new Option(el.value, el.id, false, false));
-	});
-};
-
-export const setTrader = async () => {
-	const id = "#trader";
-	const data = await mst.getPriceRatio();
-	const traders = data.map((item) => item.TRADER);
-	const uniqueTraders = [...new Set(traders)];
-	$(`${id}`)
-		.empty()
-		.append(new Option("", "", false, false));
-	uniqueTraders.map((el) => {
-		$(`${id}`).append(new Option(el, el, false, false));
-	});
-};
-
-export const setAgent = async () => {
-	const id = "#agent";
-	const data = await mkt.getAgent();
-	const agents = data.filter((item) => item.STATUS == "Enabled");
-	const uniqueAgents = [
-		...new Map(agents.map((item) => [item.AGENT, item])).values(),
-	];
-	$(`${id}`)
-		.empty()
-		.append(new Option("", "", false, false));
-	uniqueAgents.map((el) => {
-		$(`${id}`).append(new Option(el.AGENT, el.AGENT, false, false));
-	});
-};
-
-export const setCountry = async () => {
-	const id = "#country";
-	const data = await mkt.getCountries();
-	$(`${id}`)
-		.empty()
-		.append(new Option("", "", false, false));
-	data.map((el) => {
-		$(`${id}`).append(new Option(el.CTNAME, el.CTNAME, false, false));
-	});
-};
-
-export const setStatus = async () => {
-	const id = "#status";
-	const data = await mst.getStatus();
-	$(`${id}`)
-		.empty()
-		.append(new Option("", "", false, false));
-	data.map((el) => {
-		$(`${id}`).append(
-			new Option(el.STATUS_ACTION, el.STATUS_ID, false, false),
-		);
-	});
-};
+$(document).on("click", "#export2", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
+		const query = {
+			...q,
+			IS_DETAILS: true,
+			IS_ORDERS: true,
+			IS_TIMELINE: true,
+		};
+		let data = await getInquiry(query);
+		if ($("#pageid").val() == "2") data = await prebmdata(data);
+		const result = await dataDetails(data);
+		const template = await getTemplate("export_inquiry_list_detail.xlsx");
+		await exportExcel(result, template, {
+			filename: "Inquiry Detail List.xlsx",
+			rowstart: 3,
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await activatedBtn($(this), false);
+	}
+});

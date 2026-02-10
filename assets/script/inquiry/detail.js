@@ -961,3 +961,43 @@ export async function getSearchHeader(formdata) {
 	formdata["IS_GROUP"] = true;
 	return formdata;
 }
+
+//008: Create inquiry detail row
+export function initRow(id, seq) {
+	return {
+		INQD_ID: "",
+		INQD_SEQ: seq,
+		INQD_RUNNO: id,
+		INQD_MFGORDER: "",
+		INQD_ITEM: "",
+		INQD_CAR: "",
+		INQD_PARTNAME: "",
+		INQD_DRAWING: "",
+		INQD_VARIABLE: "",
+		INQD_QTY: 1,
+		INQD_UM: "PC",
+		INQD_SUPPLIER: "",
+		INQD_SENDPART: "",
+		INQD_UNREPLY: "",
+		INQD_FC_COST: "",
+		INQD_TC_COST: "",
+		INQD_UNIT_PRICE: "",
+		INQD_FC_BASE: "",
+		INQD_TC_BASE: "",
+		INQD_MAR_REMARK: "",
+		INQD_DES_REMARK: "",
+		INQD_FIN_REMARK: "",
+		INQD_LATEST: 1,
+		INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
+		CREATE_BY: $("#user-login").attr("empname"),
+		UPDATE_BY: $("#user-login").attr("empname"),
+	};
+}
+
+export async function addRow({ id, seq }, table, data = {}) {
+	const newRow = await initRow(id, seq);
+	data = { ...newRow, ...data };
+	const row = table.row.add(data).draw();
+	if ($(row.node()).find("td:eq(3) input").length > 0)
+		$(row.node()).find("td:eq(3) input").focus();
+}

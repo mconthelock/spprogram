@@ -13,16 +13,31 @@ Funtion contents
 011 - Delete attached file
 */
 // import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-// import "@amec/webasset/css/select2.min.css";
+import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+import select2 from "select2";
+import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
-import { createTable } from "@amec/webasset/dataTable";
+import { setSelect2 } from "@amec/webasset/select2";
+import { showMessage, revisionCode } from "@amec/webasset/utils";
 import { setDatePicker } from "@amec/webasset/flatpickr";
-import * as inqservice from "../service/inquiry.js";
-import * as utils from "../utils.js";
-import * as inqs from "../inquiry/detail.js";
-import * as tb from "../inquiry/table.js";
-import * as tbmar from "../inquiry/table_mar.js";
+import { createTable } from "@amec/webasset/dataTable";
+import {
+	setupCard,
+	setupTableHistory,
+	setupTableAttachment,
+	setupPartTableDetail,
+} from "../inquiry/index.js";
+import * as ui from "../inquiry/ui.js";
+import {
+	getInquiry,
+	getInquiryHistory,
+	getInquiryFile,
+} from "../service/inquiry.js";
+// import * as inqs from "../inquiry/detail.js";
+// import * as tb from "../inquiry/table.js";
+// import * as tbmar from "../inquiry/table_mar.js";
+import { initApp } from "../utils.js";
 
 //001: On load form
 var table;
@@ -31,45 +46,55 @@ var tableAttach;
 let selectedFilesMap = new Map();
 let deletedFilesMap = new Map();
 let deletedLineMap = new Map();
+select2();
 
 $(document).ready(async () => {
 	try {
-		await utils.initApp({ submenu: ".navmenu-newinq" });
-		let logs, inquiry, details, file;
+		await showLoader();
+		await initApp({ submenu: ".navmenu-newinq" });
+		let inqs, inq, details, logs, file;
 		let mode = "create";
 		const currentUrl = window.location.href;
-		if (currentUrl.includes("edit") && $("#inquiry-id").val() != "") {
-			inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
-			if (inquiry.length == 0) throw new Error("Inquiry do not found");
-
+		if (currentUrl.includes("detail") && $("#inquiry-id").val() != "") {
+			inqs = await getInquiry({
+				INQ_ID: $("#inquiry-id").val(),
+				IS_DETAILS: true,
+			});
+			if (inqs.length == 0) throw new Error("Inquiry do not found");
 			mode = "edit";
-			if (inquiry.INQ_STATUS >= 10) {
-				inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
-				inquiry.INQ_MAR_PIC = $("#user-login").attr("empno");
+			inq = inqs[0];
+			if (inqs[0].INQ_STATUS >= 10) {
+				inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
+				inqs[0].INQ_MAR_PIC = $("#user-login").attr("empno");
 				mode = "revise";
 			}
-
-			details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
-			logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
-			file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
+			details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
+			logs = await getInquiryHistory(inqs[0].INQ_NO);
+			file = await getInquiryFile({ INQ_NO: inqs[0].INQ_NO });
 		}
-		const cards = await inqs.setupCard(inquiry);
-		const tableContainer = await tbmar.setupTableDetail(details);
+
+		const cards = await setupCard(inq);
+		const tableContainer = await setupPartTableDetail(details);
 		table = await createTable(tableContainer);
+		// const history = await tb.setupTableHistory(logs);
+		// await createTable(history, { id: "#history" });
+		// const attachment = await tb.setupTableAttachment(file);
+		// tableAttach = await createTable(attachment, { id: "#attachment" });
+		// const btn = await setupButton(mode);
+		// const reason = await inqs.createReasonModal();
+		// const elmes = await inqs.elmesComponent();
+		// const date = await setDatePicker();
 
-		const history = await tb.setupTableHistory(logs);
+		//Inquiry History
+		const history = await setupTableHistory(logs);
 		await createTable(history, { id: "#history" });
-
-		const attachment = await tb.setupTableAttachment(file);
+		const attachment = await setupTableAttachment(file, true);
 		tableAttach = await createTable(attachment, { id: "#attachment" });
 
-		const btn = await setupButton(mode);
-		const reason = await inqs.createReasonModal();
-		const elmes = await inqs.elmesComponent();
-		const date = await setDatePicker();
+		await setSelect2({ allowClear: false });
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -125,15 +150,6 @@ async function setupButton(mode) {
 		$("#btn-container").append(sendDE, sendIS, draft, back);
 	else $("#btn-container").append(updateDE, updateIS, back);
 }
-
-//002: Add table detail rows
-$(document).on("click", "#addRowBtn", async function (e) {
-	e.preventDefault();
-	const lastRow = table.row(":not(.d-none):last").data();
-	let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_RUNNO) + 1;
-	let seq = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
-	await tb.addRow({ id, seq }, table);
-});
 
 $(document).on("click", ".add-sub-line", async function (e) {
 	e.preventDefault();

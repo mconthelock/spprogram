@@ -1,13 +1,13 @@
-import dayjs from "dayjs";
 import ExcelJS from "exceljs";
 import { getExportTemplate, getInquiryID } from "../service/inquiry.js";
 import { cloneRows } from "../service/excel.js";
+import { addRow } from "./detail.js";
 
 export const statusColors = () => {
 	return [
 		{ id: 1, color: "bg-gray-300 text-gray-600" }, //Draft
 		{ id: 2, color: "bg-teal-500 text-white" }, //New
-		{ id: 9, color: "bg-yellow-400" }, //revise
+		{ id: 9, color: "bg-yellow-400" }, //Revise
 		{ id: 19, color: "bg-cyan-500" }, //SE
 		{ id: 29, color: "bg-blue-500 text-white" }, //DE
 		{ id: 39, color: "bg-slate-500 text-white" }, //IS
@@ -109,4 +109,15 @@ $(document).on("click", "#export-detail", async function (e) {
 			link.click();
 		});
 	});
+});
+
+// Inquiry Detail Table
+//002: Add table detail rows
+$(document).on("click", "#addRowBtn", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const lastRow = table.row(":not(.d-none):last").data();
+	let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_RUNNO) + 1;
+	let seq = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
+	await addRow({ id, seq }, table);
 });

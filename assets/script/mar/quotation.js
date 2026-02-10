@@ -154,7 +154,7 @@ async function tableInquiryOption(data) {
 					title: "Process",
 					type: "link",
 					icon: "fi fi-rr-edit text-lg",
-					className: `btn-sm btn-accent text-white hover:shadow-lg w-[100px]`,
+					className: `btn-xs btn-accent text-white hover:shadow-lg w-[100px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/1/`,
 				});
 				const view = createBtn({
@@ -162,7 +162,7 @@ async function tableInquiryOption(data) {
 					title: "View",
 					type: "link",
 					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
-					className: `btn-sm btn-outline btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
+					className: `btn-sx btn-outline btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
 				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;
@@ -198,7 +198,7 @@ async function tableInquiryOption(data) {
 					title: "Edit",
 					type: "link",
 					icon: "fi fi-rr-edit text-lg",
-					className: `btn-sm btn-accent text-white hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
+					className: `btn-xs btn-accent text-white hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/2/`,
 				});
 				const view = createBtn({
@@ -206,7 +206,7 @@ async function tableInquiryOption(data) {
 					title: "View",
 					type: "link",
 					icon: "fi fi fi-rs-search text-lg",
-					className: `btn-sm btn-outline btn-accent text-accent hover:shadow-lg hover:text-white ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
+					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/3/`,
 				});
 				const excel = createBtn({
@@ -214,13 +214,13 @@ async function tableInquiryOption(data) {
 					title: `Export`,
 					type: "link",
 					icon: "fi fi-tr-file-excel text-lg",
-					className: `btn-sm btn-neutral text-white export-excel hover:shadow-lg`,
+					className: `btn-xs btn-neutral text-white export-excel hover:shadow-lg`,
 				});
 				const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
 				const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const revise = `<a class="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
 				const dropdown = `<div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-sm btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
+                    <div tabindex="0" role="button" class="btn btn-xs btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
                         <li>${sparq}</li>
                         <li>${order}</li>

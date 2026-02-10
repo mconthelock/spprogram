@@ -10,7 +10,7 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-second display text-xs"></table>
+        <table id="table" class="table table-zebra table-detail display text-xs"></table>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-3">
@@ -33,5 +33,4 @@
 
 @section('scripts')
     <script src="{{ $_ENV['APP_JS'] }}/mar_inqviews.js?ver={{ $GLOBALS['version'] }}"></script>
-    <script src="{{ $_ENV['APP_JS'] }}/inquiryui.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

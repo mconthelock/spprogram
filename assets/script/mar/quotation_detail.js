@@ -3,16 +3,19 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
 import select2 from "select2";
-import dayjs from "dayjs";
 import ExcelJS from "exceljs";
+import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showDigits, intVal } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { initApp } from "../utils.js";
-import { setupCard } from "../inquiry/detail.js";
-import { setupTableHistory, setupTableAttachment } from "../inquiry/table.js";
+import {
+	setupTableHistory,
+	setupTableAttachment,
+	setupCard,
+} from "../inquiry/index.js";
 import { tableWeightOption } from "../quotation/table_weight.js";
 import {
 	tablePartOption,

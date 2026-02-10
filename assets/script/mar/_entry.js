@@ -1,6 +1,8 @@
 module.exports = {
 	//Inquiry
 	mar_inquiry: "./assets/script/mar/inquiry.js",
+	mar_inqdetail: "./assets/script/mar/inquiry_detail.js",
+	mar_inqviews: "./assets/script/mar/inquiry_view.js",
 	mar_inq_report: "./assets/script/mar/inquiry_report.js",
 	//Quotation
 	mar_quotation: "./assets/script/mar/quotation.js",

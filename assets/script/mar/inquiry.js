@@ -3,12 +3,9 @@ import "@amec/webasset/css/dataTable.min.css";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
+import { activatedBtn } from "@amec/webasset/components/buttons";
 import { tableInquiryOption } from "../inquiry/index.js";
-// import { displayname } from "@amec/webasset/api/amec";
-// import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
-// import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-// import { statusColors } from "../inquiry/ui.js";
-// import { tableInquiry, confirmDeleteInquiry } from "../inquiry/table.js";
+import { getTemplate, exportExcel } from "../service/excel";
 import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
 import { initApp } from "../utils.js";
 
