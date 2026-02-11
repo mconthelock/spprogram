@@ -3,7 +3,14 @@ import { intVal, showDigits } from "@amec/webasset/utils";
 import { setSelect2 } from "@amec/webasset/select2";
 import { getExportTemplate, getInquiryID } from "../service/inquiry.js";
 import { cloneRows } from "../service/excel.js";
-import { addRow, changeCar, changeCell, elmesSetup } from "./detail.js";
+import {
+	addRow,
+	changeCar,
+	changeCell,
+	elmesSetup,
+	elmesConform,
+	elmesCancel,
+} from "./detail.js";
 
 export const statusColors = () => {
 	return [
@@ -169,4 +176,21 @@ $(document).on("change", ".elmes-input", async function (e) {
 	if (item != "" && mfg != "") {
 		await elmesSetup(row);
 	}
+});
+
+//003: Show Elmes table
+$(document).on("click", "#elmes-confirm", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const tableElmes = $("#tableElmes").DataTable();
+
+	const increse = 1;
+	const elmesData = tableElmes.rows().data();
+	await elmesConform(elmesData, increse, table);
+});
+
+$(document).on("click", "#elmes-cancel", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	await elmesCancel(table);
 });

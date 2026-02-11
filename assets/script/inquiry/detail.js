@@ -665,10 +665,10 @@ export async function elmesSetup(row) {
 		const setting = await setupElmesTable(elmes);
 		tableElmes = await createTable(setting, {
 			id: "#tableElmes",
-			columnSelect: { status: true },
+			columnSelect: { status: true, class: "max-w-[55px]! w-[55px]!" },
 		});
 		$("#elmes-target").val(row.index());
-		$("#showElmes").click();
+		$("#elmes_modal").attr("checked", true);
 	} else {
 		const newData = {
 			...data,
@@ -723,7 +723,7 @@ export async function elmesConform(elmesData, increse, table) {
 	await destroyTable("#tableElmes");
 	$("#tableElmes").html("");
 	$("#elmes-target").val("");
-	$("#showElmes").click();
+	$("#elmes_modal").prop("checked", false);
 }
 
 export async function elmesCancel(table) {
@@ -731,7 +731,7 @@ export async function elmesCancel(table) {
 	const inx = $("#elmes-target").val();
 	$("#tableElmes").html("");
 	$("#elmes-target").val("");
-	$("#showElmes").click();
+	$("#elmes_modal").prop("checked", false);
 	$(table.row(inx).node()).find(".partname").focus();
 }
 //End: Elmes

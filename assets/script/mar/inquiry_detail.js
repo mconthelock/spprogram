@@ -151,17 +151,6 @@ async function setupButton(mode) {
 	else $("#btn-container").append(updateDE, updateIS, back);
 }
 
-//003: Show Elmes table
-$(document).on("click", "#elmes-confirm", async function () {
-	const increse = 1;
-	const elmesData = tableElmes.rows().data();
-	await inqs.elmesConform(elmesData, increse, table);
-});
-
-$(document).on("click", "#elmes-cancel", async function () {
-	await inqs.elmesCancel(table);
-});
-
 //004: Unable to reply checkbox
 $(document).on("click", ".unreply", async function () {
 	await inqs.clickUnreply($(this), table.row($(this).parents("tr")));
