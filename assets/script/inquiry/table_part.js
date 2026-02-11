@@ -106,7 +106,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="w-25! cell-input edit-input partname" maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-25! cell-input elmes-input mfgno" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -114,11 +114,11 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className: "sticky-column item-no",
+			className: "sticky-column",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="w-12.5! cell-input edit-input partname" maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-12.5! cell-input elmes-input itemno" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},

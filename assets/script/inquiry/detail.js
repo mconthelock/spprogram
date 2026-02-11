@@ -19,14 +19,15 @@ import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { createBtn } from "@amec/webasset/components/buttons";
 import { intVal } from "@amec/webasset/utils";
-
-import { getReason } from "../service/master";
-import { getElmesItem } from "../service/elmes.js";
-import { getMainProject } from "../service/mkt.js";
+import { setupElmesTable } from "./table_elmes.js";
+import {
+	getReason,
+	getElmesItem,
+	getMainProject,
+	validateVariable,
+} from "../service/index.js";
 import * as utils from "../utils.js";
-import * as dwg from "../drawing.js";
 import * as source from "./source";
-import * as tb from "./table.js";
 select2();
 
 export const statusColors = () => {
@@ -377,8 +378,8 @@ export async function importExcel(file) {
 
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
-			const variavle = dwg.validateVariable(el[6]);
-			const init = await tb.initRow(el[1]);
+			const variavle = validateVariable(el[6]);
+			const init = await initRow(el[1]);
 			const newRow = {
 				...init,
 				INQD_CAR: el[8],
@@ -434,7 +435,7 @@ export async function importText(file) {
 	lines.forEach(function (row) {
 		const el = row.split("\t");
 		const variavle = dwg.validateVariable(el[6]);
-		const init = tb.initRow(el[1]);
+		const init = initRow(el[1]);
 		const newRow = {
 			...init,
 			INQD_CAR: el[8],
@@ -661,7 +662,7 @@ export async function elmesSetup(row) {
 
 	const elmes = await getElmesItem(mfgno, item);
 	if (elmes.length > 0) {
-		const setting = await tb.elmesTable(elmes);
+		const setting = await setupElmesTable(elmes);
 		tableElmes = await createTable(setting, {
 			id: "#tableElmes",
 			columnSelect: { status: true },
@@ -1000,4 +1001,53 @@ export async function addRow({ id, seq }, table, data = {}) {
 	const row = table.row.add(data).draw();
 	if ($(row.node()).find("td:eq(3) input").length > 0)
 		$(row.node()).find("td:eq(3) input").focus();
+}
+
+export async function changeCar(table, el) {
+	const row = table.row($(el).closest("tr"));
+	const data = row.data();
+	const prjno = $("#project-no").val();
+	if (prjno == "") {
+		const newData = {
+			...data,
+			INQD_CAR: $(el).val(),
+		};
+		row.data(newData);
+		row.draw(false);
+		$(row.node()).find(".mfgno").focus();
+		return;
+	}
+
+	const carno = $(el).val();
+	const orders = await source.projectConclude({ prjno, carno });
+	if (orders.length > 0) {
+		const newData = {
+			...data,
+			INQD_CAR: carno,
+			INQD_MFGORDER: orders[0].MFGNO,
+		};
+		row.data(newData);
+		row.draw(false);
+		$(row.node()).find(".itemno").focus();
+	} else {
+		const newData = {
+			...data,
+			INQD_CAR: carno,
+		};
+		row.data(newData);
+		row.draw(false);
+		$(row.node()).find(".mfgno").focus();
+	}
+}
+
+export async function changeCell(table, el) {
+	const cell = table.cell($(el).closest("td"));
+	let newValue = $(el).val();
+	if ($(el).attr("type") === "checkbox" && !$(el).is(":checked"))
+		newValue = null;
+	if ($(el).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
+	if ($(el).attr("type") === "number") newValue = intVal(newValue);
+	if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();
+	cell.data(newValue);
+	return table;
 }

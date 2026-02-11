@@ -51,54 +51,6 @@ export async function tableInquiry(data, options = {}) {
 	return opt;
 }
 
-export async function changeCell(table, el) {
-	const cell = table.cell($(el).closest("td"));
-	let newValue = $(el).val();
-	if ($(el).attr("type") === "checkbox" && !$(el).is(":checked"))
-		newValue = null;
-	if ($(el).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
-	if ($(el).attr("type") === "number") newValue = intVal(newValue);
-	if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();
-	cell.data(newValue);
-	return table;
-}
-
-export async function changeCar(table, el) {
-	const row = table.row($(el).closest("tr"));
-	const data = row.data();
-	const prjno = $("#project-no").val();
-	if (prjno == "") {
-		const newData = {
-			...data,
-			INQD_CAR: $(el).val(),
-		};
-		row.data(newData);
-		row.draw(false);
-		$(row.node()).find(".mfgno").focus();
-		return;
-	}
-
-	const carno = $(el).val();
-	const orders = await source.projectConclude({ prjno, carno });
-	if (orders.length > 0) {
-		const newData = {
-			...data,
-			INQD_CAR: carno,
-			INQD_MFGORDER: orders[0].MFGNO,
-		};
-		row.data(newData);
-		row.draw(false);
-		$(row.node()).find(".itemno").focus();
-	} else {
-		const newData = {
-			...data,
-			INQD_CAR: carno,
-		};
-		row.data(newData);
-		row.draw(false);
-		$(row.node()).find(".mfgno").focus();
-	}
-}
 //End Table detail
 
 export async function setupTableDetailView(data = []) {
@@ -404,42 +356,6 @@ export async function downloadClientFile(selectedFiles, fileName) {
 	}
 }
 
-export async function elmesTable(data) {
-	const opt = {};
-	opt.dom = `<"flex mb-3"<"table-search flex flex-1 gap-5"><"flex items-center table-option"f>><"bg-white border border-slate-300 rounded-2xl"t><"flex mt-5"<"table-page flex-1"><"table-info flex  flex-none gap-5"p>>`;
-	opt.data = data;
-	opt.ordering = false;
-	opt.columns = [
-		{ data: "orderno", title: "MFG No." },
-		{ data: "carno", title: "Car" },
-		{ data: "itemno", title: "Item" },
-		{ data: "partname", title: "Part Name" },
-		{ data: "drawing", title: "Drawing No." },
-		{ data: "variable", title: "Variable" },
-		{ data: "qty", title: "Qty" },
-		{
-			data: "supply",
-			title: "Supply",
-			render: (data) => {
-				if (data == "R") return `LOCAL`;
-				if (data == "J") return `MELINA`;
-				if (data == "U") return ``;
-				return `AMEC`;
-			},
-		},
-		{ data: "scndpart", title: `2<sup>nd</sup>` },
-	];
-	opt.initComplete = function () {
-		$("#tableElmes")
-			.closest(".dt-container")
-			.find(".table-search")
-			.append(
-				`<h1 class="font-semibold text-xl flex items-center">Part List</h1>`,
-			);
-	};
-	return opt;
-}
-
 export async function confirmDeleteInquiry(table) {
 	const modal = $("#confirm_box");
 	modal.find("button").prop("disabled", true);
@@ -480,9 +396,3 @@ export async function confirmDeleteInquiry(table) {
 	modal.find("button").prop("disabled", false);
 	modal.find("#confirm_close").click();
 }
-
-//Universal Event
-$(document).on("click", ".delete-inquiry", async function (e) {
-	e.preventDefault();
-	await showConfirm();
-});

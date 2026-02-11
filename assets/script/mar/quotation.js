@@ -135,9 +135,7 @@ async function tableInquiryOption(data) {
 		},
 		{
 			data: "INQ_ID",
-			className: `w-fit !max-w-[110px] !text-center ${
-				pageid == "3" ? "hidden" : ""
-			}`,
+			className: `w-fit text-center! ${pageid == "3" ? "hidden" : ""}`,
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
@@ -154,7 +152,7 @@ async function tableInquiryOption(data) {
 					title: "Process",
 					type: "link",
 					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent text-white hover:shadow-lg w-[100px]`,
+					className: `btn-xs btn-accent text-white hover:shadow-lg w-[80px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/1/`,
 				});
 				const view = createBtn({
@@ -162,7 +160,7 @@ async function tableInquiryOption(data) {
 					title: "View",
 					type: "link",
 					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
-					className: `btn-sx btn-outline btn-accent text-accent hover:shadow-lg hover:text-white w-[100px]`,
+					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white w-[80px]`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
 				});
 				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;

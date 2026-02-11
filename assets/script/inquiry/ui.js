@@ -1,7 +1,9 @@
 import ExcelJS from "exceljs";
+import { intVal, showDigits } from "@amec/webasset/utils";
+import { setSelect2 } from "@amec/webasset/select2";
 import { getExportTemplate, getInquiryID } from "../service/inquiry.js";
 import { cloneRows } from "../service/excel.js";
-import { addRow } from "./detail.js";
+import { addRow, changeCar, changeCell, elmesSetup } from "./detail.js";
 
 export const statusColors = () => {
 	return [
@@ -112,7 +114,6 @@ $(document).on("click", "#export-detail", async function (e) {
 });
 
 // Inquiry Detail Table
-//002: Add table detail rows
 $(document).on("click", "#addRowBtn", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
@@ -120,4 +121,52 @@ $(document).on("click", "#addRowBtn", async function (e) {
 	let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_RUNNO) + 1;
 	let seq = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
 	await addRow({ id, seq }, table);
+	await setSelect2({ allowClear: false });
+});
+
+$(document).on("click", ".add-sub-line", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const data = table.row($(this).parents("tr")).data();
+	const seq = showDigits(intVal(data.INQD_SEQ) + 0.01, 2);
+	const id = parseInt(data.INQD_RUNNO) + 0.1;
+	await addRow({ id, seq }, table);
+	await setSelect2({ allowClear: false });
+});
+
+$(document).on("click", ".delete-sub-line", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const row = table.row($(this).closest("tr"));
+	const data = row.data();
+	if (data.INQD_ID != "") {
+		deletedLineMap.set(data.INQD_ID, data);
+	}
+	row.remove().draw(false);
+});
+
+$(document).on("change", ".carno", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	await changeCar(table, this);
+});
+
+$(document).on("change", ".edit-input", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	await changeCell(table, this);
+});
+
+$(document).on("change", ".elmes-input", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const row = table.row($(this).closest("tr"));
+	const node = table.row($(this).closest("tr")).node();
+	const item = $(node).find(".itemno").val();
+	const mfg = $(node).find(".mfgno").val();
+	let data = row.data();
+	row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
+	if (item != "" && mfg != "") {
+		await elmesSetup(row);
+	}
 });

@@ -151,45 +151,7 @@ async function setupButton(mode) {
 	else $("#btn-container").append(updateDE, updateIS, back);
 }
 
-$(document).on("click", ".add-sub-line", async function (e) {
-	e.preventDefault();
-	const data = table.row($(this).parents("tr")).data();
-	const seq = digits(utils.intVal(data.INQD_SEQ) + 0.01, 2);
-	const id = parseInt(data.INQD_RUNNO) + 0.1;
-	await tb.addRow({ id, seq }, table);
-});
-
-$(document).on("click", ".delete-sub-line", async function (e) {
-	e.preventDefault();
-	const row = table.row($(this).closest("tr"));
-	const data = row.data();
-	if (data.INQD_ID != "") {
-		deletedLineMap.set(data.INQD_ID, data);
-	}
-	row.remove().draw(false);
-});
-
-$(document).on("change", ".carno", async function (e) {
-	await tb.changeCar(table, this);
-});
-
-$(document).on("change", ".edit-input", async function () {
-	await tb.changeCell(table, this);
-});
-
 //003: Show Elmes table
-$(document).on("change", ".elmes-input", async function (e) {
-	const row = table.row($(this).closest("tr"));
-	const node = table.row($(this).closest("tr")).node();
-	const item = $(node).find(".itemno").val();
-	const mfg = $(node).find(".mfgno").val();
-	let data = row.data();
-	row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
-	if (item != "" && mfg != "") {
-		tableElmes = await inqs.elmesSetup(row);
-	}
-});
-
 $(document).on("click", "#elmes-confirm", async function () {
 	const increse = 1;
 	const elmesData = tableElmes.rows().data();
