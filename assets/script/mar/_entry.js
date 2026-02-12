@@ -7,7 +7,7 @@ module.exports = {
 	//Quotation
 	mar_quotation: "./assets/script/mar/quotation.js",
 	mar_quodetail: "./assets/script/mar/quotation_detail.js",
-	mar_quoview: "./assets/script/mar/quoview.js",
+	// mar_quoview: "./assets/script/mar/quotation_view.js",
 	//Out2Out Quotation
 	mar_outtoout: "./assets/script/mar/quotation_outout.js",
 

@@ -17,7 +17,7 @@ import { setSelect2 } from "@amec/webasset/select2";
 import { readInput } from "@amec/webasset/excel";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { createBtn } from "@amec/webasset/components/buttons";
-import { intVal } from "@amec/webasset/utils";
+import { intVal, showMessage } from "@amec/webasset/utils";
 import {
 	getReason,
 	getMainProject,
@@ -26,7 +26,7 @@ import {
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
 import { setSelectedFilesMap } from "./store.js";
-import { fileExtension } from "../utils.js";
+import { fileExtension, setInquiryNo } from "../utils.js";
 select2();
 
 export const statusColors = () => {
@@ -573,7 +573,7 @@ export async function getFormHeader() {
 	const header = {};
 	obj.map((i, el) => {
 		if ($(el).attr("name") === "INQ_NO") {
-			header.INQ_NO = utils.setInquiryNo($(el).val());
+			header.INQ_NO = setInquiryNo($(el).val());
 		} else if ($(el).attr("name") === "INQ_PKC_REQ") {
 			header.INQ_PKC_REQ = $('input[name="INQ_PKC_REQ"]:checked').val();
 		} else if ($(el).attr("name") === "INQ_AGENT") {
@@ -734,7 +734,18 @@ export async function addAttached(e) {
 	let files = [];
 	for (let i = 0; i < file.length; i++) {
 		const ext = fileExtension(file[i].name);
-		const allow = ["pdf", "jpg", "png", "docx", "xlsx", "txt"];
+		const allow = [
+			"pdf",
+			"jpg",
+			"png",
+			"docx",
+			"xlsx",
+			"txt",
+			"csv",
+			"zip",
+			"dwg",
+			"msg",
+		];
 		if (allow.includes(ext)) {
 			setSelectedFilesMap(file[i].name, file[i]);
 			const fs = {

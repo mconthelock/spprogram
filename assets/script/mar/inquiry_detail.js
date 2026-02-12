@@ -31,6 +31,9 @@ import {
 	createReasonModal,
 	importExcel,
 	importText,
+	getFormHeader,
+	verifyHeader,
+	verifyDetail,
 } from "../inquiry/index.js";
 import { bindDeleteLine } from "../inquiry/ui.js";
 import { state } from "../inquiry/store.js";
@@ -38,6 +41,8 @@ import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
+	createInquiry,
+	createInquiryFile,
 } from "../service/index.js";
 import { initApp, fileExtension } from "../utils.js";
 
@@ -216,52 +221,48 @@ $(document).on("click", "#send-bm", async function (e) {
 });
 
 async function createPath(opt) {
-	const chkheader = await inqs.verifyHeader(
-		opt.level == 0 ? ".req-1" : ".req-2",
-	);
-	if (!chkheader) return;
-	const header = await inqs.getFormHeader();
-	const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-	if (check_inq.length > 0) {
-		await showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
-		$("#inquiry-no").focus().select();
-		return;
-	}
-
-	header.INQ_STATUS = opt.status;
-	header.INQ_TYPE = "SP";
-	const details = table.rows().data().toArray();
 	try {
-		await inqs.verifyDetail(table, details, opt.level);
-		await showLoader({
-			show: true,
-			title: "Saving data",
-			clsbox: `!bg-transparent`,
-		});
+		await showLoader();
+		const chkheader = await verifyHeader(
+			opt.level == 0 ? ".req-1" : ".req-2",
+		);
+		if (!chkheader) return;
+		const header = await getFormHeader();
+		const check_inq = await getInquiry({ INQ_NO: header.INQ_NO });
+		if (check_inq.length > 0) {
+			await showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
+			$("#inquiry-no").focus().select();
+			return;
+		}
+
+		header.INQ_STATUS = opt.status;
+		header.INQ_TYPE = "SP";
+		const details = table.rows().data().toArray();
+		await verifyDetail(table, details, opt.level);
 		const timelinedata = await setTimelineData(opt.status);
 		const history = await setLogsData(opt.status);
 		const fomdata = { header, details, timelinedata, history };
-		const inquiry = await inqservice.createInquiry(fomdata);
-		if (selectedFilesMap.size > 0) {
+		const inquiry = await createInquiry(fomdata);
+
+		//Attachments
+		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
 			attachment_form.append("INQ_NO", inquiry.INQ_NO);
-			selectedFilesMap.forEach((file, fileName) => {
+			state.selectedFilesMap.forEach((file, fileName) => {
 				attachment_form.append("files", file, fileName);
 			});
-			await inqservice.createInquiryFile(attachment_form);
+			await createInquiryFile(attachment_form);
 		}
-
-		if (opt.status == 1)
-			window.location.replace(
-				`${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`,
-			);
-		else
-			window.location.replace(
-				`${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`,
-			);
+		const url =
+			opt.status == 1
+				? `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
+				: `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+		window.location.replace(url);
 	} catch (error) {
-		await showErrorMessage(`Something went wrong.`, "2036");
-		return;
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await showLoader({ show: false });
 	}
 }
 
