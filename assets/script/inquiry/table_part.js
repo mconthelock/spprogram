@@ -32,6 +32,16 @@ export async function setupPartTableDetail(data = []) {
 		return update;
 	};
 
+	const renderSupplier = (data) => {
+		const sup = ["", "AMEC", "MELINA", "LOCAL"];
+		let selector = `<select class="w-25! s2 edit-input supplier">`;
+		sup.forEach((el) => {
+			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
+		});
+		selector += `</select>`;
+		return selector;
+	};
+
 	const mode = data.length > 0 ? 1 : 0;
 	const opt = { ...tableOpt };
 	opt.data = data;
@@ -86,7 +96,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: "sticky-column",
+			className: "sticky-column text-center!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -197,14 +207,17 @@ export async function setupPartTableDetail(data = []) {
 			title: "Supplier",
 			className: "supplier-line",
 			sortable: false,
-			render: function (data) {
+			render: function (data, type) {
+				if (type === "display") {
+					return renderSupplier(data);
+				}
 				return data;
 			},
 		},
 		{
 			data: "INQD_SENDPART",
 			title: `2<sup>nd</sup>`,
-			className: "text-center",
+			className: "text-center!",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
@@ -218,7 +231,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: "text-center",
+			className: "text-center!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
@@ -253,15 +266,6 @@ export async function setupPartTableDetail(data = []) {
 		},
 	];
 
-	opt.createdRow = function (row, data, dataIndex) {
-		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="w-25! s2 edit-input">`;
-		sup.forEach((el) => {
-			selector += `<option value="${el}" ${el == data.INQD_SUPPLIER ? "selected" : ""}>${el}</option>`;
-		});
-		selector += `</select>`;
-		$(row).find("td.supplier-line").html(selector);
-	};
 	opt.initComplete = function () {
 		const addRowBtn = createBtn({
 			id: "addRowBtn",
@@ -269,40 +273,24 @@ export async function setupPartTableDetail(data = []) {
 			icon: "fi fi-rr-add text-2xl",
 			className: `btn-sm btn-primary btn-square text-white`,
 		});
+		const uploadBtn = createBtn({
+			id: "uploadRowBtn",
+			title: "",
+			icon: "fi fi-rr-cloud-upload-alt text-2xl",
+			className: `btn-sm btn-accent btn-square text-white`,
+		});
+		const downloadBtn = createBtn({
+			id: "downloadTemplateBtn",
+			title: "",
+			icon: "fi fi-rr-cloud-download-alt text-2xl",
+			className: `btn-sm btn-accent btn-outline btn-square text-accent hover:text-white`,
+		});
 		$("#table")
 			.closest(".dt-container")
 			.find(".table-page")
-			.append(addRowBtn);
-
-		const btn = `<div class="flex gap-2 ">
-            <div class="tooltip" data-tip="Add line">
-                <button id="addRowBtn" class="btn btn-primary btn-sm btn-square flex items-center" type="button">
-                    <i class="fi fi-rr-add text-2xl text-white"></i>
-                </button>
-            </div>
-      <div class="tooltip" data-tip="Upload inquiry">
-        <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square ${
-			mode == 1 ? "hidden" : ""
-		}"><i class="fi fi-rr-cloud-upload-alt text-2xl text-white"></i></button>
-        <input type="file" id="import-tsv" class="hidden" />
-      </div>
-      <div class="tooltip" data-tip="Download template">
-        <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square ${
-			mode == 1 ? "hidden" : ""
-		}"><i class="fi fi-rr-cloud-download-alt text-2xl text-white"></i></button>
-      </div>
-    </div>`;
-
-		$("#table")
-			.closest(".dt-container")
-			.find(".table-search")
 			.append(
-				`
-        <div class="tooltip tooltip-open absolute z-50 hidden" id="tip1">
-            <div class="tooltip-content">
-                <div class="animate-bounce text-orange-400 -rotate-10 text-2xl font-black">Wow!</div>
-            </div>
-        </div>`,
+				`<div class="flex gap-1">${addRowBtn}${mode == 1 ? "" : uploadBtn}${mode == 1 ? "" : downloadBtn}</div>
+                <input type="file" id="import-tsv" accept=".xlsx, .csv, .tsv, .txt" class="hidden"/>`,
 			);
 	};
 	return opt;

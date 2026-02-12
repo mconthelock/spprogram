@@ -1,13 +1,14 @@
-import { dateToSchedule } from "@amec/webasset/utils";
-import * as mst from "../service/master.js";
-import * as mkt from "../service/mkt.js";
-import * as inq from "../service/inquiry.js";
-import * as cus from "../service/customers.js";
-import * as utils from "../utils.js";
+import { dateToSchedule, showMessage } from "@amec/webasset/utils";
+import * as srv from "../service/index.js";
+// import * as mst from "../service/master.js";
+// import * as mkt from "../service/mkt.js";
+// import * as inq from "../service/inquiry.js";
+// import * as cus from "../service/customers.js";
+import { setInquiryNo } from "../utils.js";
 
 export const init = {
 	getTraders: async function () {
-		const data = await mst.getPriceRatio();
+		const data = await srv.getPriceRatio();
 		const traders = data.map((item) => item.TRADER);
 		const uniqueTraders = [...new Set(traders)];
 		let options = uniqueTraders.map((trader) => {
@@ -20,7 +21,7 @@ export const init = {
 	},
 
 	getQuoType: async function () {
-		const data = await mst.getQuotationType();
+		const data = await srv.getQuotationType();
 		let options = data.map((type) => {
 			return {
 				id: type.QUOTYPE_ID,
@@ -31,7 +32,7 @@ export const init = {
 	},
 
 	getShipment: async function () {
-		const data = await mst.getShipments();
+		const data = await srv.getShipments();
 		let options = data.map((shp) => {
 			return {
 				id: shp.SHIPMENT_ID,
@@ -42,7 +43,7 @@ export const init = {
 	},
 
 	getCurrency: async function () {
-		const data = await mst.getCurrency();
+		const data = await srv.getCurrency();
 		const currency = data.filter((item) => item.CURR_LATEST == "1");
 		let options = currency.map((cur) => {
 			return {
@@ -54,7 +55,7 @@ export const init = {
 	},
 
 	getDeliveryTerm: async function () {
-		const data = await mst.getDeliveryTerm();
+		const data = await srv.getDeliveryTerm();
 		let options = data.map((term) => {
 			return {
 				id: term.TERM_ID,
@@ -65,7 +66,7 @@ export const init = {
 	},
 
 	getMethod: async function () {
-		const data = await mst.getMethod();
+		const data = await srv.getMethod();
 		let options = data.map((method) => {
 			return {
 				id: method.METHOD_ID,
@@ -76,7 +77,7 @@ export const init = {
 	},
 
 	getAgent: async function () {
-		const data = await mkt.getAgent();
+		const data = await srv.getAgent();
 		const agents = data.filter((item) => item.STATUS == "Enabled");
 		let options = agents.map((agent) => {
 			return {
@@ -88,7 +89,7 @@ export const init = {
 	},
 
 	getCountries: async function () {
-		const data = await mkt.getCountries();
+		const data = await srv.getCountries();
 		let options = data.map((country) => {
 			return {
 				id: country.CTNAME,
@@ -99,7 +100,7 @@ export const init = {
 	},
 
 	getSeries: async function () {
-		const data = await mkt.getSeries();
+		const data = await srv.getSeries();
 		let options = data.map((series) => {
 			return {
 				id: series.ABBREVIATION,
@@ -110,7 +111,7 @@ export const init = {
 	},
 
 	getCustomers: async function () {
-		const data = await cus.getCustomer();
+		const data = await srv.getCustomer();
 		let options = data.map((customer) => {
 			return {
 				id: customer.CUS_ID,
@@ -121,7 +122,7 @@ export const init = {
 	},
 
 	getMarPerson: async function () {
-		const data = await mst.getAppUsers();
+		const data = await srv.getAppUsers();
 		const result = data.filter((x) =>
 			["MAR"].includes(x.appsgroups.GROUP_CODE),
 		);
@@ -140,7 +141,7 @@ export const init = {
 	},
 
 	getSalePerson: async function () {
-		const data = await mst.getAppUsers();
+		const data = await srv.getAppUsers();
 		const result = data.filter((x) =>
 			["SEG", "SEL"].includes(x.appsgroups.GROUP_CODE),
 		);
@@ -168,10 +169,10 @@ export const events = {
 		loader.removeClass("hidden");
 
 		const q = { PRJ_NO: obj.value.toUpperCase() };
-		let data = await mkt.getMainProject(q);
-		if (data.length == 0) data = await mkt.getPartProject(q);
-		if (data.length == 0) data = await mkt.getDummyProject(q);
-		// if (data.length == 0) data = await mkt.getCubeProject(q);
+		let data = await srv.getMainProject(q);
+		if (data.length == 0) data = await srv.getPartProject(q);
+		if (data.length == 0) data = await srv.getDummyProject(q);
+		// if (data.length == 0) data = await srv.getCubeProject(q);
 		if (data.length > 0) {
 			const values = data[0];
 			for (const key in values) {
@@ -208,7 +209,7 @@ export const events = {
 								"change",
 							);
 						} else {
-							const agentMaster = await mkt.getAgent();
+							const agentMaster = await srv.getAgent();
 							if (agents.has(values.AGENT)) {
 								const agn = agentMaster.find(
 									(x) => x.AGENT == values.AGENT,
@@ -266,10 +267,10 @@ export const events = {
 
 		const loader = $(obj).closest(".input").find(".loading");
 		loader.removeClass("hidden");
-		const values = await utils.setInquiryNo(obj.value);
+		const values = await setInquiryNo(obj.value);
 		obj.value = values;
 
-		const controller = await mst.getControl();
+		const controller = await srv.getControl();
 		const prefix = controller.find(
 			(clt) => clt.CNT_PREFIX == values.substring(0, 5).toUpperCase(),
 		);
@@ -286,7 +287,7 @@ export const events = {
 			}
 		}
 
-		const inquiry = await inq.getInquiry({ INQ_NO: values });
+		const inquiry = await srv.getInquiry({ INQ_NO: values });
 		if (inquiry.length > 0) {
 			await showMessage(`Inquiry ${values} is already exist!`);
 			$("#inquiry-no").focus().select();
@@ -301,7 +302,7 @@ export const events = {
 
 	handleCustomerChange: async (e) => {
 		const obj = e.target;
-		const data = await cus.getCustomer();
+		const data = await srv.getCustomer();
 		const customers = data.find((item) => item.CUS_ID == obj.value);
 		$("#project-name").val(customers.CUS_NAME + " STOCK");
 		$("#trader").val("Direct").change();
@@ -313,7 +314,7 @@ export const events = {
 		$("#delivery-term").val(customers.CUS_TERM).change();
 		$("#delivery-method").val(2).change();
 		$("#inq-leadtime").val(customers.CUS_LT).change();
-		$("#currency").val(customers.CUS_CURENCY).change();
+		$("#currency").val(customers.CUS_CURRENCY).change();
 
 		$("#add-item").removeClass("btn-disabled");
 		$("#inquiry-no").focus().select();
@@ -323,7 +324,7 @@ export const events = {
 		const obj = e.target;
 		const trader = $("#trader").val();
 		const quotation = obj.value;
-		const data = await mst.findPriceRatio({
+		const data = await srv.findPriceRatio({
 			QUOTATION: quotation,
 			TRADER: trader,
 		});
@@ -351,37 +352,4 @@ export const events = {
 			}
 		}
 	},
-};
-
-export const stockHeader = async (name, item) => {
-	//   const str = name.split("_");
-	const customers = await cus.getCustomer();
-	const value = customers.find((item) => item.CUS_NAME == name);
-	if (value !== undefined) {
-		$("#project-no").val(`${value.CUS_DISPLAY} STOCK`);
-		$("#project-name").val(`${value.CUS_DISPLAY} STOCK`);
-		$("#shop-order").val(`-`);
-		const series = item >= 6 ? "JSW" : "GQXL3";
-		const operation = item >= 6 ? "B2" : "2BC";
-		const spec = item >= 6 ? "1200/JS-SE/03500/30" : "P1000-CO-060,05S/O";
-		$("#series").val(series).trigger("change");
-		$("#operation").val(operation);
-		$("#spec").val(spec);
-		$("#schedule").val(`201505Y`);
-
-		const agent = `${value.CUS_AGENT} (${value.CUS_COUNTRY})`;
-		$("#agent").val(agent).trigger("change");
-		$("#country").val(value.CUS_COUNTRY).trigger("change");
-	}
-};
-
-export const projectConclude = async (data) => {
-	let q = {};
-	if (data.mfgno) q = { SMFG_NO: data.mfgno };
-	else q = { PRJ_NO: data.prjno, CAR_NO: data.carno };
-
-	let prjdata = await mkt.getMainProject(q);
-	if (prjdata.length == 0) await mkt.getPartProject(q);
-	if (prjdata.length == 0) await mkt.getDummyProject(q);
-	return prjdata;
 };

@@ -16,18 +16,16 @@ import select2 from "select2";
 import { setSelect2 } from "@amec/webasset/select2";
 import { readInput } from "@amec/webasset/excel";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
-import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import { createBtn } from "@amec/webasset/components/buttons";
 import { intVal } from "@amec/webasset/utils";
-import { setupElmesTable } from "./table_elmes.js";
 import {
 	getReason,
-	getElmesItem,
 	getMainProject,
 	validateVariable,
 } from "../service/index.js";
-import * as utils from "../utils.js";
-import * as source from "./source";
+import { initRow } from "./ui.js";
+// import * as utils from "../utils.js";
+import { init, events } from "./source";
 select2();
 
 export const statusColors = () => {
@@ -219,8 +217,7 @@ export async function createFieldInput(field) {
 			let options = [];
 			let optStr = "<option value=''></option>";
 			if (field.source) {
-				if (source.init[field.source])
-					options = await source.init[field.source]();
+				if (init[field.source]) options = await init[field.source]();
 			} else if (field.options) {
 				options = field.options;
 			}
@@ -248,8 +245,8 @@ export async function createFieldInput(field) {
 					allowClear: false,
 				});
 				jQueryElement.removeAttr("aria-hidden");
-				if (field.onChange && source.events[field.onChange]) {
-					jQueryElement.on("change", source.events[field.onChange]);
+				if (field.onChange && events[field.onChange]) {
+					jQueryElement.on("change", events[field.onChange]);
 				}
 			}, 1000);
 			break;
@@ -314,14 +311,10 @@ export async function createFieldInput(field) {
         </label>`;
 			inputContainer.innerHTML = inputLabel;
 			elementToListen = inputContainer.querySelector(`#${field.id}`);
-			if (
-				elementToListen &&
-				field.onChange &&
-				source.events[field.onChange]
-			) {
+			if (elementToListen && field.onChange && events[field.onChange]) {
 				elementToListen.addEventListener(
 					"change",
-					source.events[field.onChange],
+					events[field.onChange],
 				);
 			}
 			break;
@@ -357,6 +350,39 @@ export async function freightTable() {
 	return freightTable;
 }
 
+export const stockHeader = async (name, item) => {
+	//   const str = name.split("_");
+	const customers = await cus.getCustomer();
+	const value = customers.find((item) => item.CUS_NAME == name);
+	if (value !== undefined) {
+		$("#project-no").val(`${value.CUS_DISPLAY} STOCK`);
+		$("#project-name").val(`${value.CUS_DISPLAY} STOCK`);
+		$("#shop-order").val(`-`);
+		const series = item >= 6 ? "JSW" : "GQXL3";
+		const operation = item >= 6 ? "B2" : "2BC";
+		const spec = item >= 6 ? "1200/JS-SE/03500/30" : "P1000-CO-060,05S/O";
+		$("#series").val(series).trigger("change");
+		$("#operation").val(operation);
+		$("#spec").val(spec);
+		$("#schedule").val(`201505Y`);
+
+		const agent = `${value.CUS_AGENT} (${value.CUS_COUNTRY})`;
+		$("#agent").val(agent).trigger("change");
+		$("#country").val(value.CUS_COUNTRY).trigger("change");
+	}
+};
+
+export const projectConclude = async (data) => {
+	let q = {};
+	if (data.mfgno) q = { SMFG_NO: data.mfgno };
+	else q = { PRJ_NO: data.prjno, CAR_NO: data.carno };
+
+	let prjdata = await mkt.getMainProject(q);
+	if (prjdata.length == 0) await mkt.getPartProject(q);
+	if (prjdata.length == 0) await mkt.getDummyProject(q);
+	return prjdata;
+};
+
 // 002: Import data from file
 export async function importExcel(file) {
 	const excelData = await readInput(file, {
@@ -375,7 +401,6 @@ export async function importExcel(file) {
 			"Item",
 		],
 	});
-
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
 			const variavle = validateVariable(el[6]);
@@ -469,13 +494,13 @@ export async function importHeader(data) {
 	if (prj.length > 0) {
 		const projectNo = document.querySelector("#project-no");
 		projectNo.value = prj[0].PRJ_NO;
-		if (source.events.handleProjectChange) {
-			await source.events.handleProjectChange({ target: projectNo });
+		if (events.handleProjectChange) {
+			await events.handleProjectChange({ target: projectNo });
 		}
 	} else if (data.mfgno.toUpperCase().indexOf("STOCK") > -1) {
 		const name = data.file.split("_");
 		const str = name[1] == undefined ? "" : name[1];
-		await source.stockHeader(str, data.item);
+		await stockHeader(str, data.item);
 	}
 
 	const inqno = document.querySelector("#inquiry-no");
@@ -540,201 +565,7 @@ export async function createReasonModal() {
     `;
 	$("body").append(modal);
 }
-
-export async function clickUnreply(obj, row) {
-	if (!obj.is(":checked")) {
-		const tr = $(obj).closest("tr");
-		tr.find(".supplier").attr("disabled", false);
-		return;
-	}
-	//   const row = table.row($(this).parents("tr"));
-	const data = row.data();
-	if (data.INQD_UNREPLY != "") {
-		$(`#reason-${data.INQD_UNREPLY}`).prop("checked", true);
-		if (data.INQD_UNREPLY == 99)
-			$("#text-comment-other").val(data.INQD_MAR_REMARK);
-	} else {
-		$(`.reason-code:first`).prop("checked", true);
-	}
-	$("#reason-target").val(row.index());
-	$("#modal-reason").click();
-}
-
-export async function countReason(obj) {
-	$(obj).removeClass("border-red-500");
-	$(obj).closest("li").find(".text-comment-err").html("");
-	$("#text-count").removeClass("text-red-500");
-	const txt = $(obj).val();
-	let cnt = $(obj).val().length;
-	if (cnt > 100) {
-		$("#text-count").addClass("text-red-500");
-		$(obj).val(txt.substring(0, 100));
-		$(obj).addClass("border-red-500");
-		$(obj)
-			.closest("li")
-			.find(".text-comment-err")
-			.html(`Maximun is 100 charactors.`);
-		return;
-	}
-	$("#text-count").html(cnt);
-}
-
-export async function saveUnreply(table) {
-	const selected = $(".reason-code:checked");
-	const remark = selected.closest("li").find(".text-comment").val();
-	if (remark == "" || selected.val() == undefined) {
-		$(".text-comment").addClass("border-red-500");
-		$(".text-comment-err").html(
-			`Please explain reason, Why you can't reply this line.`,
-		);
-		return;
-	}
-
-	const groupcode = $("#user-login").attr("groupcode");
-	const marremark = groupcode == "MAR" ? remark : null;
-	const deremark = groupcode != "MAR" ? remark : null;
-	const target = $("#reason-target").val();
-	const row = table.row(target);
-	const data = row.data();
-	const newData = {
-		...data,
-		INQD_UNREPLY: selected.val(),
-		INQD_MAR_REMARK: marremark == null ? data.INQD_MAR_REMARK : marremark,
-		INQD_DES_REMARK: deremark == null ? data.INQD_DES_REMARK : deremark,
-		INQD_SUPPLIER: "",
-	};
-	table.row(target).data(newData);
-	await resetUnreplyForm();
-}
-
-export async function resetUnreply(table) {
-	const target = $("#reason-target").val();
-	const row = table.row(target);
-	const data = row.data();
-	const newData = {
-		...data,
-		INQD_UNREPLY: ``,
-		// INQD_MAR_REMARK: ``,
-	};
-	table.row(target).data(newData);
-	await resetUnreplyForm();
-}
-
-export async function resetUnreplyForm() {
-	$("#text-comment-other").val(``);
-	$("#text-count").html(`0`);
-	$("#modal-reason").prop("checked", false);
-}
 //End: Unreply
-
-//004: Search Elmes data
-export async function elmesComponent() {
-	const confirmBtn = await createBtn({
-		id: "elmes-confirm",
-		title: "Confirm",
-		icon: "",
-		className: "btn-primary btn-outline text-primary hover:text-white",
-	});
-	const cancelBtn = await createBtn({
-		id: "elmes-cancel",
-		title: "Cancel",
-		icon: "icofont-close text-2xl",
-		className: "btn-neutral btn-outline text-neutral hover:text-white",
-	});
-
-	const str = `<input type="checkbox" id="showElmes" class="modal-toggle" />
-    <div class="modal" role="dialog">
-        <div class="modal-box w-screen max-w-[100vw] h-screen overflow-y-scroll">
-            <table id="tableElmes" class="table w-full"></table>
-            <input type="hidden" id="elmes-target"/>
-            <div class="flex gap-2 mt-3">${confirmBtn}${cancelBtn}</div>
-        </div>
-    </div>`;
-	$("body").append(str);
-}
-
-export async function elmesSetup(row) {
-	let tableElmes;
-	const data = row.data();
-	const mfgno = $(row.node()).find(".mfgno").val();
-	const item = $(row.node()).find(".itemno").val();
-	if (mfgno.length === 0 || item.length < 3) return;
-
-	const elmes = await getElmesItem(mfgno, item);
-	if (elmes.length > 0) {
-		const setting = await setupElmesTable(elmes);
-		tableElmes = await createTable(setting, {
-			id: "#tableElmes",
-			columnSelect: { status: true, class: "max-w-[55px]! w-[55px]!" },
-		});
-		$("#elmes-target").val(row.index());
-		$("#elmes_modal").attr("checked", true);
-	} else {
-		const newData = {
-			...data,
-			INQD_MFGORDER: mfgno,
-			INQD_ITEM: item,
-		};
-		row.data(newData);
-		//row.draw(false);
-		tableElmes = null;
-		$(row.node()).find(".partname").focus();
-	}
-	return tableElmes;
-}
-
-export async function elmesConform(elmesData, increse, table) {
-	const rowid = $("#elmes-target").val();
-	const data = table.row(rowid).data();
-	table.rows(rowid).remove().draw(); //Delete current row first
-	//Insert rows
-	let i = 0;
-	let id = intVal(data.INQD_SEQ);
-	elmesData.map((val) => {
-		if (val.selected !== undefined) {
-			let supplier = `AMEC`;
-			if (val.supply === "R") supplier = `LOCAL`;
-			if (val.supply === "J") supplier = `MELINA`;
-			if (val.supply === "U") supplier = ``;
-
-			let second = `0`;
-			if (val.scndpart != "" && val.scndpart.toUpperCase() !== "X")
-				second = `1`;
-
-			const newRow = {
-				...data,
-				id: id + i,
-				INQD_SEQ: id + i,
-				INQD_CAR: val.carno,
-				INQD_MFGORDER: val.orderno,
-				INQD_ITEM: val.itemno,
-				INQD_PARTNAME: val.partname,
-				INQD_DRAWING: val.drawing,
-				INQD_VARIABLE: val.variable,
-				INQD_QTY: val.qty,
-				INQD_SUPPLIER: supplier,
-				INQD_SENDPART: second,
-			};
-			table.row.add(newRow).draw(false);
-			i = increse + i;
-		}
-	});
-
-	await destroyTable("#tableElmes");
-	$("#tableElmes").html("");
-	$("#elmes-target").val("");
-	$("#elmes_modal").prop("checked", false);
-}
-
-export async function elmesCancel(table) {
-	await destroyTable("#tableElmes");
-	const inx = $("#elmes-target").val();
-	$("#tableElmes").html("");
-	$("#elmes-target").val("");
-	$("#elmes_modal").prop("checked", false);
-	$(table.row(inx).node()).find(".partname").focus();
-}
-//End: Elmes
 
 //005: Verify form before save
 export async function getFormHeader() {
@@ -961,93 +792,4 @@ export async function getSearchHeader(formdata) {
 	}
 	formdata["IS_GROUP"] = true;
 	return formdata;
-}
-
-//008: Create inquiry detail row
-export function initRow(id, seq) {
-	return {
-		INQD_ID: "",
-		INQD_SEQ: seq,
-		INQD_RUNNO: id,
-		INQD_MFGORDER: "",
-		INQD_ITEM: "",
-		INQD_CAR: "",
-		INQD_PARTNAME: "",
-		INQD_DRAWING: "",
-		INQD_VARIABLE: "",
-		INQD_QTY: 1,
-		INQD_UM: "PC",
-		INQD_SUPPLIER: "",
-		INQD_SENDPART: "",
-		INQD_UNREPLY: "",
-		INQD_FC_COST: "",
-		INQD_TC_COST: "",
-		INQD_UNIT_PRICE: "",
-		INQD_FC_BASE: "",
-		INQD_TC_BASE: "",
-		INQD_MAR_REMARK: "",
-		INQD_DES_REMARK: "",
-		INQD_FIN_REMARK: "",
-		INQD_LATEST: 1,
-		INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
-		CREATE_BY: $("#user-login").attr("empname"),
-		UPDATE_BY: $("#user-login").attr("empname"),
-	};
-}
-
-export async function addRow({ id, seq }, table, data = {}) {
-	const newRow = await initRow(id, seq);
-	data = { ...newRow, ...data };
-	const row = table.row.add(data).draw();
-	if ($(row.node()).find("td:eq(3) input").length > 0)
-		$(row.node()).find("td:eq(3) input").focus();
-}
-
-export async function changeCar(table, el) {
-	const row = table.row($(el).closest("tr"));
-	const data = row.data();
-	const prjno = $("#project-no").val();
-	if (prjno == "") {
-		const newData = {
-			...data,
-			INQD_CAR: $(el).val(),
-		};
-		row.data(newData);
-		row.draw(false);
-		$(row.node()).find(".mfgno").focus();
-		return;
-	}
-
-	const carno = $(el).val();
-	const orders = await source.projectConclude({ prjno, carno });
-	if (orders.length > 0) {
-		const newData = {
-			...data,
-			INQD_CAR: carno,
-			INQD_MFGORDER: orders[0].MFGNO,
-		};
-		row.data(newData);
-		row.draw(false);
-		$(row.node()).find(".itemno").focus();
-	} else {
-		const newData = {
-			...data,
-			INQD_CAR: carno,
-		};
-		row.data(newData);
-		row.draw(false);
-		$(row.node()).find(".mfgno").focus();
-	}
-}
-
-export async function changeCell(table, el) {
-	const cell = table.cell($(el).closest("td"));
-	let newValue = $(el).val();
-	if ($(el).attr("type") === "checkbox" && !$(el).is(":checked"))
-		newValue = null;
-	if ($(el).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
-	if ($(el).attr("type") === "number") newValue = intVal(newValue);
-	if ($(el).hasClass("uppercase")) newValue = newValue.toUpperCase();
-	cell.data(newValue);
-	return table;
 }

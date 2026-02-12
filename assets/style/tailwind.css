@@ -196,7 +196,6 @@
 	.table > tbody > tr > td {
 		@apply border-b! border-gray-300!;
 	}
-
 	.table.table-detail > tbody > tr > td {
 		border-right: 0.25px solid var(--color-gray-300) !important;
 		@apply px-3!;
@@ -223,6 +222,10 @@
 		outline: none;
 		cursor: pointer;
 		@apply bg-primary/20!;
+	}
+
+	.table.table-edit > tbody > tr > td.dt-empty {
+		@apply py-2!;
 	}
 
 	/* .table > tbody > tr > td.cell-view {

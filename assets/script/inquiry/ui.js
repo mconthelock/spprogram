@@ -1,31 +1,57 @@
 import ExcelJS from "exceljs";
-import { intVal, showDigits } from "@amec/webasset/utils";
+import { intVal, showDigits, showMessage } from "@amec/webasset/utils";
+import { currentUser } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
-import { getExportTemplate, getInquiryID } from "../service/inquiry.js";
-import { cloneRows } from "../service/excel.js";
+import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import {
-	addRow,
-	changeCar,
-	changeCell,
-	elmesSetup,
-	elmesConform,
-	elmesCancel,
-} from "./detail.js";
+	getExportTemplate,
+	getInquiryID,
+	getElmesItem,
+} from "../service/index.js";
+import { cloneRows } from "../service/excel.js";
+import { setupElmesTable } from "./table_elmes.js";
+import { setDeletedLineMap } from "./store.js";
+import { projectConclude } from "./source.js";
+import { statusColors } from "./detail.js";
 
-export const statusColors = () => {
-	return [
-		{ id: 1, color: "bg-gray-300 text-gray-600" }, //Draft
-		{ id: 2, color: "bg-teal-500 text-white" }, //New
-		{ id: 9, color: "bg-yellow-400" }, //Revise
-		{ id: 19, color: "bg-cyan-500" }, //SE
-		{ id: 29, color: "bg-blue-500 text-white" }, //DE
-		{ id: 39, color: "bg-slate-500 text-white" }, //IS
-		{ id: 49, color: "bg-amber-500 text-white" }, //FIN
-		{ id: 59, color: "bg-teal-500 text-white" }, //MAR [Post process]
-		{ id: 98, color: "bg-red-500 text-white" }, //Cancel
-		{ id: 99, color: "bg-primary text-white" }, //Finish
-	];
-};
+export function initRow(id, seq) {
+	return {
+		INQD_ID: "",
+		INQD_SEQ: seq,
+		INQD_RUNNO: id,
+		INQD_MFGORDER: "",
+		INQD_ITEM: "",
+		INQD_CAR: "",
+		INQD_PARTNAME: "",
+		INQD_DRAWING: "",
+		INQD_VARIABLE: "",
+		INQD_QTY: 1,
+		INQD_UM: "PC",
+		INQD_SUPPLIER: "",
+		INQD_SENDPART: "",
+		INQD_UNREPLY: "",
+		INQD_FC_COST: "",
+		INQD_TC_COST: "",
+		INQD_UNIT_PRICE: "",
+		INQD_FC_BASE: "",
+		INQD_TC_BASE: "",
+		INQD_MAR_REMARK: "",
+		INQD_DES_REMARK: "",
+		INQD_FIN_REMARK: "",
+		INQD_LATEST: 1,
+		INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
+		CREATE_BY: $("#user-login").attr("empname"),
+		UPDATE_BY: $("#user-login").attr("empname"),
+	};
+}
+
+export async function addRow({ id, seq }, table, data = {}) {
+	const newRow = await initRow(id, seq);
+	data = { ...newRow, ...data };
+	const row = table.row.add(data).draw();
+	if ($(row.node()).find("td:eq(3) input").length > 0)
+		$(row.node()).find("td:eq(3) input").focus();
+}
 
 $(document).on("mouseenter", ".detail-log", function () {
 	const data = $(this).closest("td").find("ul");
@@ -141,27 +167,56 @@ $(document).on("click", ".add-sub-line", async function (e) {
 	await setSelect2({ allowClear: false });
 });
 
-$(document).on("click", ".delete-sub-line", async function (e) {
-	e.preventDefault();
-	const table = $("#table").DataTable();
-	const row = table.row($(this).closest("tr"));
-	const data = row.data();
-	if (data.INQD_ID != "") {
-		deletedLineMap.set(data.INQD_ID, data);
-	}
-	row.remove().draw(false);
-});
+export function bindDeleteLine() {
+	$(document).on("click", ".delete-sub-line", async function (e) {
+		e.preventDefault();
+		const table = $("#table").DataTable();
+		const row = table.row($(this).closest("tr"));
+		const data = row.data();
+		if (data.INQD_ID != "") {
+			//deletedLineMap.set(data.INQD_ID, data);
+			setDeletedLineMap(data.INQD_ID, data);
+		}
+		row.remove().draw(false);
+	});
+}
 
 $(document).on("change", ".carno", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
-	await changeCar(table, this);
+	const row = table.row($(this).closest("tr"));
+	try {
+		const data = row.data();
+		const prjno = $("#project-no").val();
+		const carno = $(this).val();
+		const orders = await projectConclude({ prjno, carno });
+		const mfgno = orders.length > 0 ? orders[0].MFGNO : "";
+		const newData = {
+			...data,
+			INQD_CAR: carno,
+			INQD_MFGORDER: mfgno,
+		};
+		row.data(newData);
+		row.draw(false);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	} finally {
+		$(row.node()).find(".mfgno").focus();
+	}
 });
 
 $(document).on("change", ".edit-input", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
-	await changeCell(table, this);
+	const cell = table.cell($(this).closest("td"));
+	let newValue = $(this).val();
+	if ($(this).attr("type") === "checkbox" && !$(this).is(":checked"))
+		newValue = null;
+	if ($(this).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
+	if ($(this).attr("type") === "number") newValue = intVal(newValue);
+	if ($(this).hasClass("uppercase")) newValue = newValue.toUpperCase();
+	cell.data(newValue);
 });
 
 $(document).on("change", ".elmes-input", async function (e) {
@@ -173,8 +228,28 @@ $(document).on("change", ".elmes-input", async function (e) {
 	const mfg = $(node).find(".mfgno").val();
 	let data = row.data();
 	row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
-	if (item != "" && mfg != "") {
-		await elmesSetup(row);
+	if (mfg.length > 0 && item.length == 3) {
+		let tableElmes;
+		const elmes = await getElmesItem(mfg, item);
+		if (elmes.length > 0) {
+			const setting = await setupElmesTable(elmes);
+			tableElmes = await createTable(setting, {
+				id: "#tableElmes",
+				columnSelect: { status: true },
+			});
+			$("#elmes-target").val(row.index());
+			$("#elmes_modal").attr("checked", true);
+		} else {
+			const newData = {
+				...data,
+				INQD_MFGORDER: mfg,
+				INQD_ITEM: item,
+			};
+			row.data(newData);
+			//row.draw(false);
+			tableElmes = null;
+			$(row.node()).find(".partname").focus();
+		}
 	}
 });
 
@@ -183,14 +258,170 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const tableElmes = $("#tableElmes").DataTable();
+	try {
+		const increse = 1;
+		const elmesData = tableElmes.rows().data();
+		const rowid = $("#elmes-target").val();
+		const data = table.row(rowid).data();
+		//1. Delete current row first
+		table.rows(rowid).remove().draw();
+		//2.Insert rows
+		let i = 0;
+		let id = intVal(data.INQD_SEQ);
+		elmesData.map((val) => {
+			if (val.selected !== undefined) {
+				let supplier = `AMEC`;
+				if (val.supply === "R") supplier = `LOCAL`;
+				if (val.supply === "J") supplier = `MELINA`;
+				if (val.supply === "U") supplier = ``;
 
-	const increse = 1;
-	const elmesData = tableElmes.rows().data();
-	await elmesConform(elmesData, increse, table);
+				let second = `0`;
+				if (val.scndpart != "" && val.scndpart.toUpperCase() !== "X")
+					second = `1`;
+
+				const newRow = {
+					...data,
+					id: id + i,
+					INQD_SEQ: id + i,
+					INQD_CAR: val.carno,
+					INQD_MFGORDER: val.orderno,
+					INQD_ITEM: val.itemno,
+					INQD_PARTNAME: val.partname,
+					INQD_DRAWING: val.drawing,
+					INQD_VARIABLE: val.variable,
+					INQD_QTY: val.qty,
+					INQD_SUPPLIER: supplier,
+					INQD_SENDPART: second,
+				};
+				table.row.add(newRow).draw(false);
+				i = increse + i;
+			}
+		});
+		setSelect2({ allowClear: false });
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	} finally {
+		await destroyTable("#tableElmes");
+		$("#tableElmes").html("");
+		$("#elmes-target").val("");
+		$("#elmes_modal").attr("checked", false);
+	}
 });
 
 $(document).on("click", "#elmes-cancel", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
-	await elmesCancel(table);
+	const inx = $("#elmes-target").val();
+	await destroyTable("#tableElmes");
+	$("#tableElmes").html("");
+	$("#elmes-target").val("");
+	$("#elmes_modal").prop("checked", false);
+	$(table.row(inx).node()).find(".partname").focus();
+});
+
+//004: Unable to reply checkbox
+$(document).on("click", ".unreply", async function (e) {
+	//e.preventDefault();
+	const table = $("#table").DataTable();
+	const row = table.row($(this).parents("tr"));
+	if (!$(this).is(":checked")) {
+		$(row).find(".supplier").attr("disabled", false);
+		return;
+	}
+
+	const data = row.data();
+	if (data.INQD_UNREPLY != "") {
+		$(`#reason-${data.INQD_UNREPLY}`).prop("checked", true);
+		if (data.INQD_UNREPLY == 99)
+			$("#text-comment-other").val(data.INQD_MAR_REMARK);
+	} else {
+		$(`.reason-code:first`).prop("checked", true);
+	}
+	$("#reason-target").val(row.index());
+	$("#modal-reason").click();
+});
+
+$(document).on("click", ".text-comment", async function () {
+	$("#reason-99").prop("checked", true);
+});
+
+$(document).on("keyup", ".text-comment", async function () {
+	$(this).removeClass("border-red-500");
+	$(this).closest("li").find(".text-comment-err").html("");
+	$("#text-count").removeClass("text-red-500");
+	const txt = $(this).val();
+	let cnt = $(this).val().length;
+	if (cnt > 100) {
+		$("#text-count").addClass("text-red-500");
+		$(this).val(txt.substring(0, 100));
+		$(this).addClass("border-red-500");
+		$(this)
+			.closest("li")
+			.find(".text-comment-err")
+			.html(`Maximun is 100 charactors.`);
+		return;
+	}
+	$("#text-count").html(cnt);
+});
+
+$(document).on("click", "#save-reason", async function (e) {
+	e.preventDefault();
+	try {
+		const table = $("#table").DataTable();
+		const selected = $(".reason-code:checked");
+		const remark = selected.closest("li").find(".text-comment").val();
+		if (remark.trim().length < 3 || selected.val() == undefined) {
+			$(".text-comment").addClass("border-red-500");
+			$(".text-comment-err").html(
+				`Please explain reason, Why you can't reply this line. (Minimum 3 characters)`,
+			);
+			return;
+		}
+		const groupcode = (await currentUser()).group;
+		const marremark = groupcode == "MAR" ? remark : null;
+		const deremark = groupcode != "MAR" ? remark : null;
+		const target = $("#reason-target").val();
+		const row = table.row(target);
+		const data = row.data();
+		const newData = {
+			...data,
+			INQD_UNREPLY: selected.val(),
+			INQD_MAR_REMARK:
+				marremark == null ? data.INQD_MAR_REMARK : marremark,
+			INQD_DES_REMARK: deremark == null ? data.INQD_DES_REMARK : deremark,
+			INQD_SUPPLIER: "",
+		};
+		table.row(target).data(newData);
+		setSelect2({ allowClear: false });
+		$("#text-comment-other").val(``);
+		$("#text-count").html(`0`);
+		$("#modal-reason").prop("checked", false);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	}
+});
+
+$(document).on("click", "#cancel-reason", async function (e) {
+	e.preventDefault();
+	try {
+		const table = $("#table").DataTable();
+		const target = $("#reason-target").val();
+		const row = table.row(target);
+		const data = row.data();
+		const newData = {
+			...data,
+			INQD_UNREPLY: ``,
+			// INQD_MAR_REMARK: ``,
+		};
+		table.row(target).data(newData);
+		setSelect2({ allowClear: false });
+		$("#text-comment-other").val(``);
+		$("#text-count").html(`0`);
+		$("#modal-reason").prop("checked", false);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	}
 });

@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { setSelect2 } from "@amec/webasset/select2";
 import { showMessage, revisionCode } from "@amec/webasset/utils";
+import { createBtn } from "@amec/webasset/components/buttons";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable } from "@amec/webasset/dataTable";
 import {
@@ -27,25 +28,23 @@ import {
 	setupTableHistory,
 	setupTableAttachment,
 	setupPartTableDetail,
+	createReasonModal,
+	importExcel,
+	importText,
 } from "../inquiry/index.js";
-import * as ui from "../inquiry/ui.js";
+import { bindDeleteLine } from "../inquiry/ui.js";
+import { state } from "../inquiry/store.js";
 import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
-} from "../service/inquiry.js";
-// import * as inqs from "../inquiry/detail.js";
-// import * as tb from "../inquiry/table.js";
-// import * as tbmar from "../inquiry/table_mar.js";
-import { initApp } from "../utils.js";
+} from "../service/index.js";
+import { initApp, fileExtension } from "../utils.js";
 
 //001: On load form
 var table;
 var tableElmes;
 var tableAttach;
-let selectedFilesMap = new Map();
-let deletedFilesMap = new Map();
-let deletedLineMap = new Map();
 select2();
 
 $(document).ready(async () => {
@@ -76,12 +75,12 @@ $(document).ready(async () => {
 		const cards = await setupCard(inq);
 		const tableContainer = await setupPartTableDetail(details);
 		table = await createTable(tableContainer);
+		await bindDeleteLine();
 		// const history = await tb.setupTableHistory(logs);
 		// await createTable(history, { id: "#history" });
 		// const attachment = await tb.setupTableAttachment(file);
 		// tableAttach = await createTable(attachment, { id: "#attachment" });
 		// const btn = await setupButton(mode);
-		// const reason = await inqs.createReasonModal();
 		// const elmes = await inqs.elmesComponent();
 		// const date = await setDatePicker();
 
@@ -92,6 +91,9 @@ $(document).ready(async () => {
 		tableAttach = await createTable(attachment, { id: "#attachment" });
 
 		await setSelect2({ allowClear: false });
+		await setDatePicker();
+		await createReasonModal();
+		await setupButton(mode);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -151,27 +153,16 @@ async function setupButton(mode) {
 	else $("#btn-container").append(updateDE, updateIS, back);
 }
 
-//004: Unable to reply checkbox
-$(document).on("click", ".unreply", async function () {
-	await inqs.clickUnreply($(this), table.row($(this).parents("tr")));
+//Download template
+$(document).on("click", "#downloadTemplateBtn", async function (e) {
+	e.preventDefault();
+	const link = document.createElement("a");
+	link.href = `${process.env.APP_ENV}/assets/Import_inquiry_template.xlsx`;
+	link.download = "Import_inquiry_template.xlsx";
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
 });
-
-$(document).on("click", "#cancel-reason", async function () {
-	await inqs.resetUnreply(table);
-});
-
-$(document).on("click", "#save-reason", async function () {
-	await inqs.saveUnreply(table);
-});
-
-$(document).on("click", ".text-comment", async function () {
-	$("#reason-99").prop("checked", true);
-});
-
-$(document).on("keyup", ".text-comment", async function () {
-	await inqs.countReason(this);
-});
-// END: Unable to reply checkbox
 
 //005: Import data from file
 $(document).on("click", "#uploadRowBtn", async function (e) {
@@ -180,7 +171,7 @@ $(document).on("click", "#uploadRowBtn", async function (e) {
 
 $(document).on("change", "#import-tsv", async function (e) {
 	const file = e.target.files[0];
-	const ext = utils.fileExtension(file.name);
+	const ext = fileExtension(file.name);
 	const allow = ["xlsx", "tsv", "txt"];
 	if (!allow.includes(ext)) {
 		const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
@@ -190,13 +181,9 @@ $(document).on("change", "#import-tsv", async function (e) {
 		return;
 	}
 
-	var newdata = null;
-	if (ext === "xlsx") {
-		newdata = await inqs.importExcel(file);
-	} else {
-		newdata = await inqs.importText(file);
-	}
-
+	let newdata = null;
+	if (ext === "xlsx") newdata = await importExcel(file);
+	else newdata = await importText(file);
 	if (newdata == null) {
 		await showMessage("No data found in the file.");
 		return;
@@ -205,6 +192,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 	newdata.forEach(async function (row) {
 		table.row.add(row).draw();
 	});
+	setSelect2({ allowClear: false });
 });
 //End :Import date from File
 
@@ -239,17 +227,6 @@ $(document).on("click", ".delete-att", function (e) {
 	const fileName = data.FILE_ORIGINAL_NAME;
 	selectedFilesMap.delete(fileName);
 	row.remove().draw(false);
-});
-
-//Download template
-$(document).on("click", "#downloadTemplateBtn", async function (e) {
-	e.preventDefault();
-	const link = document.createElement("a");
-	link.href = `${process.env.APP_ENV}/assets/files/export/Import_inquiry_template.xlsx`;
-	link.download = "Import_inquiry_template.xlsx";
-	document.body.appendChild(link);
-	link.click();
-	document.body.removeChild(link);
 });
 
 //Submit Form

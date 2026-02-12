@@ -9,7 +9,7 @@ import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-import { statusColors } from "../inquiry/ui.js";
+import { statusColors } from "../inquiry/detail.js";
 import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
 import { initApp, tableOpt } from "../utils.js";
 

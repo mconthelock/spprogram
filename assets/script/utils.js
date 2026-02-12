@@ -1,7 +1,5 @@
-import dayjs from "dayjs";
 import { showbgLoader } from "@amec/webasset/preloader";
 import { initAuthen } from "@amec/webasset/authen";
-import { displayEmpInfo } from "@amec/webasset/indexDB";
 
 export const initApp = async (opt = {}) => {
 	try {
