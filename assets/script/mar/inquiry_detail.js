@@ -196,39 +196,6 @@ $(document).on("change", "#import-tsv", async function (e) {
 });
 //End :Import date from File
 
-//009: Add attachment
-$(document).on("change", "#attachment-file", async function (e) {
-	const datafile = await inqs.addAttached(e, selectedFilesMap);
-	if (datafile.files.length > 0) {
-		selectedFilesMap = datafile.selectedFilesMap;
-		datafile.files.map((fs) => {
-			tableAttach.row.add(fs).draw();
-		});
-	}
-});
-
-//010: Download attached file
-$(document).on("click", ".download-att-client", function (e) {
-	e.preventDefault();
-	const row = tableAttach.row($(this).closest("tr"));
-	const data = row.data();
-	const fileName = data.FILE_ORIGINAL_NAME;
-	tb.downloadClientFile(selectedFilesMap, fileName);
-});
-
-//011: Delete attached file
-$(document).on("click", ".delete-att", function (e) {
-	e.preventDefault();
-	const row = tableAttach.row($(this).closest("tr"));
-	const data = row.data();
-	if (data.FILE_ID !== undefined) {
-		deletedFilesMap.set(data);
-	}
-	const fileName = data.FILE_ORIGINAL_NAME;
-	selectedFilesMap.delete(fileName);
-	row.remove().draw(false);
-});
-
 //Submit Form
 //006: Save Draft
 $(document).on("click", "#draft", async function (e) {

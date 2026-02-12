@@ -24,8 +24,9 @@ import {
 	validateVariable,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
-// import * as utils from "../utils.js";
 import { init, events } from "./source";
+import { setSelectedFilesMap } from "./store.js";
+import { fileExtension } from "../utils.js";
 select2();
 
 export const statusColors = () => {
@@ -404,9 +405,9 @@ export async function importExcel(file) {
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
 			const variavle = validateVariable(el[6]);
-			const init = await initRow(el[1]);
+			const strrow = await initRow(el[1], i + 1);
 			const newRow = {
-				...init,
+				...strrow,
 				INQD_CAR: el[8],
 				INQD_MFGORDER: el[7],
 				INQD_ITEM: el[9],
@@ -420,7 +421,6 @@ export async function importExcel(file) {
 				INQD_OWNER: "MAR",
 				INQ_NO: el[0],
 			};
-
 			// ---------- Check 2na on Elmes here ----------
 			return newRow;
 		});
@@ -457,12 +457,12 @@ export async function importText(file) {
 	const cols = lines[0].split("\t");
 	if (cols.length !== 10) return;
 	const readdata = [];
-	lines.forEach(function (row) {
+	lines.forEach(function (row, i) {
 		const el = row.split("\t");
 		const variavle = dwg.validateVariable(el[6]);
-		const init = initRow(el[1]);
+		const strrow = initRow(el[1], i + 1);
 		const newRow = {
-			...init,
+			...strrow,
 			INQD_CAR: el[8],
 			INQD_MFGORDER: el[7].replaceAll("-", ""),
 			INQD_ITEM: el[9].substring(0, 3),
@@ -724,7 +724,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 //End: Verify save form
 
 //006: Add attachment
-export async function addAttached(e, selectedFilesMap) {
+export async function addAttached(e) {
 	const file = e.target.files;
 	if (!file) {
 		await showMessage("Please select a file to upload.");
@@ -733,10 +733,10 @@ export async function addAttached(e, selectedFilesMap) {
 
 	let files = [];
 	for (let i = 0; i < file.length; i++) {
-		const ext = utils.fileExtension(file[i].name);
+		const ext = fileExtension(file[i].name);
 		const allow = ["pdf", "jpg", "png", "docx", "xlsx", "txt"];
 		if (allow.includes(ext)) {
-			selectedFilesMap.set(file[i].name, file[i]);
+			setSelectedFilesMap(file[i].name, file[i]);
 			const fs = {
 				FILE_ORIGINAL_NAME: file[i].name,
 				FILE_SIZE: file[i].size,
@@ -751,7 +751,7 @@ export async function addAttached(e, selectedFilesMap) {
 			return;
 		}
 	}
-	return { files, selectedFilesMap };
+	return { files };
 }
 
 //007: Search key
@@ -792,4 +792,20 @@ export async function getSearchHeader(formdata) {
 	}
 	formdata["IS_GROUP"] = true;
 	return formdata;
+}
+
+export async function downloadClientFile(selectedFiles, fileName) {
+	const fileToDownload = selectedFiles.get(fileName);
+	if (fileToDownload) {
+		const fileUrl = URL.createObjectURL(fileToDownload);
+		const link = document.createElement("a");
+		link.href = fileUrl;
+		link.download = fileToDownload.name;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(fileUrl);
+	} else {
+		await showMessage(`File "${fileName}" not found for download.`);
+	}
 }
