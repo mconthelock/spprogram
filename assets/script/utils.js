@@ -17,7 +17,8 @@ export const initApp = async (opt = {}) => {
 		console.log(error);
 	}
 	await new Promise((r) => setTimeout(r, 500));
-	await showbgLoader({ show: false });
+	//$("#main-contents").addClass("bg-primary/5 border border-primary/30");
+	//await showbgLoader({ show: false });
 	return;
 };
 

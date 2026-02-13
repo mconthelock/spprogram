@@ -43,7 +43,6 @@ $(document).ready(async () => {
 			IS_WEIGHT: true,
 		});
 		if (inq.length == 0) throw new Error("Inquiry do not found");
-
 		inq[0].INQ_DATE = dayjs(inq[0].INQ_DATE).format("YYYY-MM-DD");
 		const mode = $("#inquiry-mode").val();
 		let title = `${inq[0].INQ_NO} `;
@@ -66,35 +65,6 @@ $(document).ready(async () => {
 			await quotationFactory(inq);
 		}
 		$("#inquiry-title").html(title);
-
-		// const customers = await cus.getCustomer();
-		// const customer = customers.find(
-		// 	(c) => c.CUS_ID == inquiry.INQ_CUSTOMER,
-		// );
-		// inquiry.QUO_CUSTOMER = customer == undefined ? "" : customer.CUS_NAME;
-
-		// if (inquiry.INQ_PKC_REQ == 0) {
-		// 	$("#tabs-lift").remove();
-		// 	$("#table-freight").remove();
-		// } else {
-		// 	$("#without-tab").remove();
-		// 	await freightData(inquiry.weight);
-		// }
-
-		// //Inquiry Detail
-		// const details = inquiry.details.filter((dt) => dt.INQD_LATEST == 1);
-		// const tableContainer = await tbquo.setupTableDetail(
-		// 	details,
-		// 	inquiry.INQ_TYPE,
-		// );
-
-		//Weight Package
-		// const weightContainer = await tableWeightOption(weight);
-		// tableWeight = await createTable(weightContainer, {
-		// 	id: "#table-weight",
-		// });
-
-		// // table = await createTable(tableContainer);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -137,7 +107,10 @@ async function quotationFactory(inq) {
 	const customers = await getCustomer();
 	const customer = customers.find((c) => c.CUS_ID == inq[0].INQ_CUSTOMER);
 	inq[0].QUO_CUSTOMER = customer == undefined ? "" : customer.CUS_NAME;
-	inq[0].INQ_ACTUAL_PO = inq[0].INQ_ACTUAL_PO.toUpperCase();
+	inq[0].INQ_ACTUAL_PO =
+		inq[0].INQ_ACTUAL_PO == null
+			? null
+			: inq[0].INQ_ACTUAL_PO.toUpperCase();
 	inq[0].INQ_CUSTRQS = dayjs(inq[0].INQ_CUSTRQS).format("YYYY-MM-DD");
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewFactOption(inq[0].details);

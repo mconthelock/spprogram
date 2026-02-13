@@ -1,17 +1,19 @@
 import ExcelJS from "exceljs";
+import dayjs from "dayjs";
 import { intVal, showDigits, showMessage } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
 import {
 	getExportTemplate,
-	getInquiryID,
+	getInquiry,
 	getElmesItem,
 } from "../service/index.js";
 import { cloneRows } from "../service/excel.js";
 import { setupElmesTable } from "./table_elmes.js";
 import { state, setDeletedLineMap } from "./store.js";
 import { projectConclude, addAttached } from "./detail.js";
+import dayjs from "dayjs";
 
 export function initRow(id, seq) {
 	return {
@@ -100,37 +102,42 @@ $(document).on("click", "#export-detail", async function (e) {
 		name: `exportinquirydetail.xlsx`,
 	});
 
-	const info = await getInquiryID($("#inquiry-id").val());
+	const info = await getInquiry({
+		INQ_ID: $("#inquiry-id").val(),
+		IS_DETAILS: true,
+	});
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (workbook) => {
 		const sheet = workbook.worksheets[0];
-		sheet.getCell(2, 22).value = info.INQ_NO;
-		sheet.getCell(4, 22).value = info.INQ_TRADER;
-		sheet.getCell(5, 1).value = `Email: ${info.maruser.SRECMAIL}`;
+		sheet.getCell(2, 22).value = info[0].INQ_NO;
+		sheet.getCell(4, 22).value = info[0].INQ_TRADER;
+		sheet.getCell(5, 1).value = `Email: ${info[0].maruser.SRECMAIL}`;
 		sheet.getCell(6, 1).value =
-			`Tel: +66 (038) 93 6600 Ext.${info.maruser.NTELNO}`;
+			`Tel: +66 (038) 93 6600 Ext.${info[0].maruser.NTELNO}`;
 
-		sheet.getCell(9, 5).value = info.maruser.SNAME;
-		sheet.getCell(10, 5).value = moment(info.INQ_DATE).format("DD/MM/YYYY");
-		sheet.getCell(11, 5).value = info.INQ_AGENT;
-		sheet.getCell(12, 5).value = info.INQ_COUNTRY;
-
-		sheet.getCell(9, 19).value = moment(info.INQ_MAR_SENT).format(
+		sheet.getCell(9, 5).value = info[0].maruser.SNAME;
+		sheet.getCell(10, 5).value = dayjs(info[0].INQ_DATE).format(
 			"DD/MM/YYYY",
 		);
-		sheet.getCell(10, 19).value = info.INQ_REV;
-		sheet.getCell(11, 19).value = info.INQ_PRJNO;
-		sheet.getCell(12, 19).value = info.INQ_PRJNAME;
+		sheet.getCell(11, 5).value = info[0].INQ_AGENT;
+		sheet.getCell(12, 5).value = info[0].INQ_COUNTRY;
+
+		sheet.getCell(9, 19).value = dayjs(info[0].INQ_MAR_SENT).format(
+			"DD/MM/YYYY",
+		);
+		sheet.getCell(10, 19).value = info[0].INQ_REV;
+		sheet.getCell(11, 19).value = info[0].INQ_PRJNO;
+		sheet.getCell(12, 19).value = info[0].INQ_PRJNAME;
 
 		let s = 16;
-		const details = info.details
+		const details = info[0].details
 			.filter((dt) => dt.INQD_LATEST == 1)
 			.sort((a, b) => a.INQD_RUNNO - b.INQD_RUNNO);
 		for (const i in details) {
 			const rowdata = details[i];
 			if (s > 36) await cloneRows(sheet, 20, s);
-			await setdata(sheet, rowdata, s, info.shipment.SHIPMENT_VALUE);
+			await setdata(sheet, rowdata, s, info[0].shipment.SHIPMENT_VALUE);
 			s++;
 		}
 		await workbook.xlsx.writeBuffer().then(function (buffer) {
@@ -139,7 +146,7 @@ $(document).on("click", "#export-detail", async function (e) {
 			});
 			const link = document.createElement("a");
 			link.href = URL.createObjectURL(blob);
-			link.download = `${info.INQ_NO}.xlsx`;
+			link.download = `${info[0].INQ_NO}.xlsx`;
 			link.click();
 		});
 	});

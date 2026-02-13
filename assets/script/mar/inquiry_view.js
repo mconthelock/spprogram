@@ -3,9 +3,7 @@ import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-// import * as inqs from "../inquiry/detail.js";
-// import * as tb from "../inquiry/table.js";
-// import * as service from "../service/inquiry.js";
+import { createBtn } from "@amec/webasset/components/buttons";
 import {
 	setupCard,
 	setupTableHistory,
@@ -21,8 +19,6 @@ import {
 } from "../service/inquiry.js";
 import { initApp } from "../utils.js";
 
-var table;
-var tableAttach;
 $(document).ready(async () => {
 	try {
 		await showLoader();
@@ -37,7 +33,7 @@ $(document).ready(async () => {
 		const card = await setupCard(inq[0]);
 		const details = inq[0].details.filter((dt) => dt.INQD_LATEST == 1);
 		const partTable = await setupPartViewDetail(details);
-		table = await createTable(partTable);
+		const table = await createTable(partTable);
 
 		//Inquiry History
 		const logs = await getInquiryHistory(inq[0].INQ_NO);
@@ -46,8 +42,10 @@ $(document).ready(async () => {
 
 		const file = await getInquiryFile({ INQ_NO: inq[0].INQ_NO });
 		const attachment = await setupTableAttachment(file, true);
-		tableAttach = await createTable(attachment, { id: "#attachment" });
-		// const btn = await setupButton();
+		const tableAttach = await createTable(attachment, {
+			id: "#attachment",
+		});
+		const btn = await setupButton();
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -66,7 +64,7 @@ async function setupButton() {
 	});
 
 	const back = await createBtn({
-		id: "goback",
+		id: "backBtn",
 		title: "Back",
 		type: "link",
 		href: `${process.env.APP_ENV}/mar/inquiry`,

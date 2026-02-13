@@ -16,7 +16,6 @@ Funtion contents
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import select2 from "select2";
-import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { setSelect2 } from "@amec/webasset/select2";
 import { showMessage, revisionCode } from "@amec/webasset/utils";
@@ -43,15 +42,13 @@ import {
 	getInquiryFile,
 	createInquiry,
 	createInquiryFile,
+	updateInquiry,
 } from "../service/index.js";
 import { initApp, fileExtension } from "../utils.js";
 
 //001: On load form
 var table;
-var tableElmes;
-var tableAttach;
 select2();
-
 $(document).ready(async () => {
 	try {
 		await showLoader();
@@ -76,29 +73,22 @@ $(document).ready(async () => {
 			logs = await getInquiryHistory(inqs[0].INQ_NO);
 			file = await getInquiryFile({ INQ_NO: inqs[0].INQ_NO });
 		}
-
 		const cards = await setupCard(inq);
 		const tableContainer = await setupPartTableDetail(details);
 		table = await createTable(tableContainer);
-		await bindDeleteLine();
-		// const history = await tb.setupTableHistory(logs);
-		// await createTable(history, { id: "#history" });
-		// const attachment = await tb.setupTableAttachment(file);
-		// tableAttach = await createTable(attachment, { id: "#attachment" });
-		// const btn = await setupButton(mode);
-		// const elmes = await inqs.elmesComponent();
-		// const date = await setDatePicker();
-
-		//Inquiry History
+		//Inquiry History and Attachment
 		const history = await setupTableHistory(logs);
-		await createTable(history, { id: "#history" });
+		const tableHistory = await createTable(history, { id: "#history" });
 		const attachment = await setupTableAttachment(file, true);
-		tableAttach = await createTable(attachment, { id: "#attachment" });
+		const tableAttach = await createTable(attachment, {
+			id: "#attachment",
+		});
 
 		await setSelect2({ allowClear: false });
 		await setDatePicker();
 		await createReasonModal();
 		await setupButton(mode);
+		await bindDeleteLine();
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -256,7 +246,7 @@ async function createPath(opt) {
 		const url =
 			opt.status == 1
 				? `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
-				: `${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`;
+				: `${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`;
 		window.location.replace(url);
 	} catch (error) {
 		console.log(error);
@@ -269,11 +259,11 @@ async function createPath(opt) {
 //012: Update and send to design
 $(document).on("click", "#update-de", async function (e) {
 	e.preventDefault();
-	if ($(this).hasClass("revise") && $("#remark").val() == "") {
-		await showMessage("Please enter remark for revise inquiry.");
-		$("#remark").focus();
-		return;
-	}
+	// if ($(this).hasClass("revise") && $("#remark").val() == "") {
+	// 	await showMessage("Please enter remark for revise inquiry.");
+	// 	$("#remark").focus();
+	// 	return;
+	// }
 
 	if ($("#status").val() >= 10) {
 		await updatePath({ level: 1, status: 3 });
@@ -285,48 +275,45 @@ $(document).on("click", "#update-de", async function (e) {
 //013: Update and send to AS400
 $(document).on("click", "#update-bm", async function (e) {
 	e.preventDefault();
-	if ($(this).hasClass("revise") && $("#remark").val() == "") {
-		await showMessage("Please enter remark for revise inquiry.");
-		$("#remark").focus();
-		return;
-	}
+	// if ($(this).hasClass("revise") && $("#remark").val() == "") {
+	// 	await showMessage("Please enter remark for revise inquiry.");
+	// 	$("#remark").focus();
+	// 	return;
+	// }
 	await updatePath({ level: 2, status: 30 });
 });
 
 async function updatePath(opt) {
-	const chkheader = await inqs.verifyHeader(".req-2");
-	if (!chkheader) return;
-	const header = await inqs.getFormHeader();
-	const check_inq = await inqservice.getInquiry({ INQ_NO: header.INQ_NO });
-	if (check_inq.length == 0) {
-		await showMessage(`Inquiry ${header.INQ_NO} is not found on System!`);
-		$("#inquiry-no").focus().select();
-		return;
-	}
-
-	header.INQ_STATUS = opt.status;
-	header.UPDATE_BY = $("#user-login").attr("empname");
-	header.UPDATE_AT = new Date();
-
-	const details = table.rows().data().toArray();
 	try {
-		await inqs.verifyDetail(table, details, opt.level);
-		await showLoader({
-			show: true,
-			title: "Saving data",
-			clsbox: `!bg-transparent`,
-		});
+		await showLoader();
+		// const chkheader = await verifyHeader(".req-2");
+		// if (!chkheader) return;
+		const header = await getFormHeader();
+		// const check_inq = await getInquiry({ INQ_NO: header.INQ_NO });
+		// if (check_inq.length == 0) {
+		// 	await showMessage(
+		// 		`Inquiry ${header.INQ_NO} is not found on System!`,
+		// 	);
+		// 	$("#inquiry-no").focus().select();
+		// 	return;
+		// }
 
+		header.INQ_STATUS = opt.status;
+		header.UPDATE_BY = $("#user-login").attr("empname");
+		header.UPDATE_AT = new Date();
+
+		const details = table.rows().data().toArray();
+		// await verifyDetail(table, details, opt.level);
 		let deleteLine = [];
-		if (deletedLineMap.size > 0) {
-			deletedLineMap.forEach((value, key) => {
+		if (state.deletedLineMap.size > 0) {
+			state.deletedLineMap.forEach((value, key) => {
 				deleteLine.push(key);
 			});
 		}
 
 		let deleteFile = [];
-		if (deletedFilesMap.size > 0) {
-			deletedFilesMap.forEach((value, key) => {
+		if (state.deletedFilesMap.size > 0) {
+			state.deletedFilesMap.forEach((value, key) => {
 				deleteFile.push(key);
 			});
 		}
@@ -341,21 +328,24 @@ async function updatePath(opt) {
 			timelinedata,
 			history,
 		};
-		const inquiry = await inqservice.updateInquiry(fomdata);
-		if (selectedFilesMap.size > 0) {
+		const inquiry = await updateInquiry(fomdata);
+		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
 			attachment_form.append("INQ_NO", inquiry.INQ_NO);
-			selectedFilesMap.forEach((file, fileName) => {
+			state.selectedFilesMap.forEach((file, fileName) => {
 				attachment_form.append("files", file, fileName);
 			});
-			await inqservice.createInquiryFile(attachment_form);
+			await createInquiryFile(attachment_form);
 		}
 		window.location.replace(
-			`${process.env.APP_ENV}/mar/inquiry/view/${inquiry.INQ_ID}`,
+			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await showErrorMessage(`Something went wrong.`, "2036");
+		console.log(error);
+		await showMessage(`Something went wrong.`);
 		return;
+	} finally {
+		await showLoader({ show: false });
 	}
 }
 

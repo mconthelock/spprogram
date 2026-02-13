@@ -4,7 +4,7 @@ class Stockpart extends MY_Controller {
         parent::__construct();
     }
 
-     public function create(){
+     public function index(){
         $this->views('mar/stockpart/detail');
     }
 

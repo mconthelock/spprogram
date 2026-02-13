@@ -33,6 +33,12 @@
             "class": "fdate",
             "mapping": "INQ_CUSTRQS",
             "name": "INQ_CUSTRQS"
+        },
+        {
+            "label": "Remark",
+            "id": "remarks",
+            "type": "textarea" ,
+            "name": "QUO_NOTE"
         }
     ]
 }

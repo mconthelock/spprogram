@@ -8,7 +8,7 @@ export async function tableViewFactOption(data = []) {
 	opt.lengthChange = false;
 	opt.searching = false;
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none">>`;
-	opt.orderFixed = [0, "asc"];
+	opt.order = [[0, "asc"]];
 	opt.columns = [
 		{
 			data: "INQD_RUNNO",
@@ -17,125 +17,51 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_SEQ",
 			title: "No",
-			className: "sticky-column w-[50px] min-w-[50px]",
+			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
 		},
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className:
-				"!px-[3px] w-[75px] min-w-[75px] max-w-[75px] item-no sticky-column",
-			sortable: false,
-			render: function (data, type, row, meta) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `sticky-column w-14 min-w-14 cell-display border-r! text-center!`,
 		},
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "sticky-column",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 min-w-50 max-w-50 break-all">${data}</div>`;
-				}
-				return data;
-			},
+			className: `sticky-column w-62 min-w-62 cell-display border-r!`,
 		},
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 min-w-50 max-w-50 break-all">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-62 min-w-62 cell-display border-r!`,
 		},
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 min-w-50 max-w-50 break-all">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-62 min-w-62 cell-display border-r!`,
 		},
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-24 min-w-24 cell-display border-r!`,
 		},
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
 			footer: "Total",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-16 min-w-16 cell-display border-r!`,
 		},
 		{
 			data: "INQD_UM",
 			title: "U/M",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_FC_COST",
-			title: "FC Cost",
-			className: `hidden`,
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_FC_BASE",
-			title: "%FC",
-			className: `hidden`,
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-16 min-w-16 cell-display border-r!`,
 		},
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `min-w-[100px] INQD_TC_COST`,
-			render: function (data, type, row) {
+			className: `w-32 min-w-32 cell-display border-r!`,
+			render: function (data, type) {
 				if (type === "display") {
-					data = data == null ? "" : data;
-					if (row.INQD_SUPPLIER == "MELINA") {
-						return `<div class="px-2"><input type="text" class="w-full min-w-13.75 outline-0 text-right input-number inqprice" value="${data}"/></div>`;
-					}
-					return `<div class="px-2 text-right!">${showDigits(data, 0)}</div>`;
+					return showDigits(data, 0);
 				}
 				return data;
 			},
@@ -143,11 +69,10 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_TC_BASE",
 			title: "% TC",
-			className: `min-w-[70px]`,
+			className: `w-12 min-w-12 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${showDigits(data, 3)}</div>`;
+					return showDigits(data, 3);
 				}
 				return data;
 			},
@@ -155,11 +80,10 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `min-w-[100px]`,
+			className: `w-32 min-w-32 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
-					data = data == null ? "" : Math.ceil(data);
-					return `<div class="px-2 text-right!">${showDigits(data, 0)}</div>`;
+					return showDigits(data, 3);
 				}
 				return data;
 			},
@@ -167,17 +91,13 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `min-w-[100px]`,
+			className: `w-32 min-w-32 cell-display border-r!`,
 			render: function (data, type, row) {
-				const totalPrice =
-					Math.ceil(row.INQD_UNIT_PRICE) * row.INQD_QTY;
+				const price = row.INQD_QTY * data;
 				if (type === "display") {
-					return `<div class="px-2 text-right!">${showDigits(
-						totalPrice,
-						0,
-					)}</div>`;
+					return showDigits(price, 3);
 				}
-				return data;
+				return price;
 			},
 		},
 	];
@@ -193,8 +113,6 @@ export async function tableViewFactOption(data = []) {
 		let currency = "";
 		data.map((el) => {
 			const price = calPrice(el);
-			console.log(price);
-
 			totalqty += intVal(el.INQD_QTY);
 			totalfccost += intVal(el.INQD_FC_COST);
 			totaltccost += intVal(price.tccost);
@@ -204,9 +122,9 @@ export async function tableViewFactOption(data = []) {
 		});
 
 		api.column(7).footer().innerHTML = showDigits(totalqty, 0);
-		api.column(11).footer().innerHTML = showDigits(totaltccost, 0);
-		api.column(13).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(14).footer().innerHTML = showDigits(total, 0);
+		api.column(9).footer().innerHTML = showDigits(totaltccost, 0);
+		api.column(11).footer().innerHTML = showDigits(totalunit, 0);
+		api.column(12).footer().innerHTML = showDigits(total, 0);
 	};
 	return opt;
 }

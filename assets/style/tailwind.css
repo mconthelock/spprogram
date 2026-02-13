@@ -184,7 +184,7 @@
 	}
 
 	.table thead th {
-		@apply text-center! bg-slate-500! text-gray-300! text-xs!;
+		@apply text-center! bg-slate-500! text-gray-300! text-xs! border-none!;
 	}
 
 	.table {
@@ -202,7 +202,7 @@
 	}
 
 	.table.table-edit > tbody > tr > td:not(.cell-display) {
-		border-right: 0.25px solid var(--color-gray-300) !important;
+		border-right: 1px solid var(--color-gray-300) !important;
 		@apply p-0!;
 	}
 

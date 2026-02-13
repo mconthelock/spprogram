@@ -31,7 +31,7 @@
             <div class="drawer-content flex flex-col items-center justify-start w-full h-full">
                 <!-- Page content here -->
                 <div class="flex-1 flex flex-col w-full px-4 my-5 md:px-4">
-                    <div class="card bg-primary/5 border border-primary/30 min-h-[calc(100vh-3rem)]">
+                    <div class="card min-h-[calc(100vh-3rem)] bg-primary/5 border border-primary/30" id="main-contents">
                         <div class="card-body">
                             @yield('contents')
                         </div>

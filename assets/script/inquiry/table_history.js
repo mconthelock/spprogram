@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import { displayname } from "@amec/webasset/api/amec";
+import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
 import { tableOpt } from "../utils.js";
 export async function setupTableHistory(data = []) {
 	const opt = { ...tableOpt };
@@ -11,7 +14,7 @@ export async function setupTableHistory(data = []) {
 	opt.columns = [
 		{
 			data: "INQ_REV",
-			className: "text-center text-xs w-[30px] max-w-[30px] !p-0 !ps-3",
+			className: "text-center text-xs w-[45px] max-w-[45px]",
 			title: "Rev.",
 			sortable: false,
 			render: (data, type) => {
@@ -33,23 +36,23 @@ export async function setupTableHistory(data = []) {
 						emp.SEMPNO
 					})`;
 					return `
-          <div class="flex gap-2">
-            <div class="avatar">
-                <div class="w-8 h-8 rounded-full">
-                    <img src="" id="image-${emp.SEMPNO}" class="hidden" />
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <a href="http://webflow/form/usrInfo.asp?uid=${
-					emp.SEMPNO
-				}" target="_blank" class="text-nowrap font-bold">${name}</a>
-                <div class="text-nowrap text-gray-500">${moment(data).format(
-					"YYYY-MM-DD HH:mm:ss",
-				)}</div>
-            </div>
-        </div>`;
+                        <div class="flex gap-2">
+                            <div class="avatar">
+                                <div class="w-8 h-8 rounded-full">
+                                    <img src="" id="image-${emp.SEMPNO}" class="hidden" />
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <a href="http://webflow/form/usrInfo.asp?uid=${
+									emp.SEMPNO
+								}" target="_blank" class="text-nowrap font-bold">${name}</a>
+                                <div class="text-nowrap text-gray-500">${dayjs(
+									data,
+								).format("YYYY-MM-DD HH:mm:ss")}</div>
+                            </div>
+                        </div>`;
 				}
-				return moment(data).format("YYYY-MM-DD HH:mm:ss");
+				return dayjs(data).format("YYYY-MM-DD HH:mm:ss");
 			},
 		},
 		{

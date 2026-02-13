@@ -10,38 +10,19 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-second table-edit display text-xs"></table>
+        <table id="table" class="table table-zebra table-edit text-xs"></table>
     </div>
     <div class="flex gap-2 my-3" id="btn-container"></div>
 
     <input type="checkbox" id="new-stock-item" class="modal-toggle" />
-    <div class="modal " role="dialog">
-        <div class="modal-box w-full rounded-none min-w-[100vw] min-h-[100vh]">
-            {{-- <h3 class="text-lg font-bold pb-2">Price List item!</h3> --}}
-            <table id="table-price-list" class="table table-zebra table-second display text-sm"></table>
-            <div class="flex gap-3 mt-5">
-                <button class="btn btn-primary rounded-none text-white hover:bg-primary/70" type="button"
-                    id="price-list-confirm"><i class="fi fi-rr-insert text-xl"></i>Confirm</button>
-                <button class="btn btn-error rounded-none" type="button" id="price-list-cancel"><i
-                        class="fi fi-bs-cross text-xl"></i>Cancel</button>
-            </div>
+    <div class="modal" role="dialog">
+        <div class="modal-box min-w-9/12">
+            @include('layouts/datatable_load')
+            <table id="table-price-list" class="table table-zebra table-second display text-xs"></table>
         </div>
     </div>
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/inquiryui.js?ver={{ $GLOBALS['version'] }}"></script>
     <script src="{{ $_ENV['APP_JS'] }}/mar_inqstock.js?ver={{ $GLOBALS['version'] }}"></script>
-@endsection
-
-@section('styles')
-    <style>
-        #table-price-list thead tr th:first-child::after {
-            display: none;
-        }
-
-        #table-price-list tbody {
-            font-size: 0.75rem !important;
-        }
-    </style>
 @endsection

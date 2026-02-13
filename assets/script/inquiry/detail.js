@@ -21,6 +21,8 @@ import { intVal, showMessage } from "@amec/webasset/utils";
 import {
 	getReason,
 	getMainProject,
+	getPartProject,
+	getDummyProject,
 	validateVariable,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
@@ -378,9 +380,9 @@ export const projectConclude = async (data) => {
 	if (data.mfgno) q = { SMFG_NO: data.mfgno };
 	else q = { PRJ_NO: data.prjno, CAR_NO: data.carno };
 
-	let prjdata = await mkt.getMainProject(q);
-	if (prjdata.length == 0) await mkt.getPartProject(q);
-	if (prjdata.length == 0) await mkt.getDummyProject(q);
+	let prjdata = await getMainProject(q);
+	if (prjdata.length == 0) await getPartProject(q);
+	if (prjdata.length == 0) await getDummyProject(q);
 	return prjdata;
 };
 

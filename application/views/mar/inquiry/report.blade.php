@@ -145,5 +145,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/mar_inq_report.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/mar_inqreport.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

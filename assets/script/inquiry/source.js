@@ -314,10 +314,18 @@ export const events = {
 		$("#delivery-term").val(customers.CUS_TERM).change();
 		$("#delivery-method").val(2).change();
 		$("#inq-leadtime").val(customers.CUS_LT).change();
-		$("#currency").val(customers.CUS_CURRENCY).change();
-
+		$("#currency").val(customers.CUS_CURENCY).change();
 		$("#add-item").removeClass("btn-disabled");
 		$("#inquiry-no").focus().select();
+
+		if ($.fn.dataTable.isDataTable("#table")) {
+			var tableEl = $("#table").DataTable();
+			// tableEl.rows().every(function () {
+			// 	this.remove().draw();
+			// });
+
+			tableEl.data().clear().draw();
+		}
 	},
 
 	handleQuotationChange: async (e) => {

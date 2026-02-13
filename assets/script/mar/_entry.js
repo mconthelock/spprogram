@@ -3,11 +3,12 @@ module.exports = {
 	mar_inquiry: "./assets/script/mar/inquiry.js",
 	mar_inqdetail: "./assets/script/mar/inquiry_detail.js",
 	mar_inqviews: "./assets/script/mar/inquiry_view.js",
-	mar_inq_report: "./assets/script/mar/inquiry_report.js",
+	mar_inqreport: "./assets/script/mar/inquiry_report.js",
+	//Stock Part
+	mar_inqstock: "./assets/script/mar/inquiry_stockpart.js",
 	//Quotation
 	mar_quotation: "./assets/script/mar/quotation.js",
 	mar_quodetail: "./assets/script/mar/quotation_detail.js",
-	// mar_quoview: "./assets/script/mar/quotation_view.js",
 	//Out2Out Quotation
 	mar_outtoout: "./assets/script/mar/quotation_outout.js",
 
