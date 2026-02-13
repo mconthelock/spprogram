@@ -34,7 +34,6 @@ import {
 import { addRow, bindDeleteLine } from "../inquiry/ui.js";
 import { initApp } from "../utils.js";
 
-//001: On load form
 var table;
 var tablePriceList;
 select2();
@@ -200,13 +199,13 @@ $(document).on("click", "#price-list-confirm", async function (e) {
 	const lastRowData = lastRowNode.data().toArray();
 	const lastSeq = lastRowData[0].INQD_SEQ;
 	table.row(lastRowIndex).remove().draw();
-	let i = 0;
+	console.log(lastSeq);
+	var index = 0;
 	rows.forEach(async (row) => {
 		if (row.selected) {
-			console.log(lastSeq, i);
 			const formula = row.customer.rate.FORMULA;
-			const cost = row.itemdesc.prices[0].TCCOST;
-			const price = formula * cost;
+			const cost = Math.ceil(row.itemdesc.prices[0].TCCOST);
+			const price = Math.ceil(formula * cost);
 			const newrow = {
 				INQD_ITEM: row.itemdesc.ITEM_NO,
 				INQD_PARTNAME: row.itemdesc.ITEM_NAME,
@@ -214,16 +213,17 @@ $(document).on("click", "#price-list-confirm", async function (e) {
 				INQD_VARIABLE: row.itemdesc.ITEM_VARIABLE,
 				INQD_UM: row.itemdesc.ITEM_UNIT,
 				INQD_SUPPLIER: row.itemdesc.ITEM_SUPPLIER,
-				INQD_FC_COST: row.itemdesc.prices[0].FCCOST,
+				INQD_FC_COST: Math.ceil(row.itemdesc.prices[0].FCCOST),
 				INQD_FC_BASE: row.itemdesc.prices[0].FCBASE,
-				INQD_TC_COST: row.itemdesc.prices[0].TCCOST,
+				INQD_TC_COST: Math.ceil(row.itemdesc.prices[0].TCCOST),
 				INQD_TC_BASE: row.customer.rate.FORMULA,
 				INQD_UNIT_PRICE: price,
 				ITEMID: row.itemdesc.ITEM_ID,
 				INQD_OWNER: "MAR",
 			};
-			await addRow({ id: lastSeq + i, seq: lastSeq + i }, table, newrow);
-			i++;
+			const seq = lastSeq + index;
+			index = index + 1;
+			await addRow({ id: seq, seq: seq }, table, newrow);
 		}
 	});
 	$("#table-price-list").html("");

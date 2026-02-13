@@ -7,7 +7,7 @@ export async function tableViewFactOption(data = []) {
 	opt.data = data;
 	opt.lengthChange = false;
 	opt.searching = false;
-	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none">>`;
+	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"p><"table-page flex-none"i>>`;
 	opt.order = [[0, "asc"]];
 	opt.columns = [
 		{
@@ -58,7 +58,7 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -80,10 +80,10 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
-					return showDigits(data, 3);
+					return showDigits(data, 0);
 				}
 				return data;
 			},
@@ -91,11 +91,11 @@ export async function tableViewFactOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r!`,
 			render: function (data, type, row) {
 				const price = row.INQD_QTY * data;
 				if (type === "display") {
-					return showDigits(price, 3);
+					return showDigits(price, 0);
 				}
 				return price;
 			},

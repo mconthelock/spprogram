@@ -20,7 +20,7 @@
                     <span class="font-bold ">Item Detail</span>
                 </label>
                 <div class="tab-content bg-base-100 border-base-300 p-6">
-                    <table id="table" class="table table-zebra display text-xs"></table>
+                    <table id="table" class="table table-zebra table-edit text-xs"></table>
                 </div>
 
                 <label class="tab flex items-center gap-2">
@@ -55,7 +55,7 @@
         </div>
 
         <div id="without-tab" class="">
-            <table id="table" class="table table-zebra table-second table-edit display text-md!"></table>
+            <table id="table" class="table table-zebra table-edit text-xs"></table>
         </div>
 
     </div>
