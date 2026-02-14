@@ -33,9 +33,10 @@ export async function setupPartViewDetail(data = []) {
 
 	const opt = { ...tableOpt };
 	opt.data = data;
-	opt.paging = false;
+	// opt.paging = false;
+	// opt.info = false;
+	opt.lengthChange = false;
 	opt.searching = false;
-	opt.info = false;
 	opt.orderFixed = [0, "asc"];
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.columns = [

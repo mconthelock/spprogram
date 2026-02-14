@@ -13,8 +13,8 @@ export async function tableWeightOption(data = []) {
             </select>`;
 	};
 
-	const textInput = (data, digits = 0) => {
-		return `<input type="text" class="w-full cell-input input-number text-right" value="${showDigits(data, digits) || 0}">`;
+	const textInput = (data, name, digits = 0) => {
+		return `<input type="text" class="w-full cell-input input-number text-right" value="${showDigits(data, digits) || 0}" data-name="${name}">`;
 	};
 
 	const fooerData = (data) => {
@@ -54,7 +54,7 @@ export async function tableWeightOption(data = []) {
 			data: "NO_WEIGHT",
 			className: `w-32 min-w-32 bg-primary/10`,
 			render: function (data, type) {
-				if (type === "display") return textInput(data);
+				if (type === "display") return textInput(data, "NO_WEIGHT");
 				return data;
 			},
 		},
@@ -62,7 +62,7 @@ export async function tableWeightOption(data = []) {
 			data: "NET_WEIGHT",
 			className: `w-32 min-w-32 bg-primary/10`,
 			render: function (data, type) {
-				if (type === "display") return textInput(data);
+				if (type === "display") return textInput(data, "NET_WEIGHT");
 				return data;
 			},
 		},
@@ -70,7 +70,7 @@ export async function tableWeightOption(data = []) {
 			data: "GROSS_WEIGHT",
 			className: `w-32 min-w-32 bg-primary/10`,
 			render: function (data, type) {
-				if (type === "display") return textInput(data);
+				if (type === "display") return textInput(data, "GROSS_WEIGHT");
 				return data;
 			},
 		},
@@ -78,7 +78,7 @@ export async function tableWeightOption(data = []) {
 			data: "WIDTH_WEIGHT",
 			className: `w-32 min-w-32 bg-primary/10`,
 			render: function (data, type) {
-				if (type === "display") return textInput(data);
+				if (type === "display") return textInput(data, "WIDTH_WEIGHT");
 				return data;
 			},
 		},
@@ -86,7 +86,7 @@ export async function tableWeightOption(data = []) {
 			data: "LENGTH_WEIGHT",
 			className: `w-32 min-w-32 bg-primary/10`,
 			render: function (data, type) {
-				if (type === "display") return textInput(data);
+				if (type === "display") return textInput(data, "LENGTH_WEIGHT");
 				return data;
 			},
 		},
@@ -94,7 +94,7 @@ export async function tableWeightOption(data = []) {
 			data: "HEIGHT_WEIGHT",
 			className: `w-32 min-w-32 bg-primary/10`,
 			render: function (data, type) {
-				if (type === "display") return textInput(data);
+				if (type === "display") return textInput(data, "HEIGHT_WEIGHT");
 				return data;
 			},
 		},
@@ -102,11 +102,6 @@ export async function tableWeightOption(data = []) {
 			data: "VOLUMN_WEIGHT",
 			className: `cell-display w-32 min-w-32 border-r!`,
 			render: function (data, type) {
-				// 	const volume =
-				// 		intVal(row.WIDTH_WEIGHT) *
-				// 		intVal(row.LENGTH_WEIGHT) *
-				// 		intVal(row.HEIGHT_WEIGHT) *
-				// 		0.000001;
 				if (type === "display") {
 					return showDigits(data, 4);
 				}
@@ -116,6 +111,14 @@ export async function tableWeightOption(data = []) {
 		{
 			data: "ROUND_WEIGHT",
 			className: `cell-display w-32 min-w-32 border-r!`,
+		},
+		{
+			data: "SEQ_WEIGHT",
+			className: `cell-display w-12 min-w-12 border-r!`,
+			sortable: false,
+			render: function (data, type) {
+				return `<button type="button" class="btn btn-xs btn-circle btn-ghost text-error delete-weight-row"><i class="fi fi-rr-cross"></i></button>`;
+			},
 		},
 	];
 

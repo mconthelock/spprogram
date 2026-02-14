@@ -21,7 +21,6 @@ import {
 	getInquiryFile,
 } from "../service/index.js";
 import { initApp } from "../utils.js";
-import { node } from "@rspack/core";
 
 var tableWeight;
 $(async function () {
@@ -55,6 +54,18 @@ $(async function () {
 		const tableAttach = await createTable(attachment, {
 			id: "#attachment",
 		});
+
+		const save = await createBtn();
+
+		const back = await createBtn({
+			id: "goback",
+			title: "Back",
+			type: "link",
+			href: `${process.env.APP_ENV}/pkc/inquiry`,
+			icon: "fi fi-rr-arrow-circle-left text-xl",
+			className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
+		});
+		$("#btn-container").append(save, back);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
@@ -74,23 +85,72 @@ $(document).on("click", "#add-weight-row", async function (e) {
 		WIDTH_WEIGHT: 0,
 		LENGTH_WEIGHT: 0,
 		HEIGHT_WEIGHT: 0,
-		VOLUMN_WEIGHT: 12,
+		VOLUMN_WEIGHT: 0,
 		ROUND_WEIGHT: 0,
 	};
 	tableWeight.row.add(data).draw();
+	$("#table-weight").find("tbody tr:last").find("td:eq(3) input").focus();
 	setSelect2({ allowClear: false });
+});
+
+$(document).on("click", ".delete-weight-row", async function (e) {
+	e.preventDefault();
+	const selectedRow = $(this).closest("tr");
+	const found = tableWeight.row(selectedRow).data();
+	const seq = intVal(found.SEQ_WEIGHT);
+	tableWeight.row(selectedRow).remove().draw();
+	var i = seq;
+	tableWeight.rows().every(function (rw) {
+		const dt = this.data();
+		if (intVal(dt.SEQ_WEIGHT) >= seq) {
+			this.cells(rw, 1).every(function () {
+				this.data(i++);
+			});
+		}
+	});
 });
 
 $(document).on("change", ".cell-input", async function (e) {
 	e.preventDefault();
-	const newValue = intVal($(this).val());
-	const rowData = tableWeight.row($(this).closest("tr")).data();
-	const columnIndex = $(this).closest("td")[0].cellIndex;
-	const key = Object.keys(rowData)[columnIndex - 1];
-	const data = { ...rowData, [key]: newValue };
-	tableWeight.row($(this).closest("tr")).data(data).draw();
-	// const nextCell = $(this).closest("td").next("td");
-	// if (nextCell.length) {
-	// 	nextCell.find("input").focus();
-	// }
+	const selectedRow = $(this).closest("tr");
+	const selectedCol = $(this).closest("td");
+	let row = tableWeight.row(selectedRow).data();
+	const name = $(this).attr("data-name");
+	row[name] = intVal($(this).val());
+	row = await volumn(row);
+	tableWeight.row(selectedRow).data(row).draw(false);
+	console.log(row);
+
+	const next = $(selectedCol).index() + 1;
+	const nexCol = tableWeight.row(selectedRow).column(next).nodes().to$();
+	if ($(nexCol).find("input").length > 0) $(nexCol).find("input").select();
+	setSelect2({ allowClear: false });
 });
+
+$(document).on("click", "#btn-save", async function (e) {
+	e.preventDefault();
+	//   if ((await checkReqired("#inqform")) === false) return false;
+	//   if ((await checkTabledetail(tableWeight)) === false) return false;
+
+	//   $.ajax({
+	//     url: host + "pkc/weight/create",
+	//     type: "POST",
+	//     data: { data: tableWeight.data().toArray() },
+	//     success: function (res) {
+	//       window.location = `${host}pkc/inquiry`;
+	//     },
+	//     error: function (err) {
+	//       showErrorNotify(err);
+	//     },
+	//   });
+});
+
+function volumn(el) {
+	const w = intVal(el.WIDTH_WEIGHT);
+	const l = intVal(el.LENGTH_WEIGHT);
+	const h = intVal(el.HEIGHT_WEIGHT);
+	const val = (w * l * h) / 1000000;
+	el.VOLUMN_WEIGHT = val;
+	el.ROUND_WEIGHT = Math.ceil(val);
+	return el;
+}

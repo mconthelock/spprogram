@@ -36,6 +36,7 @@
                             <th colspan="2">Weight</th>
                             <th colspan="3">Dimension</th>
                             <th colspan="2">Volume (CU.M)</th>
+                            <th rowspan="2"><i class="fi fi-rr-settings-sliders text-lg"></i></th>
                         </tr>
                         <tr>
                             <th>Net Weight</th>
