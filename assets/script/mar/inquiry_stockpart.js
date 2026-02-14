@@ -284,14 +284,12 @@ $(document).on("click", "#savedata", async function (e) {
 			QUO_PIC: inquiry.INQ_MAR_PIC,
 			QUO_LATEST: 1,
 		});
-
 		window.location.replace(
-			`${process.env.APP_ENV}/mar/quotation/show/${inquiry.INQ_ID}`,
+			`${process.env.APP_ENV}/mar/quotation/detail/${inquiry.INQ_ID}/3/`,
 		);
 	} catch (error) {
+		await showLoader({ show: false });
 		await showMessage(`Something went wrong.`);
 		return;
-	} finally {
-		await showLoader({ show: false });
 	}
 });

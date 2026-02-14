@@ -259,11 +259,11 @@ async function createPath(opt) {
 //012: Update and send to design
 $(document).on("click", "#update-de", async function (e) {
 	e.preventDefault();
-	// if ($(this).hasClass("revise") && $("#remark").val() == "") {
-	// 	await showMessage("Please enter remark for revise inquiry.");
-	// 	$("#remark").focus();
-	// 	return;
-	// }
+	if ($(this).hasClass("revise") && $("#remark").val() == "") {
+		await showMessage("Please enter remark for revise inquiry.");
+		$("#remark").focus();
+		return;
+	}
 
 	if ($("#status").val() >= 10) {
 		await updatePath({ level: 1, status: 3 });
@@ -275,35 +275,35 @@ $(document).on("click", "#update-de", async function (e) {
 //013: Update and send to AS400
 $(document).on("click", "#update-bm", async function (e) {
 	e.preventDefault();
-	// if ($(this).hasClass("revise") && $("#remark").val() == "") {
-	// 	await showMessage("Please enter remark for revise inquiry.");
-	// 	$("#remark").focus();
-	// 	return;
-	// }
+	if ($(this).hasClass("revise") && $("#remark").val() == "") {
+		await showMessage("Please enter remark for revise inquiry.");
+		$("#remark").focus();
+		return;
+	}
 	await updatePath({ level: 2, status: 30 });
 });
 
 async function updatePath(opt) {
 	try {
 		await showLoader();
-		// const chkheader = await verifyHeader(".req-2");
-		// if (!chkheader) return;
+		const chkheader = await verifyHeader(".req-2");
+		if (!chkheader) return;
 		const header = await getFormHeader();
-		// const check_inq = await getInquiry({ INQ_NO: header.INQ_NO });
-		// if (check_inq.length == 0) {
-		// 	await showMessage(
-		// 		`Inquiry ${header.INQ_NO} is not found on System!`,
-		// 	);
-		// 	$("#inquiry-no").focus().select();
-		// 	return;
-		// }
+		const check_inq = await getInquiry({ INQ_NO: header.INQ_NO });
+		if (check_inq.length == 0) {
+			await showMessage(
+				`Inquiry ${header.INQ_NO} is not found on System!`,
+			);
+			$("#inquiry-no").focus().select();
+			return;
+		}
 
 		header.INQ_STATUS = opt.status;
 		header.UPDATE_BY = $("#user-login").attr("empname");
 		header.UPDATE_AT = new Date();
 
 		const details = table.rows().data().toArray();
-		// await verifyDetail(table, details, opt.level);
+		await verifyDetail(table, details, opt.level);
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
 			state.deletedLineMap.forEach((value, key) => {

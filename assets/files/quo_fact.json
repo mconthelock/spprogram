@@ -1,5 +1,5 @@
 {
-    "id": "customers",
+    "id": "quo_fact",
     "title": "Customer Information",
     "fields": [
         {
@@ -27,12 +27,24 @@
             "name": "INQ_PRJNAME"
         },
         {
+            "label": "PO",
+            "id": "actual-po",
+            "type": "text" ,
+            "name": "INQ_ACTUAL_PO"
+        },
+        {
             "label": "CUSTRQS",
             "id": "custrqs",
             "type": "text",
             "class": "fdate",
             "mapping": "INQ_CUSTRQS",
             "name": "INQ_CUSTRQS"
+        },
+        {
+            "label": "Remark",
+            "id": "remarks",
+            "type": "textarea" ,
+            "name": "QUO_NOTE"
         }
     ]
 }
