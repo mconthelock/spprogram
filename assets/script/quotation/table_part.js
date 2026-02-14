@@ -17,109 +17,57 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_SEQ",
 			title: "No",
-			className: "sticky-column w-[50px] min-w-[50px]",
+			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
 		},
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: "sticky-column w-[50px] min-w-[50px]",
+			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
 		},
 		{
 			data: "INQD_MFGORDER",
 			title: "MFG NO.",
-			className:
-				"!px-[3px] w-[100px] min-w-[100px] max-w-[100px] sticky-column",
-			sortable: false,
-			render: function (data, type, row, meta) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `sticky-column w-24 min-w-24 cell-display border-r! `,
 		},
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className:
-				"!px-[3px] w-[75px] min-w-[75px] max-w-[75px] item-no sticky-column",
-			sortable: false,
-			render: function (data, type, row, meta) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `sticky-column w-12 min-w-12 cell-display border-r! text-center!`,
 		},
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "sticky-column",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 min-w-50 max-w-50 break-all">${data}</div>`;
-				}
-				return data;
-			},
+			className: `sticky-column w-62 min-w-62 cell-display border-r! `,
 		},
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 min-w-50 max-w-50 break-all">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-62 min-w-62 cell-display border-r! `,
 		},
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 min-w-50 max-w-50 break-all">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-62 min-w-62 cell-display border-r! `,
 		},
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-24 min-w-24 cell-display border-r! `,
 		},
 		{
 			data: "INQD_SENDPART",
 			title: "2nd",
-			className: "text-center!",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-12 min-w-12 cell-display border-r! text-center!`,
 		},
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: "text-center!",
+			className: `w-12 min-w-12 cell-display border-r! text-center!`,
 			render: function (data, type) {
 				if (type === "display") {
-					data =
-						data == null
-							? ""
-							: `<i class="fi fi-sr-circle-xmark text-xl text-error"></i>`;
-					return `<div class="px-2">${data}</div>`;
+					return data == null
+						? ""
+						: `<i class="fi fi-sr-circle-xmark text-xl text-error justify-center"></i>`;
 				}
 				return data;
 			},
@@ -127,8 +75,7 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className:
-				"px-[3px]! text-right bg-primary/20 min-w-[75px] INQD_QTY",
+			className: `w-24 min-w-24 bg-primary/20`,
 			footer: "Total",
 			render: function (data, type) {
 				if (type === "display") {
@@ -141,61 +88,30 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_UM",
 			title: "U/M",
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_FC_COST",
-			title: "FC Cost",
-			className: `hidden`,
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_FC_BASE",
-			title: "%FC",
-			className: `hidden`,
-			render: function (data, type) {
-				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2">${data}</div>`;
-				}
-				return data;
-			},
+			className: `w-12 min-w-12 cell-display border-r!`,
 		},
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `min-w-[100px] INQD_TC_COST`,
+			className: `w-24 min-w-24 border-r! INQD_TC_COST`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					data = data == null ? "" : data;
 					if (row.INQD_SUPPLIER == "MELINA") {
-						return `<div class="px-2"><input type="text" class="w-full min-w-13.75 outline-0 text-right input-number inqprice" value="${data}"/></div>`;
+						return `<input type="text" class="w-full outline-0 text-right input-number inqprice" value="${data}"/></div>`;
 					}
-					return `<div class="px-2 text-right!">${showDigits(data, 0)}</div>`;
+					return showDigits(data, 0);
 				}
 				return data;
 			},
 		},
 		{
 			data: "INQD_TC_BASE",
-			title: "% TC",
-			className: `min-w-[70px]`,
+			title: "%TC",
+			className: `w-12 min-w-12 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
-					data = data == null ? "" : data;
-					return `<div class="px-2 text-right!">${showDigits(data, 3)}</div>`;
+					return showDigits(data, 3);
 				}
 				return data;
 			},
@@ -203,11 +119,10 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `min-w-[100px]`,
+			className: `w-32 min-w-32 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
-					data = data == null ? "" : Math.ceil(data);
-					return `<div class="px-2 text-right!">${showDigits(data, 0)}</div>`;
+					return showDigits(data, 0);
 				}
 				return data;
 			},
@@ -215,23 +130,19 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `min-w-[100px]`,
+			className: `w-32 min-w-32 cell-display border-r!`,
 			render: function (data, type, row) {
-				const totalPrice =
-					Math.ceil(row.INQD_UNIT_PRICE) * row.INQD_QTY;
+				const price = intVal(data) * intVal(row.INQD_QTY);
 				if (type === "display") {
-					return `<div class="px-2 text-right!">${showDigits(
-						totalPrice,
-						0,
-					)}</div>`;
+					return showDigits(price, 0);
 				}
-				return data;
+				return price;
 			},
 		},
 		{
 			data: "INQD_MAR_REMARK",
 			title: "MAR Remark",
-			className: `min-w-50`,
+			className: `w-62 min-w-62 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					if (data == null) return "";
@@ -246,7 +157,7 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_DES_REMARK",
 			title: "D/E Remark",
-			className: `min-w-50`,
+			className: `w-62 min-w-62 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					if (data == null) return "";
@@ -261,14 +172,14 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_FIN_REMARK",
 			title: "FIN Remark",
-			className: `min-w-50`,
+			className: `w-62 min-w-62 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					if (data == null) return "";
 					return `<div class="flex">
-            <div class="px-2 min-w-50 max-w-50 break-all text-xs line-clamp-1">${data}</div>
-            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
-          </div>`;
+                        <div class="px-2 min-w-50 max-w-50 break-all text-xs line-clamp-1">${data}</div>
+                        <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
+                    </div>`;
 				}
 				return data;
 			},
@@ -276,8 +187,8 @@ export async function tablePartOption(data = []) {
 	];
 
 	opt.createdRow = function (row, data, dataIndex) {
-		if (data.INQD_SUPPLIER === "MELINA")
-			$(row).find(".INQD_TC_COST").addClass("bg-yellow-100!");
+		if (data.INQD_SUPPLIER != "MELINA")
+			$(row).find(".INQD_TC_COST").addClass("cell-display");
 		return;
 	};
 
@@ -300,11 +211,9 @@ export async function tablePartOption(data = []) {
 		});
 
 		api.column(11).footer().innerHTML = "";
-		api.column(13).footer().innerHTML = showDigits(totalfccost, 0);
-		api.column(15).footer().innerHTML = showDigits(totaltccost, 0);
-		api.column(17).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(18).footer().innerHTML = showDigits(total, 0);
-		// api.column(19).footer().innerHTML = currency;
+		api.column(13).footer().innerHTML = showDigits(totaltccost, 0);
+		api.column(15).footer().innerHTML = showDigits(totalunit, 0);
+		api.column(16).footer().innerHTML = showDigits(total, 0);
 	};
 	return opt;
 }

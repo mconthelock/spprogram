@@ -5,6 +5,10 @@ class Inquiry extends MY_Controller {
     }
 
     public function index(){
-        $this->views('mar/inquiry/index');
+        $this->views('pkc/inquiry/index');
+    }
+
+    public function detail($id){
+        $this->views('pkc/inquiry/detail', ['id' => $id]);
     }
 }

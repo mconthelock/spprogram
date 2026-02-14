@@ -7,7 +7,7 @@ export async function tableViewFactOption(data = []) {
 	opt.data = data;
 	opt.lengthChange = false;
 	opt.searching = false;
-	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"p><"table-page flex-none"i>>`;
+	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.order = [[0, "asc"]];
 	opt.columns = [
 		{

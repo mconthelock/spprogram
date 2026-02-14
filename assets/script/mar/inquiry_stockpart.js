@@ -273,6 +273,7 @@ $(document).on("click", "#savedata", async function (e) {
 		header.INQ_PRDSCH = "201501Z";
 		header.INQ_TYPE = "Secure";
 		header.INQ_MAR_SENT = new Date();
+		header.UPDATE_AT = new Date();
 		const fomdata = { header, details };
 		const inquiry = await createInquiry(fomdata);
 		const quotation = await createQuotation({

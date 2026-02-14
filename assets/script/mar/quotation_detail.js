@@ -2,8 +2,6 @@ import "select2/dist/css/select2.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 
-import select2 from "select2";
-import ExcelJS from "exceljs";
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showDigits, intVal } from "@amec/webasset/utils";
@@ -16,11 +14,11 @@ import {
 	setupTableAttachment,
 	setupCard,
 } from "../inquiry/index.js";
-import { tableWeightOption } from "../quotation/table_weight.js";
 import {
 	tablePartOption,
 	tableViewFactOption,
 	tableViewOutOption,
+	tableViewWeightOption,
 } from "../quotation/index.js";
 import { getCustomer } from "../service/customers.js";
 import {
@@ -28,6 +26,7 @@ import {
 	getInquiryHistory,
 	getInquiryFile,
 } from "../service/inquiry.js";
+import * as exportquo from "../quotation/export_excel.js";
 
 var table;
 var tableAttach;
@@ -76,6 +75,11 @@ $(document).ready(async () => {
 
 async function quotationPart(inq) {
 	if (inq[0].INQ_PKC_REQ == 0) $("#with-tab").remove();
+	else {
+		const weightOpt = await tableViewWeightOption(inq[0].weight);
+		tableWeight = await createTable(weightOpt, { id: "#table-weight" });
+		$("#without-tab").remove();
+	}
 	const vlist = $("#form-container").attr("data");
 	const vstr = vlist.replace(/quotation/g, "quo_part");
 	$("#form-container").attr("data", vstr);
@@ -164,12 +168,21 @@ async function setupButton(group) {
 		className:
 			"btn-outline btn-accent text-neutral hover:text-white hover:bg-accent",
 	});
+
+	const exportBtn = await createBtn({
+		id: "export-excel-quotation",
+		title: "Export Excel",
+		icon: "fi fi-tr-file-excel text-xl",
+		className: `btn-accent text-white hover:text-white export-excel-quotation`,
+		other: `data-id="${$("#inquiry-id").val()}"`,
+	});
+
 	switch (group) {
 		case "3":
-			$("#btn-container").append(back);
+			$("#btn-container").append(exportBtn, back);
 			break;
 		case "2":
-			$("#btn-container").append(back);
+			$("#btn-container").append(exportBtn, back);
 			break;
 		default:
 			$("#btn-container").append(issue, reject, returnfin, back);

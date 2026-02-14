@@ -13,7 +13,7 @@
         </div>
 
         <div id="with-tab" class="">
-            <div class="tabs tabs-lift hidden" id="tabs-lift">
+            <div class="tabs tabs-lift" id="tabs-lift">
                 <label class="tab flex items-center gap-2">
                     <input type="radio" name="my_tabs_4" checked="checked" />
                     <i class="fi fi-tr-memo-circle-check text-xl"></i>
@@ -29,7 +29,7 @@
                     <span class="font-bold ">Weight Package</span>
                 </label>
                 <div class="tab-content bg-base-100 border-base-300 p-6">
-                    <table id="table-weight" class="table table-zebra table-all-cell-border display text-xs">
+                    <table id="table-weight" class="table table-zebra display text-xs">
                         <thead>
                             <tr>
                                 <th rowspan="2">No.</th>
