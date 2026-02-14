@@ -6,7 +6,7 @@ import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { setSelect2 } from "@amec/webasset/select2";
 import { showMessage, intVal, showDigits } from "@amec/webasset/utils";
-import { createBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import {
 	setupCard,
@@ -19,6 +19,9 @@ import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
+	createWeight,
+	updateInquiryTimeline,
+	createInquiryHistory,
 } from "../service/index.js";
 import { initApp } from "../utils.js";
 
@@ -78,7 +81,7 @@ $(document).on("click", "#add-weight-row", async function (e) {
 	e.preventDefault();
 	const data = {
 		SEQ_WEIGHT: tableWeight.data().count() + 1,
-		PACKAGE_TYPE: "",
+		PACKAGE_TYPE: "Wooden package",
 		NO_WEIGHT: 1,
 		NET_WEIGHT: 0,
 		GROSS_WEIGHT: 0,
@@ -119,8 +122,6 @@ $(document).on("change", ".cell-input", async function (e) {
 	row[name] = intVal($(this).val());
 	row = await volumn(row);
 	tableWeight.row(selectedRow).data(row).draw(false);
-	console.log(row);
-
 	const next = $(selectedCol).index() + 1;
 	const nexCol = tableWeight.row(selectedRow).column(next).nodes().to$();
 	if ($(nexCol).find("input").length > 0) $(nexCol).find("input").select();
@@ -129,20 +130,35 @@ $(document).on("change", ".cell-input", async function (e) {
 
 $(document).on("click", "#btn-save", async function (e) {
 	e.preventDefault();
-	//   if ((await checkReqired("#inqform")) === false) return false;
-	//   if ((await checkTabledetail(tableWeight)) === false) return false;
-
-	//   $.ajax({
-	//     url: host + "pkc/weight/create",
-	//     type: "POST",
-	//     data: { data: tableWeight.data().toArray() },
-	//     success: function (res) {
-	//       window.location = `${host}pkc/inquiry`;
-	//     },
-	//     error: function (err) {
-	//       showErrorNotify(err);
-	//     },
-	//   });
+	try {
+		await activatedBtn($(this));
+		const data = tableWeight.data().toArray();
+		const weight = data.map(async (dt) => {
+			dt.INQ_ID = $("#inquiry-id").val();
+			await createWeight(dt);
+		});
+		const timeline = {
+			INQ_NO: $("#inquiry-no").val(),
+			INQ_REV: $("#revision").val(),
+			PKC_USER: $("#user-login").attr("empno"),
+			PKC_CONFIRM: new Date(),
+		};
+		await updateInquiryTimeline(timeline);
+		const history = {
+			INQ_NO: $("#inquiry-no").val(),
+			INQ_REV: $("#revision").val(),
+			INQH_DATE: new Date(),
+			INQH_USER: $("#user-login").attr("empno"),
+			INQH_ACTION: 25,
+			INQH_LATEST: 1,
+		};
+		await createInquiryHistory(history);
+		window.location.replace(`${process.env.APP_ENV}/pkc/inquiry`);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+		await activatedBtn($(this), false);
+	}
 });
 
 function volumn(el) {

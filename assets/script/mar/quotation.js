@@ -163,7 +163,7 @@ async function tableInquiryOption(data) {
 					type: "link",
 					icon: "fi fi-rr-arrow-up-right-from-square text-lg",
 					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white w-[80px]`,
-					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/3/`,
 				});
 				return `<div class="flex justify-end gap-2">${timelines ? view : edit}</div>`;
 			},

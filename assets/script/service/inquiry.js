@@ -208,6 +208,23 @@ export const getInquiryHistory = async (id) => {
 	});
 };
 
+export const createInquiryHistory = async (data) => {
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: `${process.env.APP_API}/sp/history/create/`,
+			type: "POST",
+			dataType: "json",
+			data: data,
+			success: function (response) {
+				resolve(response);
+			},
+			error: function (error) {
+				reject(error);
+			},
+		});
+	});
+};
+
 //Attachment
 export const createInquiryFile = async (data) => {
 	return new Promise((resolve, reject) => {

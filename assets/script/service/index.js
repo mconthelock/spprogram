@@ -6,3 +6,4 @@ export * from "./customers.js";
 export * from "./items.js";
 export * from "./inquiry.js";
 export * from "./quotation.js";
+export * from "./weight.js";

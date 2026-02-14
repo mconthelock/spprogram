@@ -6,7 +6,12 @@ import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtn } from "@amec/webasset/components/buttons";
 import { tableInquiryPKCOption } from "../inquiry/index.js";
 import { getTemplate, exportExcel } from "../service/excel";
-import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
+import {
+	getInquiry,
+	updateInquiryTimeline,
+	dataExports,
+	dataDetails,
+} from "../service/inquiry.js";
 import { initApp } from "../utils.js";
 
 var table;
@@ -29,5 +34,28 @@ $(async function () {
 		await showMessage(error);
 	} finally {
 		await showLoader({ show: false });
+	}
+});
+
+$(document).on("click", ".process-btn", async function (e) {
+	e.preventDefault();
+	try {
+		const data = table.row($(this).closest("tr")).data();
+		if (data.timeline.PKC_READ == null) {
+			await activatedBtn($(this));
+			const timelines = {
+				INQ_NO: data.INQ_NO,
+				INQ_REV: data.INQ_REV,
+				PKC_USER: $("#user-login").attr("empno"),
+				PKC_READ: new Date(),
+			};
+			await updateInquiryTimeline(timelines);
+		}
+		window.location.replace(
+			`${process.env.APP_ENV}/pkc/inquiry/detail/${data.INQ_ID}/`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
 	}
 });

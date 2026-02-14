@@ -2,15 +2,20 @@ import { showDigits, intVal } from "@amec/webasset/utils";
 import { createBtn } from "@amec/webasset/components/buttons";
 import { tableOpt } from "../utils.js";
 export async function tableWeightOption(data = []) {
-	const packtype = () => {
-		return `<select class="w-full s2 edit-input package-type">
-            <option value=""></option>
-            <option value="Wooden package">Wooden package</option>
-            <option value="Carton package+Pallet">Carton package+Pallet</option>
-            <option value="Carton box">Carton box</option>
-            <option value="Pallet">Pallet</option>
-            <option value="Bare">Bare</option>
-            </select>`;
+	const packtype = (data) => {
+		const list = [
+			"Wooden package",
+			"Carton package+Pallet",
+			"Carton box",
+			"Pallet",
+			"Bare",
+		];
+		let option = `<select class="w-full s2 edit-input package-type">`;
+		list.forEach((item) => {
+			option += `<option value="${item}" ${data === item ? "selected" : ""}>${item}</option>`;
+		});
+		option += `</select>`;
+		return option;
 	};
 
 	const textInput = (data, name, digits = 0) => {
@@ -45,7 +50,7 @@ export async function tableWeightOption(data = []) {
 			className: `sticky-column`,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return packtype();
+					return packtype(data);
 				}
 				return data;
 			},

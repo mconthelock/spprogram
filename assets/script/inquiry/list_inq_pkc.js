@@ -74,10 +74,9 @@ export async function tableInquiryPKCOption(data) {
 				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Process",
-					type: "link",
 					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent text-white hover:shadow-lg`,
-					href: `${process.env.APP_ENV}/pkc/inquiry/detail/${data}/`,
+					className: `btn-xs btn-accent text-white hover:shadow-lg process-btn`,
+					//href: `${process.env.APP_ENV}/pkc/inquiry/detail/${data}/`,
 				});
 				return `<div class="flex gap-1 justify-center items-center w-fit">${edit}</div>`;
 			},
