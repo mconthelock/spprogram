@@ -1,52 +1,67 @@
-import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import { createTable } from "@amec/webasset/dataTable";
+
 import { showLoader } from "@amec/webasset/preloader";
-import { tableOpt } from "./table.js";
-import * as service from "../service/inquiry.js";
-import * as utils from "../utils.js";
+import { showMessage } from "@amec/webasset/utils";
+import { createTable } from "@amec/webasset/dataTable";
+import { tableInquirySaleOption } from "../inquiry/index.js";
+import { getInquiry, updateInquiryTimeline } from "../service/index.js";
+import { initApp } from "../utils.js";
+// import { tableOpt } from "./table.js";
+// import * as service from "../service/inquiry.js";
+// import * as utils from "../utils.js";
 
 var table;
 $(document).ready(async () => {
 	try {
-		await utils.initApp({ submenu: ".navmenu-newinq" });
+		await showLoader();
+		await initApp({ submenu: ".navmenu-newinq" });
 		const usergroup = $("#user-login").attr("groupcode");
 		const q = {
-			GE_INQ_STATUS: 2,
-			LE_INQ_STATUS: 10,
+			INQ_STATUS: "<= 10",
+			IS_GROUP: 1,
+			IS_TIMELINE: 1,
 		};
-		let data = await service.getInquiry(q);
-		localStorage.setItem("spinquiryquery", JSON.stringify(q));
-		if (usergroup == "SEG") {
-			data = data.filter((item) => item.INQ_STATUS < 10);
-		} else {
+		let data = await getInquiry(q);
+		if (usergroup == "SLE") {
 			data = data.filter((item) => item.INQ_STATUS == 10);
+		} else {
+			data = data.filter(
+				(item) => item.INQ_STATUS < 10 && item.INQ_STATUS != 4,
+			);
 		}
-		const opt = await tableOpt(data);
+		const opt = await tableInquirySaleOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await showLoader({ show: false });
 	}
 });
 
-$(document).on("click", ".btn-process", async function (e) {
+$(document).on("click", ".process-btn", async function (e) {
 	e.preventDefault();
-	const row = table.row($(this).closest("tr")).data();
-	const timeline = row.timeline;
-	if (timeline.SG_READ == null) {
-		const data = {
-			INQ_NO: row.INQ_NO,
-			INQ_REV: row.INQ_REV,
-			SG_READ: new Date(),
-		};
-		await service.updateInquiryTimeline(data);
+	try {
+		const row = table.row($(this).closest("tr")).data();
+		const timeline = row.timeline;
+		if (timeline.SG_READ == null) {
+			await activatedBtn($(this));
+			const data = {
+				INQ_NO: row.INQ_NO,
+				INQ_REV: row.INQ_REV,
+				SG_USER: $("#user-login").attr("empno"),
+				SG_READ: new Date(),
+			};
+			await updateInquiryTimeline(data);
+		}
+		window.location.replace(
+			`${process.env.APP_ENV}/se/inquiry/detail/${row.INQ_ID}/`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+		await activatedBtn($(this), false);
 	}
-	const url = $(this).attr("href");
-	await showbgLoader(true);
-	window.location.href = url;
 });
 
 $(document).on("click", ".btn-process", async function (e) {

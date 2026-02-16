@@ -84,12 +84,6 @@
 
 @section('styles')
     <style>
-        #table tfoot tr th {
-            background: #eee !important;
-            font-weight: bold;
-            text-align: end;
-        }
-
         #table-freight thead th {
             font-size: 0.75rem;
             text-align: center;

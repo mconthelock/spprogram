@@ -143,7 +143,7 @@ export const init = {
 	getSalePerson: async function () {
 		const data = await srv.getAppUsers();
 		const result = data.filter((x) =>
-			["SEG", "SEL"].includes(x.appsgroups.GROUP_CODE),
+			["SLG", "SLE"].includes(x.appsgroups.GROUP_CODE),
 		);
 		let options = result.map((sale) => {
 			const group = sale.appsgroups.GROUP_CODE;

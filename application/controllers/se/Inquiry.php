@@ -8,16 +8,8 @@ class Inquiry extends MY_Controller {
         $this->views('sale/inquiry/index');
     }
 
-    public function edit($id){
-        $this->views('sale/inquiry/detail', array('id'=> $id));
-    }
-
     public function detail($id){
-        $this->views('sale/inquiry/declare', array('id'=> $id));
-    }
-
-    public function view($id){
-        $this->views('sale/inquiry/view', array('id'=> $id));
+        $this->views('sale/inquiry/detail', array('id'=> $id));
     }
 
     public function report(){

@@ -188,7 +188,7 @@
 	}
 
 	.table tfoot th {
-		@apply text-center! bg-slate-300! text-slate-700! text-xs! border-none!;
+		@apply bg-slate-300! text-slate-700! text-xs! border-none!;
 	}
 
 	.table {

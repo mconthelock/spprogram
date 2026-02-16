@@ -1,33 +1,28 @@
-/*
-Funtion contents
-001 - On load form
-002 - Add table detail rows
-003 - Show Elmes table
-004 - Unable to reply checkbox
-005 - Import data from file
-006 - Assign Engineer
-007 - Bypass to DE
-008 - Save and send to AS400
-009 - Add attachment
-010 - Download attached file
-011 - Delete attached file
-012 - Update and send to design
-013 - Update and send to AS400
-014 - Export inquiry list
-015 - Update and send to AS400
-*/
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import dayjs from "dayjs";
+
 import { showLoader } from "@amec/webasset/preloader";
+import { showMessage, intVal, showDigits } from "@amec/webasset/utils";
+import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
-import * as inqservice from "../service/inquiry.js";
-import * as mail from "../service/mail.js";
-import * as utils from "../utils.js";
-import * as inqs from "../inquiry/detail.js";
-import * as tb from "../inquiry/table.js";
-import * as tbsale from "../inquiry/table_sale.js";
+import {
+	setupCard,
+	setupTableHistory,
+	setupTableAttachment,
+	setupSaleTableDetail,
+	createReasonModal,
+} from "../inquiry/index.js";
+import {
+	getInquiry,
+	getInquiryHistory,
+	getInquiryFile,
+	updateInquiryTimeline,
+	createInquiryHistory,
+} from "../service/index.js";
+import { initApp } from "../utils.js";
+import { bindDeleteLine } from "../inquiry/ui.js";
+import { state } from "../inquiry/store.js";
 //001: On load form
 var table;
 var tableElmes;
@@ -38,76 +33,48 @@ let deletedLineMap = new Map();
 
 $(document).ready(async () => {
 	try {
-		await utils.initApp({ submenu: ".navmenu-newinq" });
+		await showLoader();
+		await initApp();
+		const inqs = await getInquiry({
+			INQ_ID: $("#inquiry-id").val(),
+			IS_DETAILS: true,
+			IS_TIMELINE: true,
+		});
+
 		const user = $("#user-login").attr("empno");
-		const usergroup = $("#user-login").attr("groupcode");
-		let logs, inquiry, details, file, revise;
-		inquiry = await inqservice.getInquiryID($("#inquiry-id").val());
-		if (inquiry.length == 0) throw new Error("Inquiry do not found");
-		revise = false;
 		let setime = {
-			SALE_CLASS: inquiry.timeline.SALE_CLASS,
-			SG_USER: inquiry.timeline.SG_USER,
-			SG_READ: inquiry.timeline.SG_READ,
-			SG_CONFIRM: inquiry.timeline.SG_CONFIRM,
-			SE_USER: inquiry.timeline.SE_USER,
-			SE_READ: inquiry.timeline.SE_READ,
-			SE_CONFIRM: inquiry.timeline.SE_CONFIRM,
+			SALE_CLASS: inqs[0].timeline.SALE_CLASS,
+			SG_USER: inqs[0].timeline.SG_USER,
+			SG_READ: inqs[0].timeline.SG_READ,
+			SG_CONFIRM: inqs[0].timeline.SG_CONFIRM,
+			SE_USER: inqs[0].timeline.SE_USER,
+			SE_READ: inqs[0].timeline.SE_READ,
+			SE_CONFIRM: inqs[0].timeline.SE_CONFIRM,
 		};
-
-		if (inquiry.INQ_STATUS >= 20) {
-			inquiry.INQ_REV = utils.revision_code(inquiry.INQ_REV);
-			revise = true;
-			if (usergroup == "SEG") {
-				const current = moment().format("YYYY-MM-DD HH:mm:ss");
-				setime = {
-					...setime,
-					SG_READ: setime.SG_READ == null ? current : setime.SG_READ,
-					SE_READ: setime.SE_READ == null ? current : setime.SE_READ,
-					SG_USER: user,
-				};
-			}
-			if (usergroup != "SEG") {
-				setime = {
-					...setime,
-					SE_READ: moment().format("YYYY-MM-DD HH:mm:ss"),
-					SE_USER: user,
-				};
-			}
-		}
-
-		details = inquiry.details.filter((dt) => dt.INQD_LATEST == "1");
-		logs = await inqservice.getInquiryHistory(inquiry.INQ_NO);
-		file = await inqservice.getInquiryFile({ INQ_NO: inquiry.INQ_NO });
-		inquiry = { ...inquiry, timeline: { ...inquiry.timeline, ...setime } };
-		const cards = await inqs.setupCard(inquiry);
-
-		console.log(inquiry.timeline);
-
-		const tableContainer = await tbsale.setupTableDetail(
-			details,
-			usergroup,
-		);
-		table = await createTable(tableContainer);
-
-		const history = await tb.setupTableHistory(logs);
-		await createTable(history, { id: "#history" });
-
-		const attachment = await tb.setupTableAttachment(file);
-		tableAttach = await createTable(attachment, { id: "#attachment" });
-
-		const btn = await setupButton(revise);
-		const reason = await inqs.createReasonModal();
-		const elmes = await inqs.elmesComponent();
+		const cards = await setupCard(inqs[0]);
+		const details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
+		const detailsOption = await setupSaleTableDetail(details);
+		table = await createTable(detailsOption);
+		//Inquiry History and Attachment
+		const logs = await getInquiryHistory(inqs[0].INQ_NO);
+		const file = await getInquiryFile({ INQ_NO: inqs[0].INQ_NO });
+		const history = await setupTableHistory(logs);
+		const tableHistory = await createTable(history, { id: "#history" });
+		const attachment = await setupTableAttachment(file, true);
+		const tableAttach = await createTable(attachment, {
+			id: "#attachment",
+		});
+		await createReasonModal();
+		await bindDeleteLine();
 	} catch (error) {
 		console.log(error);
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await showLoader({ show: false });
 	}
 });
 
-async function setupButton(revise) {
+/*async function setupButton(revise) {
 	const usergroup = $("#user-login").attr("groupcode");
 	const assign = await createBtn({
 		id: "assign-pic",
@@ -158,9 +125,10 @@ async function setupButton(revise) {
 	if (usergroup == "SEG")
 		$("#btn-container").append(assign, forwardde, sendIS, back);
 	else $("#btn-container").append(confirm, back);
-}
+}*/
 
 //002: Add table detail rows
+/*
 $(document).on("click", "#addRowBtn", async function (e) {
 	e.preventDefault();
 	const lastRow = table.row(":not(.d-none):last").data();
@@ -555,3 +523,4 @@ async function setLogsData(action) {
 		INQH_REMARK: $("#remark").val(),
 	};
 }
+*/

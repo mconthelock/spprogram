@@ -11,7 +11,7 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-second table-edit display text-md!"></table>
+        <table id="table" class="table table-zebra table-edit text-md!"></table>
     </div>
 
     <div class="flex gap-2 my-3" id="btn-container"></div>
@@ -19,13 +19,4 @@
 
 @section('scripts')
     <script src="{{ $_ENV['APP_JS'] }}/mar_outtoout.js?ver={{ $GLOBALS['version'] }}"></script>
-@endsection
-
-@section('styles')
-    <style>
-        #table tfoot tr th {
-            background: #eee !important;
-            font-weight: bold;
-        }
-    </style>
 @endsection

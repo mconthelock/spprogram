@@ -244,6 +244,8 @@ $(document).on("change", ".elmes-input", async function (e) {
 				columnSelect: { status: true },
 			});
 			$("#elmes-target").val(row.index());
+			const type = Number.isInteger(data.INQD_SEQ) ? 1 : 0.01;
+			$("#elmes-type").val(type);
 			$("#elmes_modal").attr("checked", true);
 		} else {
 			const newData = {
@@ -265,7 +267,7 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 	const table = $("#table").DataTable();
 	const tableElmes = $("#tableElmes").DataTable();
 	try {
-		const increse = 1;
+		const increse = Number($("#elmes-type").val());
 		const elmesData = tableElmes.rows().data();
 		const rowid = $("#elmes-target").val();
 		const data = table.row(rowid).data();

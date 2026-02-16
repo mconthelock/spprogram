@@ -1,6 +1,7 @@
-import * as utils from "../utils.js";
-
-export async function setupTableDetail(data = [], group = "SEG") {
+import { showDigits } from "@amec/webasset/utils";
+import { createBtn } from "@amec/webasset/components/buttons";
+import { tableOpt } from "../utils.js";
+export async function setupSaleTableDetail(data = []) {
 	const renderText = (str, logs, key) => {
 		if (logs == undefined) return str;
 		let li = ``;
@@ -31,8 +32,18 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		return update;
 	};
 
+	const renderSupplier = (data) => {
+		const sup = ["", "AMEC", "MELINA", "LOCAL"];
+		let selector = `<select class="w-25! s2 edit-input supplier">`;
+		sup.forEach((el) => {
+			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
+		});
+		selector += `</select>`;
+		return selector;
+	};
+
 	const mode = data.length > 0 ? 1 : 0;
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.paging = false;
 	opt.searching = false;
@@ -48,16 +59,19 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_ID",
 			title: "<i class='icofont-settings text-lg'></i>",
-			className: "text-center text-nowrap sticky-column px-1",
+			className:
+				"sticky-column text-center text-nowrap cell-display px-3! border-r!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<div class="btn btn-xs btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
-          <button class="btn btn-xs btn-circle btn-ghost ${
-				row.INQD_OWNER_GROUP != "MAR"
-					? "delete-sub-line text-red-500"
-					: "btn-disabled"
-			}"><i class="fi fi-bs-cross"></i></button>`;
+					return `<div class="btn btn-xs btn-circle btn-ghost add-sub-line" type="button">
+                        <span class="text-2xl text-gray-600">+</span>
+                    </div>
+                    <button class="btn btn-xs btn-circle btn-ghost ${
+						row.INQD_OWNER_GROUP != "MAR"
+							? "delete-sub-line text-red-500"
+							: "btn-disabled"
+					}"><i class="fi fi-bs-cross"></i></button>`;
 				}
 				return data;
 			},
@@ -69,9 +83,9 @@ export async function setupTableDetail(data = [], group = "SEG") {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					if (data % 1 !== 0) data = digits(data, 2);
+					if (data % 1 !== 0) data = showDigits(data, 2);
 					const log = renderLog(data, row.logs, "INQD_SEQ");
-					const str = `<input type="text" class="!w-[50px] cell-input edit-input input-number ${
+					const str = `<input type="text" class="w-12.5! cell-input input-number ${
 						log ? "detail-log" : ""
 					}" value="${data}">`;
 					return renderText(str, row.logs, "INQD_SEQ");
@@ -82,12 +96,12 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: "sticky-column",
+			className: "sticky-column text-center!",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type, row) {
 				if (type === "display") {
 					const log = renderLog(data, row.logs, "INQD_CAR");
-					const str = `<input type="text" class="!w-[40px] uppercase cell-input carno ${
+					const str = `<input type="text" class="w-10! uppercase cell-input carno ${
 						log ? "detail-log" : ""
 					}" maxlength="2" value="${data == null ? "" : data}"/>`;
 					return renderText(str, row.logs, "INQD_CAR");
@@ -102,9 +116,7 @@ export async function setupTableDetail(data = [], group = "SEG") {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="text" class="!w-[100px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
-						data == null ? "" : data
-					}">`;
+					return `<textarea class="w-25! cell-input elmes-input mfgno" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -112,11 +124,11 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className: "sticky-column item-no",
+			className: "sticky-column",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="text" class="!w-[50px] cell-input elmes-input input-number itemno" value="${data}"/>`;
+					return `<textarea class="w-12.5! cell-input elmes-input itemno" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -124,11 +136,11 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "sticky-column !px-[3px]",
+			className: "sticky-column ",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<textarea class="!w-[250px] cell-input edit-input partname" maxlength="50">${
+					return `<textarea class="w-62! cell-input edit-input partname" maxlength="50">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -138,11 +150,11 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: "!px-[3px] drawing-line",
+			className: " drawing-line",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="!w-[225px] uppercase cell-input edit-input drawing-line" maxlength="150">${
+					return `<textarea class="w-62! uppercase cell-input edit-input drawing-line" maxlength="150">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -152,11 +164,11 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: "!px-[3px]",
+			className: "",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="!w-[200px] uppercase cell-input edit-input variable-line" maxlength="250">${
+					return `<textarea class="w-62! uppercase cell-input edit-input variable-line" maxlength="250">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -166,11 +178,13 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className: "!px-[3px]",
+			className: "",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
+					return `<textarea class="w-12.5! uppercase cell-input edit-input variable-line">${
+						data == null ? "" : data
+					}</textarea>`;
 				}
 				return data;
 			},
@@ -178,12 +192,12 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_UM",
 			title: "U/M",
-			className: "!px-[3px]",
+			className: "",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				data = data == "" ? "PC" : data;
 				if (type === "display") {
-					return `<input type="type" class="!w-[55px] uppercase cell-input edit-input" value="${data}">`;
+					return `<input type="type" class="w-12.5! uppercase cell-input edit-input" value="${data}">`;
 				}
 				return data;
 			},
@@ -191,26 +205,11 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			className: "!px-[3px] supplier-line",
+			className: "supplier-line",
 			sortable: false,
-			render: function (data, type, row) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<select class="!w-[100px] select select-sm supplier edit-input" ${
-						row.INQD_UNREPLY == "" || row.INQD_UNREPLY == null
-							? ""
-							: "disabled"
-					}>
-                <option value=""></option>
-                <option value="AMEC" ${
-					data == "AMEC" ? "selected" : ""
-				}>AMEC</option>
-                <option value="MELINA" ${
-					data == "MELINA" ? "selected" : ""
-				}>MELINA</option>
-                <option value="LOCAL" ${
-					data == "LOCAL" ? "selected" : ""
-				}>LOCAL</option>
-              </select>`;
+					return renderSupplier(data);
 				}
 				return data;
 			},
@@ -218,11 +217,11 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_SENDPART",
 			title: `2<sup>nd</sup>`,
-			className: "text-center",
+			className: "text-center!",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input" value="1" ${
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input ndpartlist" value="1" ${
 						data == 1 ? "checked" : ""
 					} />`;
 				}
@@ -232,46 +231,33 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: "text-center",
+			className: "text-center!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
 					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
-               ${data == "" || data == null ? "" : "checked"}/>`;
-				}
-				return data;
-			},
-		},
-		{
-			data: "INQD_DE",
-			title: `<i class='fi fi-tr-share-square text-lg'></i>`,
-			className: `text-center ${group == "SEG" ? "hidden" : ""}`,
-			sortable: false,
-			render: function (data, type, row, meta) {
-				if (type === "display") {
-					return `<input type="checkbox" value="1" class="checkbox checkbox-sm checkbox-warning text-white forward edit-input"
-               ${data == "" || data == null ? "" : "checked"}/>`;
+           ${data == "" || data == null ? "" : "checked"}/>`;
 				}
 				return data;
 			},
 		},
 		{
 			data: "INQD_MAR_REMARK",
-			className: `min-w-[250px] ${mode == 0 ? "hidden" : ""}`,
+			className: `w-62 min-w-62 cell-display border-r!`,
 			title: "MAR Remark",
 			sortable: false,
-			render: function (data) {
+			render: function (data, type) {
 				return data == null ? "" : data;
 			},
 		},
 		{
 			data: "INQD_DES_REMARK",
-			className: "remark-line",
-			title: "Remark",
+			className: `w-62 min-w-62 remark-line`,
+			title: "Sale Remark",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${
+					return `<textarea class="w-62! cell-input edit-input remark" maxlength="250">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -280,37 +266,6 @@ export async function setupTableDetail(data = [], group = "SEG") {
 		},
 	];
 
-	opt.initComplete = function (settings, json) {
-		const btn = `<div class="flex gap-2 ">
-      <div class="tooltip" data-tip="Add line">
-        <button id="addRowBtn" class="btn btn-primary btn-sm btn-square flex items-center" type="button">
-            <i class="fi fi-rr-add text-2xl text-white"></i>
-        </button>
-      </div>
-      <div class="tooltip" data-tip="Upload inquiry">
-        <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square ${
-			mode == 1 ? "hidden" : ""
-		}"><i class="fi fi-rr-cloud-upload-alt text-2xl text-white"></i></button>
-        <input type="file" id="import-tsv" class="hidden" />
-      </div>
-      <div class="tooltip" data-tip="Download template">
-        <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square ${
-			mode == 1 ? "hidden" : ""
-		}"><i class="fi fi-rr-cloud-download-alt text-2xl text-white"></i></button>
-      </div>
-    </div>`;
-		// $("#table").closest(".dt-container").find(".table-page").append(btn);
-		$("#table")
-			.closest(".dt-container")
-			.find(".table-search")
-			.append(
-				`
-        <div class="tooltip tooltip-open absolute z-50 hidden" id="tip1">
-            <div class="tooltip-content">
-                <div class="animate-bounce text-orange-400 -rotate-10 text-2xl font-black">Wow!</div>
-            </div>
-        </div>`,
-			);
-	};
+	opt.initComplete = function () {};
 	return opt;
 }

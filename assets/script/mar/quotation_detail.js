@@ -29,8 +29,6 @@ import {
 import * as exportquo from "../quotation/export_excel.js";
 
 var table;
-var tableAttach;
-var tableWeight;
 $(document).ready(async () => {
 	try {
 		await showLoader({ show: true });
@@ -40,30 +38,19 @@ $(document).ready(async () => {
 			IS_DETAILS: true,
 			IS_QUOTATION: true,
 			IS_WEIGHT: true,
+			IS_TIMELINE: true,
 		});
 		if (inq.length == 0) throw new Error("Inquiry do not found");
 		inq[0].INQ_DATE = dayjs(inq[0].INQ_DATE).format("YYYY-MM-DD");
-		const mode = $("#inquiry-mode").val();
-		let title = `${inq[0].INQ_NO} `;
+		$("#inquiry-title").html(`${inq[0].INQ_NO}`);
+
 		if (inq[0].INQ_TYPE == "SP") {
-			if (mode == 1) {
-				title = `${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(New)</span>`;
-				// prettier-ignore
-				inq[0].QUO_VALIDITY = dayjs().add(60, "day").format("YYYY-MM-DD");
-			} else if (mode == 2) {
-				title = `${inq[0].INQ_NO} <span class="text-sm! italic text-gray-500">(Revise)</span>`;
-				// prettier-ignore
-				inq[0].QUO_DATE = dayjs(inq[0].quotation.QUO_DATE).format("YYYY-MM-DD");
-				// prettier-ignore
-				inq[0].QUO_VALIDITY = dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
-			}
 			await quotationPart(inq);
 		} else if (inq[0].INQ_TYPE == "Out2out") {
 			await quotationOut(inq);
 		} else {
 			await quotationFactory(inq);
 		}
-		$("#inquiry-title").html(title);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -74,22 +61,42 @@ $(document).ready(async () => {
 });
 
 async function quotationPart(inq) {
+	let mode = intVal($("#inquiry-mode").val());
 	if (inq[0].INQ_PKC_REQ == 0) $("#with-tab").remove();
 	else {
+		// const freight = await freightData(inq[0].weight);
 		const weightOpt = await tableViewWeightOption(inq[0].weight);
-		tableWeight = await createTable(weightOpt, { id: "#table-weight" });
+		const tableWeight = await createTable(weightOpt, {
+			id: "#table-weight",
+		});
 		$("#without-tab").remove();
+		if (mode < 3 && inq[0].timeline.PKC_CONFIRM == null) {
+			mode = 3;
+		}
 	}
+
 	const vlist = $("#form-container").attr("data");
 	const vstr = vlist.replace(/quotation/g, "quo_part");
 	$("#form-container").attr("data", vstr);
 
-	const card = await setupCard(inq[0]);
-	const optDetail = await tablePartOption(inq[0].details);
-	table = await createTable(optDetail);
-	const freight = await freightData(inq[0].weight);
-	await setDatePicker();
+	inq[0].QUO_DATE =
+		inq[0].quotation == null
+			? dayjs().format("YYYY-MM-DD")
+			: dayjs(inq[0].quotation.QUO_DATE).format("YYYY-MM-DD");
+	inq[0].QUO_VALIDITY =
+		inq[0].quotation == null
+			? dayjs().add(60, "day").format("YYYY-MM-DD")
+			: dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
+	console.log(inq[0]);
 
+	const card = await setupCard(inq[0]);
+	// Table Detail
+	let optDetail;
+	if (mode == 3) optDetail = await tableViewFactOption(inq[0].details);
+	else optDetail = await tablePartOption(inq[0].details);
+	table = await createTable(optDetail);
+
+	await setDatePicker();
 	//Inquiry History
 	const logs = await getInquiryHistory(inq[0].INQ_NO);
 	const history = await setupTableHistory(logs);
@@ -97,8 +104,8 @@ async function quotationPart(inq) {
 
 	const file = await getInquiryFile({ INQ_NO: inq[0].INQ_NO });
 	const attachment = await setupTableAttachment(file, true);
-	tableAttach = await createTable(attachment, { id: "#attachment" });
-	await setupButton();
+	const tableAttach = await createTable(attachment, { id: "#attachment" });
+	await setupButton(mode);
 }
 
 async function quotationFactory(inq) {
@@ -119,7 +126,7 @@ async function quotationFactory(inq) {
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewFactOption(inq[0].details);
 	const tableDetail = await createTable(optDetail);
-	await setupButton("2");
+	await setupButton(3);
 }
 
 async function quotationOut(inq) {
@@ -132,7 +139,7 @@ async function quotationOut(inq) {
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewOutOption(inq[0].details);
 	const tableDetail = await createTable(optDetail);
-	await setupButton("3");
+	await setupButton(3);
 }
 
 async function setupButton(group) {
@@ -178,11 +185,11 @@ async function setupButton(group) {
 	});
 
 	switch (group) {
-		case "3":
+		case 3:
 			$("#btn-container").append(exportBtn, back);
 			break;
-		case "2":
-			$("#btn-container").append(exportBtn, back);
+		case 2:
+			$("#btn-container").append(issue, reject, returnfin, back);
 			break;
 		default:
 			$("#btn-container").append(issue, reject, returnfin, back);

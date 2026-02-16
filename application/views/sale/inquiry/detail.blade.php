@@ -1,8 +1,8 @@
 @extends('layouts/template')
 
 @section('contents')
-    <input type="hidden" name="inquiry-id" id="inquiry-id" value="{{ $id }}">
-    <h1 class="text-3xl font-sans font-[700] uppercase text-gray-700">Inquiry Detail</h1>
+    <input type="text" name="inquiry-id" id="inquiry-id" value="{{ $id }}" class="hidden">
+    <h2 class="card-title text-2xl">Inquiry Detail</h2>
     <div class="divider m-0"></div>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewprj|viewinfo|sale"></main>
 
@@ -10,15 +10,15 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-second table-edit display text-xs"></table>
+        <table id="table" class="table table-zebra table-edit text-xs"></table>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="flex-1">
             <div class="divider divider-start divider-primary">
                 <span class="font-extrabold text-md text-primary ps-3">History</span>
             </div>
-            <table id="history" class="table table-zebra table-second display text-xs"></table>
+            <table id="history" class="table table-zebra text-xs"></table>
         </div>
         <div class="flex-1 relative">
             <div class="divider divider-start divider-primary">
@@ -28,14 +28,24 @@
                 id="add-attachment">
                 <div class="tooltip tooltip-left" data-tip="Add attachment"><i class="fi fi-br-clip text-lg"></i></div>
             </button>
-            <table id="attachment" class="table table-zebra table-second display text-xs"></table>
+            <table id="attachment" class="table table-zebra text-xs"></table>
         </div>
     </div>
     <div class="flex gap-2 my-3" id="btn-container"></div>
-    @include('mar.inquiry._revision')
+
+
+    <input type="checkbox" id="elmes_modal" class="modal-toggle" />
+    <div class="modal" role="dialog">
+        <div class="modal-box min-w-10/12 min-h-10/12 rounded-md">
+            <h3 class="text-lg font-bold">General Part List</h3>
+            <p class="py-4">Add drawing into inquiry by search from General Part List</p>
+            <input type="text" id="elmes-target" class="hiddenx">
+            <input type="text" id="elmes-type" class="hiddenx">
+            <table id="tableElmes" class="table table-zebra text-xs"></table>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/se_inqdetail.js?ver={{ $GLOBALS['version'] }}"></script>
-    <script src="{{ $_ENV['APP_JS'] }}/inquiryui.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/sale_inqdetail.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection
