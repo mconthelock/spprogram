@@ -1,5 +1,6 @@
 import { showDigits } from "@amec/webasset/utils";
 import { createBtn } from "@amec/webasset/components/buttons";
+import { setSelect2 } from "@amec/webasset/select2";
 import { tableOpt } from "../utils.js";
 export async function setupSaleTableDetail(data = []) {
 	const renderText = (str, logs, key) => {
@@ -221,7 +222,7 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input ndpartlist" value="1" ${
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="1" ${
 						data == 1 ? "checked" : ""
 					} />`;
 				}
@@ -265,7 +266,5 @@ export async function setupSaleTableDetail(data = []) {
 			},
 		},
 	];
-
-	opt.initComplete = function () {};
 	return opt;
 }

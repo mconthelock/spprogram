@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, intVal, showDigits } from "@amec/webasset/utils";
+import { setSelect2 } from "@amec/webasset/select2";
 import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import {
@@ -64,6 +65,8 @@ $(document).ready(async () => {
 		const tableAttach = await createTable(attachment, {
 			id: "#attachment",
 		});
+
+		await setSelect2({ allowClear: false });
 		await createReasonModal();
 		await bindDeleteLine();
 	} catch (error) {

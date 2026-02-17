@@ -8,6 +8,7 @@ import {
 	getExportTemplate,
 	getInquiry,
 	getElmesItem,
+	getSecondItem,
 } from "../service/index.js";
 import { cloneRows } from "../service/excel.js";
 import { setupElmesTable } from "./table_elmes.js";
@@ -223,8 +224,10 @@ $(document).on("change", ".edit-input", async function (e) {
 	if ($(this).attr("type") === "number") newValue = intVal(newValue);
 	if ($(this).hasClass("uppercase")) newValue = newValue.toUpperCase();
 	cell.data(newValue);
+	setSelect2({ allowClear: false });
 });
 
+// 003: Show Elmes table
 $(document).on("change", ".elmes-input", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
@@ -261,7 +264,6 @@ $(document).on("change", ".elmes-input", async function (e) {
 	}
 });
 
-//003: Show Elmes table
 $(document).on("click", "#elmes-confirm", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
@@ -328,7 +330,50 @@ $(document).on("click", "#elmes-cancel", async function (e) {
 	$(table.row(inx).node()).find(".partname").focus();
 });
 
-//004: Unable to reply checkbox
+// 004: Second part checkbox
+$(document).on("change", ".ndpartlist", async function (e) {
+	e.preventDefault();
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const row = table.row($(this).closest("tr"));
+	const node = table.row($(this).closest("tr")).node();
+	const item = $(node).find(".itemno").val();
+	const mfg = $(node).find(".mfgno").val();
+	let data = row.data();
+	row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
+	if (mfg.length > 0 && item.length == 3) {
+		let tableElmes;
+		const elmes = await getSecondItem(mfg, item);
+		if (elmes.length == 0) {
+			await showMessage("No second part found for this item.");
+			return;
+		}
+
+		// if (elmes.length > 0) {
+		// 	const setting = await setupElmesTable(elmes);
+		// 	tableElmes = await createTable(setting, {
+		// 		id: "#tableElmes",
+		// 		columnSelect: { status: true },
+		// 	});
+		// 	$("#elmes-target").val(row.index());
+		// 	const type = Number.isInteger(data.INQD_SEQ) ? 1 : 0.01;
+		// 	$("#elmes-type").val(type);
+		// 	$("#elmes_modal").attr("checked", true);
+		// } else {
+		// 	const newData = {
+		// 		...data,
+		// 		INQD_MFGORDER: mfg,
+		// 		INQD_ITEM: item,
+		// 	};
+		// 	row.data(newData);
+		// 	//row.draw(false);
+		// 	tableElmes = null;
+		// 	$(row.node()).find(".partname").focus();
+		// }
+	}
+});
+
+// 004: Unable to reply checkbox
 $(document).on("click", ".unreply", async function (e) {
 	//e.preventDefault();
 	const table = $("#table").DataTable();
