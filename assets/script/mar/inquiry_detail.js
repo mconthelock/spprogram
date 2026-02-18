@@ -27,14 +27,17 @@ import {
 	setupTableHistory,
 	setupTableAttachment,
 	setupPartTableDetail,
-	createReasonModal,
 	importExcel,
 	importText,
 	getFormHeader,
 	verifyHeader,
 	verifyDetail,
 } from "../inquiry/index.js";
-import { bindDeleteLine } from "../inquiry/ui.js";
+import {
+	bindDeleteLine,
+	createReasonModal,
+	createElmesModal,
+} from "../inquiry/ui.js";
 import { state } from "../inquiry/store.js";
 import {
 	getInquiry,
@@ -79,7 +82,7 @@ $(document).ready(async () => {
 		//Inquiry History and Attachment
 		const history = await setupTableHistory(logs);
 		const tableHistory = await createTable(history, { id: "#history" });
-		const attachment = await setupTableAttachment(file, true);
+		const attachment = await setupTableAttachment(file, false);
 		const tableAttach = await createTable(attachment, {
 			id: "#attachment",
 		});
@@ -87,6 +90,7 @@ $(document).ready(async () => {
 		await setSelect2({ allowClear: false });
 		await setDatePicker();
 		await createReasonModal();
+		await createElmesModal();
 		await setupButton(mode);
 		await bindDeleteLine();
 	} catch (error) {

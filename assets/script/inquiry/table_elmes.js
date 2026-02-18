@@ -5,9 +5,10 @@ export async function setupElmesTable(data) {
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl mt-3 overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.data = data;
-	opt.ordering = false;
-	opt.pageLength = 10;
+	opt.pageLength = 15;
+	opt.order = [[1, "asc"]];
 	opt.columns = [
+		{ data: "seq", title: "seq", className: "hidden" },
 		{ data: "orderno", title: "MFG No.", className: "sticky-column!" },
 		{
 			data: "carno",
@@ -15,8 +16,8 @@ export async function setupElmesTable(data) {
 			className: "sticky-column! text-center!",
 		},
 		{ data: "itemno", title: "Item", className: "text-center!" },
-		{ data: "partname", title: "Part Name" },
-		{ data: "drawing", title: "Drawing No." },
+		{ data: "partname", title: "Part Name", className: "w-50 min-w-50" },
+		{ data: "drawing", title: "Drawing No.", className: "w-50 min-w-50" },
 		{ data: "variable", title: "Variable" },
 		{ data: "qty", title: "Qty" },
 		{

@@ -2,6 +2,7 @@ import "@amec/webasset/css/dataTable.min.css";
 
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
+import { activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import { tableInquirySaleOption } from "../inquiry/index.js";
 import { getInquiry, updateInquiryTimeline } from "../service/index.js";

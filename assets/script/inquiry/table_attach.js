@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
+import { currentUser } from "@amec/webasset/api/amec";
 import { tableOpt, fileIcons, fileExtension } from "../utils.js";
 export async function setupTableAttachment(data = [], view = false) {
+	const user = await currentUser();
+	const usrgroup = user.group;
 	const icons = await fileIcons();
 	const opt = { ...tableOpt };
 	opt.data = data;
@@ -56,10 +59,15 @@ export async function setupTableAttachment(data = [], view = false) {
 			data: "FILE_ORIGINAL_NAME",
 			title: `<i class="icofont-ui-delete text-lg"></i>`,
 			className: `text-center px-1 py-[8px] ${view ? "hidden" : ""}`,
+			sortable: false,
 			render: (data, type, row) => {
-				return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att">
-            <i class="icofont-ui-delete text-sm text-red-500"></i>
-        </a>`;
+				if (usrgroup == "MAR" && row.FILE_OWNER == "MAR") {
+					return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att"><i class="fi fi-rr-trash text-2xl text-red-500"></i></a>`;
+				} else if (usrgroup != "MAR" && row.FILE_OWNER != "MAR") {
+					return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att"><i class="fi fi-rr-trash text-2xl text-red-500"></i></a>`;
+				} else {
+					return `<a href="#" class="btn btn-ghost btn-sm btn-circle btn-disabled"><i class="fi fi-tr-trash-slash text-2xl text-gray-300"></i></a>`;
+				}
 			},
 		},
 	];

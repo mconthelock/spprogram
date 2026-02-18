@@ -4,11 +4,13 @@ import { intVal, showDigits, showMessage } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
+import { createBtn } from "@amec/webasset/components/buttons";
 import {
 	getExportTemplate,
 	getInquiry,
 	getElmesItem,
 	getSecondItem,
+	getReason,
 } from "../service/index.js";
 import { cloneRows } from "../service/excel.js";
 import { setupElmesTable } from "./table_elmes.js";
@@ -53,6 +55,93 @@ export async function addRow({ id, seq }, table, data = {}) {
 	const row = table.row.add(data).draw();
 	if ($(row.node()).find("td:eq(3) input").length > 0)
 		$(row.node()).find("td:eq(3) input").focus();
+}
+
+//003: Unreply checkbox
+export async function createReasonModal() {
+	const reason = await getReason();
+	let str = ``;
+	reason.map((item) => {
+		if (item.REASON_ID == 99) {
+			str += `<li class="flex flex-col gap-2">
+        <div>
+            <input type="radio" name="reason"
+                class="radio radio-sm radio-neutral me-2 reason-code"
+                id="reason-${item.REASON_ID}"
+                value="${item.REASON_ID}" />
+            <span>${item.REASON_DESC}</span>
+        </div>
+        <div>
+            <fieldset class="fieldset">
+                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other" maxlength="100"></textarea>
+                <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
+                <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
+            </fieldset>
+        </div>
+      </li>`;
+		} else {
+			str += `<li>
+        <input type="radio" name="reason"
+            class="radio radio-sm radio-neutral me-2 reason-code"
+            id="reason-${item.REASON_ID}" value="${item.REASON_ID}"/>
+        <input type="hidden" class="text-comment" value="${item.REASON_DESC}"/>
+        <span>${item.REASON_DESC}</span>
+      </li>`;
+		}
+	});
+
+	const btnSave = await createBtn({
+		id: "save-reason",
+		className: "btn-outline  btn-primary  text-primary hover:text-white",
+	});
+	const btnCancel = await createBtn({
+		id: "cancel-reason",
+		title: "Cancel",
+		icon: "icofont-close text-2xl",
+		className: "btn-outline  btn-neutral  text-neutral hover:text-white",
+	});
+
+	const modal = `
+        <div id="reason_modal_wapper">
+            <input type="checkbox" id="modal-reason" class="modal-toggle" />
+            <div class="modal" role="dialog">
+                <div class="modal-box p-8">
+                    <h3 class="text-lg font-bold mb-3">Unable to reply reason</h3>
+                    <div class="divider"></div>
+                    <ul class="flex flex-col gap-3">${str}</ul>
+                    <input type="hidden" id="reason-target"/>
+                    <div class="flex gap-2">${btnSave}${btnCancel}</div>
+                </div>
+            </div>
+        </div>`;
+	$("body").append(modal);
+}
+
+export async function destroyReasonModal() {
+	$("#reason_modal_wapper").remove();
+}
+
+//003: Unreply checkbox
+export async function createElmesModal() {
+	const modal = `
+        <div id="elmes_modal_wapper">
+            <input type="checkbox" id="elmes_modal" class="modal-toggle" />
+            <div class="modal" role="dialog">
+                <div class="modal-box p-8 min-w-8/12 ">
+                <h3 class="text-lg font-bold">General Part List</h3>
+                    <div class="divider"></div>
+                    <input type="text" id="elmes-target" class="hiddenx">
+                    <input type="text" id="elmes-type" class="hiddenx">
+                    <table id="tableElmes" class="table table-zebra text-xs"></table>
+                </div>
+            </div>
+        </div>
+    `;
+	$("body").append(modal);
+}
+
+export async function destroyElmesModal() {
+	$("#elmes_modal_wapper").remove();
 }
 
 $(document).on("mouseenter", ".detail-log", function () {
@@ -239,15 +328,22 @@ $(document).on("change", ".elmes-input", async function (e) {
 	row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
 	if (mfg.length > 0 && item.length == 3) {
 		let tableElmes;
+		await createElmesModal();
 		const elmes = await getElmesItem(mfg, item);
+		const user = await currentUser();
+		const type = user.group == "MAR" ? 1 : 0.01;
 		if (elmes.length > 0) {
 			const setting = await setupElmesTable(elmes);
 			tableElmes = await createTable(setting, {
 				id: "#tableElmes",
-				columnSelect: { status: true },
+				columnSelect: {
+					status: true,
+					class: "max-w-[55px]!",
+					width: "55px",
+				},
 			});
+
 			$("#elmes-target").val(row.index());
-			const type = Number.isInteger(data.INQD_SEQ) ? 1 : 0.01;
 			$("#elmes-type").val(type);
 			$("#elmes_modal").attr("checked", true);
 		} else {
@@ -257,7 +353,6 @@ $(document).on("change", ".elmes-input", async function (e) {
 				INQD_ITEM: item,
 			};
 			row.data(newData);
-			//row.draw(false);
 			tableElmes = null;
 			$(row.node()).find(".partname").focus();
 		}
@@ -312,27 +407,23 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 		console.log(error);
 		await showMessage(error);
 	} finally {
-		await destroyTable("#tableElmes");
-		$("#tableElmes").html("");
-		$("#elmes-target").val("");
 		$("#elmes_modal").attr("checked", false);
+		await destroyElmesModal();
 	}
 });
 
 $(document).on("click", "#elmes-cancel", async function (e) {
 	e.preventDefault();
-	const table = $("#table").DataTable();
 	const inx = $("#elmes-target").val();
-	await destroyTable("#tableElmes");
-	$("#tableElmes").html("");
-	$("#elmes-target").val("");
-	$("#elmes_modal").prop("checked", false);
+	const table = $("#table").DataTable();
+	$("#elmes_modal").attr("checked", false);
+	await destroyElmesModal();
+
 	$(table.row(inx).node()).find(".partname").focus();
 });
 
 // 004: Second part checkbox
 $(document).on("change", ".ndpartlist", async function (e) {
-	e.preventDefault();
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));
@@ -343,34 +434,43 @@ $(document).on("change", ".ndpartlist", async function (e) {
 	row.data({ ...data, INQD_ITEM: item, INQD_MFGORDER: mfg }).draw();
 	if (mfg.length > 0 && item.length == 3) {
 		let tableElmes;
+		await createElmesModal();
 		const elmes = await getSecondItem(mfg, item);
+		const user = await currentUser();
+		const type = user.group == "MAR" ? 1 : 0.01;
 		if (elmes.length == 0) {
-			await showMessage("No second part found for this item.");
+			row.data({
+				...data,
+				INQD_ITEM: item,
+				INQD_MFGORDER: mfg,
+				INQD_SENDPART: "1",
+			}).draw();
+			await destroyElmesModal();
+			await setSelect2({ allowClear: false });
 			return;
 		}
 
-		// if (elmes.length > 0) {
-		// 	const setting = await setupElmesTable(elmes);
-		// 	tableElmes = await createTable(setting, {
-		// 		id: "#tableElmes",
-		// 		columnSelect: { status: true },
-		// 	});
-		// 	$("#elmes-target").val(row.index());
-		// 	const type = Number.isInteger(data.INQD_SEQ) ? 1 : 0.01;
-		// 	$("#elmes-type").val(type);
-		// 	$("#elmes_modal").attr("checked", true);
-		// } else {
-		// 	const newData = {
-		// 		...data,
-		// 		INQD_MFGORDER: mfg,
-		// 		INQD_ITEM: item,
-		// 	};
-		// 	row.data(newData);
-		// 	//row.draw(false);
-		// 	tableElmes = null;
-		// 	$(row.node()).find(".partname").focus();
-		// }
+		const setting = await setupElmesTable(elmes);
+		tableElmes = await createTable(setting, {
+			id: "#tableElmes",
+			columnSelect: {
+				status: true,
+				class: "max-w-[55px]!",
+				width: "55px",
+			},
+		});
+
+		$("#elmes-target").val(row.index());
+		$("#elmes-type").val(type);
+		$("#elmes_modal").attr("checked", true);
 	}
+});
+
+$(document).on("change", ".revokepartlist", async function (e) {
+	e.preventDefault();
+	const table = $("#table").DataTable();
+	const row = table.row($(this).closest("tr"));
+	row.data({ ...data, INQD_SENDPART: null }).draw();
 });
 
 // 004: Unable to reply checkbox
@@ -379,10 +479,18 @@ $(document).on("click", ".unreply", async function (e) {
 	const table = $("#table").DataTable();
 	const row = table.row($(this).parents("tr"));
 	if (!$(this).is(":checked")) {
-		$(row).find(".supplier").attr("disabled", false);
+		const data = row.data();
+		const newData = {
+			...data,
+			INQD_UNREPLY: null,
+			INQD_SUPPLIER: "",
+		};
+		row.data(newData).draw();
+		setSelect2({ allowClear: false });
 		return;
 	}
 
+	await createReasonModal();
 	const data = row.data();
 	if (data.INQD_UNREPLY != "") {
 		$(`#reason-${data.INQD_UNREPLY}`).prop("checked", true);
@@ -443,13 +551,14 @@ $(document).on("click", "#save-reason", async function (e) {
 			INQD_MAR_REMARK:
 				marremark == null ? data.INQD_MAR_REMARK : marremark,
 			INQD_DES_REMARK: deremark == null ? data.INQD_DES_REMARK : deremark,
-			INQD_SUPPLIER: "",
+			INQD_SUPPLIER: "N/A",
 		};
 		table.row(target).data(newData);
 		setSelect2({ allowClear: false });
 		$("#text-comment-other").val(``);
 		$("#text-count").html(`0`);
 		$("#modal-reason").prop("checked", false);
+		await destroyReasonModal();
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);

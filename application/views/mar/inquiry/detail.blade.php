@@ -32,17 +32,6 @@
         </div>
     </div>
     <div class="flex gap-2 my-3" id="btn-container"></div>
-
-
-    <input type="checkbox" id="elmes_modal" class="modal-toggle" />
-    <div class="modal" role="dialog">
-        <div class="modal-box min-w-10/12 min-h-10/12 rounded-md">
-            <h3 class="text-lg font-bold">General Part List</h3>
-            <p class="py-4">Add drawing into inquiry by search from General Part List</p>
-            <input type="text" id="elmes-target" class="hiddenx">
-            <table id="tableElmes" class="table table-zebra text-xs"></table>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')

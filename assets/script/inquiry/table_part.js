@@ -116,7 +116,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="w-25! cell-input elmes-input mfgno" maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-25! cell-input elmes-input mfgno" maxlength="9">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -128,7 +128,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="w-12.5! cell-input elmes-input itemno" maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-12.5! cell-input elmes-input itemno" maxlength="3">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -140,7 +140,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<textarea class="w-62! cell-input edit-input partname" maxlength="50">${
+					return `<textarea class="w-62! cell-input edit-input partname" maxlength="100">${
 						data == null ? "" : data
 					}</textarea>`;
 				}

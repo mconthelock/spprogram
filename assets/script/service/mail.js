@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import * as mst from "./master.js";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
+import { currentUser } from "@amec/webasset/api/amec";
 import { getDesigner } from "../des/data.js";
 
 export const sendGLD = async (data) => {
@@ -22,10 +23,15 @@ export const sendGLD = async (data) => {
 	return await createEmailData(data, emailto);
 };
 
-export const sendSE = async (data) => {
-	const emp = await displayEmpInfo(data.timeline.SE_USER);
-	const emailto = emp?.SRECMAIL ? [emp.SRECMAIL] : [];
-	return await createEmailData(data, emailto);
+export const mailToSaleEngineer = async (data) => {
+	try {
+		const emp = await displayEmpInfo(data.timeline.SE_USER);
+		const emailto = emp?.SRECMAIL ? [emp.SRECMAIL] : [];
+		return await createEmailData(data, emailto);
+	} catch (error) {
+		console.error("Error sending email to Sale Engineer:", error);
+		throw error; // Rethrow the error after logging it
+	}
 };
 
 export const sendPKC = async (data) => {
@@ -60,10 +66,11 @@ export const sendMail = (data) => {
 };
 
 async function createEmailData(data, emailto) {
+	const sender = await currentUser();
 	const emailData = {
 		inquiryNo: data.INQ_NO,
-		requester: data.maruser.SNAME,
-		issueDate: moment(data.CREATE_AT).format("YYYY-MM-DD HH:mm"),
+		requester: sender ? sender.displayname.sname : "Unknown User",
+		issueDate: dayjs(data.CREATE_AT).format("YYYY-MM-DD HH:mm"),
 		message: data.remark !== undefined ? data.remark : "-",
 		itemList: [
 			{
@@ -79,7 +86,7 @@ async function createEmailData(data, emailto) {
 	const finalHtml = createEmailHtml(emailData);
 	const mailto = {
 		from: "SP Program <no-reply@MitsubishiElevatorAsia.co.th>",
-		to: emailto,
+		to: "chalorms@MitsubishiElevatorAsia.co.th", //emailto
 		cc: ["chalorms@MitsubishiElevatorAsia.co.th", data.maruser.SRECMAIL],
 		subject: `Inquiry No. ${data.INQ_NO} Update`,
 		html: finalHtml,
@@ -111,20 +118,15 @@ function createEmailHtml(data) {
         <head>
             <meta charset="utf-8">
             <style>
-                /* Style CSS สำหรับ Email ควรเป็น Inline CSS หรือรวมใน <style> block */
                 body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; }
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #dddddd; }
-                .header { background-color: #1abc9c; color: white; padding: 10px; }
                 .content { padding: 20px 0; }
                 .footer { font-size: 0.8em; color: #777777; padding-top: 20px; border-top: 1px solid #eeeeee; }
-                /* สไตล์ตารางถูกกำหนดในฟังก์ชัน createHtmlTable แล้ว */
             </style>
         </head>
         <body>
             <div class="container">
-                <div class="header">
-                    <h2>Inquiry No. ${inquiryNo} Update</h2>
-                </div>
+                <h2 style="display:block; padding-left: 8px; text-align: left;background-color: #1abc9c; color: white;">Inquiry No. ${inquiryNo} Update</h2>
                 <div class="content">
                     <p>Dear All Concern</p>
                     <p><strong>${requester}</strong> has sent new Inquiry on **SP Program** since ${issueDate}. Please accesss to system and processing data.</p>
@@ -144,12 +146,6 @@ function createEmailHtml(data) {
         </body>
         </html>
     `;
-	// `<p style="padding-top: 20px;">
-	//     <a href="[Link to Inquiry Page]"
-	//         style="display: inline-block; padding: 10px 20px; background-color: #00cc66; color: white; text-decoration: none; border-radius: 5px;">
-	//         คลิกเพื่อดูรายละเอียดในระบบ
-	//     </a>
-	// </p>`;
 }
 
 function createHtmlTable(data, columnMapping = {}) {
@@ -168,7 +164,7 @@ function createHtmlTable(data, columnMapping = {}) {
                 ${headers
 					.map(
 						(header) =>
-							`<th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">${header}</th>`
+							`<th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">${header}</th>`,
 					)
 					.join("")}
             </tr>
@@ -188,11 +184,11 @@ function createHtmlTable(data, columnMapping = {}) {
 						.map(
 							(key) => `
                         <td style="border: 1px solid #dddddd; padding: 8px;">${item[key]}</td>
-                    `
+                    `,
 						)
 						.join("")}
                 </tr>
-            `
+            `,
 				)
 				.join("")}
         </tbody>

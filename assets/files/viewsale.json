@@ -62,6 +62,13 @@
             "name": "INQ_REMARK"
         },
         {
+            "label": "Remark",
+            "id": "showremark",
+            "type": "staticText" ,
+            "name": "INQ_REMARK",
+            "input": true
+        },
+        {
             "label": "SE Read",
             "id": "sale-read",
             "type": "hidden",

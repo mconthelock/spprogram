@@ -16,10 +16,9 @@ import select2 from "select2";
 import { setSelect2 } from "@amec/webasset/select2";
 import { readInput } from "@amec/webasset/excel";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
-import { createBtn } from "@amec/webasset/components/buttons";
+
 import { intVal, showMessage } from "@amec/webasset/utils";
 import {
-	getReason,
 	getMainProject,
 	getPartProject,
 	getDummyProject,
@@ -510,63 +509,6 @@ export async function importHeader(data) {
 	inqno.dispatchEvent(new Event("change"));
 }
 
-//003: Unreply checkbox
-export async function createReasonModal() {
-	const reason = await getReason();
-	let str = ``;
-	reason.map((item) => {
-		if (item.REASON_ID == 99) {
-			str += `<li class="flex flex-col gap-2">
-        <div>
-            <input type="radio" name="reason"
-                class="radio radio-sm radio-neutral me-2 reason-code"
-                id="reason-${item.REASON_ID}"
-                value="${item.REASON_ID}" />
-            <span>${item.REASON_DESC}</span>
-        </div>
-        <div>
-            <fieldset class="fieldset">
-                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other" maxlength="100"></textarea>
-                <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
-                <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
-            </fieldset>
-        </div>
-      </li>`;
-		} else {
-			str += `<li>
-        <input type="radio" name="reason"
-            class="radio radio-sm radio-neutral me-2 reason-code"
-            id="reason-${item.REASON_ID}" value="${item.REASON_ID}"/>
-        <input type="hidden" class="text-comment" value="${item.REASON_DESC}"/>
-        <span>${item.REASON_DESC}</span>
-      </li>`;
-		}
-	});
-
-	const btnSave = await createBtn({
-		id: "save-reason",
-		className: "btn-outline  btn-primary  text-primary hover:text-white",
-	});
-	const btnCancel = await createBtn({
-		id: "cancel-reason",
-		title: "Cancel",
-		icon: "icofont-close text-2xl",
-		className: "btn-outline  btn-neutral  text-neutral hover:text-white",
-	});
-
-	const modal = `<input type="checkbox" id="modal-reason" class="modal-toggle" />
-        <div class="modal" role="dialog">
-            <div class="modal-box p-8">
-                <h3 class="text-lg font-bold mb-3">Unable to reply reason</h3>
-                <div class="divider"></div>
-                <ul class="flex flex-col gap-3">${str}</ul>
-                <input type="hidden" id="reason-target"/>
-                <div class="flex gap-2">${btnSave}${btnCancel}</div>
-            </div>
-        </div>
-    `;
-	$("body").append(modal);
-}
 //End: Unreply
 
 //005: Verify form before save

@@ -6,6 +6,7 @@ export * from "./detail.js";
 export * from "./table_part.js";
 export * from "./table_stock.js";
 export * from "./table_sale.js";
-export * from "./view_part.js";
 export * from "./table_attach.js";
 export * from "./table_history.js";
+export * from "./view_part.js";
+export * from "./view_sale.js";

@@ -1,6 +1,5 @@
 import { showDigits } from "@amec/webasset/utils";
-import { createBtn } from "@amec/webasset/components/buttons";
-import { setSelect2 } from "@amec/webasset/select2";
+import { currentUser } from "@amec/webasset/api/amec";
 import { tableOpt } from "../utils.js";
 export async function setupSaleTableDetail(data = []) {
 	const renderText = (str, logs, key) => {
@@ -33,9 +32,9 @@ export async function setupSaleTableDetail(data = []) {
 		return update;
 	};
 
-	const renderSupplier = (data) => {
-		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="w-25! s2 edit-input supplier">`;
+	const renderSupplier = (data, disabled) => {
+		const sup = ["", "N/A", "AMEC", "MELINA", "LOCAL"];
+		let selector = `<select class="w-25! s2 edit-input supplier" ${disabled ? "disabled" : ""}>`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -43,7 +42,9 @@ export async function setupSaleTableDetail(data = []) {
 		return selector;
 	};
 
-	const mode = data.length > 0 ? 1 : 0;
+	//const mode = data.length > 0 ? 1 : 0;
+	const user = await currentUser();
+	const usrgroup = user.group;
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.paging = false;
@@ -208,8 +209,11 @@ export async function setupSaleTableDetail(data = []) {
 			title: "Supplier",
 			className: "supplier-line",
 			sortable: false,
-			render: function (data, type) {
+			render: function (data, type, row) {
 				if (type === "display") {
+					if (row.INQD_UNREPLY != "" && row.INQD_UNREPLY != null) {
+						return renderSupplier(data, true);
+					}
 					return renderSupplier(data);
 				}
 				return data;
@@ -222,9 +226,11 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="1" ${
-						data == 1 ? "checked" : ""
-					} />`;
+					if (data == null || data == "0")
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="1" />`;
+					else if (data == "1")
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" value="1" checked/>`;
+					else return data;
 				}
 				return data;
 			},
@@ -238,6 +244,18 @@ export async function setupSaleTableDetail(data = []) {
 				if (type === "display") {
 					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
            ${data == "" || data == null ? "" : "checked"}/>`;
+				}
+				return data;
+			},
+		},
+		{
+			data: null,
+			title: `<div class="tooltip  tooltip-bottom" data-tip="Forward to DE"><i class="fi fi-sr-redo text-xl"></i></div>`,
+			className: `text-center! ${usrgroup == "SLG" ? "hidden" : ""}`,
+			sortable: false,
+			render: function (data, type, row, meta) {
+				if (type === "display") {
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white farward"/>`;
 				}
 				return data;
 			},
