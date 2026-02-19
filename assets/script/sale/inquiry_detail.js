@@ -6,7 +6,11 @@ import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, intVal, showDigits } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import {
+	createBtn,
+	activatedBtn,
+	activatedBtnRow,
+} from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import {
 	setupCard,
@@ -23,11 +27,13 @@ import {
 	getInquiryFile,
 	updateInquiry,
 	createInquiryFile,
+	createInquiryHistory,
 	mailToSaleEngineer,
+	mailToDEGroupLeader,
 } from "../service/index.js";
-import { initApp } from "../utils.js";
 import { bindDeleteLine } from "../inquiry/ui.js";
 import { state } from "../inquiry/store.js";
+import { initApp } from "../utils.js";
 
 var table;
 $(document).ready(async () => {
@@ -62,7 +68,13 @@ $(document).ready(async () => {
 		const cards = await setupCard(inqs[0]);
 		$("#showremark").closest(".grid").addClass("hidden");
 
-		const details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
+		let details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
+		details = details.map((dt) => {
+			return {
+				...dt,
+				FORWARD: null,
+			};
+		});
 		const detailsOption = await setupSaleTableDetail(details);
 		table = await createTable(detailsOption);
 		//Inquiry History and Attachment
@@ -126,7 +138,7 @@ async function setupButton(revise, usergroup) {
 	});
 
 	const back = await createBtn({
-		id: "goback",
+		id: "",
 		title: "Back",
 		type: "link",
 		href: `${process.env.APP_ENV}/se/inquiry`,
@@ -154,14 +166,14 @@ $(document).on("click", "#assign-pic", async function (e) {
 	const chkheader = await verifyHeader(".req-1");
 	if (!chkheader) return;
 	try {
-		await activatedBtn($(this));
+		await activatedBtnRow($(this));
 		const inquiry = await updatePath(10, 1);
 		await mailToSaleEngineer(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await activatedBtn($(this), false);
+		await activatedBtnRow($(this), false);
 		await showMessage(`Something went wrong.`);
 		return;
 	}
@@ -177,18 +189,15 @@ $(document).on("click", "#forward-de", async function (e) {
 		return;
 	}
 	try {
-		await activatedBtn($(this));
+		await activatedBtnRow($(this));
 		const inquiry = await updatePath(12, 2);
 		await mailToDEGroupLeader(inquiry);
-		// const email = await mail.sendGLD({
-		// 	...inquiry,
-		// 	remark: $("#remark").val(),
-		// });
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`,
-		// );
+		window.location.replace(
+			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		);
 	} catch (error) {
-		await activatedBtn($(this), false);
+		console.log(error);
+		await activatedBtnRow($(this), false);
 		await showMessage(`Something went wrong.`);
 		return;
 	}
@@ -204,16 +213,21 @@ $(document).on("click", "#send-bm", async function (e) {
 		return;
 	}
 	try {
+		const logs = await setLogsData(11);
+		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+
 		const inquiry = await updatePath(30, 3, 2);
-		const email = await mail.sendPKC({
-			...inquiry,
-			remark: $("#remark").val(),
-		});
-		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`,
-		);
+		// const email = await mail.sendPKC({
+		// 	...inquiry,
+		// 	remark: $("#remark").val(),
+		// });
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`,
+		// );
 	} catch (error) {
-		await showErrorMessage(`Something went wrong.`, "2036");
+		console.log(error);
+		await activatedBtnRow($(this), false);
+		await showMessage(`Something went wrong.`);
 		return;
 	}
 });
@@ -228,62 +242,65 @@ $(document).on("click", "#send-confirm", async function (e) {
 		return;
 	}
 	try {
+		await activatedBtnRow($(this));
+		//12	Foreward to DE
+		//30	Add AS400
 		const inquiry = await updatePath(11, 4, 1);
 		// return;
-		const grpdata = {
-			data: { INQG_STATUS: 28, INQG_SKIP: 1 },
-			condition: { INQ_ID: inquiry.INQ_ID },
-		};
-		await inqservice.updateInquiryGroup(grpdata);
-		const details = table.rows().data().toArray();
-		let group = [];
-		for (const dt of details) {
-			if (dt.INQD_DE !== null) {
-				let item = Math.floor(parseInt(dt.INQD_ITEM) / 100);
-				if (item == 5) item = 2;
-				if (item >= 6) item = 6;
-				group.push(item);
-			}
-		}
+		// const grpdata = {
+		// 	data: { INQG_STATUS: 28, INQG_SKIP: 1 },
+		// 	condition: { INQ_ID: inquiry.INQ_ID },
+		// };
+		// await inqservice.updateInquiryGroup(grpdata);
+		// const details = table.rows().data().toArray();
+		// let group = [];
+		// for (const dt of details) {
+		// 	if (dt.INQD_DE !== null) {
+		// 		let item = Math.floor(parseInt(dt.INQD_ITEM) / 100);
+		// 		if (item == 5) item = 2;
+		// 		if (item >= 6) item = 6;
+		// 		group.push(item);
+		// 	}
+		// }
 
-		if (group.length == 0) {
-			const header = { INQ_STATUS: 30, INQ_NO: inquiry.INQ_NO };
-			const history = await setLogsData(30);
-			const fomdata = {
-				header,
-				history,
-			};
-			const inqs = await inqservice.updateInquiryStatus(
-				fomdata,
-				$("#inquiry-id").val(),
-			);
-			//   const email = await mail.sendPKC({
-			//     ...inqs,
-			//     remark: $("#remark").val(),
-			//   });
-			window.location.replace(
-				`${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`,
-			);
-			return;
-		}
+		// if (group.length == 0) {
+		// 	const header = { INQ_STATUS: 30, INQ_NO: inquiry.INQ_NO };
+		// 	const history = await setLogsData(30);
+		// 	const fomdata = {
+		// 		header,
+		// 		history,
+		// 	};
+		// 	const inqs = await inqservice.updateInquiryStatus(
+		// 		fomdata,
+		// 		$("#inquiry-id").val(),
+		// 	);
+		// 	//   const email = await mail.sendPKC({
+		// 	//     ...inqs,
+		// 	//     remark: $("#remark").val(),
+		// 	//   });
+		// 	window.location.replace(
+		// 		`${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`,
+		// 	);
+		// 	return;
+		// }
 
-		group = [...new Set(group)];
-		for (const gp of group) {
-			const grpdata = {
-				data: { INQG_STATUS: 0, INQG_SKIP: null },
-				condition: { INQ_ID: inquiry.INQ_ID, INQG_GROUP: gp },
-			};
-			await inqservice.updateInquiryGroup(grpdata);
-			const inqs = await inqservice.getInquiryID(inquiry.INQ_ID);
-			//   const email = await mail.sendGLD({
-			//     ...inqs,
-			//     remark: $("#remark").val(),
-			//   });
-			//   window.location.replace(
-			//     `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
-			//   );
-			return;
-		}
+		// group = [...new Set(group)];
+		// for (const gp of group) {
+		// 	const grpdata = {
+		// 		data: { INQG_STATUS: 0, INQG_SKIP: null },
+		// 		condition: { INQ_ID: inquiry.INQ_ID, INQG_GROUP: gp },
+		// 	};
+		// 	await inqservice.updateInquiryGroup(grpdata);
+		// 	const inqs = await inqservice.getInquiryID(inquiry.INQ_ID);
+		// 	//   const email = await mail.sendGLD({
+		// 	//     ...inqs,
+		// 	//     remark: $("#remark").val(),
+		// 	//   });
+		// 	//   window.location.replace(
+		// 	//     `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
+		// 	//   );
+		// 	return;
+		// }
 		// const email = await mail.sendPKC({
 		//   ...inquiry,
 		//   remark: $("#remark").val(),
@@ -292,10 +309,12 @@ $(document).on("click", "#send-confirm", async function (e) {
 		//   `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
 		// );
 	} catch (error) {
-		await showErrorMessage(`Something went wrong.`, "2036");
+		await showMessage(`Something went wrong.`);
 		return;
 	}
 });
+
+async function sendToDE() {}
 
 // 015: Update and send to AS400
 async function updatePath(status, action, level = 0) {
@@ -310,8 +329,14 @@ async function updatePath(status, action, level = 0) {
 			UPDATE_BY: $("#user-login").attr("empname"),
 			UPDATE_AT: new Date(),
 		};
-		const details = table.rows().data().toArray();
+		let details = table.rows().data().toArray();
+		details = details.map((dt) => {
+			const { FORWARD, ...rest } = dt;
+			return rest;
+		});
+
 		await verifyDetail(table, details, level);
+		return;
 		const timelinedata = await setTimelineData(header, status);
 		const history = await setLogsData(status);
 		let deleteLine = [];

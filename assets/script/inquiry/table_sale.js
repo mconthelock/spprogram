@@ -152,7 +152,7 @@ export async function setupSaleTableDetail(data = []) {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: " drawing-line",
+			className: "drawing-line",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
@@ -249,7 +249,7 @@ export async function setupSaleTableDetail(data = []) {
 			},
 		},
 		{
-			data: null,
+			data: "FORWARD",
 			title: `<div class="tooltip  tooltip-bottom" data-tip="Forward to DE"><i class="fi fi-sr-redo text-xl"></i></div>`,
 			className: `text-center! ${usrgroup == "SLG" ? "hidden" : ""}`,
 			sortable: false,

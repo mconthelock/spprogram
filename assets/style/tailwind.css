@@ -148,6 +148,11 @@
 		display: flex !important;
 	}
 
+	/* Button */
+	.btn-disabled {
+		@apply cursor-not-allowed! text-white!;
+	}
+
 	/* Table and Datatable Styles */
 	div.dt-container .dt-search input,
 	div.dt-container .dt-length select {

@@ -23,6 +23,8 @@ import {
 	getPartProject,
 	getDummyProject,
 	validateVariable,
+	validateDrawingNo,
+	validateVariable,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -629,7 +631,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				return;
 			}
 
-			const dwgno = dwg.validateDrawingNo(item.INQD_DRAWING);
+			const dwgno = validateDrawingNo(item.INQD_DRAWING);
 			if (dwgno == null) {
 				check = false;
 				message.push(`Please check Drawing no. format.`);
@@ -637,8 +639,8 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				return;
 			}
 
-			if (item.INQD_VARIABLE != "" || item.INQD_VARIABLE != null) {
-				const variavle = dwg.validateVariable(item.INQD_VARIABLE);
+			if (item.INQD_VARIABLE != "" && item.INQD_VARIABLE != null) {
+				const variavle = validateVariable(item.INQD_VARIABLE);
 				if (!variavle.isValid) {
 					check = false;
 					message.push(`Please check Variable format.`);
@@ -646,14 +648,23 @@ export async function verifyDetail(table, data, savelevel = 0) {
 					return;
 				}
 			}
+			console.log(item.INQD_UNREPLY, item.INQD_SUPPLIER);
 
-			if (item.INQD_UNREPLY == "" && item.INQD_SUPPLIER == "") {
+			if (
+				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
+				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == "N/A")
+			) {
 				check = false;
 				message.push(`Please select supplier.`);
 				errorEl(row.find(".supplier-line"));
 				return;
 			}
-			if (item.INQD_UNREPLY != "" && row.find(".remark").val() == "") {
+
+			if (
+				item.INQD_UNREPLY != "" &&
+				item.INQD_UNREPLY != null &&
+				row.find(".remark").val() == ""
+			) {
 				check = false;
 				message.push(`Please input remark for unable to reply reason.`);
 				errorEl(row.find(".remark-line"));

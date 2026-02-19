@@ -1,12 +1,12 @@
 import dayjs from "dayjs";
-import * as mst from "./master.js";
+import { getAppUsers } from "./master.js";
 import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { currentUser } from "@amec/webasset/api/amec";
 import { getDesigner } from "../des/data.js";
 
-export const sendGLD = async (data) => {
-	let users = await mst.getAppUsers();
-	users = users.filter((u) => ["LDE"].includes(u.appsgroups?.GROUP_CODE));
+export const mailToDEGroupLeader = async (data) => {
+	let users = await getAppUsers();
+	users = users.filter((u) => ["LDR"].includes(u.appsgroups?.GROUP_CODE));
 	const designer = await getDesigner();
 	users.map((u) => {
 		const des = designer.find((d) => d.DES_USER === u.USERS_ID);
@@ -35,7 +35,7 @@ export const mailToSaleEngineer = async (data) => {
 };
 
 export const sendPKC = async (data) => {
-	let users = await mst.getAppUsers();
+	let users = await getAppUsers();
 	users = users.filter((u) => ["PKC"].includes(u.appsgroups?.GROUP_CODE));
 	if (data.INQ_PKC_REQ == 1) {
 		const emailto = users.map((u) => u.data.SRECMAIL);
@@ -129,7 +129,7 @@ function createEmailHtml(data) {
                 <h2 style="display:block; padding-left: 8px; text-align: left;background-color: #1abc9c; color: white;">Inquiry No. ${inquiryNo} Update</h2>
                 <div class="content">
                     <p>Dear All Concern</p>
-                    <p><strong>${requester}</strong> has sent new Inquiry on **SP Program** since ${issueDate}. Please accesss to system and processing data.</p>
+                    <p><strong>${requester}</strong> has sent part supply inquiry to you since ${dayjs().format("YYYY-MM-DD HH:mm")}. Please accesss to system and processing data.</p>
                     <p style="border-left: 3px solid #ff9900; padding-left: 10px; background-color: #fffacd; padding: 10px;">
                         <strong>Note:</strong> ${
 							message == undefined ? "-" : message

@@ -55,6 +55,8 @@ export function formatDrawingNo(input) {
 }
 
 export function validateVariable(inputString) {
+	console.log(inputString);
+
 	if (inputString.endsWith(",")) {
 		inputString = inputString.slice(0, -1);
 	}

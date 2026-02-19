@@ -58,7 +58,7 @@ $(document).on("change", ".fdate", function (e) {
 	}
 });
 
-$(document).on("click", "#goback", async function (e) {
-	e.preventDefault();
-	window.history.back();
-});
+// $(document).on("click", "#goback", async function (e) {
+// 	e.preventDefault();
+// 	window.history.back();
+// });
