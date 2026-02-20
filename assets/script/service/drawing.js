@@ -55,14 +55,10 @@ export function formatDrawingNo(input) {
 }
 
 export function validateVariable(inputString) {
-	console.log(inputString);
-
 	if (inputString.endsWith(",")) {
 		inputString = inputString.slice(0, -1);
 	}
 	let cleanedString = inputString.replace(/\s/g, "");
-	//   console.log(cleanedString);
-
 	const pairRegex = /([^=,]{1,3})=((?:[^,]+|,(?![^=,]{1,3}=))+)/g;
 	let isValid = true;
 	const errors = [];
@@ -125,4 +121,28 @@ export function validateVariable(inputString) {
 	}
 
 	return { isValid, errors, parsedData };
+}
+
+export function prebmDrawingNo(input) {
+	if (!input || typeof input !== "string") return null;
+	let dwg = input.replace(/\s+/g, "");
+	const dwgval = formatDrawingNo(dwg);
+	const dwgarr = dwgval.split(" ");
+	const row = [];
+	let prefix = 206;
+	dwgarr.map((part, index) => {
+		const key = `Q6K${prefix + index}`;
+		row.push({ [key]: part });
+	});
+	return Object.assign({}, ...row);
+}
+
+export function prebmVariable(input) {
+	if (!input || typeof input !== "string") return null;
+	let str = input.replace(/\s+/g, "");
+	const varval = validateVariable(str);
+	if (varval.isValid) {
+		return varval.parsedData;
+	}
+	return;
 }

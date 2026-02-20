@@ -4,11 +4,11 @@ import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
 import { tableOpt } from "../utils.js";
 export async function setupTableHistory(data = []) {
 	const opt = { ...tableOpt };
+	opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex flex-none gap-5"i> >`;
 	opt.data = data;
 	opt.pageLength = 5;
 	opt.paging = true;
-	opt.dom = `<"flex gap-3"<"table-search flex flex-1 gap-5 "><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
-	opt.info = false;
+	// opt.info = false;
 	opt.lengthChange = false;
 	opt.order = [1, "desc"];
 	opt.columns = [

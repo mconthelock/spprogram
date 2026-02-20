@@ -28,8 +28,14 @@ import {
 	updateInquiry,
 	createInquiryFile,
 	createInquiryHistory,
+	prebmDrawingNo,
+	prebmVariable,
 	mailToSaleEngineer,
 	mailToDEGroupLeader,
+	setAS400Header,
+	setAS400Detail,
+	setAS400Variable,
+	addAS400Data,
 } from "../service/index.js";
 import { bindDeleteLine } from "../inquiry/ui.js";
 import { state } from "../inquiry/store.js";
@@ -213,9 +219,18 @@ $(document).on("click", "#send-bm", async function (e) {
 		return;
 	}
 	try {
-		const logs = await setLogsData(11);
-		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+		// let details = table.rows().data().toArray();
+		// details = details.map((dt) => {
+		// 	const { FORWARD, ...rest } = dt;
+		// 	return rest;
+		// });
+		// const dwgData = await prebmDrawingNo(details[0].INQD_DRAWING);
+		// console.log(dwgData);
 
+		// const varData = await prebmVariable(details[0].INQD_VARIABLE);
+		// console.log(varData);
+		// const logs = await setLogsData(11, true);
+		// await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		const inquiry = await updatePath(30, 3, 2);
 		// const email = await mail.sendPKC({
 		// 	...inquiry,
@@ -314,8 +329,6 @@ $(document).on("click", "#send-confirm", async function (e) {
 	}
 });
 
-async function sendToDE() {}
-
 // 015: Update and send to AS400
 async function updatePath(status, action, level = 0) {
 	try {
@@ -324,6 +337,10 @@ async function updatePath(status, action, level = 0) {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),
 			INQ_REV: $("#revision").val(),
+			INQ_PRJNO: $("#project-no").val(),
+			INQ_PRDSCH: $("#schedule").val(),
+			INQ_SERIES: $("#series").val(),
+			INQ_SPEC: $("#spec").val(),
 			INQ_STATUS: status,
 			INQ_SALE_REMARK: $("#remark").val(),
 			UPDATE_BY: $("#user-login").attr("empname"),
@@ -334,9 +351,18 @@ async function updatePath(status, action, level = 0) {
 			const { FORWARD, ...rest } = dt;
 			return rest;
 		});
+		const q601kp1 = await setAS400Header(header, details);
+		const q601kp2 = await setAS400Detail(header.INQ_NO, details);
+		const q601kp4 = await setAS400Variable(header.INQ_NO, details);
+		console.log(q601kp4.flat(1));
+		await addAS400Data({
+			header: q601kp1,
+			detail: q601kp2,
+			variable: q601kp4.flat(1),
+		});
 
-		await verifyDetail(table, details, level);
 		return;
+		await verifyDetail(table, details, level);
 		const timelinedata = await setTimelineData(header, status);
 		const history = await setLogsData(status);
 		let deleteLine = [];
@@ -415,11 +441,13 @@ async function setTimelineData(header, action) {
 	return data;
 }
 
-async function setLogsData(action) {
+async function setLogsData(action, adjust = false) {
 	return {
 		INQ_NO: $("#inquiry-no").val(),
 		INQ_REV: $("#revision").val(),
-		INQH_DATE: new Date(),
+		INQH_DATE: adjust
+			? dayjs().add("-1", "second").format("YYYY-MM-DD HH:mm:ss")
+			: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		INQH_USER: $("#user-login").attr("empno"),
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),

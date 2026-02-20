@@ -92,6 +92,7 @@ export async function tableInquiryPKCOption(data) {
 		});
 		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
 		$("#datatable_loading").addClass("hidden");
+		await this.api().columns.adjust();
 	};
 	return opt;
 }

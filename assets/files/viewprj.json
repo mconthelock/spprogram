@@ -3,11 +3,11 @@
     "title": "Original Project",
     "fields": [
         { "label": "Project No", "id": "project-no", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRJNO", "name": "INQ_PRJNO", "input": true},
-        { "label": "Project Name", "id": "project-name", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRJNAME", "name": "INQ_PRJNAME"},
-        { "label": "Shop Order", "id": "shop-order", "type": "staticText", "class": "view-data" , "mapping": "INQ_SHOPORDER", "name": "INQ_SHOPORDER"},
-        { "label": "Series", "id": "series", "type": "staticText", "class": "view-data", "mapping": "INQ_SERIES", "name": "INQ_SERIES"},
-        { "label": "Operation", "id": "operation", "type": "staticText", "class": "view-data" , "mapping": "INQ_OPERATION", "name": "INQ_OPERATION"},
-        { "label": "Spec", "id": "spec", "type": "staticText", "class": "view-data", "mapping": "INQ_SPEC", "name": "INQ_SPEC"},
-        { "label": "Schedule", "id": "schedule", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRDSCH", "name": "INQ_PRDSCH"}
+        { "label": "Project Name", "id": "project-name", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRJNAME", "name": "INQ_PRJNAME", "input": true},
+        { "label": "Shop Order", "id": "shop-order", "type": "staticText", "class": "view-data" , "mapping": "INQ_SHOPORDER", "name": "INQ_SHOPORDER", "input": true},
+        { "label": "Series", "id": "series", "type": "staticText", "class": "view-data", "mapping": "INQ_SERIES", "name": "INQ_SERIES", "input": true},
+        { "label": "Operation", "id": "operation", "type": "staticText", "class": "view-data" , "mapping": "INQ_OPERATION", "name": "INQ_OPERATION", "input": true},
+        { "label": "Spec", "id": "spec", "type": "staticText", "class": "view-data", "mapping": "INQ_SPEC", "name": "INQ_SPEC", "input": true},
+        { "label": "Schedule", "id": "schedule", "type": "staticText", "class": "view-data" , "mapping": "INQ_PRDSCH", "name": "INQ_PRDSCH", "input": true}
     ]
 }
