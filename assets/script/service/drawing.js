@@ -122,27 +122,3 @@ export function validateVariable(inputString) {
 
 	return { isValid, errors, parsedData };
 }
-
-export function prebmDrawingNo(input) {
-	if (!input || typeof input !== "string") return null;
-	let dwg = input.replace(/\s+/g, "");
-	const dwgval = formatDrawingNo(dwg);
-	const dwgarr = dwgval.split(" ");
-	const row = [];
-	let prefix = 206;
-	dwgarr.map((part, index) => {
-		const key = `Q6K${prefix + index}`;
-		row.push({ [key]: part });
-	});
-	return Object.assign({}, ...row);
-}
-
-export function prebmVariable(input) {
-	if (!input || typeof input !== "string") return null;
-	let str = input.replace(/\s+/g, "");
-	const varval = validateVariable(str);
-	if (varval.isValid) {
-		return varval.parsedData;
-	}
-	return;
-}

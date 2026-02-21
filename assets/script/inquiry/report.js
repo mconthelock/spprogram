@@ -1,5 +1,5 @@
 import { init } from "../inquiry/source.js";
-import { getStatus } from "../service/master.js";
+import { getStatus, getAppUsers } from "../service/master.js";
 import { createBtn } from "@amec/webasset/components/buttons";
 
 export const setSeries = async () => {
@@ -74,6 +74,27 @@ export const setStatus = async () => {
 	});
 };
 
+export const setSaleEngineer = async () => {
+	const id = "#se_engineer";
+	let users = await getAppUsers();
+	users = users.filter((u) =>
+		["SLG", "SLE"].includes(u.appsgroups?.GROUP_CODE),
+	);
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
+	users.map((el) => {
+		$(`${id}`).append(
+			new Option(
+				`${el.data.SNAME} (${el.data.SEMPNO})`,
+				el.data.SEMPNO,
+				false,
+				false,
+			),
+		);
+	});
+};
+
 export const setReportButton = async () => {
 	const search = await createBtn({
 		id: "search",
@@ -85,8 +106,8 @@ export const setReportButton = async () => {
 	const reset = await createBtn({
 		id: "reset-report",
 		title: "Reset",
-		icon: "fi fi-ts-feedback-cycle-loop text-xl",
-		className: `btn-soft btn-accent border-accent  hover:shadow-lg hover:text-white`,
+		icon: "ffi fi-br-refresh text-xl",
+		className: `btn-outline btn-accent hover:shadow-lg hover:text-white`,
 	});
-	$("#btn-report").append(` ${search} ${reset}`);
+	$("#btn-container").append(` ${search} ${reset}`);
 };

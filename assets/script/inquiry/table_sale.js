@@ -72,7 +72,7 @@ export async function setupSaleTableDetail(data = []) {
                     <button class="btn btn-xs btn-circle btn-ghost ${
 						row.INQD_OWNER_GROUP != "MAR"
 							? "delete-sub-line text-red-500"
-							: "btn-disabled"
+							: "btn-disabled text-gray-300!"
 					}"><i class="fi fi-bs-cross"></i></button>`;
 				}
 				return data;

@@ -149,7 +149,7 @@
 	}
 
 	/* Button */
-	.btn-disabled {
+	.btn-disabled:not(.btn-ghost) {
 		@apply cursor-not-allowed! text-white!;
 	}
 

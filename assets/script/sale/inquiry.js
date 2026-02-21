@@ -6,11 +6,14 @@ import { currentUser } from "@amec/webasset/api/amec";
 import { activatedBtn } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import { tableInquirySaleOption } from "../inquiry/index.js";
-import { getInquiry, updateInquiryTimeline } from "../service/index.js";
+import {
+	getInquiry,
+	updateInquiryTimeline,
+	getTemplate,
+	exportExcel,
+} from "../service/index.js";
+import { dataExports } from "./data.js";
 import { initApp } from "../utils.js";
-// import { tableOpt } from "./table.js";
-// import * as service from "../service/inquiry.js";
-// import * as utils from "../utils.js";
 
 var table;
 $(document).ready(async () => {
@@ -33,6 +36,7 @@ $(document).ready(async () => {
 		}
 		const opt = await tableInquirySaleOption(data);
 		table = await createTable(opt);
+		localStorage.setItem("spinquiryquery", JSON.stringify(q));
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -72,6 +76,42 @@ $(document).on("click", ".process-btn", async function (e) {
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
+		await activatedBtn($(this), false);
+	}
+});
+
+$(document).on("click", "#export1", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
+		const query = {
+			...q,
+			IS_TIMELINE: true,
+			IS_DETAILS: true,
+		};
+		let data = await getInquiry(query);
+		const usergroup = $("#user-login").attr("groupcode");
+		if (usergroup == "SLE") {
+			data = data.filter((item) => item.INQ_STATUS == 10);
+		} else {
+			data = data.filter(
+				(item) => item.INQ_STATUS < 10 && item.INQ_STATUS != 4,
+			);
+		}
+
+		const template = await getTemplate(
+			"export_inquiry_list_template_for_sale.xlsx",
+		);
+		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
+		let result = await dataExports(sortData);
+		await exportExcel(result, template, {
+			filename: "Inquiry List.xlsx",
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
 		await activatedBtn($(this), false);
 	}
 });

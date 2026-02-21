@@ -5,22 +5,27 @@ import { currentUser } from "@amec/webasset/api/amec";
 import { getDesigner } from "../des/data.js";
 
 export const mailToDEGroupLeader = async (data) => {
-	let users = await getAppUsers();
-	users = users.filter((u) => ["LDR"].includes(u.appsgroups?.GROUP_CODE));
-	const designer = await getDesigner();
-	users.map((u) => {
-		const des = designer.find((d) => d.DES_USER === u.USERS_ID);
-		if (des) u.DES_GROUP = des.DES_GROUP;
-	});
+	try {
+		let users = await getAppUsers();
+		users = users.filter((u) => ["LDR"].includes(u.appsgroups?.GROUP_CODE));
+		const designer = await getDesigner();
+		users.map((u) => {
+			const des = designer.find((d) => d.DES_USER === u.USERS_ID);
+			if (des) u.DES_GROUP = des.DES_GROUP;
+		});
 
-	let emailto = [];
-	let group = data.inqgroup;
-	group = group.filter((g) => g.INQG_LATEST == "1" && g.INQG_STATUS == 0);
-	group.map((g) => {
-		const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
-		if (user) emailto.push(user.data.SRECMAIL);
-	});
-	return await createEmailData(data, emailto);
+		let emailto = [];
+		let group = data.inqgroup;
+		group = group.filter((g) => g.INQG_LATEST == "1" && g.INQG_STATUS == 0);
+		group.map((g) => {
+			const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
+			if (user) emailto.push(user.data.SRECMAIL);
+		});
+		return await createEmailData(data, emailto);
+	} catch (error) {
+		console.error("Error sending email to DE Group Leader:", error);
+		throw error;
+	}
 };
 
 export const mailToSaleEngineer = async (data) => {
@@ -30,16 +35,22 @@ export const mailToSaleEngineer = async (data) => {
 		return await createEmailData(data, emailto);
 	} catch (error) {
 		console.error("Error sending email to Sale Engineer:", error);
-		throw error; // Rethrow the error after logging it
+		throw error;
 	}
 };
 
-export const sendPKC = async (data) => {
-	let users = await getAppUsers();
-	users = users.filter((u) => ["PKC"].includes(u.appsgroups?.GROUP_CODE));
-	if (data.INQ_PKC_REQ == 1) {
-		const emailto = users.map((u) => u.data.SRECMAIL);
-		return await createEmailData(data, emailto);
+export const mailToPKC = async (data) => {
+	try {
+		let users = await getAppUsers();
+		users = users.filter((u) => ["PKC"].includes(u.appsgroups?.GROUP_CODE));
+		if (data.INQ_PKC_REQ == 1 && data.timeline.PKC_CONFIRM == null) {
+			const emailto = users.map((u) => u.data.SRECMAIL);
+			return await createEmailData(data, emailto);
+		}
+		return true;
+	} catch (error) {
+		console.error("Error sending email to PKC:", error);
+		throw error;
 	}
 };
 

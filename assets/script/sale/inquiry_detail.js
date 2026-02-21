@@ -3,21 +3,16 @@ import "@amec/webasset/css/dataTable.min.css";
 
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
-import { showMessage, intVal, showDigits } from "@amec/webasset/utils";
+import { showMessage, revisionCode } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
-import {
-	createBtn,
-	activatedBtn,
-	activatedBtnRow,
-} from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import {
 	setupCard,
 	setupTableHistory,
 	setupTableAttachment,
 	setupSaleTableDetail,
-	getFormHeader,
 	verifyHeader,
 	verifyDetail,
 } from "../inquiry/index.js";
@@ -28,10 +23,9 @@ import {
 	updateInquiry,
 	createInquiryFile,
 	createInquiryHistory,
-	prebmDrawingNo,
-	prebmVariable,
 	mailToSaleEngineer,
 	mailToDEGroupLeader,
+	mailToPKC,
 	setAS400Header,
 	setAS400Detail,
 	setAS400Variable,
@@ -54,26 +48,37 @@ $(document).ready(async () => {
 			IS_TIMELINE: true,
 		});
 
-		let setime = {
+		let settime = {
 			SALE_CLASS: inqs[0].timeline.SALE_CLASS,
-			SG_USER: inqs[0].timeline.SG_USER,
-			SG_READ: inqs[0].timeline.SG_READ,
+			SG_USER:
+				inqs[0].timeline.SG_USER == null
+					? user.empno
+					: inqs[0].timeline.SG_USER,
+			SG_READ:
+				inqs[0].timeline.SG_READ == null
+					? dayjs().format("YYYY-MM-DD HH:mm:ss")
+					: inqs[0].timeline.SG_READ,
 			SG_CONFIRM: inqs[0].timeline.SG_CONFIRM,
 			SE_USER: inqs[0].timeline.SE_USER,
 			SE_READ: inqs[0].timeline.SE_READ,
 			SE_CONFIRM: inqs[0].timeline.SE_CONFIRM,
 		};
-		inqs[0] = { ...inqs[0], ...setime };
+		inqs[0] = { ...inqs[0], ...settime };
+		inqs[0].timeline = { ...inqs[0].timeline, ...settime };
 		inqs[0].INQ_DATE = dayjs(inqs[0].INQ_DATE).format("YYYY-MM-DD");
 		inqs[0].INQ_REMARK = inqs[0].INQ_SALE_REMARK;
-		if (usrgroup != "SLG") {
+
+		let revise = inqs[0].INQ_STATUS > 20 ? true : false;
+		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
+		if (usrgroup == "SLG") {
 			const vlist = $("#form-container").attr("data");
-			const vstr = vlist.replace(/sale/g, "viewsale");
+			const vstr = vlist.replace(/viewsale/g, "sale");
 			$("#form-container").attr("data", vstr);
 		}
+		console.log(inqs[0]);
+
 		const cards = await setupCard(inqs[0]);
 		$("#showremark").closest(".grid").addClass("hidden");
-
 		let details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
 		details = details.map((dt) => {
 			return {
@@ -95,7 +100,7 @@ $(document).ready(async () => {
 
 		await setSelect2({ allowClear: false });
 		await bindDeleteLine();
-		await setupButton(false, usrgroup);
+		await setupButton(revise, usrgroup);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -109,9 +114,7 @@ async function setupButton(revise, usergroup) {
 		id: "assign-pic",
 		title: "Assign PIC",
 		icon: "fi fi-rs-user-check text-xl",
-		className: `btn-primary text-white hover:shadow-lg ${
-			revise ? "revised" : ""
-		}`,
+		className: `btn-primary text-white hover:shadow-lg ${revise ? `revised` : ``}`,
 	});
 
 	const forwardde = await createBtn({
@@ -119,9 +122,7 @@ async function setupButton(revise, usergroup) {
 		title: "Forward to DE",
 		tooltip: `Send the inquiry to Design Department without SE checking.`,
 		icon: "fi fi-tr-share-square text-xl",
-		className: `btn-accent text-white hover:shadow-lg ${
-			revise ? "revised" : ""
-		}`,
+		className: `btn-accent text-white hover:shadow-lg ${revise ? `revised` : ``}`,
 	});
 
 	const sendIS = await createBtn({
@@ -129,18 +130,14 @@ async function setupButton(revise, usergroup) {
 		title: "Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		tooltip: "Finish declare part process and Send to Pre-BM on AS400",
-		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${
-			revise ? "revised" : ""
-		}`,
+		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${revise ? `revised` : ``}`,
 	});
 
 	const confirm = await createBtn({
 		id: "send-confirm",
 		title: "Confirm",
 		icon: "fi fi-tr-badge-check text-xl",
-		className: `btn-primary text-white hover:shadow-lg ${
-			revise ? "revised" : ""
-		}`,
+		className: `btn-primary text-white hover:shadow-lg ${revise ? `revised` : ``}`,
 	});
 
 	const back = await createBtn({
@@ -149,28 +146,25 @@ async function setupButton(revise, usergroup) {
 		type: "link",
 		href: `${process.env.APP_ENV}/se/inquiry`,
 		icon: "fi fi-rr-arrow-circle-left text-xl",
-		className:
-			"btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
+		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	if (usergroup == "SLG")
-		$("#btn-container").append(assign, forwardde, sendIS, back);
-	else $("#btn-container").append(confirm, back);
+	if (usergroup != "SLG") $("#btn-container").append(confirm, back);
+	else $("#btn-container").append(assign, forwardde, sendIS, back);
 }
 
 // Submit Form
 // 006: Assign Engineer
 $(document).on("click", "#assign-pic", async function (e) {
 	e.preventDefault();
+	const chkheader = await verifyHeader(".req-1");
+	if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}
-
-	const chkheader = await verifyHeader(".req-1");
-	if (!chkheader) return;
 	try {
 		await activatedBtnRow($(this));
 		const inquiry = await updatePath(10, 1);
@@ -188,12 +182,15 @@ $(document).on("click", "#assign-pic", async function (e) {
 //007: Bypass to DE
 $(document).on("click", "#forward-de", async function (e) {
 	e.preventDefault();
+	const chkheader = await verifyHeader(".req-1");
+	if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}
+
 	try {
 		await activatedBtnRow($(this));
 		const inquiry = await updatePath(12, 2);
@@ -212,6 +209,8 @@ $(document).on("click", "#forward-de", async function (e) {
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
+	const chkheader = await verifyHeader(".req-1");
+	if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
@@ -219,26 +218,15 @@ $(document).on("click", "#send-bm", async function (e) {
 		return;
 	}
 	try {
-		// let details = table.rows().data().toArray();
-		// details = details.map((dt) => {
-		// 	const { FORWARD, ...rest } = dt;
-		// 	return rest;
-		// });
-		// const dwgData = await prebmDrawingNo(details[0].INQD_DRAWING);
-		// console.log(dwgData);
-
-		// const varData = await prebmVariable(details[0].INQD_VARIABLE);
-		// console.log(varData);
-		// const logs = await setLogsData(11, true);
-		// await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+		await activatedBtnRow($(this));
+		const logs = await setLogsData(11, true);
+		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		const inquiry = await updatePath(30, 3, 2);
-		// const email = await mail.sendPKC({
-		// 	...inquiry,
-		// 	remark: $("#remark").val(),
-		// });
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`,
-		// );
+		await setAS400Data(inquiry);
+		await mailToPKC(inquiry);
+		window.location.replace(
+			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		);
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow($(this), false);
@@ -351,19 +339,10 @@ async function updatePath(status, action, level = 0) {
 			const { FORWARD, ...rest } = dt;
 			return rest;
 		});
-		const q601kp1 = await setAS400Header(header, details);
-		const q601kp2 = await setAS400Detail(header.INQ_NO, details);
-		const q601kp4 = await setAS400Variable(header.INQ_NO, details);
-		console.log(q601kp4.flat(1));
-		await addAS400Data({
-			header: q601kp1,
-			detail: q601kp2,
-			variable: q601kp4.flat(1),
-		});
-
-		return;
 		await verifyDetail(table, details, level);
-		const timelinedata = await setTimelineData(header, status);
+		const timelinedata = await setTimelineData(header, action);
+
+		if (status == 30) $("#remark").val("");
 		const history = await setLogsData(status);
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
@@ -452,4 +431,23 @@ async function setLogsData(action, adjust = false) {
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),
 	};
+}
+
+async function setAS400Data(inq) {
+	let isAMEC = false;
+	inq.details.map((dt) => {
+		if (dt.INQD_SUPPLIER == "AMEC" && dt.INQD_LATEST == 1) isAMEC = true;
+	});
+	if (!isAMEC) return;
+
+	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
+	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
+	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
+	await addAS400Data({
+		header: q601kp1,
+		detail: q601kp2,
+		variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
+		inquiryNo: inq.INQ_NO,
+	});
+	return;
 }

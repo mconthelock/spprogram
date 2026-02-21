@@ -174,37 +174,21 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 	};
 
 	opt.initComplete = async function () {
-		const newinq = await createBtn({
-			id: "add-new-inquiry",
-			type: "link",
-			href: `${process.env.APP_ENV}/mar/inquiry/create`,
-			title: "New Inquiry",
-			icon: "fi fi-tr-file-excel text-xl ",
-			className: `btn-outline btn-primary text-primary hover:shadow-lg  hover:text-white`,
-		});
 		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Inquiry",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-accent text-white hover:shadow-lg`,
 		});
-		const export2 = await createBtn({
-			id: "export2",
-			title: "Export (With Detail)",
-			icon: "fi fi-rr-layers text-xl",
-			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
-		});
 
 		const back = await createBtn({
-			id: "back-report",
+			id: "goback",
 			title: "Back",
 			icon: "fi fi fi-rr-undo text-xl",
 			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
 		});
-
-		$(".table-option").append(`${extopt.new === true ? newinq : ""}`);
 		$(".table-info").append(
-			`<div class="flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
+			`<div class="flex gap-2">${export1}${extopt.back === true ? back : ""}</div>`,
 		);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();

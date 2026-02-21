@@ -14,11 +14,11 @@ Q6K109            Revision                                        1
 Q6K110            Last Tran Date                                  8    0
 Q6K111            Last Tran Time                                  6    0
 */
-export async function setAS400Header(header, details) {
+export async function setAS400Header(header, MFGNO) {
 	const user = await currentUser();
 	const strc = [
 		{ Q6K101: header.INQ_NO },
-		{ Q6K102: details[0].INQD_MFGORDER.trim().substring(0, 8) },
+		{ Q6K102: MFGNO.trim().substring(0, 8) },
 		{ Q6K103: header.INQ_PRJNO.trim().substring(0, 15) },
 		{ Q6K104: header.INQ_PRDSCH.trim().substring(0, 7) },
 		{ Q6K105: header.INQ_SERIES },
@@ -73,43 +73,47 @@ export async function setAS400Detail(INQ_NO, details) {
 	const user = await currentUser();
 	const rows = [];
 	details.map(async (el, i) => {
-		const strc = [
-			{ Q6K201: INQ_NO },
-			{ Q6K202: el.INQD_RUNNO },
-			{ Q6K203: el.INQD_CAR },
-			{ Q6K204: el.INQD_ITEM },
-			{ Q6K205: el.INQD_PARTNAME.trim().substring(0, 30) },
-			{ Q6K217: el.INQD_QTY },
-			{ Q6K223: user.empno },
-			{ Q6K226: "A" },
-		];
+		if (el.INQD_LATEST == 1) {
+			const strc = [
+				{ Q6K201: INQ_NO },
+				{ Q6K202: el.INQD_RUNNO },
+				{ Q6K203: el.INQD_CAR },
+				{ Q6K204: el.INQD_ITEM },
+				{ Q6K205: el.INQD_PARTNAME.trim().substring(0, 30) },
+				{ Q6K217: el.INQD_QTY },
+				{ Q6K223: user.empno },
+				{ Q6K226: "A" },
+			];
 
-		let dwg = el.INQD_DRAWING.replace(/\s+/g, "");
-		const dwgval = await formatDrawingNo(dwg);
-		const dwgarr = dwgval.split(" ");
-		let prefix = 206;
-		dwgarr.map((part, index) => {
-			const key = `Q6K${prefix + index}`;
-			if (index > 2) {
-				part = part.replace(/L/g, "");
-			}
-			strc.push({ [key]: part });
-		});
+			let dwg = el.INQD_DRAWING.replace(/\s+/g, "");
+			const dwgval = await formatDrawingNo(dwg);
+			const dwgarr = dwgval.split(" ");
+			let prefix = 206;
+			dwgarr.map((part, index) => {
+				const key = `Q6K${prefix + index}`;
+				if (index > 2) {
+					part = part.replace(/L/g, "");
+				}
+				strc.push({ [key]: part });
+			});
 
-		let row = [];
-		strc.map((item) => {
-			const key = Object.keys(item)[0];
-			const value = item[key];
-			const data = {
-				field: key,
-				value: value,
-				op: "eq",
-				type:
-					key === "Q6K202" || key === "Q6K217" ? "number" : "string",
-			};
-			row.push(data);
-		});
-		rows.push(row);
+			let row = [];
+			strc.map((item) => {
+				const key = Object.keys(item)[0];
+				const value = item[key];
+				const data = {
+					field: key,
+					value: value,
+					op: "eq",
+					type:
+						key === "Q6K202" || key === "Q6K217"
+							? "number"
+							: "string",
+				};
+				row.push(data);
+			});
+			rows.push(row);
+		}
 	});
 	return rows;
 }
@@ -123,72 +127,77 @@ Q6K404            Valus                                           9
 export async function setAS400Variable(INQ_NO, details) {
 	const rows = [];
 	details.map(async (el, i) => {
-		let str = el.INQD_VARIABLE.replace(/\s+/g, "");
-		const varval = await validateVariable(str);
-		if (varval.isValid) {
-			let row = [];
-			Object.keys(varval.parsedData).forEach((key) => {
-				if (varval.parsedData[key].length > 9) {
-					const acctxt = (input) => {
-						const words = input.split(",");
-						return words.reduce((acc, word) => {
-							if (
-								acc.length === 0 ||
-								acc[acc.length - 1].length + word.length + 1 > 9
-							) {
-								acc.push(word);
-							} else {
-								acc[acc.length - 1] += `,${word}`;
-							}
-							return acc;
-						}, []);
-					};
-					const result = acctxt(varval.parsedData[key]);
-					result.map((part, index) => {
+		if (!(el.INQD_VARIABLE == "" || el.INQD_VARIABLE == null)) {
+			let str = el.INQD_VARIABLE.replace(/\s+/g, "");
+			const varval = await validateVariable(str);
+			if (varval.isValid) {
+				let row = [];
+				Object.keys(varval.parsedData).forEach((key) => {
+					if (varval.parsedData[key].length > 9) {
+						const acctxt = (input) => {
+							const words = input.split(",");
+							return words.reduce((acc, word) => {
+								if (
+									acc.length === 0 ||
+									acc[acc.length - 1].length +
+										word.length +
+										1 >
+										9
+								) {
+									acc.push(word);
+								} else {
+									acc[acc.length - 1] += `,${word}`;
+								}
+								return acc;
+							}, []);
+						};
+						const result = acctxt(varval.parsedData[key]);
+						result.map((part, index) => {
+							const strc = [
+								{ Q6K401: INQ_NO },
+								{ Q6K402: el.INQD_RUNNO },
+								{ Q6K403: key },
+								{ Q6K404: part },
+							];
+							row.push(strc);
+						});
+					} else {
 						const strc = [
 							{ Q6K401: INQ_NO },
 							{ Q6K402: el.INQD_RUNNO },
 							{ Q6K403: key },
-							{ Q6K404: part },
+							{ Q6K404: varval.parsedData[key] },
 						];
 						row.push(strc);
-					});
-				} else {
-					const strc = [
-						{ Q6K401: INQ_NO },
-						{ Q6K402: el.INQD_RUNNO },
-						{ Q6K403: key },
-						{ Q6K404: varval.parsedData[key] },
-					];
-					row.push(strc);
-				}
-			});
-			let lines = [];
-			row.map((item) => {
-				let line = [];
-				item.map((its) => {
-					const data = {
-						field: Object.keys(its)[0],
-						value: Object.values(its)[0],
-						op: "eq",
-						type:
-							Object.keys(its)[0] === "Q6K402"
-								? "number"
-								: "string",
-					};
-					line.push(data);
+					}
 				});
-				lines.push(line);
-			});
-			rows.push(lines);
+				let lines = [];
+				row.map((item) => {
+					let line = [];
+					item.map((its) => {
+						const data = {
+							field: Object.keys(its)[0],
+							value: Object.values(its)[0],
+							op: "eq",
+							type:
+								Object.keys(its)[0] === "Q6K402"
+									? "number"
+									: "string",
+						};
+						line.push(data);
+					});
+					lines.push(line);
+				});
+				rows.push(lines);
+			}
 		}
 	});
-	console.log(rows);
 
 	return rows;
 }
 
 export async function addAS400Data(data) {
+	console.log("Oh hi, Do you call me? I am here");
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: `${process.env.APP_API}/sp/prebm/create/`,

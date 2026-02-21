@@ -3,28 +3,27 @@
 @section('contents')
     <h2 class="card-title text-2xl">Inquiry Report</h2>
     <div class="divider m-0"></div>
-    <table id="table" class="table table-zebra display text-xs"></table>
     <form action="#" id="form-container" class="hidden" autocomplete="off">
         <div class="flex gap-8">
             <div class="flex-1 flex flex-col py-6 px-12 bg-white rounded-lg shadow">
                 <div class="divider divider-start font-bold text-primary">Search By Inquiry Information</div>
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Inquiry No.</legend>
-                    <input type="text" class="input w-full uppercase" name="LIKE_INQ_NO" placeholder="" />
+                    <input type="text" class="input w-full uppercase" name="INQ_NO" placeholder="" />
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Inquiry Date</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
-                                name="GE_INQ_DATE" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                                name="START_INQ_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
-                                name="LE_INQ_DATE" />
+                            <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
+                                name="END_INQ_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -34,14 +33,14 @@
                     <legend class="fieldset-legend">MAR Send Date</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.GE_MAR_SEND" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                                name="timeline.START_MAR_SEND" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.LE_MAR_SEND" />
+                            <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
+                                name="timeline.END_MAR_SEND" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -49,28 +48,28 @@
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Trader</legend>
-                    <select class="select w-full" id="trader" name="INQ_TRADER">
+                    <select class="select w-full s2" id="trader" name="INQ_TRADER">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Agent</legend>
-                    <select class="select w-full" id="agent" name="INQ_AGENT">
+                    <select class="select w-full s2" id="agent" name="INQ_AGENT">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Country</legend>
-                    <select class="select w-full" id="country" name="INQ_COUNTRY">
+                    <select class="select w-full s2" id="country" name="INQ_COUNTRY">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Status</legend>
-                    <select class="select w-full" id="status" name="INQ_STATUS">
+                    <select class="select w-full s2" id="status" name="INQ_STATUS">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
@@ -89,25 +88,25 @@
                 </fieldset>
 
                 <fieldset class="fieldset">
+                    <legend class="fieldset-legend">Shop Order</legend>
+                    <input type="text" class="input w-full" placeholder="" name="LIKE_INQ_SHOPORDER" />
+                </fieldset>
+
+                <fieldset class="fieldset">
                     <legend class="fieldset-legend">Series</legend>
-                    <select class="select w-full" id="series" name="INQ_SERIES">
+                    <select class="select w-full s2" id="series" name="INQ_SERIES">
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Order Type</legend>
-                    <select class="select w-full" id="ordertype" name="INQ_ORDER_TYPE"></select>
+                    <select class="select w-full s2" id="ordertype" name="INQ_ORDER_TYPE"></select>
                 </fieldset>
-
-                {{-- <fieldset class="fieldset">
-                    <legend class="fieldset-legend">Forward to D/E</legend>
-                    <select class="select w-full" id="ordertype" name="_TYPE"></select>
-                </fieldset> --}}
 
                 <div class="divider divider-start font-bold text-primary">Search by Sale action.</div>
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Sale Engineer</legend>
-                    <select class="select w-full" id="se_engineer" name="timeline.SE_USER">
+                    <select class="select w-full s2" id="se_engineer" name="timeline.SE_USER">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
@@ -116,14 +115,14 @@
                     <legend class="fieldset-legend">Sale Receive</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.GE_SG_READ" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                                name="timeline.START_SG_READ" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.LE_SG_READ" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                                name="timeline.END_SG_READ" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -133,31 +132,36 @@
                     <legend class="fieldset-legend">Sale Confirm</legend>
                     <div class="flex w-full items-center">
                         <label class="input">
-                            <input type="text" class="grow fdate sdate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.GE_SE_CONFIRM" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                                name="timeline.START_SE_CONFIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
-                            <input type="text" class="grow fdate edate-report" placeholder="YYYY-MM-DD"
-                                name="timeline.LE_SE_CONFIRM" />
+                            <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
+                                name="timeline.END_SE_CONFIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
                 </fieldset>
             </div>
         </div>
-        <div class="flex justify-start my-3 gap-3">
-            <a href="#" id="search" class="btn btn-primary rounded-none text-white">
+        <div class="flex justify-start my-3 gap-3" id="btn-container">
+            {{-- <a href="#" id="search" class="btn btn-primary rounded-none text-white">
                 <i class="fi fi-ts-assessment text-xl"></i>Search
             </a>
             <button type="reset" class="btn btn-outline btn-neutral rounded-none" id="reset-form">
                 <i class="fi fi-ts-feedback-cycle-loop text-xl"></i>Reset
-            </button>
+            </button> --}}
         </div>
     </form>
+
+    <div id="report-table">
+        @include('layouts/datatable_load')
+        <table id="table" class="table table-zebra display text-xs"></table>
+    </div>
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/se_inq_report.js?ver={{ $GLOBALS['version'] }}"></script>
+    <script src="{{ $_ENV['APP_JS'] }}/sale_report.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

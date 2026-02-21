@@ -648,7 +648,6 @@ export async function verifyDetail(table, data, savelevel = 0) {
 					return;
 				}
 			}
-			console.log(item.INQD_UNREPLY, item.INQD_SUPPLIER);
 
 			if (
 				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
@@ -740,7 +739,14 @@ export async function getSearchHeader(formdata) {
 		}
 	});
 
-	const timeline_key = ["timeline.START_MAR_SEND", "timeline.END_MAR_SEND"];
+	const timeline_key = [
+		"timeline.START_MAR_SEND",
+		"timeline.END_MAR_SEND",
+		"timeline.START_SG_READ",
+		"timeline.END_SG_READ",
+		"imeline.START_SE_CONFIRM",
+		"timeline.END_SE_CONFIRM",
+	];
 	let timelies = {};
 	timeline_key.forEach((key) => {
 		if (formdata[key]) {

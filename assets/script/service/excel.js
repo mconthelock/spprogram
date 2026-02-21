@@ -1,7 +1,7 @@
-import ExcelJS from "exceljs";
-import { ameccaledar } from "../utils.js";
 import dayjs from "dayjs";
-var daterange;
+import ExcelJS from "exceljs";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
+import { ameccaledar } from "../utils.js";
 
 export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
 	const sourceRow = worksheet.getRow(sourceRowNum);
@@ -21,7 +21,6 @@ export const exportExcel = async (data, template, options = {}) => {
 		rowstart: 2,
 		...options,
 	};
-	//daterange = await getCalendar(data);
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (workbook) => {
@@ -69,18 +68,15 @@ export const exportExcel = async (data, template, options = {}) => {
 					if (format[2] === "Date" && value) {
 						// prettier-ignore
 						sheet.getCell(target, format[1]).value = dayjs(value).add(7, 'hour').toDate();
-						// dayjs(dayjs(value).locale('th').add(7, 'hour').format('YYYY-MM-DD')).toDate();
 						sheet.getCell(target, format[1]).numFmt = format[4]
 							? format[4]
 							: "yyyy-mm-dd";
 					} else if (format[2] === "Datetime" && value) {
 						// prettier-ignore
 						sheet.getCell(target, format[1]).value = dayjs(value).add(7, 'hour').toDate();
-						// sheet.getCell(target, format[1]).value = dayjs(dayjs(value).locale('th').add(7, 'hour').format('YYYY-MM-DD HH:mm:ss')).toDate();
-						// prettier-ignore
-						sheet.getCell(target, format[1]).numFmt =  format[4]
+						sheet.getCell(target, format[1]).numFmt = format[4]
 							? format[4]
-							:  "yyyy-mm-dd hh:mm:ss";
+							: "yyyy-mm-dd hh:mm:ss";
 					} else {
 						sheet.getCell(target, format[1]).value = value;
 						sheet.getCell(target, format[1]).numFmt = "General";
@@ -188,41 +184,35 @@ export function getSchedule(data, param) {
 }
 
 //Excel function
-function getEffect(data, param) {
+export function getEffect(data, param) {
 	const inqgroup = data.inqgroup;
 	const des = inqgroup.filter((item) => item.INQG_GROUP === param.INQG_GROUP);
 	return des.length > 0 ? "Y" : "";
 }
 
-function nextWorkingDay(data, param) {
-	const sdate = dayjs(data.timeline.MAR_SEND).format("YYYYMMDD");
-	const days = parseInt(param.days);
+export async function getAmecName(data, param) {
+	const timeline = data.timeline;
+	if (timeline[param.cols] == null) return "";
+
+	const users = await displayEmpInfo(timeline[param.cols]);
+	return users.SNAME || "";
+}
+
+export async function nextWorkingDay(data, days) {
+	const sdate = dayjs(data.INQ_DATE).format("YYYYMMDD");
+	const edate = dayjs(data.INQ_DATE).add(30, "days").format("YYYYMMDD");
+	let daterange = await await ameccaledar(sdate, edate);
 	daterange = daterange.filter(
 		(item) => item.DAYOFF == 0 && item.WORKID >= sdate,
 	);
-	let i = 1;
-	let current = sdate;
-	daterange.forEach((item) => {
-		if (i == days) {
-			current = item.WORKID;
-		}
-		i++;
-	});
-	return dayjs(current, "YYYYMMDD").format("YYYY-MM-DD");
-}
 
-async function getCalendar(data) {
-	const minInqMoment = data.reduce((acc, item) => {
-		if (!item || !item.INQ_DATE) return acc;
-		const m = dayjs(item.INQ_DATE);
-		if (!m.isValid()) return acc;
-		return acc === null || m.isBefore(acc) ? m : acc;
-	}, null);
-
-	const minInqDate = minInqMoment ? minInqMoment.format("YYYYMMDD") : null;
-	const daterange = await ameccaledar(
-		minInqDate,
-		dayjs().add(10, "days").format("YYYYMMDD"),
-	);
-	return daterange;
+	let current = 0;
+	for (let i = 0; i < days; i++) {
+		current = daterange[i].WORKID;
+	}
+	const formattedDate = current
+		.toString()
+		.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
+	const nextday = dayjs(formattedDate).format("YYYY-MM-DD");
+	return nextday;
 }

@@ -12,11 +12,15 @@ import {
 	getSecondItem,
 	getReason,
 } from "../service/index.js";
+import {
+	projectConclude,
+	addAttached,
+	getFormHeader,
+	getSearchHeader,
+} from "./detail.js";
 import { cloneRows } from "../service/excel.js";
 import { setupElmesTable } from "./table_elmes.js";
-import { state, setDeletedLineMap } from "./store.js";
-import { projectConclude, addAttached } from "./detail.js";
-import dayjs from "dayjs";
+import { setDeletedLineMap } from "./store.js";
 
 export function initRow(id, seq) {
 	return {
@@ -46,6 +50,7 @@ export function initRow(id, seq) {
 		INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
 		CREATE_BY: $("#user-login").attr("empname"),
 		UPDATE_BY: $("#user-login").attr("empname"),
+		FORWARD: null,
 	};
 }
 
@@ -621,3 +626,46 @@ $(document).on("click", ".delete-att", function (e) {
 	selectedFilesMap.delete(fileName);
 	row.remove().draw(false);
 });
+
+//012: Reset report form
+$(document).on("click", "#reset-report", async function (e) {
+	e.preventDefault();
+	$("#form-container")[0].reset();
+	$(".select").val(null).trigger("change");
+	localStorage.removeItem("spinquiryquery");
+});
+
+export function bindSearchReport(callback) {
+	$(document).on("click", "#search", async function (e) {
+		e.preventDefault();
+		try {
+			localStorage.removeItem("spinquiryquery");
+			let formdata = await getFormHeader();
+			Object.keys(formdata).forEach(
+				(key) => formdata[key] == "" && delete formdata[key],
+			);
+			if (Object.keys(formdata).length == 0) {
+				await showMessage(
+					"Please select at least one filter criteria.",
+				);
+				return;
+			}
+			formdata = await getSearchHeader(formdata);
+			await callback(formdata);
+			$("#form-container").addClass("hidden");
+			$("#report-table").removeClass("hidden");
+			localStorage.setItem("spinquiryquery", JSON.stringify(formdata));
+			history.pushState({ page: "results" }, "Search Results");
+		} catch (error) {
+			console.log(error);
+			await showMessage(`Something went wrong.`);
+		}
+	});
+
+	window.onpopstate = async function (event) {
+		$("#report-table").addClass("hidden");
+		$("#form-container").removeClass("hidden");
+		localStorage.removeItem("spinquiryquery");
+		await destroyTable();
+	};
+}

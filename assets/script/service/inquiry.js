@@ -323,9 +323,9 @@ export const dataExports = async (data) => {
 			CUST_RQS: el.orders.length == 0 ? null : el.orders[0].CUST_RQS,
 			DSTN: el.orders.length == 0 ? null : el.orders[0].DSTN,
 			FINUSER:
-				el.timeline.finusers.length == 0
+				el.timeline.length == 0
 					? null
-					: el.timeline.finusers[0].SNAME,
+					: el.timeline.finusers[0].SNAME || "",
 			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 		};
 
@@ -341,7 +341,7 @@ export const dataExports = async (data) => {
 	return details;
 };
 
-async function inquirySupplier(data) {
+export async function inquirySupplier(data) {
 	let suplier = "";
 	const dt = data.details;
 	dt.forEach((item) => {
@@ -355,7 +355,7 @@ async function inquirySupplier(data) {
 	return suplier.replace(/, $/, "");
 }
 
-async function inquirySecound(data) {
+export async function inquirySecound(data) {
 	const dt = data.details;
 	let secound = 0;
 	dt.forEach((item) => {
@@ -364,7 +364,7 @@ async function inquirySecound(data) {
 	return secound;
 }
 
-async function inquiryCountDwg(data) {
+export async function inquiryCountDwg(data) {
 	const dt = data.details;
 	let countdwg = 0;
 	dt.forEach((item) => {
@@ -374,7 +374,7 @@ async function inquiryCountDwg(data) {
 	return countdwg;
 }
 
-async function inquiryValues(data) {
+export async function inquiryValues(data) {
 	const dt = data.details;
 	let values = 0;
 	dt.forEach((item) => {
