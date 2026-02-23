@@ -510,7 +510,6 @@ export async function importHeader(data) {
 	inqno.value = data.inquiryno;
 	inqno.dispatchEvent(new Event("change"));
 }
-
 //End: Unreply
 
 //005: Verify form before save

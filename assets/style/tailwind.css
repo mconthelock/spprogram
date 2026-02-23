@@ -153,6 +153,10 @@
 		@apply cursor-not-allowed! text-white!;
 	}
 
+	#btn-container .tooltip::before {
+		@apply w-50! max-w-52! z-999!;
+	}
+
 	/* Table and Datatable Styles */
 	div.dt-container .dt-search input,
 	div.dt-container .dt-length select {

@@ -132,11 +132,11 @@ export async function createElmesModal() {
         <div id="elmes_modal_wapper">
             <input type="checkbox" id="elmes_modal" class="modal-toggle" />
             <div class="modal" role="dialog">
-                <div class="modal-box p-8 min-w-8/12 ">
+                <div class="modal-box p-8 min-w-8/12 min-h-[95vh]">
                 <h3 class="text-lg font-bold">General Part List</h3>
                     <div class="divider"></div>
-                    <input type="text" id="elmes-target" class="hiddenx">
-                    <input type="text" id="elmes-type" class="hiddenx">
+                    <input type="text" id="elmes-target" class="hidden">
+                    <input type="text" id="elmes-type" class="hidden">
                     <table id="tableElmes" class="table table-zebra text-xs"></table>
                 </div>
             </div>
@@ -289,6 +289,7 @@ $(document).on("change", ".carno", async function (e) {
 	try {
 		const data = row.data();
 		const prjno = $("#project-no").val();
+		const currentmfg = data.INQD_MFGORDER;
 		const carno = $(this).val();
 		const orders = await projectConclude({ prjno, carno });
 		const mfgno = orders.length > 0 ? orders[0].MFGNO : "";
@@ -299,6 +300,10 @@ $(document).on("change", ".carno", async function (e) {
 		};
 		row.data(newData);
 		row.draw(false);
+		await setSelect2({ allowClear: false });
+		if (currentmfg !== mfgno && mfgno !== "") {
+			$(row.node()).find(".elmes-input").trigger("change");
+		}
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
@@ -324,6 +329,7 @@ $(document).on("change", ".edit-input", async function (e) {
 // 003: Show Elmes table
 $(document).on("change", ".elmes-input", async function (e) {
 	e.preventDefault();
+	console.log("I've changed");
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));
 	const node = table.row($(this).closest("tr")).node();
@@ -423,8 +429,8 @@ $(document).on("click", "#elmes-cancel", async function (e) {
 	const table = $("#table").DataTable();
 	$("#elmes_modal").attr("checked", false);
 	await destroyElmesModal();
-
 	$(table.row(inx).node()).find(".partname").focus();
+	setSelect2({ allowClear: false });
 });
 
 // 004: Second part checkbox

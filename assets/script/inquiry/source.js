@@ -1,4 +1,5 @@
 import { dateToSchedule, showMessage } from "@amec/webasset/utils";
+import { currentUser } from "@amec/webasset/api/amec";
 import * as srv from "../service/index.js";
 // import * as mst from "../service/master.js";
 // import * as mkt from "../service/mkt.js";
@@ -141,6 +142,7 @@ export const init = {
 	},
 
 	getSalePerson: async function () {
+		const current = await currentUser();
 		const data = await srv.getAppUsers();
 		const result = data.filter((x) =>
 			["SLG", "SLE"].includes(x.appsgroups.GROUP_CODE),
@@ -154,8 +156,12 @@ export const init = {
 			const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
 			return {
 				id: sale.USERS_ID,
-				text: `${fname} ${lname}`,
+				text: `${fname} ${lname} (${emp.SEMPNO})`,
 			};
+		});
+
+		options = options.filter((el) => {
+			return el.id != current.empno;
 		});
 		return options;
 	},

@@ -87,9 +87,9 @@ export async function setupSaleTableDetail(data = []) {
 				if (type === "display") {
 					if (data % 1 !== 0) data = showDigits(data, 2);
 					const log = renderLog(data, row.logs, "INQD_SEQ");
-					const str = `<input type="text" class="w-12.5! cell-input input-number ${
-						log ? "detail-log" : ""
-					}" value="${data}">`;
+					const str = `<input type="text" class="w-12.5! cell-input input-number  ${log ? `detail-log` : ``}"
+                        ${row.INQD_OWNER_GROUP == `MAR` ? `readonly="readonly"` : ``} maxlength="5"
+                        value="${data}">`;
 					return renderText(str, row.logs, "INQD_SEQ");
 				}
 				return data;
@@ -242,8 +242,7 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
-           ${data == "" || data == null ? "" : "checked"}/>`;
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input" ${data == "" || data == null ? "" : "checked"}/>`;
 				}
 				return data;
 			},
@@ -255,7 +254,7 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white farward"/>`;
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white  edit-input" ${data == "" || data == null ? "" : "checked"}/>`;
 				}
 				return data;
 			},

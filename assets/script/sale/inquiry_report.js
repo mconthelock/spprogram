@@ -71,6 +71,7 @@ $(document).on("click", "#export1", async function (e) {
 		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
 		const query = {
 			...q,
+			INQ_TYPE: "SP",
 			IS_TIMELINE: true,
 			IS_DETAILS: true,
 		};

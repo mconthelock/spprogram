@@ -18,6 +18,7 @@ export const dataExports = async (data) => {
 			MARUSER: el.maruser.SNAME,
 			STATUS_DESC: el.status.STATUS_DESC,
 			NEXT_WORKING_DAY: await nextWorkingDay(el, 5),
+			INQ_SALE_FORWARD: el.INQ_SALE_FORWARD ? "Yes" : "No",
 		};
 
 		if (el.timeline) {

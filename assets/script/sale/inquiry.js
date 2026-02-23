@@ -22,6 +22,7 @@ $(document).ready(async () => {
 		await initApp({ submenu: ".navmenu-newinq" });
 		const usergroup = $("#user-login").attr("groupcode");
 		const q = {
+			INQ_TYPE: "SP",
 			INQ_STATUS: "<= 10",
 			IS_GROUP: 1,
 			IS_TIMELINE: 1,
@@ -88,6 +89,7 @@ $(document).on("click", "#export1", async function (e) {
 			"export_inquiry_list_template_for_sale.xlsx",
 		);
 		const q = {
+			INQ_TYPE: "SP",
 			INQ_STATUS: "<= 10",
 			IS_GROUP: 1,
 			IS_TIMELINE: 1,

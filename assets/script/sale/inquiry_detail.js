@@ -21,6 +21,7 @@ import {
 	getInquiryHistory,
 	getInquiryFile,
 	updateInquiry,
+	updateInquiryGroup,
 	createInquiryFile,
 	createInquiryHistory,
 	mailToSaleEngineer,
@@ -75,8 +76,6 @@ $(document).ready(async () => {
 			const vstr = vlist.replace(/viewsale/g, "sale");
 			$("#form-container").attr("data", vstr);
 		}
-		console.log(inqs[0]);
-
 		const cards = await setupCard(inqs[0]);
 		$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
@@ -168,6 +167,21 @@ $(document).on("click", "#assign-pic", async function (e) {
 	try {
 		await activatedBtnRow($(this));
 		const inquiry = await updatePath(10, 1);
+		const user = await currentUser();
+		const group = {
+			data: {
+				INQG_ASG: user.empno,
+				INQG_DES: $("#sale-incharge").val(),
+				INQG_CHK: $("#sale-incharge").val(),
+				INQG_CLASS: $("#des-class").val(),
+				INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_DES_DATE: null,
+				INQG_CHK_DATE: null,
+				INQG_STATUS: 1,
+			},
+			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
+		};
+		await updateInquiryGroup(group);
 		await mailToSaleEngineer(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
@@ -194,6 +208,20 @@ $(document).on("click", "#forward-de", async function (e) {
 	try {
 		await activatedBtnRow($(this));
 		const inquiry = await updatePath(12, 2);
+		const group = {
+			data: {
+				INQG_ASG: null,
+				INQG_DES: null,
+				INQG_CHK: null,
+				INQG_CLASS: null,
+				INQG_ASG_DATE: null,
+				INQG_DES_DATE: null,
+				INQG_CHK_DATE: null,
+				INQG_STATUS: 1,
+			},
+			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
+		};
+		await updateInquiryGroup(group);
 		await mailToDEGroupLeader(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
@@ -222,6 +250,21 @@ $(document).on("click", "#send-bm", async function (e) {
 		const logs = await setLogsData(11, true);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		const inquiry = await updatePath(30, 3, 2);
+		const user = await currentUser();
+		const group = {
+			data: {
+				INQG_ASG: user.empno,
+				INQG_DES: user.empno,
+				INQG_CHK: user.empno,
+				INQG_CLASS: $("#des-class").val(),
+				INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_STATUS: 9,
+			},
+			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
+		};
+		await updateInquiryGroup(group);
 		await setAS400Data(inquiry);
 		await mailToPKC(inquiry);
 		window.location.replace(
@@ -244,74 +287,66 @@ $(document).on("click", "#send-confirm", async function (e) {
 		$("#remark").focus();
 		return;
 	}
+
 	try {
 		await activatedBtnRow($(this));
-		//12	Foreward to DE
-		//30	Add AS400
-		const inquiry = await updatePath(11, 4, 1);
-		// return;
-		// const grpdata = {
-		// 	data: { INQG_STATUS: 28, INQG_SKIP: 1 },
-		// 	condition: { INQ_ID: inquiry.INQ_ID },
-		// };
-		// await inqservice.updateInquiryGroup(grpdata);
-		// const details = table.rows().data().toArray();
-		// let group = [];
-		// for (const dt of details) {
-		// 	if (dt.INQD_DE !== null) {
-		// 		let item = Math.floor(parseInt(dt.INQD_ITEM) / 100);
-		// 		if (item == 5) item = 2;
-		// 		if (item >= 6) item = 6;
-		// 		group.push(item);
-		// 	}
-		// }
+		const user = await currentUser();
+		const group = {
+			data: {
+				INQG_DES: user.empno,
+				INQG_CHK: user.empno,
+				INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_STATUS: 9,
+			},
+			condition: { INQ_ID: $("#inquiry-id").val() },
+		};
+		await updateInquiryGroup(group);
 
-		// if (group.length == 0) {
-		// 	const header = { INQ_STATUS: 30, INQ_NO: inquiry.INQ_NO };
-		// 	const history = await setLogsData(30);
-		// 	const fomdata = {
-		// 		header,
-		// 		history,
-		// 	};
-		// 	const inqs = await inqservice.updateInquiryStatus(
-		// 		fomdata,
-		// 		$("#inquiry-id").val(),
-		// 	);
-		// 	//   const email = await mail.sendPKC({
-		// 	//     ...inqs,
-		// 	//     remark: $("#remark").val(),
-		// 	//   });
-		// 	window.location.replace(
-		// 		`${process.env.APP_ENV}/se/inquiry/view/${inqs.INQ_ID}`,
-		// 	);
-		// 	return;
-		// }
-
-		// group = [...new Set(group)];
-		// for (const gp of group) {
-		// 	const grpdata = {
-		// 		data: { INQG_STATUS: 0, INQG_SKIP: null },
-		// 		condition: { INQ_ID: inquiry.INQ_ID, INQG_GROUP: gp },
-		// 	};
-		// 	await inqservice.updateInquiryGroup(grpdata);
-		// 	const inqs = await inqservice.getInquiryID(inquiry.INQ_ID);
-		// 	//   const email = await mail.sendGLD({
-		// 	//     ...inqs,
-		// 	//     remark: $("#remark").val(),
-		// 	//   });
-		// 	//   window.location.replace(
-		// 	//     `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
-		// 	//   );
-		// 	return;
-		// }
-		// const email = await mail.sendPKC({
-		//   ...inquiry,
-		//   remark: $("#remark").val(),
-		// });
-		// window.location.replace(
-		//   `${process.env.APP_ENV}/se/inquiry/view/${inquiry.INQ_ID}`
-		// );
+		const details = table.rows().data().toArray();
+		let designForward = [];
+		details.map((dt) => {
+			if (dt.FORWARD != null) {
+				const grp = Math.floor(dt.INQD_ITEM / 100);
+				designForward.push(grp);
+			}
+		});
+		designForward = [...new Set(designForward)];
+		if (designForward.length > 0) {
+			designForward.map(async (dg) => {
+				const group = {
+					data: {
+						INQG_ASG: null,
+						INQG_DES: null,
+						INQG_CHK: null,
+						INQG_CLASS: null,
+						INQG_ASG_DATE: null,
+						INQG_DES_DATE: null,
+						INQG_CHK_DATE: null,
+						INQG_STATUS: 1,
+					},
+					condition: {
+						INQ_ID: $("#inquiry-id").val(),
+						INQG_GROUP: dg,
+						INQG_LATEST: 1,
+					},
+				};
+				await updateInquiryGroup(group);
+			});
+			const inquiry = await updatePath(11, 4, 1);
+			await mailToDEGroupLeader(inquiry);
+		} else {
+			const logs = await setLogsData(11, true);
+			await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+			const inquiry = await updatePath(30, 4, 2);
+			await setAS400Data(inquiry);
+			await mailToPKC(inquiry);
+		}
+		window.location.replace(
+			`${process.env.APP_ENV}/se/inquiry/show/${$("#inquiry-id").val()}`,
+		);
 	} catch (error) {
+		console.log(error);
 		await showMessage(`Something went wrong.`);
 		return;
 	}
