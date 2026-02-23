@@ -8,7 +8,8 @@ import {
 } from "../service/index.js";
 export const dataExports = async (data) => {
 	const details = [];
-	data.forEach(async (el) => {
+	// data.forEach(async (el) => {
+	for (const el of data) {
 		let row = {
 			...el,
 			inquirySupplier: await inquirySupplier(el),
@@ -17,7 +18,7 @@ export const dataExports = async (data) => {
 			inquiryValues: await inquiryValues(el),
 			MARUSER: el.maruser.SNAME,
 			STATUS_DESC: el.status.STATUS_DESC,
-			NEXT_WORKING_DAY: await nextWorkingDay(el, 5),
+			NEXT_WORKING_DAY: await nextWorkingDay(),
 			INQ_SALE_FORWARD: el.INQ_SALE_FORWARD ? "Yes" : "No",
 		};
 
@@ -50,6 +51,6 @@ export const dataExports = async (data) => {
 		delete row.quotation;
 		delete row.quotation;
 		details.push(row);
-	});
+	}
 	return details;
 };
