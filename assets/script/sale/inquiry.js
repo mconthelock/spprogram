@@ -36,7 +36,6 @@ $(document).ready(async () => {
 		}
 		const opt = await tableInquirySaleOption(data);
 		table = await createTable(opt);
-		localStorage.setItem("spinquiryquery", JSON.stringify(q));
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -84,14 +83,17 @@ $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
 		await activatedBtn($(this));
-		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
-		const query = {
-			...q,
-			IS_TIMELINE: true,
-			IS_DETAILS: true,
-		};
-		let data = await getInquiry(query);
 		const usergroup = $("#user-login").attr("groupcode");
+		const template = await getTemplate(
+			"export_inquiry_list_template_for_sale.xlsx",
+		);
+		const q = {
+			INQ_STATUS: "<= 10",
+			IS_GROUP: 1,
+			IS_TIMELINE: 1,
+			IS_DETAILS: 1,
+		};
+		let data = await getInquiry(q);
 		if (usergroup == "SLE") {
 			data = data.filter((item) => item.INQ_STATUS == 10);
 		} else {
@@ -99,10 +101,6 @@ $(document).on("click", "#export1", async function (e) {
 				(item) => item.INQ_STATUS < 10 && item.INQ_STATUS != 4,
 			);
 		}
-
-		const template = await getTemplate(
-			"export_inquiry_list_template_for_sale.xlsx",
-		);
 		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
 		let result = await dataExports(sortData);
 		await exportExcel(result, template, {

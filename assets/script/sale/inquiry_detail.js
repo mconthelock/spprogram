@@ -321,6 +321,14 @@ $(document).on("click", "#send-confirm", async function (e) {
 async function updatePath(status, action, level = 0) {
 	try {
 		//Get header data
+		let isforward = 0;
+		let details = table.rows().data().toArray();
+		details = details.map((dt) => {
+			if (dt.FORWARD != null) isforward = 1;
+			const { FORWARD, ...rest } = dt;
+			return rest;
+		});
+		await verifyDetail(table, details, level);
 		const header = {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),
@@ -331,15 +339,10 @@ async function updatePath(status, action, level = 0) {
 			INQ_SPEC: $("#spec").val(),
 			INQ_STATUS: status,
 			INQ_SALE_REMARK: $("#remark").val(),
+			INQ_SALE_FORWARD: status == 12 ? 1 : isforward,
 			UPDATE_BY: $("#user-login").attr("empname"),
 			UPDATE_AT: new Date(),
 		};
-		let details = table.rows().data().toArray();
-		details = details.map((dt) => {
-			const { FORWARD, ...rest } = dt;
-			return rest;
-		});
-		await verifyDetail(table, details, level);
 		const timelinedata = await setTimelineData(header, action);
 
 		if (status == 30) $("#remark").val("");
