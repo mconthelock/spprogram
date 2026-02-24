@@ -6,20 +6,22 @@ class Inquiry extends MY_Controller {
 
     public function index($id = 1){
         $this->views('fin/inquiry/index', array(
-            'title' => $id == 1 ? 'Inquiry\'s Cost Management' : 'Cost Confirmed Inquiry',
+            'title' => 'Inquiry\'s Cost Management',
             'id' => $id,
         ));
     }
 
-    public function detail($id){
+    public function detail($id, $mode = 1){
         $this->views('fin/inquiry/detail', array(
             'id' => $id,
+            'mode'=>  $mode
         ));
     }
 
-    public function view($id){
+    public function show($id){
         $this->views('fin/inquiry/detail', array(
             'id' => $id,
+            'mode'=>  4
         ));
     }
 

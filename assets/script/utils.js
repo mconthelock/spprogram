@@ -63,7 +63,7 @@ export const setInquiryNo = (val) => {
 		.toUpperCase();
 };
 
-export const ameccaledar = async (sdate, edate) => {
+export function getCalendar(sdate, edate) {
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: `${process.env.APP_API}/calendar/range`,
@@ -78,6 +78,36 @@ export const ameccaledar = async (sdate, edate) => {
 			},
 		});
 	});
+}
+
+export const ameccaledar = async () => {
+	const setCalendar = async () => {
+		const exp = dayjs().add(30, "days").format("YYYY-MM-DD");
+		const qsdate = `${new Date().getFullYear() - 3}-01-01`;
+		const qedate = dayjs(exp).add(60, "days").format("YYYY-MM-DD");
+		const sdate = dayjs(qsdate).format("YYYYMMDD");
+		const edate = dayjs(qedate).format("YYYYMMDD");
+		const calendar = await getCalendar(sdate, edate);
+		const item = {
+			value: calendar,
+			expiry: exp,
+		};
+		localStorage.setItem("calendar", JSON.stringify(item));
+	};
+	let calendar;
+	let daterange = localStorage.getItem("calendar");
+	if (daterange) {
+		const item = JSON.parse(daterange);
+		const now = new Date();
+		if (now.getTime() > item.expiry) {
+			localStorage.removeItem("calendar");
+			await setCalendar();
+		}
+	} else {
+		await setCalendar();
+	}
+	calendar = JSON.parse(localStorage.getItem("calendar")).value;
+	return calendar;
 };
 
 // File Functions

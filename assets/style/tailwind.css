@@ -192,6 +192,10 @@
 		@apply shadow-sm!;
 	}
 
+	.table thead tr {
+		@apply bg-slate-500!;
+	}
+
 	.table thead th {
 		@apply text-center! bg-slate-500! text-gray-300! text-xs! border-none!;
 	}

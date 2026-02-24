@@ -188,7 +188,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
 		});
 		$(".table-info").append(
-			`<div class="flex gap-2">${export1}${extopt.back === true ? back : ""}</div>`,
+			`<div class="flex gap-2" id="btn-container">${export1}${extopt.back === true ? back : ""}</div>`,
 		);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();

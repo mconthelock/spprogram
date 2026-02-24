@@ -3,7 +3,7 @@ import "@amec/webasset/css/dataTable.min.css";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
-import { activatedBtn } from "@amec/webasset/components/buttons";
+import { activatedBtnRow } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import { tableInquirySaleOption } from "../inquiry/index.js";
 import {
@@ -83,7 +83,7 @@ $(document).on("click", ".process-btn", async function (e) {
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
-		await activatedBtn($(this));
+		await activatedBtnRow($(this));
 		const usergroup = $("#user-login").attr("groupcode");
 		const template = await getTemplate(
 			"export_inquiry_list_template_for_sale.xlsx",
@@ -112,6 +112,6 @@ $(document).on("click", "#export1", async function (e) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
 	} finally {
-		await activatedBtn($(this), false);
+		await activatedBtnRow($(this), false);
 	}
 });

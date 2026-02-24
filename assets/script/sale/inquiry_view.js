@@ -13,21 +13,13 @@ import {
 	setupTableHistory,
 	setupTableAttachment,
 	setupSaleViewDetail,
-	getFormHeader,
-	verifyHeader,
-	verifyDetail,
 } from "../inquiry/index.js";
 import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
-	updateInquiry,
-	createInquiryFile,
-	mailToSaleEngineer,
 } from "../service/index.js";
 import { initApp } from "../utils.js";
-import { bindDeleteLine } from "../inquiry/ui.js";
-import { state } from "../inquiry/store.js";
 
 var table;
 $(document).ready(async () => {
@@ -81,9 +73,9 @@ $(document).ready(async () => {
 
 async function setupButton() {
 	const exportxls = await createBtn({
-		id: "export-excel",
+		id: "export-detail",
 		title: "Export to Excel",
-		icon: "fi fi-tr-badge-check text-xl",
+		icon: "fi fi-sr-file-excel text-xl",
 		className: `btn-accent text-white hover:shadow-lg `,
 	});
 

@@ -427,6 +427,7 @@ async function setTimelineData(header, action) {
 	let data = {
 		INQ_NO: header.INQ_NO,
 		INQ_REV: header.INQ_REV,
+		MAR_SEND: $("#mar-send").val(),
 		SALE_CLASS: $("#des-class").val(),
 		SG_USER: $("#sale-leader-incharge").val(),
 		SG_READ: $("#sale-leader-read").val(),

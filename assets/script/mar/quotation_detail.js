@@ -87,8 +87,6 @@ async function quotationPart(inq) {
 		inq[0].quotation == null
 			? dayjs().add(60, "day").format("YYYY-MM-DD")
 			: dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
-	console.log(inq[0]);
-
 	const card = await setupCard(inq[0]);
 	// Table Detail
 	let optDetail;

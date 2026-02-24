@@ -53,8 +53,6 @@ $(async function () {
 async function createReportTable(formdata) {
 	try {
 		let data = await getInquiry({ ...formdata, INQ_TYPE: "SP" });
-		//console.log(formdata);
-		//console.log(data);
 		const opt = await tableInquirySaleOption(data, { back: true });
 		table = await createTable(opt);
 	} catch (error) {
@@ -80,8 +78,6 @@ $(document).on("click", "#export1", async function (e) {
 		let data = await getInquiry(query);
 		const sortData = data.sort((a, b) => a.INQ_DATE - b.INQ_DATE);
 		let result = await dataExports(sortData);
-		console.log(result);
-
 		await exportExcel(result, template, {
 			filename: "Inquiry List.xlsx",
 		});

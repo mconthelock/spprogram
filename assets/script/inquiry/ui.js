@@ -174,79 +174,6 @@ $(document).on("click", ".view-last-revision", function (e) {
 	$("#inquiry-last-revision").prop("checked", true);
 });
 
-$(document).on("click", "#export-detail", async function (e) {
-	e.preventDefault();
-	const setdata = async (sheet, el, r, num) => {
-		sheet.getCell(r, 1).value = el.INQD_SEQ;
-		sheet.getCell(r, 2).value = el.INQD_CAR;
-		sheet.getCell(r, 3).value = el.INQD_MFGORDER;
-		sheet.getCell(r, 5).value = el.INQD_ITEM;
-		sheet.getCell(r, 6).value = el.INQD_PARTNAME;
-		sheet.getCell(r, 10).value = el.INQD_DRAWING;
-		sheet.getCell(r, 14).value = el.INQD_VARIABLE;
-		sheet.getCell(r, 18).value = num;
-		sheet.getCell(r, 19).value = el.INQD_SUPPLIER;
-		sheet.getCell(r, 21).value = el.INQD_QTY;
-		sheet.getCell(r, 22).value = el.INQD_UM;
-		sheet.getCell(r, 23).value = el.INQD_SENDPART !== null ? "P" : "";
-		sheet.getCell(r, 24).value = el.INQD_UNREPLY !== null ? "P" : "";
-		sheet.getCell(r, 25).value = el.INQD_MAR_REMARK;
-	};
-
-	const template = await getExportTemplate({
-		name: `exportinquirydetail.xlsx`,
-	});
-
-	const info = await getInquiry({
-		INQ_ID: $("#inquiry-id").val(),
-		IS_DETAILS: true,
-	});
-	const file = template.buffer;
-	const workbook = new ExcelJS.Workbook();
-	await workbook.xlsx.load(file).then(async (workbook) => {
-		const sheet = workbook.worksheets[0];
-		sheet.getCell(2, 22).value = info[0].INQ_NO;
-		sheet.getCell(4, 22).value = info[0].INQ_TRADER;
-		sheet.getCell(5, 1).value = `Email: ${info[0].maruser.SRECMAIL}`;
-		sheet.getCell(6, 1).value =
-			`Tel: +66 (038) 93 6600 Ext.${info[0].maruser.NTELNO}`;
-
-		sheet.getCell(9, 5).value = info[0].maruser.SNAME;
-		sheet.getCell(10, 5).value = dayjs(info[0].INQ_DATE).format(
-			"DD/MM/YYYY",
-		);
-		sheet.getCell(11, 5).value = info[0].INQ_AGENT;
-		sheet.getCell(12, 5).value = info[0].INQ_COUNTRY;
-
-		sheet.getCell(9, 19).value = dayjs(info[0].INQ_MAR_SENT).format(
-			"DD/MM/YYYY",
-		);
-		sheet.getCell(10, 19).value = info[0].INQ_REV;
-		sheet.getCell(11, 19).value = info[0].INQ_PRJNO;
-		sheet.getCell(12, 19).value = info[0].INQ_PRJNAME;
-
-		let s = 16;
-		const details = info[0].details
-			.filter((dt) => dt.INQD_LATEST == 1)
-			.sort((a, b) => a.INQD_RUNNO - b.INQD_RUNNO);
-		for (const i in details) {
-			const rowdata = details[i];
-			if (s > 36) await cloneRows(sheet, 20, s);
-			await setdata(sheet, rowdata, s, info[0].shipment.SHIPMENT_VALUE);
-			s++;
-		}
-		await workbook.xlsx.writeBuffer().then(function (buffer) {
-			const blob = new Blob([buffer], {
-				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			});
-			const link = document.createElement("a");
-			link.href = URL.createObjectURL(blob);
-			link.download = `${info[0].INQ_NO}.xlsx`;
-			link.click();
-		});
-	});
-});
-
 // Inquiry Detail Table
 $(document).on("click", "#addRowBtn", async function (e) {
 	e.preventDefault();
@@ -675,3 +602,162 @@ export function bindSearchReport(callback) {
 		await destroyTable();
 	};
 }
+
+//Export Inquiry Detail to Excel
+$(document).on("click", "#export-detail", async function (e) {
+	e.preventDefault();
+	const setdata = async (sheet, el, r, num) => {
+		sheet.getCell(r, 1).value = el.INQD_SEQ;
+		sheet.getCell(r, 2).value = el.INQD_CAR;
+		sheet.getCell(r, 3).value = el.INQD_MFGORDER;
+		sheet.getCell(r, 5).value = el.INQD_ITEM;
+		sheet.getCell(r, 6).value = el.INQD_PARTNAME;
+		sheet.getCell(r, 10).value = el.INQD_DRAWING;
+		sheet.getCell(r, 14).value = el.INQD_VARIABLE;
+		sheet.getCell(r, 18).value = num;
+		sheet.getCell(r, 19).value = el.INQD_SUPPLIER;
+		sheet.getCell(r, 21).value = el.INQD_QTY;
+		sheet.getCell(r, 22).value = el.INQD_UM;
+		sheet.getCell(r, 23).value = el.INQD_SENDPART !== null ? "P" : "";
+		sheet.getCell(r, 24).value = el.INQD_UNREPLY !== null ? "P" : "";
+		sheet.getCell(r, 25).value = el.INQD_MAR_REMARK;
+	};
+
+	const template = await getExportTemplate({
+		name: `exportinquirydetail.xlsx`,
+	});
+
+	const info = await getInquiry({
+		INQ_ID: $("#inquiry-id").val(),
+		IS_DETAILS: true,
+	});
+	const file = template.buffer;
+	const workbook = new ExcelJS.Workbook();
+	await workbook.xlsx.load(file).then(async (workbook) => {
+		const sheet = workbook.worksheets[0];
+		sheet.getCell(2, 22).value = info[0].INQ_NO;
+		sheet.getCell(4, 22).value = info[0].INQ_TRADER;
+		sheet.getCell(5, 1).value = `Email: ${info[0].maruser.SRECMAIL}`;
+		sheet.getCell(6, 1).value =
+			`Tel: +66 (038) 93 6600 Ext.${info[0].maruser.NTELNO}`;
+
+		sheet.getCell(9, 5).value = info[0].maruser.SNAME;
+		sheet.getCell(10, 5).value = dayjs(info[0].INQ_DATE).format(
+			"DD/MM/YYYY",
+		);
+		sheet.getCell(11, 5).value = info[0].INQ_AGENT;
+		sheet.getCell(12, 5).value = info[0].INQ_COUNTRY;
+
+		sheet.getCell(9, 19).value = dayjs(info[0].INQ_MAR_SENT).format(
+			"DD/MM/YYYY",
+		);
+		sheet.getCell(10, 19).value = info[0].INQ_REV;
+		sheet.getCell(11, 19).value = info[0].INQ_PRJNO;
+		sheet.getCell(12, 19).value = info[0].INQ_PRJNAME;
+
+		let s = 16;
+		const details = info[0].details
+			.filter((dt) => dt.INQD_LATEST == 1)
+			.sort((a, b) => a.INQD_RUNNO - b.INQD_RUNNO);
+		for (const i in details) {
+			const rowdata = details[i];
+			if (s > 36) await cloneRows(sheet, 20, s);
+			await setdata(sheet, rowdata, s, info[0].shipment.SHIPMENT_VALUE);
+			s++;
+		}
+		await workbook.xlsx.writeBuffer().then(function (buffer) {
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			const link = document.createElement("a");
+			link.href = URL.createObjectURL(blob);
+			link.download = `${info[0].INQ_NO}.xlsx`;
+			link.click();
+		});
+	});
+});
+
+$(document).on("click", "#export-detail-fin", async function (e) {
+	e.preventDefault();
+	const setdata = async (sheet, el, r, num) => {
+		sheet.getCell(r, 1).value = el.INQD_SEQ;
+		sheet.getCell(r, 2).value = el.INQD_CAR;
+		sheet.getCell(r, 3).value = el.INQD_MFGORDER;
+		sheet.getCell(r, 6).value = el.INQD_ITEM;
+		sheet.getCell(r, 7).value = el.INQD_PARTNAME;
+		sheet.getCell(r, 11).value = el.INQD_DRAWING;
+		sheet.getCell(r, 15).value = el.INQD_VARIABLE;
+		sheet.getCell(r, 19).value = num;
+		sheet.getCell(r, 20).value = el.INQD_SUPPLIER;
+		sheet.getCell(r, 22).value = el.INQD_QTY;
+		sheet.getCell(r, 23).value = el.INQD_UM;
+		sheet.getCell(r, 24).value = el.INQD_FC_COST;
+		sheet.getCell(r, 26).value = el.INQD_TC_COST;
+	};
+
+	const template = await getExportTemplate({
+		name: `export_inquiry_list_detail_fin.xlsx`,
+	});
+
+	const info = await getInquiry({
+		INQ_ID: $("#inquiry-id").val(),
+		IS_TIMELINE: true,
+		IS_DETAILS: true,
+	});
+	const file = template.buffer;
+	const workbook = new ExcelJS.Workbook();
+	await workbook.xlsx.load(file).then(async (workbook) => {
+		const sheet = workbook.worksheets[0];
+		sheet.getCell(2, 5).value = info[0].INQ_NO;
+		sheet.getCell(4, 5).value = info[0].INQ_TRADER;
+		sheet.getCell(5, 20).value = `PIC`;
+
+		sheet.getCell(8, 6).value = `Issue By`;
+		sheet.getCell(9, 6).value = `Inquiry date`;
+		sheet.getCell(10, 6).value = `Agent`;
+		sheet.getCell(11, 6).value = `Country`;
+		sheet.getCell(12, 6).value = `Confirm By`;
+
+		sheet.getCell(8, 21).value = `Issue By`;
+		sheet.getCell(9, 21).value = `Inquiry date`;
+		sheet.getCell(10, 21).value = `Agent`;
+		sheet.getCell(11, 21).value = `Country`;
+		sheet.getCell(12, 21).value = `Confirm By`;
+
+		let s = 15;
+		const details = info[0].details
+			.filter((dt) => dt.INQD_LATEST == 1)
+			.sort((a, b) => a.INQD_RUNNO - b.INQD_RUNNO);
+		for (const i in details) {
+			const rowdata = details[i];
+			if (s > 36) await cloneRows(sheet, 20, s);
+			await setdata(sheet, rowdata, s, info[0].shipment.SHIPMENT_VALUE);
+			s++;
+		}
+
+		sheet.pageSetup = {
+			orientation: "portrait", // หรือ 'portrait' ตามเทมเพลต
+			paperSize: 9, // 9 คือ A4
+			fitToPage: true,
+			fitToWidth: 1,
+			fitToHeight: 0, // 0 หมายถึงปล่อยให้ความยาวไหลลงไปได้เรื่อยๆ แต่ความกว้างต้องพอดี 1 หน้า
+			margins: {
+				left: 0.2,
+				right: 0.2,
+				top: 0.2,
+				bottom: 0.2,
+				header: 0,
+				footer: 0,
+			},
+		};
+		await workbook.xlsx.writeBuffer().then(function (buffer) {
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			const link = document.createElement("a");
+			link.href = URL.createObjectURL(blob);
+			link.download = `${info[0].INQ_NO}.xlsx`;
+			link.click();
+		});
+	});
+});
