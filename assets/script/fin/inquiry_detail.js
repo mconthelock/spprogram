@@ -273,9 +273,10 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 			status: action,
 			timeline: timeline,
 		});
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}/${pageid}/`,
-		// );
+		return;
+		window.location.replace(
+			`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}/${pageid}/`,
+		);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
