@@ -7,7 +7,6 @@ import { showMessage, showDigits, intVal } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import { readInput } from "@amec/webasset/excel";
-import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { initApp } from "../utils.js";
 import {
 	setupTableHistory,
@@ -27,7 +26,7 @@ $(async function () {
 	try {
 		await showLoader({ show: true });
 		await initApp();
-		const pageid = $("#page-id").val() || 4;
+		const pageid = $("#page-id").val() || "4";
 		const inq = await getInquiry({
 			INQ_ID: $("#inquiry-id").val(),
 			IS_DETAILS: true,
@@ -36,6 +35,27 @@ $(async function () {
 		if (inq.length == 0) throw new Error("Inquiry do not found");
 		inq[0].INQ_DATE = dayjs(inq[0].INQ_DATE).format("YYYY-MM-DD");
 		$("#inquiry-title").html(`${inq[0].INQ_NO}`);
+		$("#fin-confirm-date").val(
+			inq[0].timeline?.FIN_CONFIRM
+				? dayjs(inq[0].timeline.FIN_CONFIRM).format(
+						"YYYY-MM-DD HH:mm:ss",
+					)
+				: "",
+		);
+		$("#fck-confirm-date").val(
+			inq[0].timeline?.FCK_CONFIRM
+				? dayjs(inq[0].timeline.FCK_CONFIRM).format(
+						"YYYY-MM-DD HH:mm:ss",
+					)
+				: "",
+		);
+		$("#fmn-confirm-date").val(
+			inq[0].timeline?.FMN_CONFIRM
+				? dayjs(inq[0].timeline.FMN_CONFIRM).format(
+						"YYYY-MM-DD HH:mm:ss",
+					)
+				: "",
+		);
 		const card = await setupCard(inq[0]);
 		let optDetail;
 		if (pageid == 1) optDetail = await tableCostOption(inq[0].details);
@@ -75,6 +95,8 @@ async function setupButton(pageid) {
 			const saveBtn = await createBtn({
 				id: "save-btn",
 				title: "Confirm",
+				className: `btn-primary text-white fin-confirm-btn`,
+				other: "data-action='43'",
 			});
 			const importBtn = await createBtn({
 				id: "import-btn",
@@ -82,36 +104,61 @@ async function setupButton(pageid) {
 				icon: "fi fi-rr-cloud-upload-alt text-2xl",
 				className: `btn-accent text-white`,
 			});
+
+			const returnMar = await createBtn({
+				id: "return-btn",
+				title: "Return",
+				icon: "fi fi-br-undo text-xl",
+				className: `btn-error text-white fin-confirm-btn`,
+				other: "data-action='39'",
+			});
+
 			const backBtn = await createBtn({
 				...back,
 				href: `${process.env.APP_ENV}/fin/inquiry`,
 			});
 			const importInt = `<input type="file" id="import-file" class="hidden" accept=".xlsx, .xls"/>`;
-			$("#btn-container").append(saveBtn, importBtn, importInt, backBtn);
+
+			$("#btn-container").append(
+				saveBtn,
+				importBtn,
+				importInt,
+				returnMar,
+				backBtn,
+			);
 			break;
 		case "2":
 			const confirmBtn = await createBtn({
 				id: "check-btn",
 				title: "Confirm",
+				className: `btn-primary text-white! fin-confirm-btn`,
+				other: "data-action='44'",
 			});
 			const returnBtn = await createBtn({
 				id: "return-btn",
 				title: "Return",
+				icon: "fi fi-br-undo text-xl",
+				className: `btn-error text-white fin-confirm-btn`,
+				other: "data-action='41'",
 			});
 			const backChecker = await createBtn({
 				...back,
 				href: `${process.env.APP_ENV}/fin/inquiry/index/2`,
 			});
-			$("#btn-container").append(confirmBtn, returnBtn, backCheck);
+			$("#btn-container").append(confirmBtn, returnBtn, backChecker);
 			break;
 		case "3":
 			const approve = await createBtn({
 				id: "approve-btn",
 				title: "Approve",
+				className: `btn-error text-white fin-confirm-btn`,
+				other: "data-action='45'",
 			});
 			const reject = await createBtn({
 				id: "reject-btn",
 				title: "Reject",
+				className: `btn-error text-white fin-confirm-btn`,
+				other: "data-action='42'",
 			});
 			const backMan = await createBtn({
 				...back,
@@ -119,7 +166,7 @@ async function setupButton(pageid) {
 			});
 			$("#btn-container").append(approve, reject, backMan);
 			break;
-		default:
+		case "4":
 			const show = await createBtn({
 				id: "export-detail-fin",
 				title: "Export to Excel",
@@ -131,6 +178,19 @@ async function setupButton(pageid) {
 				href: `${process.env.APP_ENV}/fin/inquiry/index/4`,
 			});
 			$("#btn-container").append(show, backView);
+			break;
+		default:
+			const showreport = await createBtn({
+				id: "export-detail-fin",
+				title: "Export to Excel",
+				icon: "fi fi-sr-file-excel text-xl",
+				className: `btn-accent text-white hover:shadow-lg `,
+			});
+			const backDefault = await createBtn({
+				...back,
+				href: `${process.env.APP_ENV}/fin/inquiry/report/2/`,
+			});
+			$("#btn-container").append(showreport, backDefault);
 			break;
 	}
 }
@@ -195,17 +255,27 @@ $(document).on("change", "#import-file", async function (e) {
 	}
 });
 
-$(document).on("click", "#save-btn", async function (e) {
+$(document).on("click", ".fin-confirm-btn", async function (e) {
 	e.preventDefault();
 	try {
 		await activatedBtnRow($(this));
+		const pageid = $("#page-id").val() || "4";
+		const action = intVal($(this).attr("data-action"));
+		const timeline = {
+			FIN_CONFIRM:
+				action == 43 ? new Date() : $("#fin-confirm-date").val(),
+			FCK_CONFIRM:
+				action == 44 ? new Date() : $("#fck-confirm-date").val(),
+			FMN_CONFIRM:
+				action == 45 ? new Date() : $("#fmn-confirm-date").val(),
+		};
 		const inquiry = await updatePath({
-			status: 41,
-			timeline: { FIN_CONFIRM: new Date() },
+			status: action,
+			timeline: timeline,
 		});
-		window.location.replace(
-			`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}/${pageid}/`,
+		// );
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

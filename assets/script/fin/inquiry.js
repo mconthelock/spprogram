@@ -15,6 +15,7 @@ import {
 	dataExports,
 	dataDetails,
 } from "../service/inquiry.js";
+import { dataFilter } from "./data.js";
 import { initApp } from "../utils.js";
 
 var table;
@@ -22,15 +23,16 @@ $(async function () {
 	try {
 		await showLoader({ show: true });
 		await initApp();
-		const pageid = intVal($("#pageid").val()) || 1;
-		const q = {
-			INQ_TYPE: "SP",
+		const pageid = $("#pageid").val() || "1";
+		let q = {
 			INQ_STATUS: ">= 30 && < 46",
 			IS_TIMELINE: 1,
 		};
 		let data = await getInquiry(q);
+		data = await dataFilter(data, pageid);
 		const opt = await tableInquiryFinOption(data);
 		table = await createTable(opt);
+		localStorage.setItem("spinquiryquery", JSON.stringify(q));
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -106,5 +108,27 @@ $(document).on("click", ".process-btn", async function (e) {
 		console.log(error);
 		await showMessage(error);
 		await activatedBtn($(this), false);
+	}
+});
+
+$(document).on("click", "#export1", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtnRow($(this));
+		const template = await getTemplate(
+			"export_inquiry_list_template_for_sale.xlsx",
+		);
+		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
+		let data = await getInquiry(q);
+		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
+		let result = await dataExports(sortData);
+		await exportExcel(result, template, {
+			filename: "Inquiry List.xlsx",
+		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await activatedBtnRow($(this), false);
 	}
 });

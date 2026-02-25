@@ -54,9 +54,16 @@ export const mailToPKC = async (data) => {
 	}
 };
 
-export const sendAAS = async () => {};
+export const mailFromFin = async (data) => {
+	try {
+		let users = await getAppUsers();
 
-export const sendFIN = async () => {};
+		return true;
+	} catch (error) {
+		console.error("Error sending email to PKC:", error);
+		throw error;
+	}
+};
 
 //Mail
 export const sendMail = (data) => {

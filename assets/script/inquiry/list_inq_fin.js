@@ -6,16 +6,14 @@ import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { createBtn } from "@amec/webasset/components/buttons";
 import { statusColors } from "./index.js";
 import { tableOpt } from "../utils.js";
-import { type } from "jquery";
 
-export async function tableInquiryFinOption(data) {
+export async function tableInquiryFinOption(data, extopt = {}) {
 	const pageid = intVal($("#pageid").val()) || "1";
 	const colors = await statusColors();
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.data = data;
-	// opt.orderFixed = [0, "desc"];
-	opt.pageLength = 15;
+	opt.pageLength = pageid == 1 ? 15 : 25;
 	opt.order = [
 		[0, "desc"],
 		[1, "desc"],
@@ -82,7 +80,7 @@ export async function tableInquiryFinOption(data) {
 		{
 			data: "timeline",
 			title: "B/M Date",
-			className: "text-nowrap",
+			className: "text-nowrap text-left!",
 			render: (data) => {
 				if (data.BM_CONFIRM == null) return "";
 				return dayjs(data.BM_CONFIRM).format("YYYY-MM-DD HH:mm");
@@ -99,7 +97,7 @@ export async function tableInquiryFinOption(data) {
 		{
 			data: "timeline",
 			title: "FIN Confirm",
-			className: `text-nowrap ${pageid == 1 ? "hidden" : ""}`,
+			className: `text-nowrap text-left! ${pageid == 1 ? "hidden" : ""}`,
 			render: (data) => {
 				if (data.FIN_CONFIRM == null) return "";
 				return dayjs(data.FIN_CONFIRM).format("YYYY-MM-DD HH:mm");
@@ -108,7 +106,7 @@ export async function tableInquiryFinOption(data) {
 		{
 			data: "timeline",
 			title: "Checker",
-			className: `text-nowrap ${pageid < 3 ? "hidden" : ""}`,
+			className: `text-nowrap text-left! ${pageid < 3 ? "hidden" : ""}`,
 			render: (data, type, row) => {
 				return `<div id="checker-${row.INQ_ID}"></div>`;
 			},
@@ -116,7 +114,7 @@ export async function tableInquiryFinOption(data) {
 		{
 			data: "timeline",
 			title: "Check Date",
-			className: `text-nowrap ${pageid < 3 ? "hidden" : ""}`,
+			className: `text-nowrap text-left! ${pageid < 3 ? "hidden" : ""}`,
 			render: (data) => {
 				if (data.FCK_CONFIRM == null) return "";
 				return dayjs(data.FCK_CONFIRM).format("YYYY-MM-DD HH:mm");
@@ -156,9 +154,9 @@ export async function tableInquiryFinOption(data) {
 					icon: "fi fi-tr-audit text-lg",
 					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
 					type: "link",
-					href: `${process.env.APP_ENV}/fin/inquiry/show/${data}/`,
+					href: `${process.env.APP_ENV}/fin/inquiry/show/${data}/${pageid}/`,
 				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${pageid == 4 ? view : edit}</div>`;
+				return `<div class="flex gap-1 justify-center items-center w-fit">${pageid > 3 ? view : edit}</div>`;
 			},
 		},
 	];
@@ -186,7 +184,16 @@ export async function tableInquiryFinOption(data) {
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-accent text-white hover:shadow-lg`,
 		});
-		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
+
+		const back = await createBtn({
+			id: "goback",
+			title: "Back",
+			icon: "fi fi fi-rr-undo text-xl",
+			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
+		});
+		$(".table-info").append(
+			`<div class="flex gap-2" id="btn-container">${export1}${extopt.back === true ? back : ""}</div>`,
+		);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();
 	};

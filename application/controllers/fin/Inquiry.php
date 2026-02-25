@@ -18,14 +18,16 @@ class Inquiry extends MY_Controller {
         ));
     }
 
-    public function show($id){
+    public function show($id, $mode = 4){
         $this->views('fin/inquiry/detail', array(
             'id' => $id,
-            'mode'=>  4
+            'mode'=>  $mode
         ));
     }
 
-    public function report(){
-        $this->views('fin/inquiry/report');
+    public function report($id = 1){
+        $this->views('fin/inquiry/report', array(
+            'id' => $id
+        ));
     }
 }

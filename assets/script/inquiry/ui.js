@@ -1,10 +1,11 @@
 import ExcelJS from "exceljs";
 import dayjs from "dayjs";
 import { intVal, showDigits, showMessage } from "@amec/webasset/utils";
-import { currentUser } from "@amec/webasset/api/amec";
+import { currentUser, displayname } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
-import { createBtn } from "@amec/webasset/components/buttons";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import {
 	getExportTemplate,
 	getInquiry,
@@ -572,18 +573,28 @@ export function bindSearchReport(callback) {
 	$(document).on("click", "#search", async function (e) {
 		e.preventDefault();
 		try {
-			localStorage.removeItem("spinquiryquery");
-			let formdata = await getFormHeader();
-			Object.keys(formdata).forEach(
-				(key) => formdata[key] == "" && delete formdata[key],
-			);
-			if (Object.keys(formdata).length == 0) {
-				await showMessage(
-					"Please select at least one filter criteria.",
+			await activatedBtnRow($(this));
+			const actionid = $("#actionid").val() || "1";
+			let formdata = {};
+			if (actionid != "2") {
+				localStorage.removeItem("spinquiryquery");
+				formdata = await getFormHeader();
+				Object.keys(formdata).forEach(
+					(key) => formdata[key] == "" && delete formdata[key],
 				);
-				return;
+				if (Object.keys(formdata).length == 0) {
+					await showMessage(
+						"Please select at least one filter criteria.",
+					);
+					return;
+				}
+				formdata = await getSearchHeader(formdata);
+			} else {
+				formdata = JSON.parse(
+					localStorage.getItem("spinquiryquery") || "{}",
+				);
 			}
-			formdata = await getSearchHeader(formdata);
+			console.log(formdata);
 			await callback(formdata);
 			$("#form-container").addClass("hidden");
 			$("#report-table").removeClass("hidden");
@@ -592,6 +603,8 @@ export function bindSearchReport(callback) {
 		} catch (error) {
 			console.log(error);
 			await showMessage(`Something went wrong.`);
+		} finally {
+			await activatedBtnRow($(this), false);
 		}
 	});
 
@@ -692,7 +705,13 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 		sheet.getCell(r, 22).value = el.INQD_QTY;
 		sheet.getCell(r, 23).value = el.INQD_UM;
 		sheet.getCell(r, 24).value = el.INQD_FC_COST;
-		sheet.getCell(r, 26).value = el.INQD_TC_COST;
+		sheet.getCell(r, 25).value = el.INQD_TC_COST;
+	};
+
+	const getUsers = async (userId) => {
+		const users = await displayEmpInfo(userId);
+		const user = await displayname(users.SNAME);
+		return user;
 	};
 
 	const template = await getExportTemplate({
@@ -704,25 +723,40 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 		IS_TIMELINE: true,
 		IS_DETAILS: true,
 	});
+	console.log(info);
+
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (workbook) => {
 		const sheet = workbook.worksheets[0];
+		const maruser = await getUsers(info[0].maruser.SEMPNO);
+		const finuser = await getUsers(info[0].timeline.FIN_USER);
+		const chkuser = await getUsers(info[0].timeline.FCK_USER);
 		sheet.getCell(2, 5).value = info[0].INQ_NO;
 		sheet.getCell(4, 5).value = info[0].INQ_TRADER;
-		sheet.getCell(5, 20).value = `PIC`;
+		sheet.getCell(5, 20).value = finuser ? finuser.fname : "";
 
-		sheet.getCell(8, 6).value = `Issue By`;
-		sheet.getCell(9, 6).value = `Inquiry date`;
-		sheet.getCell(10, 6).value = `Agent`;
-		sheet.getCell(11, 6).value = `Country`;
-		sheet.getCell(12, 6).value = `Confirm By`;
+		console.log(maruser);
 
-		sheet.getCell(8, 21).value = `Issue By`;
-		sheet.getCell(9, 21).value = `Inquiry date`;
-		sheet.getCell(10, 21).value = `Agent`;
-		sheet.getCell(11, 21).value = `Country`;
-		sheet.getCell(12, 21).value = `Confirm By`;
+		sheet.getCell(8, 6).value = maruser ? maruser.sname : "";
+		sheet.getCell(9, 6).value = dayjs(info[0].INQ_DATE).format(
+			"DD/MM/YYYY",
+		);
+		sheet.getCell(10, 6).value = info[0].INQ_AGENT;
+		sheet.getCell(11, 6).value = info[0].INQ_COUNTRY;
+		sheet.getCell(12, 6).value = finuser ? finuser.sname : "";
+
+		sheet.getCell(8, 21).value =
+			info[0].timeline.MAR_SEND == null
+				? ""
+				: dayjs(info[0].timeline.MAR_SEND).format("DD/MM/YYYY");
+		sheet.getCell(9, 21).value = info[0].INQ_REV;
+		sheet.getCell(10, 21).value = info[0].INQ_PRJNO;
+		sheet.getCell(11, 21).value = info[0].INQ_PRJNAME;
+		sheet.getCell(12, 21).value =
+			info[0].timeline.FIN_CONFIRM == null
+				? ""
+				: dayjs(info[0].timeline.FIN_CONFIRM).format("DD/MM/YYYY");
 
 		let s = 15;
 		const details = info[0].details
@@ -730,11 +764,18 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 			.sort((a, b) => a.INQD_RUNNO - b.INQD_RUNNO);
 		for (const i in details) {
 			const rowdata = details[i];
-			if (s > 36) await cloneRows(sheet, 20, s);
+			if (s > 38) await cloneRows(sheet, 15, s);
 			await setdata(sheet, rowdata, s, info[0].shipment.SHIPMENT_VALUE);
 			s++;
 		}
 
+		const sumrow = s > 38 ? s : 39;
+		sheet.getCell(sumrow, 24).value = {
+			formula: `=SUM(X15:X${sumrow - 1})`,
+		};
+		sheet.getCell(sumrow, 25).value = {
+			formula: `=SUM(Y15:Y${sumrow - 1})`,
+		};
 		sheet.pageSetup = {
 			orientation: "portrait", // หรือ 'portrait' ตามเทมเพลต
 			paperSize: 9, // 9 คือ A4
