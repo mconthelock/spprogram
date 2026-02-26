@@ -1,4 +1,5 @@
 import { showDigits, intVal } from "@amec/webasset/utils";
+import { createBtn } from "@amec/webasset/components/buttons";
 import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
@@ -24,7 +25,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
+			className: `sticky-column w-12 min-w-12 cell-display border-r! text-center!`,
 		},
 		{
 			data: "INQD_MFGORDER",
@@ -39,32 +40,32 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: `sticky-column w-62 min-w-62 cell-display border-r! `,
+			className: `sticky-column w-50 min-w-50 cell-display border-r! `,
 		},
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: `w-62 min-w-62 cell-display border-r! `,
+			className: `w-50 min-w-50 cell-display border-r! `,
 		},
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: `w-62 min-w-62 cell-display border-r! `,
+			className: `w-50 min-w-50 cell-display border-r! `,
 		},
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			className: `w-24 min-w-24 cell-display border-r! `,
+			className: `w-24 min-w-24 cell-display border-r! hidden`,
 		},
 		{
 			data: "INQD_SENDPART",
 			title: "2nd",
-			className: `w-12 min-w-12 cell-display border-r! text-center!`,
+			className: `w-8 min-w-8 cell-display border-r! text-center!`,
 		},
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: `w-12 min-w-12 cell-display border-r! text-center!`,
+			className: `w-8 min-w-8 cell-display border-r! text-center! hidden`,
 			render: function (data, type) {
 				if (type === "display") {
 					return data == null
@@ -77,7 +78,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className: `w-18 min-w-18 cell-display border-r!`,
+			className: `w-12 min-w-12 cell-display border-r!`,
 			footer: "Total",
 			render: function (data, type) {
 				if (type === "display") {
@@ -94,12 +95,12 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_FC_COST",
 			title: "FC Cost",
-			className: `w-24 min-w-24 border-r! bg-primary/10`,
+			className: `w-20 min-w-20 border-r! bg-primary/10`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					data = data == null ? "" : data;
 					if (row.INQD_SUPPLIER == "AMEC") {
-						return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fccost" value="${data}"/></div>`;
+						return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fccost" value="${showDigits(data, 0)}"/></div>`;
 					}
 					return showDigits(data, 0);
 				}
@@ -120,7 +121,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `w-24 min-w-24 cell-display border-r! INQD_TC_COST`,
+			className: `w-20 min-w-20 cell-display border-r! INQD_TC_COST`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -142,7 +143,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-20 min-w-20 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -153,7 +154,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-20 min-w-20 cell-display border-r!`,
 			render: function (data, type, row) {
 				const price = intVal(data) * intVal(row.INQD_QTY);
 				if (type === "display") {
@@ -208,11 +209,24 @@ export async function tableCostOption(data = []) {
 		},
 	];
 
-	opt.initComplete = function () {
-		$("#table").closest(".dt-container").find(".table-page")
-			.append(`<div class="flex items-center gap-2 bg-primary/10 p-2 rounded-lg" >
-                <div class="font-bold">Apply %FC at all line:</div>
-                <div><input type="text" id="fcbase-all" class="input input-number w-full max-w-25" value="1.3"/></div>
+	opt.initComplete = async function () {
+		const importBtn = await createBtn({
+			id: "import-btn",
+			title: "Import Price",
+			icon: "fi fi-tr-usd-circle text-2xl",
+			className: `btn-primary text-accent h-full hover:text-white`,
+		});
+		$("#table").closest(".dt-container").find(".table-page").append(`
+            <div class="flex items-center gap-2">
+                <div class="flex-none">
+                    <input type="file" id="import-file" class="hidden" accept=".xlsx, .xls"/>
+                    ${importBtn}
+                </div>
+                <div class="flex-1 flex items-center gap-2 bg-primary/10 border border-primary/25 p-2 rounded-lg" >
+                    <div class="font-bold">Apply %FC at all line:</div>
+                    <div><input type="text" id="fcbase-all" class="input input-number w-full max-w-25" value="1.3"/></div>
+                </div>
+
             </div>`);
 	};
 

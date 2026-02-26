@@ -19,7 +19,7 @@ class Inquiry extends MY_Controller {
     }
 
     public function show($id, $mode = 4){
-        $this->views('fin/inquiry/detail', array(
+        $this->views('fin/inquiry/show', array(
             'id' => $id,
             'mode'=>  $mode
         ));

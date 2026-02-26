@@ -24,7 +24,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
+			className: `sticky-column w-12 min-w-12 text-center! cell-display border-r! `,
 		},
 		{
 			data: "INQD_MFGORDER",
@@ -39,22 +39,22 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: `sticky-column w-62 min-w-62 cell-display border-r! `,
+			className: `sticky-column w-50 min-w-50 cell-display border-r! `,
 		},
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: `w-62 min-w-62 cell-display border-r! `,
+			className: `w-50 min-w-50 cell-display border-r! `,
 		},
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: `w-62 min-w-62 cell-display border-r! `,
+			className: `w-50 min-w-50 cell-display border-r! `,
 		},
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			className: `w-24 min-w-24 cell-display border-r! `,
+			className: `w-20 min-w-20 cell-display border-r! `,
 		},
 		{
 			data: "INQD_SENDPART",
@@ -64,7 +64,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: `w-12 min-w-12 cell-display border-r! text-center!`,
+			className: `w-12 min-w-12 cell-display border-r! text-center! hidden`,
 			render: function (data, type) {
 				if (type === "display") {
 					return data == null
@@ -77,7 +77,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className: `w-18 min-w-18 cell-display border-r!`,
+			className: `w-12 min-w-12 cell-display border-r!`,
 			footer: "Total",
 			render: function (data, type) {
 				if (type === "display") {
@@ -94,7 +94,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_FC_COST",
 			title: "FC Cost",
-			className: `w-24 min-w-24 cell-display border-r!`,
+			className: `w-20 min-w-20 cell-display border-r!`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -116,7 +116,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `w-24 min-w-24 cell-display border-r!`,
+			className: `w-20 min-w-20 cell-display border-r!`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -138,7 +138,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -149,7 +149,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r!`,
 			render: function (data, type, row) {
 				const price = intVal(data) * intVal(row.INQD_QTY);
 				if (type === "display") {
@@ -162,7 +162,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_MAR_REMARK",
 			title: "MAR Remark",
-			className: `w-62 min-w-62 cell-display border-r!`,
+			className: `w-50 min-w-50 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					if (data == null) return "";
@@ -177,7 +177,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_DES_REMARK",
 			title: "D/E Remark",
-			className: `w-62 min-w-62 cell-display border-r!`,
+			className: `w-50 min-w-50 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					if (data == null) return "";
@@ -193,7 +193,7 @@ export async function tableViewCostOption(data = []) {
 			data: "INQD_FIN_REMARK",
 			className: "remark-line",
 			title: "FIN Remark",
-			className: `w-62 min-w-62 cell-display border-r!`,
+			className: `w-50 min-w-50 cell-display border-r!`,
 			render: function (data, type) {
 				if (type === "display") {
 					if (data == null) return "";
@@ -206,8 +206,6 @@ export async function tableViewCostOption(data = []) {
 			},
 		},
 	];
-
-	opt.initComplete = function () {};
 
 	opt.footerCallback = function () {
 		const api = this.api();

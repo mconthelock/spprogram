@@ -777,16 +777,16 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 			formula: `=SUM(Y15:Y${sumrow - 1})`,
 		};
 		sheet.pageSetup = {
-			orientation: "portrait", // หรือ 'portrait' ตามเทมเพลต
-			paperSize: 9, // 9 คือ A4
+			orientation: "portrait",
+			paperSize: 9,
 			fitToPage: true,
 			fitToWidth: 1,
-			fitToHeight: 0, // 0 หมายถึงปล่อยให้ความยาวไหลลงไปได้เรื่อยๆ แต่ความกว้างต้องพอดี 1 หน้า
+			fitToHeight: 0,
 			margins: {
-				left: 0.2,
-				right: 0.2,
-				top: 0.2,
-				bottom: 0.2,
+				left: 0.3,
+				right: 0.3,
+				top: 0.5,
+				bottom: 0.5,
 				header: 0,
 				footer: 0,
 			},
