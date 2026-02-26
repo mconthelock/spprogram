@@ -11,34 +11,40 @@ export const dataExports = async (data) => {
 	for (const el of data) {
 		let row = {
 			...el,
-			inquirySupplier: await inquirySupplier(el),
-			inquirySecound: await inquirySecound(el),
-			inquiryCountDwg: await inquiryCountDwg(el),
-			inquiryValues: await inquiryValues(el),
+			// inquirySupplier: await inquirySupplier(el),
+			// inquirySecound: await inquirySecound(el),
+			// inquiryCountDwg: await inquiryCountDwg(el),
+			// inquiryValues: await inquiryValues(el),
 			MARUSER: el.maruser.SNAME,
-			STATUS_DESC: el.status.STATUS_DESC,
-			NEXT_WORKING_DAY: await nextWorkingDay(el, 5),
-			INQ_SALE_FORWARD: el.INQ_SALE_FORWARD ? "Yes" : "No",
+			STATUS_DESC: el.status.STATUS_ACTION,
 		};
 
 		if (el.timeline) {
 			row = {
 				...row,
 				MAR_SEND: el.timeline.MAR_SEND,
-				SG_READ: el.timeline.SG_READ,
-				SG_CONFIIRM: el.timeline.SG_CONFIRM,
-				SE_READ: el.timeline.SE_READ,
-				SE_CONFIRM: el.timeline.SE_CONFIRM,
-				SG_USER: el.timeline.SG_USER
-					? await displayEmpInfo(el.timeline.SG_USER).then(
+				BM_DATE: el.timeline.BM_CONFIRM,
+				FIN_NAME: el.timeline.FIN_USER
+					? await displayEmpInfo(el.timeline.FIN_USER).then(
 							(res) => res.SNAME,
 						)
 					: "",
-				SE_USER: el.timeline.SE_USER
-					? await displayEmpInfo(el.timeline.SE_USER).then(
+				FIN_READ_DATE: el.timeline.FIN_READ,
+				FIN_CONFIRM_DATE: el.timeline.FIN_CONFIRM,
+				FCK_NAME: el.timeline.FCK_USER
+					? await displayEmpInfo(el.timeline.FCK_USER).then(
 							(res) => res.SNAME,
 						)
 					: "",
+				FCK_READ_DATE: el.timeline.FCK_READ,
+				FCK_CONFIRM_DATE: el.timeline.FCK_CONFIRM,
+				FMN_NAME: el.timeline.FMN_USER
+					? await displayEmpInfo(el.timeline.FMN_USER).then(
+							(res) => res.SNAME,
+						)
+					: "",
+				FMN_READ_DATE: el.timeline.FMN_READ,
+				FMN_APPROVE_DATE: el.timeline.FMN_CONFIRM,
 			};
 		}
 

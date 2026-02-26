@@ -4,7 +4,7 @@ import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, intVal } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import { createTable } from "@amec/webasset/dataTable";
-import { activatedBtn } from "@amec/webasset/components/buttons";
+import { activatedBtnRow } from "@amec/webasset/components/buttons";
 import { tableInquiryFinOption } from "../inquiry/index.js";
 import {
 	getInquiry,
@@ -12,10 +12,8 @@ import {
 	updateInquiryTimeline,
 	getTemplate,
 	exportExcel,
-	dataExports,
-	dataDetails,
-} from "../service/inquiry.js";
-import { dataFilter } from "./data.js";
+} from "../service/index.js";
+import { dataFilter, dataExports } from "./data.js";
 import { initApp } from "../utils.js";
 
 var table;
@@ -116,14 +114,17 @@ $(document).on("click", "#export1", async function (e) {
 	try {
 		await activatedBtnRow($(this));
 		const template = await getTemplate(
-			"export_inquiry_list_template_for_sale.xlsx",
+			"export_inquiry_list_template_for_fin.xlsx",
 		);
+		const pageid = $("#pageid").val() || "1";
 		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
 		let data = await getInquiry(q);
+		data = await dataFilter(data, pageid);
 		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
 		let result = await dataExports(sortData);
 		await exportExcel(result, template, {
 			filename: "Inquiry List.xlsx",
+			rowstart: 3,
 		});
 	} catch (error) {
 		console.log(error);

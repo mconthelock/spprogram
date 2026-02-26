@@ -594,7 +594,7 @@ export function bindSearchReport(callback) {
 					localStorage.getItem("spinquiryquery") || "{}",
 				);
 			}
-			console.log(formdata);
+			// console.log(formdata);
 			await callback(formdata);
 			$("#form-container").addClass("hidden");
 			$("#report-table").removeClass("hidden");
@@ -723,8 +723,6 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 		IS_TIMELINE: true,
 		IS_DETAILS: true,
 	});
-	console.log(info);
-
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (workbook) => {
@@ -735,9 +733,6 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 		sheet.getCell(2, 5).value = info[0].INQ_NO;
 		sheet.getCell(4, 5).value = info[0].INQ_TRADER;
 		sheet.getCell(5, 20).value = finuser ? finuser.fname : "";
-
-		console.log(maruser);
-
 		sheet.getCell(8, 6).value = maruser ? maruser.sname : "";
 		sheet.getCell(9, 6).value = dayjs(info[0].INQ_DATE).format(
 			"DD/MM/YYYY",

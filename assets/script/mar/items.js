@@ -5,17 +5,15 @@ import "@amec/webasset/css/dataTable.min.css";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { getTemplate, exportExcel } from "../service/excel";
-import * as items from "../service/items.js";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
+import { getTemplate, exportExcel, getItems } from "../service/index";
 import { initApp, tableOpt } from "../utils.js";
 var table;
-
 $(async function () {
 	try {
 		await showLoader({ show: true });
 		await initApp({ submenu: ".navmenu-price" });
-		const data = await items.getItems();
+		const data = await getItems();
 		const opt = await tableOption(data);
 		table = await createTable(opt);
 	} catch (error) {
@@ -61,33 +59,38 @@ async function tableOption(data) {
 			className: "text-center",
 			sortable: false,
 			render: (data, type, row) => {
-				return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
-        <div class="flex items-center justify-center gap-2">
-            <button class="btn btn-sm btn-ghost btn-circle save-row ${
-				row.isNew === undefined ? "hidden" : ""
-			}" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>
+				const edit = `<a class="btn btn-sm btn-ghost btn-circle edit-row" href="${process.env.APP_ENV}/fin/items/detail/${data}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>`;
+				const add = ``;
+				const show = ``;
+				const save = `<button class="btn btn-sm btn-ghost btn-circle save-row" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>`;
+				const active = `<button class="btn btn-sm btn-ghost btn-circle toggle-status" data-id="${data}" data-value="0"><i class="fi fi-sr-trash text-2xl text-red-500"></i></button>`;
+				const inactive = `<a class="btn btn-sm btn-ghost btn-circle ignore-row" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>`;
+				const cancel = `<button class="btn btn-sm btn-ghost btn-circle toggle-status" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>`;
 
-            <a class="btn btn-sm btn-ghost btn-circle ignore-row ${
-				row.isNew === undefined ? "hidden" : ""
-			}" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>
+				return `<div class="flex items-center justify-center gap-2">
+                    ${edit}${add}${show}${save}${active}${inactive}${cancel}
+                </div>`;
+				// 		return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
+				// <div class="flex items-center justify-center gap-2">
+				//     <button class="btn btn-sm btn-ghost btn-circle save-row ${
+				// 		row.isNew === undefined ? "hidden" : ""
+				// 	}" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>
 
-            <a href="${
-				process.env.APP_ENV
-			}/mar/items/detail/${data}" class="btn btn-sm btn-ghost btn-circle edit-row ${
-				row.isNew !== undefined ? "hidden" : ""
-			}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>
+				//     <a class="btn btn-sm btn-ghost btn-circle ignore-row ${
+				// 		row.isNew === undefined ? "hidden" : ""
+				// 	}" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>
 
-            <button class="btn btn-sm btn-ghost btn-circle toggle-status
-                ${row.ITEM_STATUS === 0 ? "hidden" : ""}
-                ${row.isNew !== undefined ? "hidden" : ""}"
-                data-id="${data}" data-value="0">
-                <i class="fi fi-sr-trash text-2xl text-red-500"></i>
-            </button>
+				//     <button class="btn btn-sm btn-ghost btn-circle toggle-status
+				//         ${row.ITEM_STATUS === 0 ? "hidden" : ""}
+				//         ${row.isNew !== undefined ? "hidden" : ""}"
+				//         data-id="${data}" data-value="0">
+				//         <i class="fi fi-sr-trash text-2xl text-red-500"></i>
+				//     </button>
 
-            <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
-				row.ITEM_STATUS === 1 ? "hidden" : ""
-			}" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>
-        </div>`;
+				//     <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
+				// 		row.ITEM_STATUS === 1 ? "hidden" : ""
+				// 	}" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>
+				// </div>`;
 			},
 		},
 	];
