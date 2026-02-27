@@ -12,7 +12,6 @@ import { setSelect2 } from "@amec/webasset/select2";
 import { getTemplate, exportExcel } from "../service/excel";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
-import { getCustomer } from "../service/customers.js";
 import { tableOpt, initApp } from "../utils.js";
 select2();
 
@@ -88,6 +87,7 @@ async function tableOption(data) {
 	opt.order = [[0, "asc"]];
 	opt.pageLength = 25;
 	opt.columns = [
+		// { data: "ITEM_ID", className: "sticky-column text-center!" },
 		{ data: "ITEM_NO", className: "sticky-column text-center!" },
 		{
 			data: "ITEM_NAME",

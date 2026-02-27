@@ -19,6 +19,8 @@ import {
 	getInquiryHistory,
 	getInquiryFile,
 	updateInquiry,
+	getItems,
+	currentPeriod,
 } from "../service/index.js";
 
 var table;
@@ -46,9 +48,40 @@ $(async function () {
 		details = details.filter(
 			(el) => el.INQD_SUPPLIER == "AMEC" && el.INQD_UNREPLY == null,
 		);
-		if (pageid == 1 && !showPage)
+		if (pageid == 1 && !showPage) {
+			const period = await currentPeriod();
+			let items = await getItems();
+			items = items
+				.filter((item) => item.CATEGORY == 99 && item.ITEM_STATUS == 1)
+				.map((d) => {
+					const currentPeriod = period.current;
+					const current = d.prices.filter(
+						(p) =>
+							p.FYYEAR == currentPeriod.year &&
+							parseInt(p.PERIOD) == currentPeriod.period,
+					);
+					return {
+						...d,
+						FCCOST: current.length > 0 ? current[0].FCCOST : 0,
+						FCBASE: current.length > 0 ? current[0].FCBASE : 0,
+						TCCOST: current.length > 0 ? current[0].TCCOST : 0,
+					};
+				});
+			items = items.filter((item) => item.FCCOST > 0);
+
+			details = details.map((detail) => {
+				const item = items.find((i) => i.ITEM_NO == detail.ITEM_NO);
+				return {
+					...detail,
+					FCCOST: item ? item.FCCOST : 0,
+					FCBASE: item ? item.FCBASE : 0,
+					TCCOST: item ? item.TCCOST : 0,
+				};
+			});
 			optDetail = await tableCostOption(details);
-		else optDetail = await tableViewCostOption(details);
+		} else {
+			optDetail = await tableViewCostOption(details);
+		}
 		table = await createTable(optDetail);
 
 		//Inquiry History
