@@ -34,23 +34,18 @@ $(async function () {
 
 async function setData() {
 	const items = await getItems();
-	const customers = await getCustomer();
 	const period = await currentPeriod();
-	const customer = customers.find(
-		(cus) => cus.CUS_ID == $("#selected-customer").val(),
-	);
-	const selected = $("#selected-customer").val();
+	// const customer = customers.find(
+	// 	(cus) => cus.CUS_ID == $("#selected-customer").val(),
+	// );
+	// const selected = $("#selected-customer").val();
 	const ratio = await findPriceRatio({
 		SUPPLIER: "AMEC",
 		TRADER: "Direct",
-		QUOTATION: customer.CUS_QUOTATION,
+		QUOTATION: 4,
 	});
 	const data = items
-		.filter((item) => {
-			return item.itemscustomer.some(
-				(cus) => cus.CUSTOMER_ID == selected,
-			);
-		})
+		.filter((item) => item.CATEGORY == 99)
 		.map((item) => {
 			const current = period.current;
 			const currentprices = item.prices.filter(
@@ -72,7 +67,7 @@ async function setData() {
 			);
 			return {
 				...item,
-				customer: customer,
+				// customer: customer,
 				currentprice: currentprice,
 				lastprice: lastprice,
 				ratio: ratio[0] || null,
@@ -91,12 +86,12 @@ async function tableOption(data) {
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.data = data;
 	opt.order = [[0, "asc"]];
-	opt.pageLength = 15;
+	opt.pageLength = 25;
 	opt.columns = [
-		{ data: "ITEM_NO", className: "sticky-column" },
+		{ data: "ITEM_NO", className: "sticky-column text-center!" },
 		{
 			data: "ITEM_NAME",
-			className: "w-[175px] min-w-[175px] sticky-column",
+			className: "w-[225px] min-w-[225px] sticky-column",
 		},
 		{
 			data: "ITEM_DWG",
@@ -106,7 +101,7 @@ async function tableOption(data) {
 			data: "ITEM_VARIABLE",
 			className: "min-w-[225px] max-w-[225px] break-all",
 		},
-		{ data: "ITEM_CLASS", className: "text-nowrap" },
+		// { data: "ITEM_CLASS", className: "text-nowrap" },
 		{ data: "ITEM_UNIT" },
 		{
 			data: "ITEM_ID",
@@ -139,28 +134,6 @@ async function tableOption(data) {
 				return showDigits(row.currentprice.TCCOST);
 			},
 		},
-		{
-			data: "ITEM_ID",
-			className: "border-l bg-primary/10",
-			render: (data, type, row) => {
-				if (row.currentprice === undefined) return "-";
-				return row.ratio !== null
-					? showDigits(row.ratio.FORMULA, 2)
-					: "-";
-			},
-		},
-
-		{
-			data: "ITEM_ID",
-			className: "border-l bg-primary/10 relative price-move",
-			render: (data, type, row) => {
-				if (row.currentprice === undefined) return "-";
-				const ratio = row.ratio !== null ? row.ratio.FORMULA : 1;
-				const tccost = Math.ceil(row.currentprice.TCCOST * ratio);
-				return showDigits(tccost);
-			},
-		},
-
 		//Last pepiod
 		{
 			data: "ITEM_ID",
@@ -186,26 +159,6 @@ async function tableOption(data) {
 				return showDigits(row.lastprice.TCCOST);
 			},
 		},
-		{
-			data: "ITEM_ID",
-			className: "border-l bg-accent/10",
-			render: (data, type, row) => {
-				if (row.lastprice === undefined) return "-";
-				return row.ratio !== null
-					? showDigits(row.ratio.FORMULA, 2)
-					: "-";
-			},
-		},
-		{
-			data: "ITEM_ID",
-			className: "border-l bg-accent/10",
-			render: (data, type, row) => {
-				if (row.lastprice === undefined) return "-";
-				const ratio = row.ratio !== null ? row.ratio.FORMULA : 1;
-				const tccost = Math.ceil(row.lastprice.TCCOST * ratio);
-				return showDigits(tccost);
-			},
-		},
 	];
 
 	opt.createdRow = function (row, data, dataIndex) {
@@ -219,33 +172,16 @@ async function tableOption(data) {
 
 		if (data.currentprice != undefined && data.lastprice != undefined) {
 			if (data.currentprice.TCCOST < data.lastprice.TCCOST) {
-				$(row).find("td").eq(11).addClass("price-down");
+				$(row).find("td").eq(8).addClass("price-down");
 			}
 
 			if (data.currentprice.TCCOST > data.lastprice.TCCOST) {
-				$(row).find("td").eq(11).addClass("price-up");
+				$(row).find("td").eq(8).addClass("price-up");
 			}
 		}
 	};
 
 	opt.initComplete = async function () {
-		//Table Right Options
-		const customers = await getCustomer();
-		const selected = $("#selected-customer").val();
-		let cusSelect = ``;
-		customers.map((cus) => {
-			return (cusSelect += `<option value="${cus.CUS_ID}" ${
-				cus.CUS_ID == selected ? "selected" : ""
-			}>${cus.CUS_DISPLAY}</option>`);
-		});
-		$(".table-option").html(`
-      <div class="flex items-center gap-3">
-        <label for="selected-customer" class="whitespace-nowrap font-semibold">Customer:</label>
-        <select id="customer-option" class="s2 select select2-sm">${cusSelect}</select>
-      </div>
-    `);
-		await setSelect2({ width: "200px", allowClear: false });
-		// Table Footer Buttons
 		const export1 = await createBtn({
 			id: "export-btn",
 			title: "Export",
@@ -260,26 +196,33 @@ async function tableOption(data) {
 		});
 
 		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
+		$("#datatable_loading").addClass("hidden");
 	};
 	return opt;
 }
 
-$(document).on("change", "#customer-option", function () {
-	const cus = $(this).val();
-	window.location.href = `${process.env.APP_ENV}/mar/price/index/${cus}`;
-});
-
 $(document).on("click", "#export-btn", async function (e) {
 	e.preventDefault();
 	try {
-		const template = await getTemplate("export_price_for_mar.xlsx");
-		const data = table.rows().data().toArray();
+		const template = await getTemplate("export_price_for_fin.xlsx");
+		let data = table.rows().data().toArray();
+		data = data.map((d) => {
+			return {
+				...d,
+				current_FCCOST: d.currentprice ? d.currentprice.FCCOST : 0,
+				current_FCBASE: d.currentprice ? d.currentprice.FCBASE : 0,
+				current_TCCOST: d.currentprice ? d.currentprice.TCCOST : 0,
+				last_FCCOST: d.lastprice ? d.lastprice.FCCOST : 0,
+				last_FCBASE: d.lastprice ? d.lastprice.FCBASE : 0,
+				last_TCCOST: d.lastprice ? d.lastprice.TCCOST : 0,
+			};
+		});
 		await exportExcel(data, template, {
 			filename: "Price List.xlsx",
 			rowstart: 3,
 			static: [
-				{ cols: "K1", text: $("#current-period").text() },
-				{ cols: "P1", text: $("#last-period").text() },
+				{ cols: "H1", text: $("#current-period").text() },
+				{ cols: "K1", text: $("#last-period").text() },
 			],
 		});
 	} catch (error) {

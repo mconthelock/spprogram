@@ -25,7 +25,7 @@ $(async function () {
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);
-		await showMessage(error);
+		await showMessage(`Something went wrong.`);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -132,6 +132,7 @@ async function tableOption(data) {
 		});
 		$(".table-option").append(newBtn);
 		$(".table-info").append(export1);
+		$("#datatable_loading").addClass("hidden");
 	};
 	return opt;
 }
@@ -159,12 +160,16 @@ $(document).on("click", ".toggle-status", async function (e) {
 		data = {
 			...data,
 			ITEM_STATUS: value,
-			CREATE_AT: data.CREATE_AT == null ?? new Date(),
+			CREATE_AT: data.CREATE_AT == null ? new Date() : data.CREATE_AT,
+			CREATE_BY:
+				data.CREATE_BY == null
+					? $("#user-login").attr("empname")
+					: data.CREATE_BY,
 			UPDATE_AT: new Date(),
-			UPDATE_BY: $("#user-login").attr("empno"),
+			UPDATE_BY: $("#user-login").attr("empname"),
 		};
 		await updateItems(data);
-		table.row($(this).closest("tr")).data(data).draw();
+		table.row($(this).closest("tr")).data(data).draw(false);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);

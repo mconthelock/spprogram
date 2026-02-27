@@ -159,7 +159,7 @@ async function savePrice(payload) {
 		TCCOST: payload.TCCOST,
 		LATEST: 1,
 		CREATE_BY: $("#user-login").attr("empname"),
-		CREATE_AT: new Date().toISOString(),
+		CREATE_AT: new Date(),
 	};
 	const responsePrice = await updatePriceList(prices);
 	return responsePrice;

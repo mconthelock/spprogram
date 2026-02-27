@@ -80,6 +80,12 @@ export const exportExcel = async (data, template, options = {}) => {
 							sheet.getCell(target, format[1]).numFmt = format[4]
 								? format[4]
 								: "yyyy-mm-dd hh:mm:ss";
+						} else if (format[2] === "Account") {
+							const digit = format[4] ? parseInt(format[4]) : 0;
+							// prettier-ignore
+							sheet.getCell(target, format[1]).value = value !== "" ? parseFloat(value) : 0;
+							sheet.getCell(target, format[1]).numFmt =
+								`_(* #,##0${digit > 0 ? "." + "0".repeat(digit) : ""}_);_(* (#,##0${digit > 0 ? "." + "0".repeat(digit) : ""})_);_(* "-"??_);_(@_)`;
 						} else {
 							sheet.getCell(target, format[1]).value = value;
 							sheet.getCell(target, format[1]).numFmt = "General";
