@@ -32,9 +32,9 @@ export async function setupPartTableDetail(data = []) {
 		return update;
 	};
 
-	const renderSupplier = (data) => {
+	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="w-25! s2 edit-input supplier">`;
+		let selector = `<select class="s2 w-25! edit-input supplier">`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -45,12 +45,14 @@ export async function setupPartTableDetail(data = []) {
 	const mode = data.length > 0 ? 1 : 0;
 	const opt = { ...tableOpt };
 	opt.data = data;
-	opt.paging = false;
+	// opt.paging = false;
+	// opt.responsive = false;
+	// opt.info = false;
+	opt.pageLength = 20;
+	opt.lengthChange = false;
 	opt.searching = false;
-	opt.responsive = false;
-	opt.info = false;
 	opt.orderFixed = [0, "asc"];
-	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto "t><"flex mt-5"<"table-page flex-1 flex flex-col gap-3"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.columns = [
 		{
 			data: "INQD_RUNNO",
@@ -64,8 +66,8 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<div class="btn btn-xs btn-circle btn-ghost add-sub-line" type="button">
-                        <span class="text-2xl text-gray-600">+</span>
+					return `<div class="btn btn-xs btn-circle btn-ghost text-gray-600 add-sub-line" type="button">
+                        <span class="text-2xl">+</span>
                     </div>
                     <button class="btn btn-xs btn-circle btn-ghost ${
 						row.INQD_OWNER_GROUP == "MAR"
@@ -207,9 +209,9 @@ export async function setupPartTableDetail(data = []) {
 			title: "Supplier",
 			className: "supplier-line",
 			sortable: false,
-			render: function (data, type) {
+			render: function (data, type, row) {
 				if (type === "display") {
-					return renderSupplier(data);
+					return renderSupplier(data, row.INQ_ID);
 				}
 				return data;
 			},

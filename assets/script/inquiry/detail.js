@@ -405,6 +405,7 @@ export async function importExcel(file) {
 			"Item",
 		],
 	});
+
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
 			const variavle = validateVariable(el[6]);
@@ -424,9 +425,10 @@ export async function importExcel(file) {
 				INQD_OWNER: "MAR",
 				INQ_NO: el[0],
 			};
-			// ---------- Check 2na on Elmes here ----------
+			// ---------- Check 2nd on Elmes here ----------
 			return newRow;
 		});
+
 		const result = await Promise.all(readdata);
 		await importHeader({
 			mfgno: result[0].INQD_MFGORDER,
@@ -508,7 +510,10 @@ export async function importHeader(data) {
 
 	const inqno = document.querySelector("#inquiry-no");
 	inqno.value = data.inquiryno;
-	inqno.dispatchEvent(new Event("change"));
+	if (events.handleInquiryChange) {
+		await events.handleInquiryChange({ target: inqno });
+	}
+	$("#mar-incharge").val($("#user-login").attr("empno")).trigger("change");
 }
 //End: Unreply
 

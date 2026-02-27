@@ -58,7 +58,7 @@ export function initRow(id, seq) {
 export async function addRow({ id, seq }, table, data = {}) {
 	const newRow = await initRow(id, seq);
 	data = { ...newRow, ...data };
-	const row = table.row.add(data).draw();
+	const row = table.row.add(data).draw(false);
 	if ($(row.node()).find("td:eq(3) input").length > 0)
 		$(row.node()).find("td:eq(3) input").focus();
 }
@@ -184,6 +184,7 @@ $(document).on("click", "#addRowBtn", async function (e) {
 	let seq = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
 	await addRow({ id, seq }, table);
 	await setSelect2({ allowClear: false });
+	table.page("last").draw(false);
 });
 
 $(document).on("click", ".add-sub-line", async function (e) {
@@ -193,7 +194,21 @@ $(document).on("click", ".add-sub-line", async function (e) {
 	const seq = showDigits(intVal(data.INQD_SEQ) + 0.01, 2);
 	const id = parseInt(data.INQD_RUNNO) + 0.1;
 	await addRow({ id, seq }, table);
+	let dataRow = table.rows().data().toArray();
+	dataRow.sort((a, b) => intVal(a.INQD_RUNNO) - intVal(b.INQD_RUNNO));
+	let rowIndex = 0;
+	dataRow.map((row, index) => {
+		if (row.INQD_SEQ == seq) {
+			rowIndex = index;
+		}
+	});
+
+	if (rowIndex % 20 == 0) {
+		const p = table.page.info().page;
+		table.page(p + 1).draw(false);
+	}
 	await setSelect2({ allowClear: false });
+	$(this).removeClass("add-sub-line").addClass("btn-disabled text-gray-200!");
 });
 
 export function bindDeleteLine() {

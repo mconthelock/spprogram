@@ -17,7 +17,7 @@ import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
 import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
-import { setSelect2 } from "@amec/webasset/select2";
+import { destroySelect2, setSelect2 } from "@amec/webasset/select2";
 import { showMessage, revisionCode } from "@amec/webasset/utils";
 import { createBtn } from "@amec/webasset/components/buttons";
 import { setDatePicker } from "@amec/webasset/flatpickr";
@@ -51,7 +51,7 @@ import { initApp, fileExtension } from "../utils.js";
 
 //001: On load form
 var table;
-select2();
+// select2();
 $(document).ready(async () => {
 	try {
 		await showLoader();
@@ -169,29 +169,36 @@ $(document).on("click", "#uploadRowBtn", async function (e) {
 });
 
 $(document).on("change", "#import-tsv", async function (e) {
-	const file = e.target.files[0];
-	const ext = fileExtension(file.name);
-	const allow = ["xlsx", "tsv", "txt"];
-	if (!allow.includes(ext)) {
-		const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
-			", ",
-		)}`;
-		await showMessage(msg);
-		return;
-	}
+	try {
+		await showLoader();
+		const file = e.target.files[0];
+		const ext = fileExtension(file.name);
+		const allow = ["xlsx", "tsv", "txt"];
+		if (!allow.includes(ext)) {
+			const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
+				", ",
+			)}`;
+			await showMessage(msg);
+			return;
+		}
+		let newdata = null;
+		if (ext === "xlsx") newdata = await importExcel(file);
+		else newdata = await importText(file);
+		if (newdata == null) {
+			await showMessage("No data found in the file.");
+			return;
+		}
 
-	let newdata = null;
-	if (ext === "xlsx") newdata = await importExcel(file);
-	else newdata = await importText(file);
-	if (newdata == null) {
-		await showMessage("No data found in the file.");
-		return;
+		newdata.forEach(async function (row) {
+			table.row.add(row).draw(false);
+		});
+		setSelect2({ allowClear: false });
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await showLoader({ show: false });
 	}
-
-	newdata.forEach(async function (row) {
-		table.row.add(row).draw();
-	});
-	setSelect2({ allowClear: false });
 });
 //End :Import date from File
 
