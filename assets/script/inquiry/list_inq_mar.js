@@ -166,19 +166,24 @@ export async function tableInquiryOption(data, extopt = {}) {
 					title: "Edit",
 					type: "link",
 					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent text-white hover:shadow-lg`,
+					className: `btn-xs btn-accent text-white w-[80px] ms-1 hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
 					href: `${process.env.APP_ENV}/mar/inquiry/detail/${data}/`,
+				});
+
+				const secure = createBtn({
+					id: `edit-${data}`,
+					title: "Edit",
+					icon: "fi fi-rr-edit text-lg",
+					className: `btn-xs btn-accent btn-disabled w-[80px] cursor-not-allowed! ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
 				});
 
 				const deleted = createBtn({
 					id: `delete-${data}`,
 					title: ``,
-					type: "link",
 					icon: "fi fi-br-trash text-2xl",
 					className: `btn-xs btn-link text-error p-0! hover:bg-transparent! hover:shadow-none! delete-inquiry`,
-					href: `${process.env.APP_ENV}/mar/inquiry/view/${data}/`,
 				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${deleted}</div>`;
+				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${secure}${deleted}</div>`;
 			},
 		},
 	];
@@ -216,15 +221,15 @@ export async function tableInquiryOption(data, extopt = {}) {
 		});
 
 		const back = await createBtn({
-			id: "back-report",
+			id: "goback",
 			title: "Back",
-			icon: "fi fi fi-rr-undo text-xl",
+			icon: "fi fi-rr-arrow-circle-left text-xl",
 			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
 		});
 
 		$(".table-option").append(`${extopt.new === true ? newinq : ""}`);
 		$(".table-info").append(
-			`<div class="flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
+			`<div id="btn-container" class="flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
 		);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();

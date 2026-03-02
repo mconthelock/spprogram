@@ -15,7 +15,7 @@ import "@amec/webasset/css/dataTable.min.css";
 import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, intVal } from "@amec/webasset/utils";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable } from "@amec/webasset/dataTable";
 import {
@@ -36,7 +36,7 @@ import { initApp } from "../utils.js";
 
 var table;
 var tablePriceList;
-select2();
+// select2();
 $(document).ready(async () => {
 	try {
 		await showLoader();
@@ -236,7 +236,6 @@ $(document).on("click", "#price-list-confirm", async function (e) {
 $(document).on("click", "#savedata", async function (e) {
 	e.preventDefault();
 	try {
-		await showLoader();
 		const chkheader = await verifyHeader(".req-2");
 		if (!chkheader) return;
 		const header = await getFormHeader();
@@ -266,7 +265,7 @@ $(document).on("click", "#savedata", async function (e) {
 			return;
 		}
 
-		await activatedBtn($(this), true);
+		await activatedBtnRow($(this));
 		header.INQ_STATUS = 99;
 		header.INQ_SERIES = series;
 		header.INQ_SPEC = "P1050-CO-120-10S/O";
@@ -274,7 +273,17 @@ $(document).on("click", "#savedata", async function (e) {
 		header.INQ_TYPE = "Secure";
 		header.INQ_MAR_SENT = new Date();
 		header.UPDATE_AT = new Date();
-		const fomdata = { header, details };
+
+		const timelinedata = {
+			INQ_NO: $("#inquiry-no").val(),
+			INQ_REV: $("#revision").val(),
+			MAR_USER: $("#user-login").attr("empno"),
+			MAR_SEND: new Date(),
+			QT_USER: $("#user-login").attr("empno"),
+			QT_READ: new Date(),
+			QT_CONFIRM: new Date(),
+		};
+		const fomdata = { header, details, timelinedata };
 		const inquiry = await createInquiry(fomdata);
 		const quotation = await createQuotation({
 			QUO_INQ: inquiry.INQ_ID,
@@ -288,8 +297,7 @@ $(document).on("click", "#savedata", async function (e) {
 			`${process.env.APP_ENV}/mar/quotation/detail/${inquiry.INQ_ID}/3/`,
 		);
 	} catch (error) {
-		await showLoader({ show: false });
-		await showMessage(`Something went wrong.`);
-		return;
+		await activatedBtnRow($(this), false);
+		await showMessage(error.message || `Something went wrong.`);
 	}
 });

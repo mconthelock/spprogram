@@ -113,12 +113,14 @@ export const init = {
 
 	getCustomers: async function () {
 		const data = await srv.getCustomer();
-		let options = data.map((customer) => {
-			return {
-				id: customer.CUS_ID,
-				text: customer.CUS_DISPLAY,
-			};
-		});
+		let options = data
+			.filter((customer) => customer.CUS_STATUS == "1")
+			.map((customer) => {
+				return {
+					id: customer.CUS_ID,
+					text: customer.CUS_DISPLAY,
+				};
+			});
 		return options;
 	},
 

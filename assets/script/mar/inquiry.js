@@ -1,12 +1,18 @@
 import "@amec/webasset/css/dataTable.min.css";
 
 import { showLoader } from "@amec/webasset/preloader";
-import { showMessage } from "@amec/webasset/utils";
+import { showMessage, showConfirm } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtn } from "@amec/webasset/components/buttons";
 import { tableInquiryOption } from "../inquiry/index.js";
-import { getTemplate, exportExcel } from "../service/excel";
-import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
+import {
+	getTemplate,
+	exportExcel,
+	getInquiry,
+	dataExports,
+	dataDetails,
+	deleteInquiry,
+} from "../service/index.js";
 import { initApp } from "../utils.js";
 
 var table;
@@ -108,5 +114,34 @@ $(document).on("click", "#export2", async function (e) {
 		await showMessage(`Something went wrong.`);
 	} finally {
 		await activatedBtn($(this), false);
+	}
+});
+
+$(document).on("click", ".delete-inquiry", async function (e) {
+	e.preventDefault();
+	const $btn = $(this);
+	const $row = $btn.closest("tr");
+	try {
+		const data = table.row($row).data();
+		const confirm = await showConfirm();
+		if (confirm) {
+			const val = await deleteInquiry({
+				INQ_ID: data.INQ_ID,
+				INQ_MAR_PIC: $("#user-login").attr("empno"),
+				INQ_MAR_REMARK: "",
+			});
+
+			$row.css("background-color", "#ffcccc");
+			$row.fadeOut(400, function () {
+				table.row($row).remove().draw(false);
+				showMessage(
+					`Inquiry ${data.INQ_NO} has been deleted.`,
+					"success",
+				);
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
 	}
 });

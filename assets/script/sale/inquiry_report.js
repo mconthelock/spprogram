@@ -45,8 +45,6 @@ $(async function () {
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
-	} finally {
-		await showLoader({ show: false });
 	}
 });
 

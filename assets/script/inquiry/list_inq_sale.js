@@ -184,7 +184,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 		const back = await createBtn({
 			id: "goback",
 			title: "Back",
-			icon: "fi fi fi-rr-undo text-xl",
+			icon: "fi fi-rr-arrow-circle-left text-xl",
 			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
 		});
 		$(".table-info").append(

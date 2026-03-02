@@ -19,7 +19,7 @@ import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { destroySelect2, setSelect2 } from "@amec/webasset/select2";
 import { showMessage, revisionCode } from "@amec/webasset/utils";
-import { createBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { createTable } from "@amec/webasset/dataTable";
 import {
@@ -206,24 +206,23 @@ $(document).on("change", "#import-tsv", async function (e) {
 //006: Save Draft
 $(document).on("click", "#draft", async function (e) {
 	e.preventDefault();
-	await createPath({ level: 0, status: 1 });
+	await createPath({ level: 0, status: 1, obj: $(this) });
 });
 
 //007: Save and send to design
 $(document).on("click", "#send-de", async function (e) {
 	e.preventDefault();
-	await createPath({ level: 1, status: 2 });
+	await createPath({ level: 2, status: 2, obj: $(this) });
 });
 
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
-	await createPath({ level: 2, status: 30 });
+	await createPath({ level: 2, status: 30, obj: $(this) });
 });
 
 async function createPath(opt) {
 	try {
-		await showLoader();
 		const chkheader = await verifyHeader(
 			opt.level == 0 ? ".req-1" : ".req-2",
 		);
@@ -239,7 +238,9 @@ async function createPath(opt) {
 		header.INQ_STATUS = opt.status;
 		header.INQ_TYPE = "SP";
 		const details = table.rows().data().toArray();
+
 		await verifyDetail(table, details, opt.level);
+		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
 		const history = await setLogsData(opt.status);
 		const fomdata = { header, details, timelinedata, history };
@@ -261,9 +262,8 @@ async function createPath(opt) {
 		window.location.replace(url);
 	} catch (error) {
 		console.log(error);
-		await showMessage(`Something went wrong.`);
-	} finally {
-		await showLoader({ show: false });
+		await activatedBtnRow(opt.obj, false);
+		await showMessage(error.message || `Something went wrong.`);
 	}
 }
 
@@ -277,9 +277,9 @@ $(document).on("click", "#update-de", async function (e) {
 	}
 
 	if ($("#status").val() >= 10) {
-		await updatePath({ level: 1, status: 3 });
+		await updatePath({ level: 1, status: 3, obj: $(this) });
 	} else {
-		await updatePath({ level: 1, status: 2 });
+		await updatePath({ level: 1, status: 2, obj: $(this) });
 	}
 });
 
@@ -291,12 +291,12 @@ $(document).on("click", "#update-bm", async function (e) {
 		$("#remark").focus();
 		return;
 	}
-	await updatePath({ level: 2, status: 30 });
+	await updatePath({ level: 2, status: 30, obj: $(this) });
 });
 
 async function updatePath(opt) {
 	try {
-		await showLoader();
+		// await showLoader();
 		const chkheader = await verifyHeader(".req-2");
 		if (!chkheader) return;
 		const header = await getFormHeader();
@@ -312,9 +312,10 @@ async function updatePath(opt) {
 		header.INQ_STATUS = opt.status;
 		header.UPDATE_BY = $("#user-login").attr("empname");
 		header.UPDATE_AT = new Date();
-
 		const details = table.rows().data().toArray();
 		await verifyDetail(table, details, opt.level);
+		await activatedBtnRow(opt.obj);
+
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
 			state.deletedLineMap.forEach((value, key) => {
@@ -353,10 +354,8 @@ async function updatePath(opt) {
 		);
 	} catch (error) {
 		console.log(error);
+		await activatedBtnRow(opt.obj, false);
 		await showMessage(`Something went wrong.`);
-		return;
-	} finally {
-		await showLoader({ show: false });
 	}
 }
 

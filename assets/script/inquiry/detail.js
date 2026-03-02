@@ -578,9 +578,11 @@ export async function verifyDetail(table, data, savelevel = 0) {
 	let message = [];
 	const seenKeys = new Set();
 	if (data.length == 0) throw new Error(`Please insert inquiry detail.`);
-	data.map(async (item, i) => {
-		const row = $(table.row(i).node());
-		const seq = item.INQD_SEQ;
+
+	const rows = table.rows().nodes();
+	rows.each(function (index) {
+		const row = $(table.row(index).node());
+		const item = table.row(index).data();
 		if (seenKeys.has(item.INQD_SEQ)) {
 			check = false;
 			message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
@@ -602,9 +604,10 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			message.push(
 				`Please input item no. or item no should be number in range 100-999`,
 			);
-			errorEl(row.find(".item-no"));
+			errorEl(row.find(".itemno"));
 			return;
 		}
+
 		if (item.INQD_PARTNAME == "") {
 			check = false;
 			message.push(`Please input Part name`);
@@ -612,10 +615,8 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			return;
 		}
 
-		//Save data to Database
-		//MAR Send to Sale
-		// - If drawing is blank, Should attached image to reference part
 		if (savelevel == 1) {
+			// If drawing is blank, Should attached image to reference part
 			const hasAtt = $("#attachment-file")[0].files.length;
 			if (item.INQD_DRAWING == "" && hasAtt == 0) {
 				check = false;

@@ -26,7 +26,7 @@ import { setDeletedLineMap } from "./store.js";
 export function initRow(id, seq) {
 	return {
 		INQD_ID: "",
-		INQD_SEQ: seq,
+		INQD_SEQ: intVal(seq),
 		INQD_RUNNO: id,
 		INQD_MFGORDER: "",
 		INQD_ITEM: "",
@@ -191,8 +191,24 @@ $(document).on("click", ".add-sub-line", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const data = table.row($(this).parents("tr")).data();
-	const seq = showDigits(intVal(data.INQD_SEQ) + 0.01, 2);
-	const id = parseInt(data.INQD_RUNNO) + 0.1;
+	const seq = intVal(data.INQD_SEQ) + 0.01;
+	const id = data.INQD_RUNNO + 0.1;
+	const rows = table.rows().nodes();
+	rows.each(function (index) {
+		const rowData = table.row(index).data();
+		if (
+			rowData.INQD_SEQ >= seq &&
+			rowData.INQD_SEQ % 1 !== 0 &&
+			Math.floor(rowData.INQD_SEQ) === Math.floor(seq)
+		) {
+			const updatedData = {
+				...rowData,
+				INQD_SEQ: intVal(showDigits(rowData.INQD_SEQ + 0.01, 2)),
+				INQD_RUNNO: rowData.INQD_RUNNO + 0.1,
+			};
+			table.row(index).data(updatedData);
+		}
+	});
 	await addRow({ id, seq }, table);
 	let dataRow = table.rows().data().toArray();
 	dataRow.sort((a, b) => intVal(a.INQD_RUNNO) - intVal(b.INQD_RUNNO));
@@ -207,8 +223,6 @@ $(document).on("click", ".add-sub-line", async function (e) {
 		const p = table.page.info().page;
 		table.page(p + 1).draw(false);
 	}
-	await setSelect2({ allowClear: false });
-	$(this).removeClass("add-sub-line").addClass("btn-disabled text-gray-200!");
 });
 
 export function bindDeleteLine() {
@@ -218,7 +232,6 @@ export function bindDeleteLine() {
 		const row = table.row($(this).closest("tr"));
 		const data = row.data();
 		if (data.INQD_ID != "") {
-			//deletedLineMap.set(data.INQD_ID, data);
 			setDeletedLineMap(data.INQD_ID, data);
 		}
 		row.remove().draw(false);
@@ -264,6 +277,7 @@ $(document).on("change", ".edit-input", async function (e) {
 		newValue = null;
 	if ($(this).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
 	if ($(this).attr("type") === "number") newValue = intVal(newValue);
+	if ($(this).hasClass("input-number")) newValue = intVal(newValue);
 	if ($(this).hasClass("uppercase")) newValue = newValue.toUpperCase();
 	cell.data(newValue);
 	setSelect2({ allowClear: false });

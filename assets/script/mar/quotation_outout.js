@@ -13,7 +13,7 @@ import {
 } from "@amec/webasset/utils";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { readInput } from "@amec/webasset/excel";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import { createTable } from "@amec/webasset/dataTable";
 import { setupCard, getFormHeader } from "../inquiry/detail.js";
 import { tableOutOption } from "../quotation/index.js";
@@ -73,20 +73,6 @@ $(document).ready(async () => {
 		await showLoader({ show: false });
 	}
 });
-
-// const calPrice = (data) => {
-// 	const cost = intVal(data.INQD_FC_COST);
-// 	const curr1 = intVal(data.INQD_FC_BASE);
-// 	const tccost = cost * curr1;
-// 	const profit = intVal(data.INQD_TC_BASE);
-// 	const curr2 = intVal(data.INQD_EXRATE);
-// 	const unitprice =
-// 		curr2 == 0
-// 			? 0
-// 			: Math.ceil(intVal(showDigits((tccost * profit) / curr2), 3));
-// 	const amount = unitprice * intVal(data.INQD_QTY);
-// 	return { tccost, unitprice, amount };
-// };
 
 async function getDataHeader(data) {
 	const terms = await getDeliveryTerm();
@@ -312,11 +298,13 @@ $(document).on("click", "#savedata", async function () {
 			await showMessage(`Please enter Remark for revision.`);
 			return;
 		}
+
+		await activatedBtnRow($(this));
 		const header = await getFormHeader();
 		const timelinedata = await setTimelineData();
 		const history = await setLogsData();
 		const fomdata = {
-			header: { ...header, INQ_STATUS: 99 },
+			header: { ...header, INQ_STATUS: 99, INQ_TYPE: "Out2out" },
 			details,
 			timelinedata,
 			history,
@@ -327,15 +315,18 @@ $(document).on("click", "#savedata", async function () {
 				{ INQ_LATEST: 0 },
 				$("#inquiry-id").val(),
 			);
-		await activatedBtn($(this));
+
 		const inqs = await createInquiry(fomdata);
 		const quo = await createQuotation(await setQuotationData(inqs));
+		window.location.replace(
+			`${process.env.APP_ENV}/mar/quotation/detail/${inqs.INQ_ID}/3/`,
+		);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
 		return;
 	} finally {
-		//await activatedBtn($(this), false);
+		await await activatedBtnRow($(this), false);
 	}
 });
 

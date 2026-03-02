@@ -34,7 +34,7 @@ export async function setupPartTableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="s2 w-25! edit-input supplier">`;
+		let selector = `<select class="select select-sm w-25! edit-input supplier">`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -66,7 +66,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<div class="btn btn-xs btn-circle btn-ghost text-gray-600 add-sub-line" type="button">
+					return `<div class="btn btn-xs btn-circle btn-ghost text-gray-600 btn-added add-sub-line" type="button">
                         <span class="text-2xl">+</span>
                     </div>
                     <button class="btn btn-xs btn-circle btn-ghost ${
@@ -87,7 +87,7 @@ export async function setupPartTableDetail(data = []) {
 				if (type === "display") {
 					if (data % 1 !== 0) data = showDigits(data, 2);
 					const log = renderLog(data, row.logs, "INQD_SEQ");
-					const str = `<input type="text" class="w-12.5! cell-input input-number ${
+					const str = `<input type="text" class="w-12.5! seqno cell-input edit-input input-number ${
 						log ? "detail-log" : ""
 					}" value="${data}">`;
 					return renderText(str, row.logs, "INQD_SEQ");
@@ -152,7 +152,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: " drawing-line",
+			className: "",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {

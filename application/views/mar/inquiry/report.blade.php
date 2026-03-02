@@ -3,7 +3,6 @@
 @section('contents')
     <h2 class="card-title text-2xl">Inquiry Report</h2>
     <div class="divider m-0"></div>
-    <table id="table" class="table table-zebra display text-xs"></table>
     <form action="#" id="form-container" class="hidden" autocomplete="off">
         <div class="flex gap-8">
             <div class="flex-1 flex flex-col py-6 px-12 bg-white rounded-lg shadow">
@@ -142,6 +141,11 @@
         </div>
         <div class="flex justify-start my-3 gap-3" id="btn-container"></div>
     </form>
+
+    <div id="report-table">
+        @include('layouts/datatable_load')
+        <table id="table" class="table table-zebra display text-xs"></table>
+    </div>
 @endsection
 
 @section('scripts')
