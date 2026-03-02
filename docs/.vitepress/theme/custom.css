@@ -1,0 +1,19 @@
+/* .vitepress/theme/custom.css */
+
+:root {
+	--vp-home-hero-name-color: transparent;
+	--vp-home-hero-name-background: linear-gradient(
+		135deg,
+		#646cff 10%,
+		#ff3e00 100%
+	);
+}
+
+/* ทำให้พื้นหลังของ Hero โปร่งใสเพื่อให้เห็น Three.js ชัดขึ้น */
+.VPContent.is-home {
+	background: transparent !important;
+}
+
+.VPHero .container {
+	min-height: 60vh;
+}

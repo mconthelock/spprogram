@@ -5,7 +5,7 @@ dotenv.config();
 export default defineConfig({
 	vite: { clearScreen: false },
 	title: "SP Program",
-	description: "A VitePress Site",
+	// description: "A VitePress Site",
 	head: [
 		[
 			"link",
@@ -66,12 +66,12 @@ export default defineConfig({
 				...(pageData.frontmatter.hero || {}),
 				name: process.env.VITE_APP_NAME || "DailyIds",
 				text: process.env.VITE_APP_TEXT || "manual",
-				image: {
-					src: `${
-						process.env.VITE_APP_HOST || ""
-					}/assets/images/icon_512.png`,
-					alt: "SP Program Image",
-				},
+				// image: {
+				// 	src: `${
+				// 		process.env.VITE_APP_HOST || ""
+				// 	}/assets/images/icon_512.png`,
+				// 	alt: "SP Program Image",
+				// },
 				tagline:
 					process.env.VITE_APP_TAGLINE ||
 					"Powered by VitePress + custom theme",
