@@ -212,7 +212,7 @@ $(document).on("click", "#draft", async function (e) {
 //007: Save and send to design
 $(document).on("click", "#send-de", async function (e) {
 	e.preventDefault();
-	await createPath({ level: 2, status: 2, obj: $(this) });
+	await createPath({ level: 1, status: 2, obj: $(this) });
 });
 
 //008: Save and send to AS400
@@ -237,8 +237,12 @@ async function createPath(opt) {
 
 		header.INQ_STATUS = opt.status;
 		header.INQ_TYPE = "SP";
-		const details = table.rows().data().toArray();
+		header.CREATE_BY = $("#user-login").attr("empname");
+		header.CREATE_AT = new Date();
+		header.UPDATE_BY = $("#user-login").attr("empname");
+		header.UPDATE_AT = new Date();
 
+		const details = table.rows().data().toArray();
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);

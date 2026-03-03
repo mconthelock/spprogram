@@ -1,6 +1,7 @@
 import { showDigits } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import { tableOpt } from "../utils.js";
+
 export async function setupSaleTableDetail(data = []) {
 	const renderText = (str, logs, key) => {
 		if (logs == undefined) return str;
@@ -32,9 +33,9 @@ export async function setupSaleTableDetail(data = []) {
 		return update;
 	};
 
-	const renderSupplier = (data, disabled) => {
-		const sup = ["", "N/A", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="w-25! s2 edit-input supplier" ${disabled ? "disabled" : ""}>`;
+	const renderSupplier = (data, id) => {
+		const sup = ["", "AMEC", "MELINA", "LOCAL"];
+		let selector = `<select class="select select-sm w-25! edit-input supplier">`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -87,7 +88,7 @@ export async function setupSaleTableDetail(data = []) {
 				if (type === "display") {
 					if (data % 1 !== 0) data = showDigits(data, 2);
 					const log = renderLog(data, row.logs, "INQD_SEQ");
-					const str = `<input type="text" class="w-12.5! cell-input input-number  ${log ? `detail-log` : ``}"
+					const str = `<input type="text" class="w-12.5! cell-input input-number edit-input ${log ? `detail-log` : ``}"
                         ${row.INQD_OWNER_GROUP == `MAR` ? `readonly="readonly"` : ``} maxlength="5"
                         value="${data}">`;
 					return renderText(str, row.logs, "INQD_SEQ");
@@ -226,8 +227,8 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					if (data == null || data == "0")
-						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="1" />`;
+					if (data == null || data == "")
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="" />`;
 					else if (data == "1")
 						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" value="1" checked/>`;
 					else return data;

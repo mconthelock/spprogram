@@ -286,7 +286,6 @@ $(document).on("change", ".edit-input", async function (e) {
 // 003: Show Elmes table
 $(document).on("change", ".elmes-input", async function (e) {
 	e.preventDefault();
-	console.log("I've changed");
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));
 	const node = table.row($(this).closest("tr")).node();
@@ -348,9 +347,9 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 				if (val.supply === "J") supplier = `MELINA`;
 				if (val.supply === "U") supplier = ``;
 
-				let second = `0`;
+				let second = ``;
 				if (val.scndpart != "" && val.scndpart.toUpperCase() !== "X")
-					second = `1`;
+					second = val.scndpart;
 
 				const newRow = {
 					...data,
@@ -370,7 +369,6 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 				i = increse + i;
 			}
 		});
-		setSelect2({ allowClear: false });
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
@@ -391,7 +389,7 @@ $(document).on("click", "#elmes-cancel", async function (e) {
 });
 
 // 004: Second part checkbox
-$(document).on("change", ".ndpartlist", async function (e) {
+$(document).on("click", ".ndpartlist", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));
@@ -412,9 +410,9 @@ $(document).on("change", ".ndpartlist", async function (e) {
 				INQD_ITEM: item,
 				INQD_MFGORDER: mfg,
 				INQD_SENDPART: "1",
-			}).draw();
+			}).draw(false);
 			await destroyElmesModal();
-			await setSelect2({ allowClear: false });
+			// await setSelect2({ allowClear: false });
 			return;
 		}
 
@@ -431,6 +429,13 @@ $(document).on("change", ".ndpartlist", async function (e) {
 		$("#elmes-target").val(row.index());
 		$("#elmes-type").val(type);
 		$("#elmes_modal").attr("checked", true);
+	} else {
+		row.data({
+			...data,
+			INQD_ITEM: item,
+			INQD_MFGORDER: mfg,
+			INQD_SENDPART: "1",
+		}).draw(false);
 	}
 });
 
@@ -438,7 +443,8 @@ $(document).on("change", ".revokepartlist", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));
-	row.data({ ...data, INQD_SENDPART: null }).draw();
+	const data = row.data();
+	row.data({ ...data, INQD_SENDPART: null }).draw(false);
 });
 
 // 004: Unable to reply checkbox

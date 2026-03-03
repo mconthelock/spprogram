@@ -22,6 +22,7 @@ import {
 	getInquiryFile,
 	updateInquiry,
 	updateInquiryGroup,
+	updateInquiryHeader,
 	createInquiryFile,
 	createInquiryHistory,
 	mailToSaleEngineer,
@@ -166,6 +167,10 @@ $(document).on("click", "#assign-pic", async function (e) {
 	}
 	try {
 		await activatedBtnRow($(this));
+		$("#sale-leader-confirm").val(new Date());
+		const ssata = await setTimelineData({ INQ_NO: 11, INQ_REV: 1 });
+		console.log(ssata);
+		return;
 		const inquiry = await updatePath(10, 1);
 		const user = await currentUser();
 		const group = {
@@ -281,16 +286,24 @@ $(document).on("click", "#send-bm", async function (e) {
 //012: Update and send to design
 $(document).on("click", "#send-confirm", async function (e) {
 	e.preventDefault();
+	const user = await currentUser();
 	const isRevise = $(this).hasClass("revised");
-	if (isRevise && $("#remark").val().trim() === "") {
-		await showMessage("Please provide a remark for the revision.");
-		$("#remark").focus();
-		return;
+	if (isRevise) {
+		if ($("#remark").val().trim() === "") {
+			await showMessage("Please provide a remark for the revision.");
+			$("#remark").focus();
+			return;
+		}
+
+		$("#sale-incharge").val(user.empno);
+		$("#sale-confirm").val(new Date());
 	}
 
 	try {
 		await activatedBtnRow($(this));
-		const user = await currentUser();
+		const ssata = await setTimelineData({ INQ_NO: 11, INQ_REV: 1 });
+		console.log(ssata);
+		return;
 		const group = {
 			data: {
 				INQG_DES: user.empno,
@@ -302,58 +315,132 @@ $(document).on("click", "#send-confirm", async function (e) {
 			condition: { INQ_ID: $("#inquiry-id").val() },
 		};
 		await updateInquiryGroup(group);
-
 		const details = table.rows().data().toArray();
 		let designForward = [];
+		let isAmec = false;
+		let isMelina = false;
 		details.map((dt) => {
 			if (dt.FORWARD != null) {
 				const grp = Math.floor(dt.INQD_ITEM / 100);
 				designForward.push(grp);
 			}
+
+			if (dt.INQD_SUPPLIER == "AMEC") isAmec = true;
+			if (dt.INQD_SUPPLIER == "MELINA") isMelina = true;
 		});
+
+		const inquiry = await updatePath(11, 4, 1);
 		designForward = [...new Set(designForward)];
 		if (designForward.length > 0) {
-			designForward.map(async (dg) => {
-				const group = {
-					data: {
-						INQG_ASG: null,
-						INQG_DES: null,
-						INQG_CHK: null,
-						INQG_CLASS: null,
-						INQG_ASG_DATE: null,
-						INQG_DES_DATE: null,
-						INQG_CHK_DATE: null,
-						INQG_STATUS: 1,
-					},
-					condition: {
-						INQ_ID: $("#inquiry-id").val(),
-						INQG_GROUP: dg,
-						INQG_LATEST: 1,
-					},
-				};
-				await updateInquiryGroup(group);
-			});
-			const inquiry = await updatePath(11, 4, 1);
+			await forwardInquiry(designForward);
 			await mailToDEGroupLeader(inquiry);
-		} else {
-			const logs = await setLogsData(11, true);
-			await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
-			const inquiry = await updatePath(30, 4, 2);
+		} else if (isAmec) {
 			await setAS400Data(inquiry);
+			const logs = await setLogsData(30, true);
+			await createInquiryHistory({
+				...logs,
+				INQH_REMARK: null,
+				INQH_LATEST: 1,
+			});
+			await updateInquiryHeader(
+				{ INQ_STATUS: 30, INQ_LATEST: 1 },
+				inquiry.INQ_ID,
+			);
 			await mailToPKC(inquiry);
+		} else if (isMelina) {
+			//Old series
+			await updateInquiryHeader(
+				{ INQ_STATUS: 52, INQ_LATEST: 1 },
+				inquiry.INQ_ID,
+			);
+		} else {
+			//Other Supplier
+			await updateInquiryHeader(
+				{ INQ_STATUS: 50, INQ_LATEST: 1 },
+				inquiry.INQ_ID,
+			);
 		}
 		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${$("#inquiry-id").val()}`,
+			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
 		);
+		// designForward.map(async (dg) => {
+		// 	const group = {
+		// 		data: {
+		// 			INQG_ASG: null,
+		// 			INQG_DES: null,
+		// 			INQG_CHK: null,
+		// 			INQG_CLASS: null,
+		// 			INQG_ASG_DATE: null,
+		// 			INQG_DES_DATE: null,
+		// 			INQG_CHK_DATE: null,
+		// 			INQG_STATUS: 1,
+		// 		},
+		// 		condition: {
+		// 			INQ_ID: $("#inquiry-id").val(),
+		// 			INQG_GROUP: dg,
+		// 			INQG_LATEST: 1,
+		// 		},
+		// 	};
+		// 	await updateInquiryGroup(group);
+		// });
+
+		// if (inquiry) {
+		// 	await mailToDEGroupLeader(inquiry);
+		// 	window.location.replace(
+		// 		`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		// 	);
+		// }
+		// } else {
+		// 	const logs = await setLogsData(11, true);
+		// 	let status = isAmec ? 30 : 11;
+
+		// 	const inquiry = await updatePath(30, 4, 2);
+		// 	if (inquiry) {
+		// 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+		// 		await setAS400Data(inquiry);
+		// 		await mailToPKC(inquiry);
+		// 		window.location.replace(
+		// 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		// 		);
+		// 	}
+		// }
 	} catch (error) {
 		console.log(error);
-		await showMessage(`Something went wrong.`);
-		return;
+		await showMessage(error.message || `Something went wrong.`);
+		await activatedBtnRow($(this), false);
+	} finally {
+		await activatedBtnRow($(this), false);
 	}
 });
 
+async function forwardInquiry(fwdata) {
+	for (let el of fwdata) {
+		// designForward.map(async (dg) => {
+		const group = {
+			data: {
+				INQG_ASG: null,
+				INQG_DES: null,
+				INQG_CHK: null,
+				INQG_CLASS: null,
+				INQG_ASG_DATE: null,
+				INQG_DES_DATE: null,
+				INQG_CHK_DATE: null,
+				INQG_STATUS: 1,
+			},
+			condition: {
+				INQ_ID: $("#inquiry-id").val(),
+				INQG_GROUP: el,
+				INQG_LATEST: 1,
+			},
+		};
+		await updateInquiryGroup(group);
+		// });
+	}
+	return;
+}
+
 // 015: Update and send to AS400
-async function updatePath(status, action, level = 0) {
+async function updatePath(status, action, level = 1) {
 	try {
 		//Get header data
 		let isforward = 0;
@@ -374,14 +461,13 @@ async function updatePath(status, action, level = 0) {
 			INQ_SPEC: $("#spec").val(),
 			INQ_STATUS: status,
 			INQ_SALE_REMARK: $("#remark").val(),
-			INQ_SALE_FORWARD: status == 12 ? 1 : isforward,
+			INQ_SALE_FORWARD: isforward,
 			UPDATE_BY: $("#user-login").attr("empname"),
 			UPDATE_AT: new Date(),
 		};
-		const timelinedata = await setTimelineData(header, action);
-
+		const timelinedata = await setTimelineData(header);
 		if (status == 30) $("#remark").val("");
-		const history = await setLogsData(status);
+		const history = await setLogsData(status, true);
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
 			state.deletedLineMap.forEach((value, key) => {
@@ -416,14 +502,11 @@ async function updatePath(status, action, level = 0) {
 		return inquiry;
 	} catch (error) {
 		console.log(error);
-		await showMessage(`Something went wrong.`);
-		return;
+		await showMessage(error.message || `Something went wrong.`);
 	}
 }
 
-async function setTimelineData(header, action) {
-	//action: 1=> assign, 2=> assign+confirm/forward, 3 => confirm (SE),
-	const user = await currentUser();
+async function setTimelineData(header) {
 	let data = {
 		INQ_NO: header.INQ_NO,
 		INQ_REV: header.INQ_REV,
@@ -436,26 +519,6 @@ async function setTimelineData(header, action) {
 		SE_READ: $("#sale-read").val(),
 		SE_CONFIRM: $("#sale-confirm").val(),
 	};
-	switch (action) {
-		case 1:
-			data.SG_CONFIRM = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			break;
-		case 2:
-			data.SG_CONFIRM = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			data.SE_USER = user.empno;
-			data.SE_READ = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			data.SE_CONFIRM = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			break;
-		case 3:
-			data.SG_CONFIRM = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			data.SE_USER = user.empno;
-			data.SE_READ = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			data.SE_CONFIRM = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			break;
-		case 4:
-			data.SE_CONFIRM = dayjs().format("YYYY-MM-DD HH:mm:ss");
-			break;
-	}
 	return data;
 }
 
@@ -464,7 +527,7 @@ async function setLogsData(action, adjust = false) {
 		INQ_NO: $("#inquiry-no").val(),
 		INQ_REV: $("#revision").val(),
 		INQH_DATE: adjust
-			? dayjs().add("-1", "second").format("YYYY-MM-DD HH:mm:ss")
+			? dayjs().add("-3", "second").format("YYYY-MM-DD HH:mm:ss")
 			: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		INQH_USER: $("#user-login").attr("empno"),
 		INQH_ACTION: action,
@@ -482,11 +545,11 @@ async function setAS400Data(inq) {
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
 	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
-	await addAS400Data({
-		header: q601kp1,
-		detail: q601kp2,
-		variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
-		inquiryNo: inq.INQ_NO,
-	});
+	// await addAS400Data({
+	// 	header: q601kp1,
+	// 	detail: q601kp2,
+	// 	variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
+	// 	inquiryNo: inq.INQ_NO,
+	// });
 	return;
 }

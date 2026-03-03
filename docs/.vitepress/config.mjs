@@ -1,29 +1,25 @@
 import { defineConfig } from "vitepress";
 import dotenv from "dotenv";
+import * as sidebar from "./sidebar.js";
 dotenv.config();
 
 export default defineConfig({
 	vite: { clearScreen: false },
 	title: "SP Program",
-	// description: "A VitePress Site",
 	head: [
 		[
 			"link",
 			{
 				rel: "icon",
-				href: `${
-					process.env.VITE_APP_HOST || ""
-				}/assets/images/icon_512.png`,
+				href: `${process.env.VITE_APP_HOST || ``}/assets/images/icon_512.png`,
 			},
 		],
 	],
 	outDir: "dist",
 	base: "/spprogram/docs/",
-	markdown: {
-		image: { lazyLoading: true },
-	},
+	markdown: { image: { lazyLoading: true } },
 	themeConfig: {
-		logo: `${process.env.VITE_APP_HOST || ""}/assets/images/icon_512.png`, // โลโก้ที่มุมบนซ้าย navbar
+		logo: `${process.env.VITE_APP_HOST || ""}/assets/images/icon_512.png`,
 		search: {
 			provider: "local",
 		},
@@ -31,32 +27,36 @@ export default defineConfig({
 			{ text: "Home", link: "/" },
 			{ text: "Guide", link: "/quick-start" },
 		],
-
-		sidebar: [
-			{
-				text: "Inquiry",
-				collapsed: false,
-				items: [
-					{ text: "Add new inquiry", link: "/matrix/effect" },
-					{
-						text: "Add stock part inquiry",
-						link: "/matrix/master",
-					},
-					{
-						text: "On process inquiry",
-						link: "/matrix/master",
-					},
-					{
-						text: "Pending pre-bm inquiry",
-						link: "/matrix/master",
-					},
-					{
-						text: "Inquiry report",
-						link: "/matrix/manual",
-					},
-				],
-			},
-		],
+		sidebar: {
+			"/": [
+				{ text: "Quick Start", link: "/quick-start" },
+				{
+					text: "MAR User Guide",
+					link: "/mar/inquiry-new",
+				},
+				{
+					text: "Sale User Guide",
+					link: "/sale/inquiry",
+				},
+				{
+					text: "D/E User Guide",
+					link: "/de/inquiry",
+				},
+				{
+					text: "Finance User Guide",
+					link: "/fin/confirm",
+				},
+				{
+					text: "PKC User Guide",
+					link: "/pkc/inquiry",
+				},
+			],
+			"/mar/": sidebar.marItem,
+			"/sale/": sidebar.saleItem,
+			"/de/": sidebar.deItem,
+			"/fin/": sidebar.finItem,
+			"/pkc/": sidebar.pkcItem,
+		},
 	},
 	// ควบคุม หน้า index.md จาก env
 	transformPageData(pageData) {
@@ -64,14 +64,8 @@ export default defineConfig({
 			pageData.frontmatter ||= {};
 			pageData.frontmatter.hero = {
 				...(pageData.frontmatter.hero || {}),
-				name: process.env.VITE_APP_NAME || "DailyIds",
+				name: process.env.VITE_APP_NAME || "SP Program",
 				text: process.env.VITE_APP_TEXT || "manual",
-				// image: {
-				// 	src: `${
-				// 		process.env.VITE_APP_HOST || ""
-				// 	}/assets/images/icon_512.png`,
-				// 	alt: "SP Program Image",
-				// },
 				tagline:
 					process.env.VITE_APP_TAGLINE ||
 					"Powered by VitePress + custom theme",

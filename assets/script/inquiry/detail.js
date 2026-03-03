@@ -225,11 +225,13 @@ export async function createFieldInput(field) {
 			} else if (field.options) {
 				options = field.options;
 			}
+
 			options.forEach((opt) => {
 				optStr += `<option value="${opt.id}" ${
 					opt.id == field.value ? "selected" : ""
 				}>${opt.text}</option>`;
 			});
+
 			const selectInput = `<select name="${field.name}"
             id="${field.id}"
             class="w-full border border-gray-300 rounded-md p-2 bg-white select2 ${
@@ -242,7 +244,6 @@ export async function createFieldInput(field) {
 			elementToListen = inputContainer.querySelector(`#${field.id}`);
 			setTimeout(async () => {
 				const jQueryElement = $(`#${field.id}`);
-				//jQueryElement.select2({ width: "100%" });
 				await setSelect2({
 					element: `#${field.id}`,
 					placeholder: field.label || "",

@@ -12,12 +12,13 @@
         },
         {
             "label": "Assigner",
-            "id":"mar-incharge",
+            "id":"sale-leader-incharge",
             "type": "staticText",
             "name": "SG_USER",
             "mapping": "SG_USER",
             "topic": "timeline",
-            "class": "setnesting displayname"
+            "class": "setnesting displayname",
+            "input": true
         },
         {
             "label": "SG Read",
@@ -39,12 +40,13 @@
         },
         {
             "label": "Sale In-charge",
-            "id": "sale-checker",
+            "id": "sale-incharge",
             "type": "staticText",
             "class": "setnesting displayname",
             "topic": "timeline",
             "name": "SE_USER",
-            "mapping": "SE_USER"
+            "mapping": "SE_USER",
+             "input": true
         },
         {
             "label": "Design Class",
@@ -53,7 +55,8 @@
             "class": "setnesting",
             "topic": "timeline",
             "name": "SALE_CLASS",
-            "mapping": "SALE_CLASS"
+            "mapping": "SALE_CLASS",
+            "input": true
         },
         {
             "label": "Remark",
@@ -76,6 +79,15 @@
             "topic": "timeline",
             "name": "SE_READ",
             "mapping": "SE_READ"
+        },
+        {
+            "label": "SE Confirm",
+            "id": "sale-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SE_CONFIRM",
+            "mapping": "SE_CONFIRM"
         },
         {
             "label": "MAR. Send",

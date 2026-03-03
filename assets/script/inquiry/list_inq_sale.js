@@ -151,14 +151,22 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
+				const edit = createBtn({
+					id: `edit-${data}`,
+					title: "Process",
+					icon: "fi fi-br-tools text-lg",
+					className: `btn-xs btn-accent text-white hover:shadow-lg hover:text-white process-btn`,
+				});
+
 				const view = createBtn({
 					id: `view-${data}`,
-					title: "Process",
-					icon: "fi fi-rs-user-add text-lg",
-					className: `btn-xs btn-accent text-white hover:shadow-lg hover:text-white process-btn`,
-					href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
+					title: "View",
+					icon: "fi fi-rr-search text-lg",
+					type: "link",
+					className: `btn-xs btn-outline btn-accent  hover:shadow-lg hover:text-white`,
+					href: `${process.env.APP_ENV}/se/inquiry/show/${data}/`,
 				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${view}</div>`;
+				return `<div class="flex gap-1 justify-center items-center w-fit">${extopt.back === true ? view : edit}</div>`;
 			},
 		},
 	];

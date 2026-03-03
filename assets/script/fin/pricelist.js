@@ -6,9 +6,7 @@ import select2 from "select2";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showDigits } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { setSelect2 } from "@amec/webasset/select2";
-
+import { createBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, exportExcel } from "../service/excel";
 import { getItems, currentPeriod } from "../service/items.js";
 import { findPriceRatio } from "../service/master.js";
@@ -197,6 +195,7 @@ async function tableOption(data) {
 
 		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
 		$("#datatable_loading").addClass("hidden");
+		$("#table-wrapper").removeClass("hidden");
 	};
 	return opt;
 }

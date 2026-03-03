@@ -72,6 +72,15 @@ $(document).ready(async () => {
 });
 
 async function setupButton() {
+	const revise = await createBtn({
+		id: "revise-detail",
+		title: "Revise/Edit",
+		icon: "fi fi-rr-edit text-xl",
+		className: `btn-accent text-white hover:shadow-lg `,
+		type: "link",
+		href: `${process.env.APP_ENV}/se/inquiry/detail/${$("#inquiry-id").val()}/`,
+	});
+
 	const exportxls = await createBtn({
 		id: "export-detail",
 		title: "Export to Excel",
@@ -87,5 +96,5 @@ async function setupButton() {
 		icon: "fi fi-rr-arrow-circle-left text-xl",
 		className: `btn-outline btn-accent text-accent hover:text-white`,
 	});
-	$("#btn-container").append(exportxls, back);
+	$("#btn-container").append(revise, exportxls, back);
 }

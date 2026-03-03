@@ -118,7 +118,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="w-25! cell-input elmes-input mfgno" maxlength="9">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-25! uppercase cell-input elmes-input mfgno" maxlength="9">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -223,8 +223,8 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input" value="1" ${
-						data == 1 ? "checked" : ""
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input" value="${data}" ${
+						data != `` ? `checked` : ``
 					} />`;
 				}
 				return data;

@@ -175,7 +175,6 @@ export const events = {
 		const obj = e.target;
 		const loader = $(obj).closest(".input").find(".loading");
 		loader.removeClass("hidden");
-
 		const q = { PRJ_NO: obj.value.toUpperCase() };
 		let data = await srv.getMainProject(q);
 		if (data.length == 0) data = await srv.getPartProject(q);
@@ -194,9 +193,9 @@ export const events = {
 					}
 				}
 
-				if ($('select[data-mapping="' + key + '"]').length > 0) {
+				if ($(`select[data-mapping="${key}"]`).length > 0) {
 					let val = values[key];
-					const selected = $('select[data-mapping="' + key + '"]');
+					const selected = $(`select[data-mapping="${key}"]`);
 					if (selected.attr("id") == "agent") {
 						const ops = new Set();
 						const agents = new Set();
@@ -223,6 +222,8 @@ export const events = {
 									(x) => x.AGENT == values.AGENT,
 								);
 								val = `${agn.AGENT} (${agn.country.CTNAME})`;
+								console.log(val);
+
 								$('select[data-mapping="' + key + '"]').val(
 									val,
 								);

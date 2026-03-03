@@ -53,7 +53,7 @@ $(document).on("click", ".process-btn", async function (e) {
 		const user = await currentUser();
 		const group = user.group;
 		if (group == "SLG" && timeline.SG_READ == null) {
-			await activatedBtn($(this));
+			await activatedBtnRow($(this));
 			const data = {
 				INQ_NO: row.INQ_NO,
 				INQ_REV: row.INQ_REV,
@@ -62,7 +62,7 @@ $(document).on("click", ".process-btn", async function (e) {
 			};
 			await updateInquiryTimeline(data);
 		} else if (group == "SLE" && timeline.SE_READ == null) {
-			await activatedBtn($(this));
+			await activatedBtnRow($(this));
 			const data = {
 				INQ_NO: row.INQ_NO,
 				INQ_REV: row.INQ_REV,
