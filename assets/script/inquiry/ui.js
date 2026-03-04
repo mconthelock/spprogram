@@ -350,7 +350,6 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 				let second = ``;
 				if (val.scndpart != "" && val.scndpart.toUpperCase() !== "X")
 					second = val.scndpart;
-
 				const newRow = {
 					...data,
 					id: id + i,
@@ -364,6 +363,7 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 					INQD_QTY: val.qty,
 					INQD_SUPPLIER: supplier,
 					INQD_SENDPART: second,
+					INQD_ID: i === 0 ? data.INQD_ID : null,
 				};
 				table.row.add(newRow).draw(false);
 				i = increse + i;
@@ -439,7 +439,7 @@ $(document).on("click", ".ndpartlist", async function (e) {
 	}
 });
 
-$(document).on("change", ".revokepartlist", async function (e) {
+$(document).on("click", ".revokepartlist", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));

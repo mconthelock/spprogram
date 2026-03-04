@@ -157,6 +157,7 @@ async function setupButton(revise, usergroup) {
 // 006: Assign Engineer
 $(document).on("click", "#assign-pic", async function (e) {
 	e.preventDefault();
+	const user = await currentUser();
 	const chkheader = await verifyHeader(".req-1");
 	if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
@@ -167,12 +168,9 @@ $(document).on("click", "#assign-pic", async function (e) {
 	}
 	try {
 		await activatedBtnRow($(this));
+		$("#sale-leader-incharge").val(user.empno);
 		$("#sale-leader-confirm").val(new Date());
-		const ssata = await setTimelineData({ INQ_NO: 11, INQ_REV: 1 });
-		console.log(ssata);
-		return;
 		const inquiry = await updatePath(10, 1);
-		const user = await currentUser();
 		const group = {
 			data: {
 				INQG_ASG: user.empno,
@@ -193,7 +191,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 		);
 	} catch (error) {
 		await activatedBtnRow($(this), false);
-		await showMessage(`Something went wrong.`);
+		await showMessage(error.message || `Something went wrong.`);
 		return;
 	}
 });
@@ -201,8 +199,9 @@ $(document).on("click", "#assign-pic", async function (e) {
 //007: Bypass to DE
 $(document).on("click", "#forward-de", async function (e) {
 	e.preventDefault();
-	const chkheader = await verifyHeader(".req-1");
-	if (!chkheader) return;
+	const user = await currentUser();
+	// const chkheader = await verifyHeader(".req-1");
+	// if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
@@ -212,6 +211,13 @@ $(document).on("click", "#forward-de", async function (e) {
 
 	try {
 		await activatedBtnRow($(this));
+		$("#sale-leader-confirm").val(new Date());
+		$("#sale-read").val(new Date());
+		$("#sale-incharge").val(user.empno);
+		$("#sale-confirm").val(new Date());
+		//const sss = await setTimelineData({ INQ_NO: 11, INQ_REV: 1 });
+		//console.log(sss);
+		//return;
 		const inquiry = await updatePath(12, 2);
 		const group = {
 			data: {
@@ -242,6 +248,7 @@ $(document).on("click", "#forward-de", async function (e) {
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
+	const user = await currentUser();
 	const chkheader = await verifyHeader(".req-1");
 	if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
@@ -252,10 +259,13 @@ $(document).on("click", "#send-bm", async function (e) {
 	}
 	try {
 		await activatedBtnRow($(this));
+		$("#sale-leader-confirm").val(new Date());
+		$("#sale-read").val(new Date());
+		$("#sale-incharge").val(user.empno);
+		$("#sale-confirm").val(new Date());
 		const logs = await setLogsData(11, true);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		const inquiry = await updatePath(30, 3, 2);
-		const user = await currentUser();
 		const group = {
 			data: {
 				INQG_ASG: user.empno,
@@ -294,16 +304,12 @@ $(document).on("click", "#send-confirm", async function (e) {
 			$("#remark").focus();
 			return;
 		}
-
-		$("#sale-incharge").val(user.empno);
-		$("#sale-confirm").val(new Date());
 	}
 
 	try {
 		await activatedBtnRow($(this));
-		const ssata = await setTimelineData({ INQ_NO: 11, INQ_REV: 1 });
-		console.log(ssata);
-		return;
+		$("#sale-incharge").val(user.empno);
+		$("#sale-confirm").val(new Date());
 		const group = {
 			data: {
 				INQG_DES: user.empno,
@@ -447,7 +453,7 @@ async function updatePath(status, action, level = 1) {
 		let details = table.rows().data().toArray();
 		details = details.map((dt) => {
 			if (dt.FORWARD != null) isforward = 1;
-			const { FORWARD, ...rest } = dt;
+			const { FORWARD, id, ...rest } = dt;
 			return rest;
 		});
 		await verifyDetail(table, details, level);

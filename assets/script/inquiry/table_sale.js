@@ -158,7 +158,7 @@ export async function setupSaleTableDetail(data = []) {
 			render: function (data, type) {
 				if (type === "display") {
 					return `<textarea class="w-62! uppercase cell-input edit-input drawing-line" maxlength="150">${
-						data == null ? "" : data
+						data == "null" || data == null ? "" : data
 					}</textarea>`;
 				}
 				return data;
@@ -172,7 +172,7 @@ export async function setupSaleTableDetail(data = []) {
 			render: function (data, type) {
 				if (type === "display") {
 					return `<textarea class="w-62! uppercase cell-input edit-input variable-line" maxlength="250">${
-						data == null ? "" : data
+						data == "null" || data == null ? "" : data
 					}</textarea>`;
 				}
 				return data;
@@ -231,7 +231,10 @@ export async function setupSaleTableDetail(data = []) {
 						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="" />`;
 					else if (data == "1")
 						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" value="1" checked/>`;
-					else return data;
+					else
+						return `<div class="tooltip tooltip-left" data-tip="Click to revoke 2nd part">
+                            <button class="btn btn-xs btn-circle btn-ghost revokepartlist">${data}</button>
+                        </div>`;
 				}
 				return data;
 			},

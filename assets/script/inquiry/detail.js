@@ -630,7 +630,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 		}
 
 		if (savelevel == 2) {
-			if (item.INQD_DRAWING == "") {
+			if (item.INQD_DRAWING == "" && item.INQD_SUPPLIER != "LOCAL") {
 				check = false;
 				message.push(`Please input Drawing no.`);
 				errorEl(row.find(".drawing-line"));

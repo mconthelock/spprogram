@@ -8,3 +8,9 @@ assets/dist
 application/cache
 application/logs
 application/vendor
+
+package-lock.json
+
+docs/dist
+docs/.vitepress/cache
+backup

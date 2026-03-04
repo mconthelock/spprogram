@@ -17,8 +17,19 @@ export async function setupElmesTable(data) {
 		},
 		{ data: "itemno", title: "Item", className: "text-center!" },
 		{ data: "partname", title: "Part Name", className: "w-50 min-w-50" },
-		{ data: "drawing", title: "Drawing No.", className: "w-50 min-w-50" },
-		{ data: "variable", title: "Variable" },
+		{
+			data: "drawing",
+			title: "Drawing No.",
+			className: "w-50 min-w-50",
+			render: function (data) {
+				return data == "null" ? "" : data;
+			},
+		},
+		{
+			data: "variable",
+			title: "Variable",
+			render: (data) => (data == "null" ? "" : data),
+		},
 		{ data: "qty", title: "Qty" },
 		{
 			data: "supply",

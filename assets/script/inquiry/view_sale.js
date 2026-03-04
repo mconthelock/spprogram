@@ -89,11 +89,13 @@ export async function setupSaleViewDetail(data = []) {
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
 			className: "cell-display  border-r! min-w-62!",
+			render: (data) => (data == "null" ? "" : data),
 		},
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
 			className: "cell-display  border-r! min-w-50!",
+			render: (data) => (data == "null" ? "" : data),
 		},
 		{
 			data: "INQD_QTY",
