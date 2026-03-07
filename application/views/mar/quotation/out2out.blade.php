@@ -14,7 +14,7 @@
         <table id="table" class="table table-zebra table-edit text-md!"></table>
     </div>
 
-    <div class="flex gap-2 my-3" id="btn-container"></div>
+    <div class="btn-container flex gap-2 my-3"></div>
 @endsection
 
 @section('scripts')

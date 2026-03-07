@@ -12,7 +12,7 @@
         </div>
         <table id="table" class="table table-zebra table-edit text-xs"></table>
     </div>
-    <div class="flex gap-2 my-3" id="btn-container"></div>
+    <div class="btn-container flex gap-2 my-3"></div>
 
     <input type="checkbox" id="new-stock-item" class="modal-toggle" />
     <div class="modal" role="dialog">

@@ -119,7 +119,7 @@
                                     id="tccost" />
                             </div>
                         </fieldset>
-                        <div class="flex mt-3 gap-3" id="btn-container"></div>
+                        <div class="btn-container flex mt-3 gap-3"></div>
                     </div>
                 </div>
             </div>

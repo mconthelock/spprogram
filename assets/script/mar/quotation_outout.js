@@ -64,7 +64,7 @@ $(document).ready(async () => {
 			icon: `fi fi-rs-progress-upload text-xl`,
 			className: `btn-outline btn-accent text-accent hover:shadow-lg hover:text-white!`,
 		});
-		$("#btn-container").append(`${btn1}${save}${cancel}`);
+		$(".btn-container").append(`${btn1}${save}${cancel}`);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

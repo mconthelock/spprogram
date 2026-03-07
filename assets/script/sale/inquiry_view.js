@@ -96,5 +96,5 @@ async function setupButton() {
 		icon: "fi fi-rr-arrow-circle-left text-xl",
 		className: `btn-outline btn-accent text-accent hover:text-white`,
 	});
-	$("#btn-container").append(revise, exportxls, back);
+	$(".btn-container").append(revise, exportxls, back);
 }

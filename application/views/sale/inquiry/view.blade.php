@@ -31,7 +31,7 @@
             <table id="attachment" class="table table-zebra text-xs"></table>
         </div>
     </div>
-    <div class="flex gap-2 my-3" id="btn-container"></div>
+    <div class="btn-container flex gap-2 my-3"></div>
 @endsection
 
 @section('scripts')

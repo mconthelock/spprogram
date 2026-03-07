@@ -149,8 +149,8 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	if (usergroup != "SLG") $("#btn-container").append(confirm, back);
-	else $("#btn-container").append(assign, forwardde, sendIS, back);
+	if (usergroup != "SLG") $(".btn-container").append(confirm, back);
+	else $(".btn-container").append(assign, forwardde, sendIS, back);
 }
 
 // Submit Form

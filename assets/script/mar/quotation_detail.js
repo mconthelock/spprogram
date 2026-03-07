@@ -184,13 +184,13 @@ async function setupButton(group) {
 
 	switch (group) {
 		case 3:
-			$("#btn-container").append(exportBtn, back);
+			$(".btn-container").append(exportBtn, back);
 			break;
 		case 2:
-			$("#btn-container").append(issue, reject, returnfin, back);
+			$(".btn-container").append(issue, reject, returnfin, back);
 			break;
 		default:
-			$("#btn-container").append(issue, reject, returnfin, back);
+			$(".btn-container").append(issue, reject, returnfin, back);
 			break;
 	}
 }

@@ -31,7 +31,7 @@
             <table id="attachment" class="table table-zebra table-second display text-xs"></table>
         </div>
     </div>
-    <div class="flex gap-2 my-3" id="btn-container"></div>
+    <div class="btn-container flex gap-2 my-3"></div>
     @include('mar.inquiry._revision')
 @endsection
 

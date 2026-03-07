@@ -68,7 +68,7 @@ $(async function () {
 			icon: "fi fi-rr-arrow-circle-left text-xl",
 			className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 		});
-		$("#btn-container").append(save, back);
+		$(".btn-container").append(save, back);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);

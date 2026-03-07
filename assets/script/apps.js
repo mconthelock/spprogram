@@ -37,9 +37,8 @@ $(document).on("focus", ".input-number", function (e) {
 
 $(document).on("keyup", ".input-number", function (e) {
 	let value = $(this).val();
-	value = value.replace(/[^\d.-]/g, ""); // เอาเฉพาะตัวเลข จุด และ -
-	value = value.replace(/(?!^)-/g, ""); // ให้ - มีได้แค่ตัวเดียว และต้องอยู่ข้างหน้า
-	// จัดการจุด ให้มีได้แค่ 1 จุด
+	value = value.replace(/[^\d.-]/g, "");
+	value = value.replace(/(?!^)-/g, "");
 	const parts = value.split(".");
 	if (parts.length > 2) value = parts[0] + "." + parts.slice(1).join("");
 	$(this).val(value);

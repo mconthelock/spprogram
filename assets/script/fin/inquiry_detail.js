@@ -182,7 +182,7 @@ async function setupButton(pageid) {
 			...back,
 			href: url,
 		});
-		$("#btn-container").append(exportBtn, backBtn);
+		$(".btn-container").append(exportBtn, backBtn);
 	} else {
 		const backBtn = await createBtn({
 			...back,
@@ -190,7 +190,7 @@ async function setupButton(pageid) {
 		});
 		switch (pageid) {
 			case "1":
-				$("#btn-container").append(
+				$(".btn-container").append(
 					saveBtnDraft,
 					finConfirm,
 					finReturn,
@@ -199,7 +199,7 @@ async function setupButton(pageid) {
 				);
 				break;
 			case "2":
-				$("#btn-container").append(
+				$(".btn-container").append(
 					fckConfirm,
 					fckReturn,
 					exportBtn,
@@ -207,7 +207,7 @@ async function setupButton(pageid) {
 				);
 				break;
 			case "3":
-				$("#btn-container").append(
+				$(".btn-container").append(
 					fmnConfirm,
 					fmnReturn,
 					exportBtn,

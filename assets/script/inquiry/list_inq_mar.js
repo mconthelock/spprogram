@@ -228,7 +228,7 @@ export async function tableInquiryOption(data, extopt = {}) {
 
 		$(".table-option").append(`${extopt.new === true ? newinq : ""}`);
 		$(".table-info").append(
-			`<div id="btn-container" class="flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
+			`<div class="btn-container flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
 		);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();

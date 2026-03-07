@@ -148,8 +148,8 @@ async function setupButton(mode) {
 	});
 
 	if (mode == "create")
-		$("#btn-container").append(sendDE, sendIS, draft, back);
-	else $("#btn-container").append(updateDE, updateIS, back);
+		$(".btn-container").append(sendDE, sendIS, draft, back);
+	else $(".btn-container").append(updateDE, updateIS, back);
 }
 
 //Download template

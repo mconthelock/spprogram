@@ -72,5 +72,5 @@ async function setupButton() {
 		className:
 			"btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
 	});
-	$("#btn-container").append(exportfile, back);
+	$(".btn-container").append(exportfile, back);
 }

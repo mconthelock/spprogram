@@ -68,7 +68,7 @@ async function setupButton() {
 		icon: "fi fi-sr-arrow-left text-xl",
 		className: `bg-accent text-white`,
 	});
-	$("#btn-container").append(save, back);
+	$(".btn-container").append(save, back);
 }
 
 $(document).on("click", "#save-data", async function () {

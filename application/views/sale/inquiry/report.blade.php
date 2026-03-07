@@ -146,7 +146,7 @@
                 </fieldset>
             </div>
         </div>
-        <div class="flex justify-start my-3 gap-3" id="btn-container"></div>
+        <div class="btn-container flex justify-start my-3 gap-3"></div>
     </form>
 
     <div id="report-table">

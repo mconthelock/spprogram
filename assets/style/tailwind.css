@@ -153,7 +153,7 @@
 		@apply cursor-not-allowed! text-white!;
 	}
 
-	#btn-container .tooltip::before {
+	.btn-container .tooltip::before {
 		@apply w-50! max-w-52! z-999!;
 	}
 

@@ -89,7 +89,7 @@ async function setupButton() {
 			"btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
 	});
 
-	$("#btn-container").append(additems, savedata, back);
+	$(".btn-container").append(additems, savedata, back);
 }
 
 //002: Add table detail rows

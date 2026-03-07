@@ -109,5 +109,5 @@ export const setReportButton = async () => {
 		icon: "ffi fi-br-refresh text-xl",
 		className: `btn-outline btn-accent hover:shadow-lg hover:text-white`,
 	});
-	$("#btn-container").append(` ${search} ${reset}`);
+	$(".btn-container").append(` ${search} ${reset}`);
 };

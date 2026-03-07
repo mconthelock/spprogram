@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div class="flex gap-2 mt-1 mb-8" id="btn-container"></div>
+    <div class="btn-container flex gap-2 mt-1 mb-8"></div>
 @endsection
 
 @section('scripts')

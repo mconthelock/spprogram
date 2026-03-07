@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <div class="flex gap-2 my-3" id="btn-container"></div>
+    <div class="flex gap-2 my-3 btn-container"></div>
 @endsection
 
 @section('scripts')

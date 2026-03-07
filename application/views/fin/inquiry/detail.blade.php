@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="flex gap-2 mt-5 mb-8" id="btn-container"></div>
+    <div class="flex gap-2 mt-5 mb-8 btn-container"></div>
 @endsection
 
 @section('scripts')
