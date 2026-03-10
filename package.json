@@ -45,7 +45,7 @@
     "watch:js": "rspack build --watch --mode development",
     "start-watch": "run-p watch:css watch:js",
     "update:webasset": "npm update @amec/webasset",
-    "watch": "run-s update:webasset start-watch",
+    "watch": "run-s start-watch",
     "serve:js": "rspack serve --mode development",
     "serve": "run-p watch:css serve:js",
     "docs:dev": "vitepress dev docs",

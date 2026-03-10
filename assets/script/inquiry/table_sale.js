@@ -35,7 +35,7 @@ export async function setupSaleTableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25! edit-input supplier">`;
+		let selector = `<select class="select select-sm w-25!  supplier">`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -44,6 +44,7 @@ export async function setupSaleTableDetail(data = []) {
 	};
 
 	//const mode = data.length > 0 ? 1 : 0;
+	const isRevise = $("#revision").val() != "*" ? true : false;
 	const user = await currentUser();
 	const usrgroup = user.group;
 	const opt = { ...tableOpt };
@@ -258,23 +259,14 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white  edit-input" ${data == "" || data == null ? "" : "checked"}/>`;
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-warning text-white  edit-input" ${data == "" || data == null ? "" : "checked"} value="1"/>`;
 				}
 				return data;
 			},
 		},
 		{
-			data: "INQD_MAR_REMARK",
-			className: `w-62 min-w-62 cell-display border-r!`,
-			title: "MAR Remark",
-			sortable: false,
-			render: function (data, type) {
-				return data == null ? "" : data;
-			},
-		},
-		{
-			data: "INQD_DES_REMARK",
-			className: `w-62 min-w-62 remark-line`,
+			data: "INQD_SALE_REMARK",
+			className: `w-62 min-w-62 remark-line bg-primary/10`,
 			title: "Sale Remark",
 			sortable: false,
 			render: function (data, type) {
@@ -284,6 +276,24 @@ export async function setupSaleTableDetail(data = []) {
 					}</textarea>`;
 				}
 				return data;
+			},
+		},
+		{
+			data: "INQD_MAR_REMARK",
+			className: `w-62 min-w-62 cell-display border-r! bg-slate-200`,
+			title: "MAR Remark",
+			sortable: false,
+			render: function (data, type) {
+				return data == null ? "" : data;
+			},
+		},
+		{
+			data: "INQD_DES_REMARK",
+			className: `w-62 min-w-62 cell-display border-r! bg-gray-200 ${isRevise ? "" : "hidden"}`,
+			title: "D/E Remark",
+			sortable: false,
+			render: function (data, type) {
+				return data == null ? "" : data;
 			},
 		},
 	];

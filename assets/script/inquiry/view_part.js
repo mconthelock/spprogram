@@ -162,6 +162,14 @@ export async function setupPartViewDetail(data = []) {
 			},
 		},
 		{
+			data: "INQD_SALE_REMARK",
+			title: "Sale Remark",
+			className: "min-w-62!",
+			render: function (data, type) {
+				return data;
+			},
+		},
+		{
 			data: "INQD_DES_REMARK",
 			title: "D/E Remark",
 			className: "min-w-62!",

@@ -1,6 +1,11 @@
 import ExcelJS from "exceljs";
 import dayjs from "dayjs";
-import { intVal, showDigits, showMessage } from "@amec/webasset/utils";
+import {
+	intVal,
+	showConfirm,
+	showDigits,
+	showMessage,
+} from "@amec/webasset/utils";
 import { currentUser, displayname } from "@amec/webasset/api/amec";
 import { setSelect2 } from "@amec/webasset/select2";
 import { createTable, destroyTable } from "@amec/webasset/dataTable";
@@ -386,6 +391,60 @@ $(document).on("click", "#elmes-cancel", async function (e) {
 	await destroyElmesModal();
 	$(table.row(inx).node()).find(".partname").focus();
 	setSelect2({ allowClear: false });
+});
+
+//005: Supplier Change
+$(document).on("change", ".supplier", async function (e) {
+	e.preventDefault();
+	const newValue = $(this).val();
+	const table = $("#table").DataTable();
+	const row = table.row($(this).closest("tr"));
+	const currentData = row.data();
+	const newData = {
+		...currentData,
+		INQD_SUPPLIER: newValue,
+	};
+	row.data(newData).draw(false);
+	if (newValue == "") return;
+
+	let isBlank = false;
+	table.rows().every(function () {
+		const rowData = this.data();
+		if (
+			(rowData.INQD_SUPPLIER == "" || rowData.INQD_SUPPLIER == null) &&
+			$("#isBlankSupplier").length == 0
+		) {
+			isBlank = true;
+			return false;
+		}
+	});
+	$("body").append(`<div style="display:none;" id="isBlankSupplier"></div>`);
+
+	if (isBlank) {
+		const confirm = await showConfirm({
+			title: "Apply supplier",
+			message: `Would you like to apply this supplier to all lines?`,
+			acceptText: "Yes",
+			cancelText: "No",
+		});
+		if (!confirm) {
+			return;
+		}
+
+		const rows = table.rows().nodes();
+		rows.each(function (index) {
+			const rowData = table.row(index).data();
+			if (rowData.INQD_SUPPLIER == "" || rowData.INQD_SUPPLIER == null) {
+				const updatedData = {
+					...rowData,
+					INQD_SUPPLIER: newValue,
+				};
+				table.row(index).data(updatedData);
+			}
+		});
+	}
+
+	// console.log(table);
 });
 
 // 004: Second part checkbox

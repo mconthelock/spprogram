@@ -616,6 +616,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			return;
 		}
 
+		//Mar Send to Sale with out DWG and Photo
 		if (savelevel == 1) {
 			// If drawing is blank, Should attached image to reference part
 			const hasAtt = $("#attachment-file")[0].files.length;
@@ -629,7 +630,33 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			}
 		}
 
+		//
 		if (savelevel == 2) {
+			if (
+				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
+				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null)
+			) {
+				check = false;
+				message.push(`Please select supplier.`);
+				errorEl(row.find(".supplier-line"));
+				return;
+			}
+		}
+
+		if (savelevel == 3) {
+			if (
+				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
+				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null) &&
+				(item.FORWARD == "" || item.FORWARD == null)
+			) {
+				check = false;
+				message.push(`Please select supplier.`);
+				errorEl(row.find(".supplier-line"));
+				return;
+			}
+		}
+
+		if (savelevel > 1) {
 			if (item.INQD_DRAWING == "" && item.INQD_SUPPLIER != "LOCAL") {
 				check = false;
 				message.push(`Please input Drawing no.`);
@@ -653,16 +680,6 @@ export async function verifyDetail(table, data, savelevel = 0) {
 					errorEl(row.find(".variable-line"));
 					return;
 				}
-			}
-
-			if (
-				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
-				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == "N/A")
-			) {
-				check = false;
-				message.push(`Please select supplier.`);
-				errorEl(row.find(".supplier-line"));
-				return;
 			}
 
 			if (

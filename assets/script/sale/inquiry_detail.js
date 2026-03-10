@@ -127,16 +127,16 @@ async function setupButton(revise, usergroup) {
 
 	const sendIS = await createBtn({
 		id: "send-bm",
-		title: "Send to Pre-BM",
+		title: "Completed",
 		icon: "fi fi-ts-coins text-xl",
-		tooltip: "Finish declare part process and Send to Pre-BM on AS400",
+		tooltip:
+			"Finish declare part process and Send to Pre-BM on AS400 (Only supply by AMEC item)",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${revise ? `revised` : ``}`,
 	});
 
 	const confirm = await createBtn({
 		id: "send-confirm",
 		title: "Confirm",
-		icon: "fi fi-tr-badge-check text-xl",
 		className: `btn-primary text-white hover:shadow-lg ${revise ? `revised` : ``}`,
 	});
 
@@ -308,6 +308,10 @@ $(document).on("click", "#send-confirm", async function (e) {
 
 	try {
 		await activatedBtnRow($(this));
+		const details = table.rows().data().toArray();
+		await verifyDetail(table, details, 3);
+		return;
+
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
 		const group = {
@@ -321,7 +325,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 			condition: { INQ_ID: $("#inquiry-id").val() },
 		};
 		await updateInquiryGroup(group);
-		const details = table.rows().data().toArray();
+
 		let designForward = [];
 		let isAmec = false;
 		let isMelina = false;

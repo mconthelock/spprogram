@@ -212,6 +212,15 @@ $(document).on("click", "#draft", async function (e) {
 //007: Save and send to design
 $(document).on("click", "#send-de", async function (e) {
 	e.preventDefault();
+	const rows = table.rows().nodes();
+	rows.each(function (index) {
+		const rowData = table.row(index).data();
+		const updatedData = {
+			...rowData,
+			INQD_SUPPLIER: "",
+		};
+		table.row(index).data(updatedData);
+	});
 	await createPath({ level: 1, status: 2, obj: $(this) });
 });
 
