@@ -20,7 +20,7 @@ module.exports = {
 	mar_items: "./assets/script/mar/items.js",
 	mar_items_detail: "./assets/script/mar/items_detail.js",
 
-	//Master
+	//Master Data
 	priceratio: "./assets/script/mar/ms_priceratio.js",
 	inqcontrol: "./assets/script/mar/ms_inqno_control.js",
 	currency: "./assets/script/mar/ms_currency.js",
