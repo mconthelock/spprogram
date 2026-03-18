@@ -5,18 +5,18 @@ class Inquiry extends MY_Controller {
     }
 
     public function index(){
-        $this->views('sale/inquiry/index');
+        $this->views('sale/inquiry/index', array('title' => 'Assign Engineer'));
     }
 
     public function detail($id){
-        $this->views('sale/inquiry/detail', array('id'=> $id));
+        $this->views('sale/inquiry/detail', array('id'=> $id, 'title' => 'Inquiry Detail'));
     }
 
     public function show($id){
-        $this->views('sale/inquiry/view', array('id'=> $id));
+        $this->views('sale/inquiry/view', array('id'=> $id, 'title' => 'Inquiry View'));
     }
 
     public function report(){
-        $this->views('sale/inquiry/report');
+        $this->views('sale/inquiry/report', array('title' => 'Inquiry Report'));
     }
 }
