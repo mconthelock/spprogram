@@ -1,5 +1,4 @@
 import "@amec/webasset/css/dataTable.min.css";
-
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showConfirm } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";

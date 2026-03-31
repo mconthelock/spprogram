@@ -1,14 +1,50 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
-import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
-import dayjs from "dayjs";
+import { showLoader } from "@amec/webasset/preloader";
+import { showMessage, showConfirm } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
-import { statusColors } from "../inquiry/detail.js";
-import * as service from "../service/inquiry.js";
-import * as utils from "../utils.js";
-import { getDesignerGroup } from "./data.js";
+import { activatedBtn } from "@amec/webasset/components/buttons";
+import { tableInquiryDEOption } from "../inquiry/index.js";
+import { initApp } from "../utils.js";
+import { getInquiry } from "../service/index.js";
+import { getDesigner } from "./data.js";
 var table;
 $(async function () {
+	try {
+		await initApp({ submenu: ".navmenu-newinq" });
+		const data = await query();
+		const tableOpt = await tableInquiryDEOption(data, {
+			backReportBtn: true,
+		});
+		table = await createTable(tableOpt);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	} finally {
+		await showLoader({ show: false });
+	}
+});
+
+async function query() {
+	const pageid = $("#pageid").val();
+	const des = await getDesigner();
+	const user = $("#user-login").attr("empno");
+	const desgroup = des.find((d) => d.DES_USER == user).DES_GROUP;
+	const data = await getInquiry({
+		INQ_TYPE: "SP",
+		INQ_STATUS: "< 30",
+		IS_GROUP: 1,
+	});
+
+	const result = data.filter((d) => {
+		const group = d.inqgroup.find((g) => g.INQG_LATEST == 1);
+		if (group == null) return false;
+		if (desgroup == 6) return group.INQG_GROUP == 6;
+		return group.INQG_GROUP != 6;
+	});
+
+	return result;
+}
+/*$(async function () {
 	try {
 		await utils.initApp();
 		let data = await service.getInquiry({
@@ -218,4 +254,4 @@ async function tableInquiry(data, options = {}) {
          </div>`);
 	};
 	return opt;
-}
+}*/

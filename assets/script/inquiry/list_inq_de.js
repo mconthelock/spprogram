@@ -1,0 +1,236 @@
+import dayjs from "dayjs";
+import { displayname } from "@amec/webasset/api/amec";
+import { createBtn } from "@amec/webasset/components/buttons";
+import { statusColors } from "./index.js";
+import { tableOpt } from "../utils.js";
+
+export async function tableInquiryDEOption(data, extopt = {}) {
+	const colors = await statusColors();
+	const opt = { ...tableOpt };
+	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
+	opt.data = data;
+	// opt.orderFixed = [0, "desc"];
+	opt.order = [
+		[0, "desc"],
+		[1, "desc"],
+	];
+	opt.columns = [
+		{ data: "UPDATE_AT", className: "hidden" },
+		{
+			data: "INQ_DATE",
+			className: "text-center! text-nowrap sticky-column",
+			title: "Inq. Date",
+			render: function (data, type, row, meta) {
+				return dayjs(data).format("YYYY-MM-DD");
+			},
+		},
+		{
+			data: "INQ_NO",
+			className: "text-nowrap sticky-column INQ_NO",
+			title: "No.",
+			render: (data) => {
+				return `<span>${data}</span><span class="spark absolute ms-1"></span>`;
+			},
+		},
+		{
+			data: "INQ_REV",
+			className: "text-nowrap text-center sticky-column",
+			title: "Rev.",
+		},
+		{
+			data: "INQ_TRADER",
+			className: "text-nowrap",
+			title: "Trader",
+		},
+		{ data: "INQ_AGENT", title: "Agent" },
+		{ data: "INQ_COUNTRY", title: "Country" },
+		{
+			data: "status",
+			title: "Status",
+			render: (data) => {
+				if (data == null) return "";
+				const statusColor = colors.find(
+					(item) => item.id >= data.STATUS_ID,
+				);
+				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
+			},
+		},
+		{
+			data: "maruser",
+			title: "MAR. In-Charge",
+			render: (data) => {
+				if (data == null) return "";
+				const dsp = displayname(data.SNAME).sname;
+				return `${dsp} (${data.SEMPNO})`;
+			},
+		},
+		{
+			data: "inqgroup",
+			title: "EME",
+			className: "text-center px-[5px] w-[45px] max-w-[45px]",
+			sortable: false,
+			render: (data) => {
+				const des = data.filter(
+					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1,
+				);
+				if (des.length == 0) return "";
+
+				const color =
+					des[0].INQG_STATUS == null
+						? "text-gray-500"
+						: des[0].INQG_STATUS >= 9
+							? "text-primary"
+							: "text-secondary";
+				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+			},
+		},
+		{
+			data: "inqgroup",
+			title: "EEL",
+			className: "text-center px-[5px] w-[45px] max-w-[45px]",
+			sortable: false,
+			render: (data) => {
+				const des = data.filter(
+					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1,
+				);
+				if (des.length == 0) return "";
+
+				const color =
+					des[0].INQG_STATUS == null
+						? "text-gray-500"
+						: des[0].INQG_STATUS >= 9
+							? "text-primary"
+							: "text-secondary";
+				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+			},
+		},
+		{
+			data: "inqgroup",
+			title: "EAP",
+			className: "text-center px-[5px] w-[45px] max-w-[45px]",
+			sortable: false,
+			render: (data) => {
+				const des = data.filter(
+					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1,
+				);
+				if (des.length == 0) return "";
+
+				const color =
+					des[0].INQG_STATUS == null
+						? "text-gray-500"
+						: des[0].INQG_STATUS >= 9
+							? "text-primary"
+							: "text-secondary";
+				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+			},
+		},
+		{
+			data: "inqgroup",
+			title: "ESO",
+			className: "text-center px-[5px] w-[45px] max-w-[45px]",
+			sortable: false,
+			render: (data) => {
+				const des = data.filter(
+					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1,
+				);
+				if (des.length == 0) return "";
+
+				const color =
+					des[0].INQG_STATUS == null
+						? "text-gray-500"
+						: des[0].INQG_STATUS >= 9
+							? "text-primary"
+							: "text-secondary";
+				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+			},
+		},
+		{
+			data: "INQ_ID",
+			className: "text-center w-[120px]",
+			sortable: false,
+			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
+			render: (data, type, row) => {
+				const view = createBtn({
+					id: `view-${data}`,
+					title: "View",
+					type: "link",
+					icon: "fi fi-rr-search text-lg",
+					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
+					href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
+				});
+
+				const edit = createBtn({
+					id: `edit-${data}`,
+					title: "Edit",
+					type: "link",
+					icon: "fi fi-rr-edit text-lg",
+					className: `btn-xs btn-accent text-white w-[80px] ms-1 hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
+					href: `${process.env.APP_ENV}/mar/inquiry/detail/${data}/`,
+				});
+
+				const secure = createBtn({
+					id: `edit-${data}`,
+					title: "Edit",
+					icon: "fi fi-rr-edit text-lg",
+					className: `btn-xs btn-accent btn-disabled w-[80px] cursor-not-allowed! ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
+				});
+
+				const deleted = createBtn({
+					id: `delete-${data}`,
+					title: ``,
+					icon: "fi fi-br-trash text-2xl",
+					className: `btn-xs btn-link text-error p-0! hover:bg-transparent! hover:shadow-none! delete-inquiry`,
+				});
+				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${secure}${deleted}</div>`;
+			},
+		},
+	];
+
+	opt.createdRow = function (row, data) {
+		if ([4, 27].includes(data.INQ_STATUS)) {
+			$(row).addClass("bg-sky-200!");
+			$(row).find(".spark").append(`<span class="relative flex size-3">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex size-3 rounded-full bg-red-400"></span>
+                </span>`);
+		}
+	};
+
+	opt.initComplete = async function () {
+		const newinq = await createBtn({
+			id: "add-new-inquiry",
+			type: "link",
+			href: `${process.env.APP_ENV}/mar/inquiry/create`,
+			title: "New Inquiry",
+			icon: "fi fi-tr-file-excel text-xl ",
+			className: `btn-outline btn-primary text-primary hover:shadow-lg  hover:text-white`,
+		});
+		const export1 = await createBtn({
+			id: "export1",
+			title: "Export Inquiry",
+			icon: "fi fi-tr-file-excel text-xl",
+			className: `btn-accent text-white hover:shadow-lg`,
+		});
+		const export2 = await createBtn({
+			id: "export2",
+			title: "Export (With Detail)",
+			icon: "fi fi-rr-layers text-xl",
+			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
+		});
+
+		const back = await createBtn({
+			id: "goback",
+			title: "Back",
+			icon: "fi fi-rr-arrow-circle-left text-xl",
+			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
+		});
+
+		$(".table-option").append(`${extopt.new === true ? newinq : ""}`);
+		$(".table-info").append(
+			`<div class="btn-container flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
+		);
+		$("#datatable_loading").addClass("hidden");
+		await this.api().columns.adjust();
+	};
+	return opt;
+}

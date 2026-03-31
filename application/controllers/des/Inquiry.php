@@ -5,7 +5,7 @@ class Inquiry extends MY_Controller {
     }
 
     public function index(){
-        $this->views('des/inquiry/index', array('title' => 'Assign Designer', 'min' => 12, 'max' => 20));
+        $this->views('des/inquiry/index', array('title' => 'Assign Designer', 'pageid' => 1));
     }
 
     public function design(){
