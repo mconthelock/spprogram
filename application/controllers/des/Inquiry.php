@@ -9,11 +9,11 @@ class Inquiry extends MY_Controller {
     }
 
     public function design(){
-        $this->views('des/inquiry/index', array('title' => 'Declare Inquiry', 'min' => 21, 'max' => 22));
+        $this->views('des/inquiry/index', array('title' => 'Declare Inquiry', 'pageid' => 2));
     }
 
     public function check(){
-        $this->views('des/inquiry/index', array('title' => 'Recheck Inquiry', 'min' => 23, 'max' => 25));
+        $this->views('des/inquiry/index', array('title' => 'Recheck Inquiry',  'pageid' => 3));
     }
 
     public function reassign(){
@@ -21,7 +21,8 @@ class Inquiry extends MY_Controller {
     }
 
     public function report(){
-        $this->views('des/inquiry/report', array('title' => 'Report', 'type' => 'report'));
+       // $this->views('des/inquiry/report', array('title' => 'Report', 'type' => 'report'));
+        $this->views('des/inquiry/index', array('title' => 'Recheck Inquiry', ));
     }
 
     public function detail($id){

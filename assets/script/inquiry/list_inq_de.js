@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { displayname } from "@amec/webasset/api/amec";
 import { createBtn } from "@amec/webasset/components/buttons";
+import { displayEmpInfo } from "@amec/webasset/indexDB";
 import { statusColors } from "./index.js";
 import { tableOpt } from "../utils.js";
 
@@ -9,7 +10,6 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.data = data;
-	// opt.orderFixed = [0, "desc"];
 	opt.order = [
 		[0, "desc"],
 		[1, "desc"],
@@ -62,6 +62,14 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 				if (data == null) return "";
 				const dsp = displayname(data.SNAME).sname;
 				return `${dsp} (${data.SEMPNO})`;
+			},
+		},
+		{
+			data: "timeline.SE_USER",
+			title: "Sale In-Charge",
+			render: (data) => {
+				if (data == null) return "";
+				return `<span class="sale-information" id="sale-information-${data}" data-id="${data}"></span>`;
 			},
 		},
 		{
@@ -150,84 +158,37 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				const view = createBtn({
-					id: `view-${data}`,
-					title: "View",
-					type: "link",
-					icon: "fi fi-rr-search text-lg",
-					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
-					href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
-				});
-
-				const edit = createBtn({
+				const process = createBtn({
 					id: `edit-${data}`,
-					title: "Edit",
-					type: "link",
-					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent text-white w-[80px] ms-1 hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
-					href: `${process.env.APP_ENV}/mar/inquiry/detail/${data}/`,
+					title: "Process",
+					icon: "fi fi fi-ss-arrow-circle-right text-lg",
+					className: `btn-xs btn-accent w-[80px] text-white hover:shadow-lg`,
 				});
 
-				const secure = createBtn({
-					id: `edit-${data}`,
-					title: "Edit",
-					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent btn-disabled w-[80px] cursor-not-allowed! ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
-				});
-
-				const deleted = createBtn({
-					id: `delete-${data}`,
-					title: ``,
-					icon: "fi fi-br-trash text-2xl",
-					className: `btn-xs btn-link text-error p-0! hover:bg-transparent! hover:shadow-none! delete-inquiry`,
-				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${secure}${deleted}</div>`;
+				return `<div class="flex gap-1 justify-center items-center w-fit">${process}</div>`;
 			},
 		},
 	];
 
-	opt.createdRow = function (row, data) {
-		if ([4, 27].includes(data.INQ_STATUS)) {
-			$(row).addClass("bg-sky-200!");
-			$(row).find(".spark").append(`<span class="relative flex size-3">
-                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex size-3 rounded-full bg-red-400"></span>
-                </span>`);
+	opt.createdRow = async function (row, data) {
+		if ($(row).find(".sale-information").length > 0) {
+			$(row).find(".sale-information").text("Loading...");
+			const user = await displayEmpInfo(data.timeline.SE_USER);
+			const dsp = displayname(user.SNAME).sname;
+			$(row).find(".sale-information").text(`${dsp} (${user.SEMPNO})`);
 		}
 	};
 
 	opt.initComplete = async function () {
-		const newinq = await createBtn({
-			id: "add-new-inquiry",
-			type: "link",
-			href: `${process.env.APP_ENV}/mar/inquiry/create`,
-			title: "New Inquiry",
-			icon: "fi fi-tr-file-excel text-xl ",
-			className: `btn-outline btn-primary text-primary hover:shadow-lg  hover:text-white`,
-		});
 		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Inquiry",
 			icon: "fi fi-tr-file-excel text-xl",
 			className: `btn-accent text-white hover:shadow-lg`,
 		});
-		const export2 = await createBtn({
-			id: "export2",
-			title: "Export (With Detail)",
-			icon: "fi fi-rr-layers text-xl",
-			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
-		});
 
-		const back = await createBtn({
-			id: "goback",
-			title: "Back",
-			icon: "fi fi-rr-arrow-circle-left text-xl",
-			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
-		});
-
-		$(".table-option").append(`${extopt.new === true ? newinq : ""}`);
 		$(".table-info").append(
-			`<div class="btn-container flex gap-2">${export1}${export2}${extopt.back === true ? back : ""}</div>`,
+			`<div class="btn-container flex gap-2">${export1}</div>`,
 		);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();
