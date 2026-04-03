@@ -226,3 +226,15 @@ export async function nextWorkingDay(data, param) {
 	const nextday = dayjs(formattedDate).format("YYYY-MM-DD");
 	return nextday;
 }
+
+export async function countWorkingDay(sdate, edate) {
+	if (sdate == null || edate == null) return 0;
+	let daterange = await await ameccaledar();
+	const start = dayjs(sdate).format("YYYYMMDD");
+	const end = dayjs(edate).format("YYYYMMDD");
+	daterange = daterange.filter(
+		(item) =>
+			item.DAYOFF == 0 && item.WORKID >= start && item.WORKID <= end,
+	);
+	return daterange.length;
+}
