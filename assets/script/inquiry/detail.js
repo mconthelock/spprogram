@@ -22,7 +22,6 @@ import {
 	getMainProject,
 	getPartProject,
 	getDummyProject,
-	validateVariable,
 	validateDrawingNo,
 	validateVariable,
 } from "../service/index.js";
@@ -443,58 +442,6 @@ export async function importExcel(file) {
 	}
 }
 
-export async function importText(file) {
-	const readFile = (file) => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				resolve(e.target.result);
-			};
-			reader.onerror = (e) => {
-				reject(e);
-			};
-			reader.readAsText(file);
-		});
-	};
-
-	const contents = await readFile(file);
-	const lines = contents.split("\n").filter((line) => line.trim() !== "");
-	if (lines.length == 0) return null;
-	const cols = lines[0].split("\t");
-	if (cols.length !== 10) return;
-	const readdata = [];
-	lines.forEach(function (row, i) {
-		const el = row.split("\t");
-		const variavle = dwg.validateVariable(el[6]);
-		const strrow = initRow(el[1], i + 1);
-		const newRow = {
-			...strrow,
-			INQD_CAR: el[8],
-			INQD_MFGORDER: el[7].replaceAll("-", ""),
-			INQD_ITEM: el[9].substring(0, 3),
-			INQD_PARTNAME: el[3],
-			INQD_DRAWING: el[2],
-			INQD_QTY: el[4],
-			INQD_UM: el[5],
-			INQD_SUPPLIER: "AMEC",
-			INQD_OWNER: "MAR",
-			INQ_NO: el[0],
-			INQD_VARIABLE: variavle.isValid ? el[6] : "",
-			INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
-		};
-		// ---------- Check 2na on Elmes here ----------
-		readdata.push(newRow);
-	});
-
-	await importHeader({
-		mfgno: readdata[0].INQD_MFGORDER,
-		inquiryno: readdata[0].INQ_NO,
-		item: readdata[0].INQD_ITEM,
-		file: file.name,
-	});
-	return readdata;
-}
-
 export async function importHeader(data) {
 	const prj = await getMainProject({ SMFGNO: data.mfgno.substring(0, 8) });
 	if (prj.length > 0) {
@@ -515,6 +462,108 @@ export async function importHeader(data) {
 		await events.handleInquiryChange({ target: inqno });
 	}
 	$("#mar-incharge").val($("#user-login").attr("empno")).trigger("change");
+}
+
+export async function importText(file) {
+	const readFile = (file) => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				resolve(e.target.result);
+			};
+			reader.onerror = (e) => {
+				reject(e);
+			};
+			reader.readAsText(file);
+		});
+	};
+
+	const contents = await readFile(file);
+	const lines = contents.split("\r\n").filter((line) => line.trim() !== "");
+	if (lines.length == 0) return null;
+	const readdata = [];
+	lines.forEach(function (row, i) {
+		const el = row.split("\t");
+		const variavle = validateVariable(el[8]);
+		const strrow = initRow(el[1], i + 1);
+		//Type of Transport
+		// 1:SEA
+		// 2:AIR
+		// 5:COURIER
+		// 6:SEA or AIR
+		// 9:TRUCK
+		const newRow = {
+			...strrow,
+			INQD_SEQ: el[3],
+			INQD_DRAWING: el[4], //Dwg No.
+			INQD_PARTNAME: el[5],
+			INQD_QTY: el[6],
+			INQD_UM: el[7],
+			INQD_VARIABLE: el[8],
+			INQD_CAR: el[10],
+			INQD_ITEM: el[11],
+
+			INQ_NO: el[0],
+			INQ_PRJNO: el[9], //Project No.
+			INQ_SHIPMENT: el[1], //Type of Transport
+			INQ_TERM: el[2], //Contract Term
+		};
+		// Old Version
+		// const newRow = {
+		// 	...strrow,
+		// 	INQD_CAR: el[8],
+		// 	INQD_MFGORDER: el[7].replaceAll("-", ""),
+		// 	INQD_ITEM: el[9].substring(0, 3),
+		// 	INQD_PARTNAME: el[3],
+		// 	INQD_DRAWING: el[2],
+		// 	INQD_QTY: el[4],
+		// 	INQD_UM: el[5],
+		// 	INQD_SUPPLIER: "AMEC",
+		// 	INQD_OWNER: "MAR",
+		// 	INQ_NO: el[0],
+		// 	INQD_VARIABLE: variavle.isValid ? el[6] : "",
+		// 	INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
+		// };
+		// ---------- Check 2na on Elmes here ----------
+		readdata.push(newRow);
+	});
+
+	await importHeaderNewSparq({
+		prjno: readdata[0].INQ_PRJNO,
+		inquiryno: readdata[0].INQ_NO,
+		item: readdata[0].INQD_ITEM,
+		file: file.name,
+		shipment: readdata[0].INQ_SHIPMENT,
+		term: readdata[0].INQ_TERM,
+	});
+	return readdata;
+}
+
+export async function importHeaderNewSparq(data) {
+	console.log(data);
+	const projectNo = document.querySelector("#project-no");
+	// projectNo.value = "1580-3004(T)";
+	projectNo.value = data.prjno;
+	if (events.handleProjectChange) {
+		await events.handleProjectChange({ target: projectNo });
+	}
+
+	const inqno = document.querySelector("#inquiry-no");
+	inqno.value = data.inquiryno;
+	if (events.handleInquiryChange) {
+		await events.handleInquiryChange({ target: inqno });
+	}
+
+	$("#delivery-term")
+		.find("option")
+		.map((i, el) => {
+			if ($(el).text().toUpperCase() === data.term.toUpperCase()) {
+				$(el).attr("selected", "selected");
+				$(el).parent().trigger("change");
+				return false;
+			}
+		});
+	$("#delivery-method").val(data.shipment).trigger("change");
 }
 //End: Unreply
 

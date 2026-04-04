@@ -355,9 +355,21 @@ $(document).on("click", ".export-sparq", async function (e) {
 				unreplycode = item.INQD_UNREPLY;
 				unreplyremark = item.INQD_DES_REMARK;
 			}
+
+			let seaDay = "",
+				airDay = "",
+				courierDay = "",
+				truckDay = "";
+			const dm = data[0].INQ_DELIVERY_METHOD;
+			if (dm == 1 || dm == 6)
+				seaDay = data[0].shipment.SHIPMENT_VALUE.toString();
+			if (dm == 2) airDay = data[0].shipment.SHIPMENT_VALUE.toString();
+			if (dm == 5)
+				courierDay = data[0].shipment.SHIPMENT_VALUE.toString();
+			if (dm == 9) truckDay = data[0].shipment.SHIPMENT_VALUE.toString();
 			const row = [
 				data[0].INQ_NO,
-				item.INQD_RUNNO,
+				Math.floor(item.INQD_SEQ),
 				item.INQD_DRAWING,
 				item.INQD_PARTNAME,
 				item.INQD_QTY,
@@ -365,21 +377,51 @@ $(document).on("click", ".export-sparq", async function (e) {
 				item.INQD_VARIABLE,
 				item.INQD_UNIT_PRICE,
 				remark,
-				data[0].shipment.SHIPMENT_VALUE,
+				seaDay,
+				airDay,
+				courierDay,
+				truckDay,
+				data[0].shipment.SHIPMENT_VALUE, //Shipment Lead Time ❌ ที่จริงต้องเป็นวันผลิต
 				dayjs(data[0].quotation.QUO_VALIDITY).format("YYYY/MM/DD"),
-				1,
-				item.INQD_MFGORDER,
+				1, //Min lot
+				item.INQ_PRJNO, //MELCO Order No.
 				item.INQD_CAR,
 				item.INQD_ITEM,
 				data[0].INQ_SERIES,
 				unreply,
 				unreplycode,
 				unreplyremark,
-				Pattern2Flg,
-				"", //Pattern2Sup
+				// Pattern2Flg,
+				// "", //Pattern2Sup
 				data[0].INQ_REV,
 				item.INQD_SEQ,
 			];
+			// Old version
+			// const row = [
+			// 	data[0].INQ_NO,
+			// 	item.INQD_RUNNO,
+			// 	item.INQD_DRAWING,
+			// 	item.INQD_PARTNAME,
+			// 	item.INQD_QTY,
+			// 	item.INQD_UM,
+			// 	item.INQD_VARIABLE,
+			// 	item.INQD_UNIT_PRICE,
+			// 	remark,
+			// 	data[0].shipment.SHIPMENT_VALUE,
+			// 	dayjs(data[0].quotation.QUO_VALIDITY).format("YYYY/MM/DD"),
+			// 	1,
+			// 	item.INQD_MFGORDER,
+			// 	item.INQD_CAR,
+			// 	item.INQD_ITEM,
+			// 	data[0].INQ_SERIES,
+			// 	unreply,
+			// 	unreplycode,
+			// 	unreplyremark,
+			// 	Pattern2Flg,
+			// 	"", //Pattern2Sup
+			// 	data[0].INQ_REV,
+			// 	item.INQD_SEQ,
+			// ];
 			rows.push(row);
 		});
 		const tsvContent = rows.map((e) => e.join("\t")).join("\n");
