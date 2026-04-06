@@ -40,6 +40,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ $_ENV['APP_JS'] }}/inquiryui.js?ver={{ $GLOBALS['version'] }}"></script>
     <script src="{{ $_ENV['APP_JS'] }}/des_inqdetail.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

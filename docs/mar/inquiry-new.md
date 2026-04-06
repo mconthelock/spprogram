@@ -34,6 +34,26 @@ outline: deep
 
 ![alt text](../images/mar/inquiry-new-2.png)
 
+::: info 🆕 **Update 2026**
+ระบบมีการแก้ไขไฟล์ Import from SPARQ (TSV ไฟล์) โดยมีรายละเอียดดังนี้:
+
+| **No.** | **Name**                 | **Desceiption**                                                                                                                                                                                                                |
+| ------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1       | Sales Company Inquiry No | This is Key Data about each inquiry.                                                                                                                                                                                           |
+| 2       | Type of Transport        | 1:SEA<br> 2:AIR<br> 5:COURIER<br> 6:SEA or AIR<br> 9:TRUCK                                                                                                                                                                     |
+| 3       | Contract Term            | FOB, CIF, C&F, FOB, FOT, C&I                                                                                                                                                                                                   |
+| 4       | No                       | This is Key Data of each item.<br> _-Actually max 999 items._<br> _-This No is not continuous. Please take care!_                                                                                                              |
+| 5       | Drwg No                  | DrwgNo that has been requested a quote from MTPE is set. <br> - _Basically it is same as original information from S/C, Because MTPE doesn't maintain actually._                                                               |
+| 6       | Parts Name               | Parts Name that has been requested a quote from MTPE is set. <br> - _Basically it is same as original information from S/C, Because MTPE doesn't maintain actually._                                                           |
+| 7       | Qty                      | Qty that has been requested a quote from MTPE is set. <br> - _Basically it is same as original information from S/C, Because MTPE doesn't maintain actually._ <br> - _0.01～9999999.99_                                        |
+| 8       | Unit                     | Unit that has been requested a quote from MTPE is set. <br> - _Basically it is same as original information from S/C, Because MTPE doesn't maintain actually_ <br> **[Code Definition]** <br> PC, SE, LN, KG, L, M, CM, MM, RO |
+| 9       | Parameter                | Parameter that has been requested a quote from MTPE is set.<br> - _Basically it is same as original information from S/C, Because MTPE doesn't maintain actually._                                                             |
+| 10      | MELCO Order No.          | **[For Stock Case]** <br> 5 Bytes Character Fixed. Value is _**'STOCK'**_. <br><br> **[For Project Case]** <br> Existing MELCO Order No. is input by Sales Company.                                                            |
+| 11      | Car No                   | **[For Stock Case]** <br> 3 Bytes Character Fixed. Value is _**'#99'**_. <br><br> **[For Project Case]** <br> Existing Car No. is input by Sales Company. inquiry.                                                             |
+| 12      | Item No                  | Item No that has been requested a quote from MTPE is set. <br> - _Basically it is same as original information from S/C, Because MTPE doesn't maintain actually._                                                              |
+
+:::
+
 ## 📎 ขั้นตอนที่ 3: การแนบเอกสาร (Attachments)
 
 - คลิกที่ไอคอน คลิปหนีบกระดาษ ในส่วนของ Attachment เพื่ออัปโหลดไฟล์ Drawing, สเปกสินค้า หรือรูปภาพประกอบ เพื่อให้แผนก Design นำไปใช้งานต่อได้แม่นยำ

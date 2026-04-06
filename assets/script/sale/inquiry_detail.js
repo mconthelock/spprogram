@@ -310,8 +310,6 @@ $(document).on("click", "#send-confirm", async function (e) {
 		await activatedBtnRow($(this));
 		const details = table.rows().data().toArray();
 		await verifyDetail(table, details, 3);
-		return;
-
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
 		const group = {

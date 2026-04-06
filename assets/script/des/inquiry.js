@@ -1,6 +1,7 @@
 import "@amec/webasset/css/dataTable.min.css";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showConfirm } from "@amec/webasset/utils";
+import { currentUser } from "@amec/webasset/api/amec";
 import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtnRow } from "@amec/webasset/components/buttons";
 import { tableInquiryDEOption } from "../inquiry/index.js";
@@ -97,5 +98,40 @@ $(document).on("click", "#export1", async function (e) {
 		await showMessage(`Something went wrong.`);
 	} finally {
 		await activatedBtnRow($(this), false);
+	}
+});
+
+$(document).on("click", ".process-btn", async function (e) {
+	e.preventDefault();
+	try {
+		const row = table.row($(this).closest("tr")).data();
+		const timeline = row.timeline;
+		const user = await currentUser();
+		const group = user.group;
+		// if (group == "SLG" && timeline.SG_READ == null) {
+		// 	await activatedBtnRow($(this));
+		// 	const data = {
+		// 		INQ_NO: row.INQ_NO,
+		// 		INQ_REV: row.INQ_REV,
+		// 		SG_USER: $("#user-login").attr("empno"),
+		// 		SG_READ: new Date(),
+		// 	};
+		// 	await updateInquiryTimeline(data);
+		// } else if (group == "SLE" && timeline.SE_READ == null) {
+		// 	await activatedBtnRow($(this));
+		// 	const data = {
+		// 		INQ_NO: row.INQ_NO,
+		// 		INQ_REV: row.INQ_REV,
+		// 		SE_READ: new Date(),
+		// 	};
+		// 	await updateInquiryTimeline(data);
+		// }
+		window.location.replace(
+			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+		await activatedBtn($(this), false);
 	}
 });

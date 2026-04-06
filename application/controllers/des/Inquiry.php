@@ -21,14 +21,14 @@ class Inquiry extends MY_Controller {
     }
 
     public function report(){
-       // $this->views('des/inquiry/report', array('title' => 'Report', 'type' => 'report'));
-        $this->views('des/inquiry/index', array('title' => 'Recheck Inquiry', ));
+       $this->views('des/inquiry/report', array('title' => 'Report'));
     }
 
     public function detail($id){
         $this->views('des/inquiry/detail', array('title' => 'Inquiry Detail', 'id' => $id));
     }
-    public function view(){
-        $this->views('des/inquiry/view', array('title' => 'Inquiry View'));
+
+   public function show($id){
+        $this->views('des/inquiry/view', array('id'=> $id, 'title' => 'Inquiry View'));
     }
 }

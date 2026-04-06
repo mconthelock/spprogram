@@ -1,7 +1,8 @@
-import * as utils from "../utils.js";
-import { getDesignerGroup } from "../des/data.js";
+import { showDigits } from "@amec/webasset/utils";
+import { currentUser } from "@amec/webasset/api/amec";
+import { tableOpt } from "../utils.js";
 
-export async function setupTableDetail(data = []) {
+export async function setupDETableDetail(data = []) {
 	const renderText = (str, logs, key) => {
 		if (logs == undefined) return str;
 		let li = ``;
@@ -32,35 +33,49 @@ export async function setupTableDetail(data = []) {
 		return update;
 	};
 
-	const mode = data.length > 0 ? 1 : 0;
-	const des = await getDesignerGroup();
-	const opt = { ...utils.tableOpt };
+	const renderSupplier = (data, id) => {
+		const sup = ["", "AMEC", "MELINA", "LOCAL"];
+		let selector = `<select class="select select-sm w-25!  supplier">`;
+		sup.forEach((el) => {
+			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
+		});
+		selector += `</select>`;
+		return selector;
+	};
+
+	//const mode = data.length > 0 ? 1 : 0;
+	const isRevise = $("#revision").val() != "*" ? true : false;
+	const user = await currentUser();
+	const usrgroup = user.group;
+	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.paging = false;
 	opt.searching = false;
 	opt.responsive = false;
 	opt.info = false;
 	opt.orderFixed = [0, "asc"];
-	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden overflow-x-scroll"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
+	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.columns = [
 		{
 			data: "INQD_RUNNO",
-			title: "",
 			className: "hidden",
 		},
 		{
 			data: "INQD_ID",
 			title: "<i class='icofont-settings text-lg'></i>",
-			className: "text-center text-nowrap sticky-column px-1",
+			className:
+				"sticky-column text-center text-nowrap cell-display px-3! border-r!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<div class="btn btn-sm btn-circle btn-ghost add-sub-line" type="button"><span class="text-2xl text-gray-600">+</span></div>
-          <button class="btn btn-sm btn-circle btn-ghost ${
-				row.INQD_OWNER_GROUP == "MAR"
-					? "delete-sub-line text-red-500"
-					: "btn-disabled"
-			}"><i class="fi fi-bs-cross"></i></button>`;
+					return `<div class="btn btn-xs btn-circle btn-ghost add-sub-line" type="button">
+                        <span class="text-2xl text-gray-600">+</span>
+                    </div>
+                    <button class="btn btn-xs btn-circle btn-ghost ${
+						row.INQD_OWNER_GROUP != "MAR"
+							? "delete-sub-line text-red-500"
+							: "btn-disabled text-gray-300!"
+					}"><i class="fi fi-bs-cross"></i></button>`;
 				}
 				return data;
 			},
@@ -68,15 +83,15 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_SEQ",
 			title: "No",
-			className: "sticky-column !px-[3px] seqno",
+			className: "sticky-column seqno",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					if (data % 1 !== 0) data = digits(data, 2);
+					if (data % 1 !== 0) data = showDigits(data, 2);
 					const log = renderLog(data, row.logs, "INQD_SEQ");
-					const str = `<input type="number" min="1" class="!w-[65px] cell-input edit-input ${
-						log ? "detail-log" : ""
-					}" value="${data}">`;
+					const str = `<input type="text" class="w-12.5! cell-input input-number edit-input ${log ? `detail-log` : ``}"
+                        ${row.INQD_OWNER_GROUP == `MAR` ? `readonly="readonly"` : ``} maxlength="5"
+                        value="${data}">`;
 					return renderText(str, row.logs, "INQD_SEQ");
 				}
 				return data;
@@ -85,12 +100,12 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: "sticky-column !px-[3px]",
+			className: "sticky-column text-center!",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type, row) {
 				if (type === "display") {
 					const log = renderLog(data, row.logs, "INQD_CAR");
-					const str = `<input type="text" class="!w-[55px] uppercase cell-input carno ${
+					const str = `<input type="text" class="w-10! uppercase cell-input carno ${
 						log ? "detail-log" : ""
 					}" maxlength="2" value="${data == null ? "" : data}"/>`;
 					return renderText(str, row.logs, "INQD_CAR");
@@ -101,13 +116,11 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_MFGORDER",
 			title: "MFG No.",
-			className: "sticky-column !px-[3px]",
+			className: "sticky-column",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="text" class="!w-[150px] uppercase cell-input elmes-input mfgno" maxlength="9" value="${
-						data == null ? "" : data
-					}">`;
+					return `<textarea class="w-25! cell-input elmes-input mfgno" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -115,11 +128,11 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className: "!px-[3px] item-no",
+			className: "sticky-column",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="number" min="100" max="999" class="!w-[75px] cell-input elmes-input itemno" value="${data}"/>`;
+					return `<textarea class="w-12.5! cell-input elmes-input itemno" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -127,11 +140,11 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "!px-[3px]",
+			className: "sticky-column ",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<textarea class="!w-[250px] cell-input edit-input partname" maxlength="50">${
+					return `<textarea class="w-62! cell-input edit-input partname" maxlength="50">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -141,12 +154,12 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: "!px-[3px] drawing-line",
+			className: "drawing-line",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="!w-[225px] uppercase cell-input edit-input drawing-line" maxlength="150">${
-						data == null ? "" : data
+					return `<textarea class="w-62! uppercase cell-input edit-input drawing-line" maxlength="150">${
+						data == "null" || data == null ? "" : data
 					}</textarea>`;
 				}
 				return data;
@@ -155,12 +168,12 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: "!px-[3px]",
+			className: "",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="!w-[200px] uppercase cell-input edit-input variable-line" maxlength="250">${
-						data == null ? "" : data
+					return `<textarea class="w-62! uppercase cell-input edit-input variable-line" maxlength="250">${
+						data == "null" || data == null ? "" : data
 					}</textarea>`;
 				}
 				return data;
@@ -169,11 +182,13 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className: "!px-[3px]",
+			className: "",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<input type="number" min="1" class="!w-[50px] cell-input edit-input" value="${data}">`;
+					return `<textarea class="w-12.5! uppercase cell-input edit-input variable-line">${
+						data == null ? "" : data
+					}</textarea>`;
 				}
 				return data;
 			},
@@ -181,12 +196,12 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_UM",
 			title: "U/M",
-			className: "!px-[3px]",
+			className: "",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				data = data == "" ? "PC" : data;
 				if (type === "display") {
-					return `<input type="type" class="!w-[75px] uppercase cell-input edit-input" value="${data}">`;
+					return `<input type="type" class="w-12.5! uppercase cell-input edit-input" value="${data}">`;
 				}
 				return data;
 			},
@@ -194,26 +209,14 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			className: "!px-[3px] supplier-line",
+			className: "supplier-line",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<select class="!w-[100px] select select-sm supplier edit-input" ${
-						row.INQD_UNREPLY == "" || row.INQD_UNREPLY == null
-							? ""
-							: "disabled"
-					}>
-            <option value=""></option>
-            <option value="AMEC" ${
-				data == "AMEC" ? "selected" : ""
-			}>AMEC</option>
-            <option value="MELINA" ${
-				data == "MELINA" ? "selected" : ""
-			}>MELINA</option>
-            <option value="LOCAL" ${
-				data == "LOCAL" ? "selected" : ""
-			}>LOCAL</option>
-          </select>`;
+					if (row.INQD_UNREPLY != "" && row.INQD_UNREPLY != null) {
+						return renderSupplier(data, true);
+					}
+					return renderSupplier(data);
 				}
 				return data;
 			},
@@ -221,13 +224,18 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_SENDPART",
 			title: `2<sup>nd</sup>`,
-			className: "text-center",
+			className: "text-center!",
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black edit-input" value="1" ${
-						data == 1 ? "checked" : ""
-					} />`;
+					if (data == null || data == "")
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="" />`;
+					else if (data == "1")
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" value="1" checked/>`;
+					else
+						return `<div class="tooltip tooltip-left" data-tip="Click to revoke 2nd part">
+                            <button class="btn btn-xs btn-circle btn-ghost revokepartlist">${data}</button>
+                        </div>`;
 				}
 				return data;
 			},
@@ -235,67 +243,48 @@ export async function setupTableDetail(data = []) {
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: "text-center",
+			className: "text-center!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
-           ${data == "" || data == null ? "" : "checked"}/>`;
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input" ${data == "" || data == null ? "" : "checked"}/>`;
 				}
 				return data;
 			},
 		},
 		{
-			data: "INQD_MAR_REMARK",
-			className: "remark-line",
-			title: "Remark",
+			data: "INQD_DES_REMARK",
+			title: "D/E Remark",
+			className: `w-62 min-w-62 remark-line bg-primary/10`,
 			sortable: false,
-			render: function (data, type, row, meta) {
+			render: function (data, type) {
 				if (type === "display") {
-					return `<textarea class="!w-[250px] cell-input edit-input remark" maxlength="250">${
+					return `<textarea class="w-62! cell-input edit-input remark" maxlength="250">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
 				return data;
 			},
 		},
-	];
-	opt.initComplete = function (settings, json) {
-		const btn = `<div class="flex gap-2 ">
-      <div class="tooltip" data-tip="Add line">
-        <button id="addRowBtn" class="btn btn-primary btn-sm btn-square flex items-center" type="button">
-            <i class="fi fi-rr-add text-2xl text-white"></i>
-        </button>
-      </div>
-      <div class="tooltip" data-tip="Upload inquiry">
-        <button id="uploadRowBtn" class="btn btn-neutral btn-sm btn-square ${
-			mode == 1 ? "hidden" : ""
-		}"><i class="fi fi-rr-cloud-upload-alt text-2xl text-white"></i></button>
-        <input type="file" id="import-tsv" class="hidden" />
-      </div>
-      <div class="tooltip" data-tip="Download template">
-        <button id="downloadTemplateBtn" class="btn btn-neutral btn-sm btn-square ${
-			mode == 1 ? "hidden" : ""
-		}"><i class="fi fi-rr-cloud-download-alt text-2xl text-white"></i></button>
-      </div>
-    </div>`;
-		$("#table").closest(".dt-container").find(".table-page").append(btn);
-		$("#table")
-			.closest(".dt-container")
-			.find(".table-search")
-			.append(
-				`
-        <div class="tooltip tooltip-open absolute z-50 hidden" id="tip1">
-            <div class="tooltip-content">
-                <div class="animate-bounce text-orange-400 -rotate-10 text-2xl font-black">Wow!</div>
-            </div>
-        </div>`,
-			);
-	};
 
-	opt.createdRow = function (row, data, dataIndex) {
-		const item = Math.floor(parseInt(data.INQD_ITEM) / 100);
-		if (item != des.DES_GROUP) $(row).addClass("hidden");
-	};
+		{
+			data: "INQD_MAR_REMARK",
+			className: `w-62 min-w-62 cell-display border-r! bg-slate-200 text-xs`,
+			title: "MAR Remark",
+			sortable: false,
+			render: function (data, type) {
+				return data == null ? "" : data;
+			},
+		},
+		{
+			data: "INQD_SALE_REMARK",
+			className: `w-62 min-w-62 cell-display border-r! bg-slate-200 text-xs`,
+			title: "Sale Remark",
+			sortable: false,
+			render: function (data, type) {
+				return data == null ? "" : data;
+			},
+		},
+	];
 	return opt;
 }

@@ -1,4 +1,25 @@
 /* .vitepress/theme/custom.css */
+@font-face {
+	font-family: "LINE Seed TH";
+	src:
+		url("../../../assets/fonts/lineseed/th/LINESeedSansTH_W_Rg.woff2")
+			format("woff2"),
+		url("../../../assets/fonts/lineseed/th/LINESeedSansTH_W_Rg.woff")
+			format("woff");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "LINE Seed TH Bold";
+	src:
+		url("../../../assets/fonts/lineseed/th/LINESeedSansTH_W_Bd.woff2")
+			format("woff2"),
+		url("../../../assets/fonts/lineseed/th/LINESeedSansTH_W_Bd.woff")
+			format("woff");
+	font-weight: 700;
+	font-style: normal;
+}
 
 :root {
 	--vp-home-hero-name-color: transparent;
@@ -7,6 +28,15 @@
 		#646cff 10%,
 		#ff3e00 100%
 	);
+}
+* {
+	font-family: "LINE Seed TH", "LINE Seed TH Bold", sans-serif;
+}
+h1,
+h2,
+h3,
+strong {
+	font-family: "LINE Seed TH Bold", sans-serif;
 }
 
 /* ทำให้พื้นหลังของ Hero โปร่งใสเพื่อให้เห็น Three.js ชัดขึ้น */

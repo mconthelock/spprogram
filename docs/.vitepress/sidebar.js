@@ -53,7 +53,24 @@ const mar = [
 	},
 ];
 const sale = [];
-const de = [];
+const de = [
+	{
+		text: "Assign Designer",
+		link: "/de/assign",
+	},
+	{
+		text: "Declare Inquiry",
+		link: "/de/declare",
+	},
+	{
+		text: "Check Inquiry",
+		link: "/de/check",
+	},
+	{
+		text: "Inquiry Report",
+		link: "/de/report",
+	},
+];
 const fin = [
 	{
 		text: "Price Confirmation",
