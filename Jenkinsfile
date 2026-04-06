@@ -1,15 +1,6 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(name: 'DEPLOY_ENV', choices: ['development', 'production'], description: 'Select Environment to deploy')
-    }
-
-    environment {
-        NAS_PATH = "\\\\172.21.255.188\\amecweb\\wwwroot\\development"
-        GIT_SSL_NO_VERIFY = 'true'
-    }
-
     tools {
         nodejs 'node'
     }
@@ -18,25 +9,27 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 script {
-                    def isManualTrigger = currentBuild.getBuildCauses().toString().contains('UserIdCause')
-                    if (isManualTrigger && params.DEPLOY_ENV == 'production') {
-                        env.TARGET_DIR = '/var/amecweb/wwwroot/production/spprogram'
-                        env.ENV_CRED_ID = 'sp-env-prod'
-                        env.NODE_ENV = 'production'
-                        echo ">>> MANUAL BUILD: Deploying to PRODUCTION"
-                    }else {
+                    if (env.BRANCH_NAME == 'develop') {
+
                         env.TARGET_DIR = '/var/amecweb/wwwroot/development/spprogram'
-                        env.ENV_CRED_ID = 'sp-env-dev'
+                        env.ENV_CRED_ID = 'spprogram-env-dev'
                         env.NODE_ENV = 'development'
+                        env.DEPLOY_ENV = 'development'
 
-                        if (!isManualTrigger) {
-                            echo ">>> WEBHOOK DETECTED: Auto-deploying to DEVELOPMENT"
-                        } else {
-                            echo ">>> MANUAL BUILD: Selected DEVELOPMENT"
-                        }
+                        echo ">>> MR merged → develop → DEPLOY DEVELOPMENT"
+
+                    } else if (env.BRANCH_NAME == 'main') {
+
+                        env.TARGET_DIR = '/var/amecweb/wwwroot/production/spprogram'
+                        env.ENV_CRED_ID = 'spprogram-env-prod'
+                        env.NODE_ENV = 'development'
+                        env.DEPLOY_ENV = 'production'
+
+                        echo ">>> MR merged → main → DEPLOY PRODUCTION"
+
+                    } else {
+                        error "❌ Branch ${env.BRANCH_NAME} is not deployable"
                     }
-
-                    echo "Target Directory: ${env.TARGET_DIR}"
                 }
             }
         }
@@ -57,10 +50,9 @@ pipeline {
 
                             git config --global url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf "https://webhub.mitsubishielevatorasia.co.th/"
 
-                            npm install
+                            npm install --include=dev
                             npm update @amec/webasset
                             npm run build
-                            npm run build:docs
 
                             git config --global --unset url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf
                         '''
@@ -72,7 +64,7 @@ pipeline {
         stage('PHP Prep (Composer)') {
             steps {
                 dir('application') {
-                    sh 'composer install --optimize-autoloader'
+                    sh 'composer update --optimize-autoloader'
                 }
                 echo "PHP preparation with Composer done."
             }
@@ -96,6 +88,51 @@ pipeline {
                         --exclude='*@tmp' \
                         ./ ${TARGET_DIR}/
                 '''
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // 1. หาชื่อคนสั่ง Build (ดึงจาก Build Causes)
+                def buildCauses = currentBuild.getBuildCauses()
+                def buildUser = ""
+                for (cause in buildCauses) {
+                    if (cause.shortDescription.contains('Started by user')) {
+                        buildUser = cause.shortDescription.replace('Started by user ', '')
+                    }else{
+                        buildUser = cause.shortDescription.replace('Started by GitLab push by ', '')
+                    }
+                }
+
+                // 2. จัดการเรื่องเวลา (แปลงจาก milliseconds เป็นวันที่ที่อ่านออก)
+                def startTime = new Date(currentBuild.startTimeInMillis).format("dd/MM/yyyy HH:mm:ss", TimeZone.getTimeZone('Asia/Bangkok'))
+                def endTime = new Date().format("dd/MM/yyyy HH:mm:ss", TimeZone.getTimeZone('Asia/Bangkok'))
+
+                mail (
+                    to: 'sec_wsd@MitsubishiElevatorAsia.co.th',
+                    subject: "Build ${currentBuild.currentResult}: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
+                    from: 'jenkins-notify@MitsubishiElevatorAsia.co.th',
+                    body: """
+                        ข้อมูลการ Build เบื้องต้น:
+                        -------------------------------------------
+                        ผลการทำงาน: ${currentBuild.currentResult}
+                        ผู้ดำเนินการ: ${buildUser}
+                        เวลาที่เริ่ม: ${startTime}
+                        เวลาที่เสร็จ: ${endTime}
+                        ระยะเวลาทั้งหมด: ${currentBuild.durationString.replace(' and counting', '')}
+
+                        รายละเอียดสภาพแวดล้อม:
+                        -------------------------------------------
+                        Environment: ${env.DEPLOY_ENV}
+                        Target Directory: ${env.TARGET_DIR}
+
+                        สามารถตรวจสอบ Log อย่างละเอียดได้ที่:
+                        ${env.BUILD_URL}console
+                        -------------------------------------------
+                    """
+                )
             }
         }
     }
