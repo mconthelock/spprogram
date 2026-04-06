@@ -375,7 +375,8 @@ $(document).on("click", ".export-sparq", async function (e) {
 				item.INQD_QTY,
 				item.INQD_UM,
 				item.INQD_VARIABLE,
-				item.INQD_UNIT_PRICE,
+				item.INQD_UNIT_PRICE, //Unit Price
+				item.INQD_UNIT_PRICE, //Unit Cost
 				remark,
 				seaDay,
 				airDay,
@@ -436,7 +437,6 @@ $(document).on("click", ".export-sparq", async function (e) {
 		link.setAttribute("href", url);
 		link.setAttribute("download", `${data[0].INQ_NO}.txt`);
 		document.body.appendChild(link);
-
 		link.click();
 		document.body.removeChild(link);
 	} catch (error) {
