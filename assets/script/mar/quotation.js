@@ -47,11 +47,11 @@ async function tableCondition() {
 			INQ_STATUS: ">= 45 && < 50",
 			IS_TIMELINE: true,
 			INQ_PKC_REQ: "1",
-			timeline: { PKC_CONFIRM: "IS NULL" },
+			//timeline: { PKC_CONFIRM: "IS NULL" },
 		};
 	} else {
 		q = {
-			INQ_STATUS: ">= 46 && < 80",
+			INQ_STATUS: ">= 45",
 			IS_TIMELINE: true,
 		};
 	}

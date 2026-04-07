@@ -451,6 +451,9 @@ export async function importHeader(data) {
 		const projectNo = document.querySelector("#project-no");
 		projectNo.value = prj[0].PRJ_NO;
 		if (events.handleProjectChange) {
+			$("body").append(
+				`<div id="firstmfgno" class="hidden">${data.mfgno.substring(0, 8)}</div>`,
+			);
 			await events.handleProjectChange({ target: projectNo });
 		}
 	} else if (data.mfgno.toUpperCase().indexOf("STOCK") > -1) {
@@ -506,7 +509,6 @@ export async function importText(file) {
 			INQD_VARIABLE: el[8],
 			INQD_CAR: el[10],
 			INQD_ITEM: el[11],
-
 			INQ_NO: el[0],
 			INQ_SHIPMENT: el[1], //Type of Transport
 			INQ_TERM: el[2], //Contract Term
@@ -538,6 +540,20 @@ export async function importText(file) {
 		item: result[0].INQD_ITEM,
 		file: file.name,
 	});
+
+	$("#delivery-term")
+		.find("option")
+		.map((i, el) => {
+			if (
+				$(el).text().toUpperCase() ===
+				readdata[0].INQ_TERM.toUpperCase()
+			) {
+				$(el).attr("selected", "selected");
+				$(el).parent().trigger("change");
+				return false;
+			}
+		});
+	$("#delivery-method").val(readdata[0].INQ_SHIPMENT).trigger("change");
 	return result;
 	// await importHeaderNewSparq({
 	// 	prjno: readdata[0].INQ_PRJNO,
@@ -551,7 +567,6 @@ export async function importText(file) {
 }
 
 export async function importHeaderNewSparq(data) {
-	console.log(data);
 	const projectNo = document.querySelector("#project-no");
 	// projectNo.value = "1580-3004(T)";
 	projectNo.value = data.prjno;

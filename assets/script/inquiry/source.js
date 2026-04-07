@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { dateToSchedule, showMessage } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import * as srv from "../service/index.js";
@@ -181,7 +182,9 @@ export const events = {
 		if (data.length == 0) data = await srv.getDummyProject(q);
 		// if (data.length == 0) data = await srv.getCubeProject(q);
 		if (data.length > 0) {
-			const values = data[0];
+			let values = orinalMfgNo(data);
+			values = values === undefined ? data[0] : values;
+
 			for (const key in values) {
 				if ($('input[data-mapping="' + key + '"]').length > 0) {
 					const input = $('input[data-mapping="' + key + '"]');
@@ -369,4 +372,18 @@ export const events = {
 			}
 		}
 	},
+};
+
+const orinalMfgNo = (orders) => {
+	const data = $("#firstmfgno").text();
+	let mfgData;
+	for (let i = 0; i < orders.length; i++) {
+		const order = orders[i];
+		const mfgno = order.MFGNO.substr(0, 8);
+		if (data == mfgno) {
+			mfgData = order;
+			break;
+		}
+	}
+	return mfgData;
 };
