@@ -44,7 +44,7 @@ async function tableCondition() {
 		};
 	} else if ($("#pageid").val() == "2") {
 		q = {
-			INQ_STATUS: ">= 46 && < 50",
+			INQ_STATUS: ">= 45 && < 50",
 			IS_TIMELINE: true,
 			INQ_PKC_REQ: "1",
 			timeline: { PKC_CONFIRM: "IS NULL" },
