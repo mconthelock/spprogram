@@ -371,47 +371,6 @@ $(document).on("click", "#send-confirm", async function (e) {
 		window.location.replace(
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
 		);
-		// designForward.map(async (dg) => {
-		// 	const group = {
-		// 		data: {
-		// 			INQG_ASG: null,
-		// 			INQG_DES: null,
-		// 			INQG_CHK: null,
-		// 			INQG_CLASS: null,
-		// 			INQG_ASG_DATE: null,
-		// 			INQG_DES_DATE: null,
-		// 			INQG_CHK_DATE: null,
-		// 			INQG_STATUS: 1,
-		// 		},
-		// 		condition: {
-		// 			INQ_ID: $("#inquiry-id").val(),
-		// 			INQG_GROUP: dg,
-		// 			INQG_LATEST: 1,
-		// 		},
-		// 	};
-		// 	await updateInquiryGroup(group);
-		// });
-
-		// if (inquiry) {
-		// 	await mailToDEGroupLeader(inquiry);
-		// 	window.location.replace(
-		// 		`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		// 	);
-		// }
-		// } else {
-		// 	const logs = await setLogsData(11, true);
-		// 	let status = isAmec ? 30 : 11;
-
-		// 	const inquiry = await updatePath(30, 4, 2);
-		// 	if (inquiry) {
-		// 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
-		// 		await setAS400Data(inquiry);
-		// 		await mailToPKC(inquiry);
-		// 		window.location.replace(
-		// 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		// 		);
-		// 	}
-		// }
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -423,7 +382,6 @@ $(document).on("click", "#send-confirm", async function (e) {
 
 async function forwardInquiry(fwdata) {
 	for (let el of fwdata) {
-		// designForward.map(async (dg) => {
 		const group = {
 			data: {
 				INQG_ASG: null,
@@ -442,7 +400,6 @@ async function forwardInquiry(fwdata) {
 			},
 		};
 		await updateInquiryGroup(group);
-		// });
 	}
 	return;
 }
@@ -454,8 +411,8 @@ async function updatePath(status, action, level = 1) {
 		let isforward = 0;
 		let details = table.rows().data().toArray();
 		details = details.map((dt) => {
-			if (dt.FORWARD != null) isforward = 1;
-			const { FORWARD, id, ...rest } = dt;
+			if (dt.INQD_DE != null) isforward = 1;
+			const { id, ...rest } = dt;
 			return rest;
 		});
 		await verifyDetail(table, details, level);

@@ -63,8 +63,7 @@ export async function setupDETableDetail(data = []) {
 		{
 			data: "INQD_ID",
 			title: "<i class='icofont-settings text-lg'></i>",
-			className:
-				"sticky-column text-center text-nowrap cell-display px-3! border-r!",
+			className: `sticky-column text-center text-nowrap cell-display px-3! border-r!`,
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {

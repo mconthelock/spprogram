@@ -253,7 +253,7 @@ export async function setupSaleTableDetail(data = []) {
 			},
 		},
 		{
-			data: "FORWARD",
+			data: "INQD_DE",
 			title: `<div class="tooltip  tooltip-bottom" data-tip="Forward to DE"><i class="fi fi-sr-redo text-xl"></i></div>`,
 			className: `text-center! ${usrgroup == "SLG" ? "hidden" : ""}`,
 			sortable: false,

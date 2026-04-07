@@ -24,6 +24,7 @@ import {
 	getDummyProject,
 	validateDrawingNo,
 	validateVariable,
+	getCustomer,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -355,8 +356,10 @@ export async function freightTable() {
 }
 
 export const stockHeader = async (name, item) => {
+	console.log(name, item);
+
 	//   const str = name.split("_");
-	const customers = await cus.getCustomer();
+	const customers = await getCustomer();
 	const value = customers.find((item) => item.CUS_NAME == name);
 	if (value !== undefined) {
 		$("#project-no").val(`${value.CUS_DISPLAY} STOCK`);
@@ -495,7 +498,8 @@ export async function importText(file) {
 		const newRow = {
 			...strrow,
 			INQD_SEQ: el[3],
-			INQD_DRAWING: el[4], //Dwg No.
+			INQD_MFGORDER: el[9],
+			INQD_DRAWING: el[4],
 			INQD_PARTNAME: el[5],
 			INQD_QTY: el[6],
 			INQD_UM: el[7],
@@ -504,10 +508,10 @@ export async function importText(file) {
 			INQD_ITEM: el[11],
 
 			INQ_NO: el[0],
-			INQ_PRJNO: el[9], //Project No.
 			INQ_SHIPMENT: el[1], //Type of Transport
 			INQ_TERM: el[2], //Contract Term
 		};
+
 		// Old Version
 		// const newRow = {
 		// 	...strrow,
@@ -527,16 +531,23 @@ export async function importText(file) {
 		// ---------- Check 2na on Elmes here ----------
 		readdata.push(newRow);
 	});
-
-	await importHeaderNewSparq({
-		prjno: readdata[0].INQ_PRJNO,
-		inquiryno: readdata[0].INQ_NO,
-		item: readdata[0].INQD_ITEM,
+	const result = await Promise.all(readdata);
+	await importHeader({
+		mfgno: result[0].INQD_MFGORDER,
+		inquiryno: result[0].INQ_NO,
+		item: result[0].INQD_ITEM,
 		file: file.name,
-		shipment: readdata[0].INQ_SHIPMENT,
-		term: readdata[0].INQ_TERM,
 	});
-	return readdata;
+	return result;
+	// await importHeaderNewSparq({
+	// 	prjno: readdata[0].INQ_PRJNO,
+	// 	inquiryno: readdata[0].INQ_NO,
+	// 	item: readdata[0].INQD_ITEM,
+	// 	file: file.name,
+	// 	shipment: readdata[0].INQ_SHIPMENT,
+	// 	term: readdata[0].INQ_TERM,
+	// });
+	// return readdata;
 }
 
 export async function importHeaderNewSparq(data) {
