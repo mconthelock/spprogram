@@ -1,6 +1,7 @@
 import { showDigits } from "@amec/webasset/utils";
 import { createBtn } from "@amec/webasset/components/buttons";
 import { tableOpt } from "../utils.js";
+
 export async function setupPartTableDetail(data = []) {
 	const renderText = (str, logs, key) => {
 		if (logs == undefined) return str;
@@ -10,12 +11,12 @@ export async function setupPartTableDetail(data = []) {
 		);
 		log.map((el) => {
 			li += `<li class="flex gap-4 p-1 border-b">
-        <div>${el[key] == null ? "" : el[key]}</div>
-        <div class="text-xs">${moment(el.UPDATE_AT).format(
-			"yyyy-MM-DD h:mm a",
-		)}</div>
-        <div class="text-xs">${displayname(el.UPDATE_BY).fname}</div>
-      </li>`;
+                <div>${el[key] == null ? "" : el[key]}</div>
+                <div class="text-xs">${moment(el.UPDATE_AT).format(
+					"yyyy-MM-DD h:mm a",
+				)}</div>
+                <div class="text-xs">${displayname(el.UPDATE_BY).fname}</div>
+            </li>`;
 		});
 		const element = `<ul class="hidden">${li}</ul>${str}`;
 		return element;
@@ -34,7 +35,7 @@ export async function setupPartTableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25! edit-input supplier">`;
+		let selector = `<select class="select select-sm w-25! supplier">`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -61,8 +62,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_ID",
 			title: "<i class='icofont-settings text-lg'></i>",
-			className:
-				"sticky-column text-center text-nowrap cell-display px-3! border-r!",
+			className: `sticky-column text-center text-nowrap cell-display px-3! border-r!`,
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -80,7 +80,7 @@ export async function setupPartTableDetail(data = []) {
 		},
 		{
 			data: "INQD_SEQ",
-			title: "No",
+			title: "No.",
 			className: "sticky-column seqno",
 			sortable: false,
 			render: function (data, type, row) {
@@ -269,6 +269,18 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data) {
 				return data == null ? "" : data;
+			},
+		},
+		{
+			data: "INQD_FC_BASE",
+			title: "FC Base",
+			className: "hidden",
+			render: function (data, type, row, meta) {
+				data = data == "" ? "1.3" : data;
+				if (type === "display") {
+					return `<input type="type" class="w-12.5! " value="${data}">`;
+				}
+				return data;
 			},
 		},
 	];

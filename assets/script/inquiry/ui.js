@@ -419,7 +419,6 @@ $(document).on("change", ".supplier", async function (e) {
 		}
 	});
 	$("body").append(`<div style="display:none;" id="isBlankSupplier"></div>`);
-
 	if (isBlank) {
 		const confirm = await showConfirm({
 			title: "Apply supplier",

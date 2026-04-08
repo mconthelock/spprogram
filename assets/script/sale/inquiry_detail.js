@@ -410,10 +410,14 @@ async function updatePath(status, action, level = 1) {
 		//Get header data
 		let isforward = 0;
 		let details = table.rows().data().toArray();
+		console.log(details);
+		return;
+		z;
+
 		details = details.map((dt) => {
 			if (dt.INQD_DE != null) isforward = 1;
 			const { id, ...rest } = dt;
-			return rest;
+			return rezst;
 		});
 		await verifyDetail(table, details, level);
 		const header = {

@@ -35,7 +35,7 @@ export async function setupSaleTableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25!  supplier">`;
+		let selector = `<select class="select select-sm w-25! supplier">`;
 		sup.forEach((el) => {
 			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -43,7 +43,6 @@ export async function setupSaleTableDetail(data = []) {
 		return selector;
 	};
 
-	//const mode = data.length > 0 ? 1 : 0;
 	const isRevise = $("#revision").val() != "*" ? true : false;
 	const user = await currentUser();
 	const usrgroup = user.group;
@@ -63,8 +62,7 @@ export async function setupSaleTableDetail(data = []) {
 		{
 			data: "INQD_ID",
 			title: "<i class='icofont-settings text-lg'></i>",
-			className:
-				"sticky-column text-center text-nowrap cell-display px-3! border-r!",
+			className: `sticky-column text-center text-nowrap cell-display px-3! border-r!`,
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -82,7 +80,7 @@ export async function setupSaleTableDetail(data = []) {
 		},
 		{
 			data: "INQD_SEQ",
-			title: "No",
+			title: "No.",
 			className: "sticky-column seqno",
 			sortable: false,
 			render: function (data, type, row) {
