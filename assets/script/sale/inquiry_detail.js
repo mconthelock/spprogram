@@ -38,6 +38,7 @@ import { state } from "../inquiry/store.js";
 import { initApp } from "../utils.js";
 
 var table;
+
 $(document).ready(async () => {
 	try {
 		await showLoader();
@@ -80,12 +81,6 @@ $(document).ready(async () => {
 		const cards = await setupCard(inqs[0]);
 		$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
-		details = details.map((dt) => {
-			return {
-				...dt,
-				FORWARD: null,
-			};
-		});
 		const detailsOption = await setupSaleTableDetail(details);
 		table = await createTable(detailsOption);
 		//Inquiry History and Attachment
@@ -263,28 +258,35 @@ $(document).on("click", "#send-bm", async function (e) {
 		$("#sale-read").val(new Date());
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
-		const logs = await setLogsData(11, true);
-		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+
 		const inquiry = await updatePath(30, 3, 2);
-		const group = {
-			data: {
-				INQG_ASG: user.empno,
-				INQG_DES: user.empno,
-				INQG_CHK: user.empno,
-				INQG_CLASS: $("#des-class").val(),
-				INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_STATUS: 9,
-			},
-			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
-		};
-		await updateInquiryGroup(group);
-		await setAS400Data(inquiry);
-		await mailToPKC(inquiry);
-		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		if (inquiry) {
+			const logs = await setLogsData(11, false);
+			await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+			const group = {
+				data: {
+					INQG_ASG: user.empno,
+					INQG_DES: user.empno,
+					INQG_CHK: user.empno,
+					INQG_CLASS: $("#des-class").val(),
+					INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+					INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+					INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+					INQG_STATUS: 9,
+				},
+				condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
+			};
+			await updateInquiryGroup(group);
+			await setAS400Data(inquiry);
+			await mailToPKC(inquiry);
+			window.location.replace(
+				`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+			);
+		} else {
+			await activatedBtnRow($(this), false);
+			await showMessage(`Failed to update data inquiry.`);
+			return;
+		}
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow($(this), false);
@@ -410,14 +412,10 @@ async function updatePath(status, action, level = 1) {
 		//Get header data
 		let isforward = 0;
 		let details = table.rows().data().toArray();
-		console.log(details);
-		return;
-		z;
-
 		details = details.map((dt) => {
 			if (dt.INQD_DE != null) isforward = 1;
 			const { id, ...rest } = dt;
-			return rezst;
+			return rest;
 		});
 		await verifyDetail(table, details, level);
 		const header = {
@@ -484,7 +482,10 @@ async function setTimelineData(header) {
 		SG_USER: $("#sale-leader-incharge").val(),
 		SG_READ: $("#sale-leader-read").val(),
 		SG_CONFIRM: $("#sale-leader-confirm").val(),
-		SE_USER: $("#sale-incharge").val(),
+		SE_USER:
+			$("#sale-incharge").val() != null
+				? $("#sale-incharge").val()
+				: $("#sale-leader-incharge").val(),
 		SE_READ: $("#sale-read").val(),
 		SE_CONFIRM: $("#sale-confirm").val(),
 	};
@@ -495,9 +496,10 @@ async function setLogsData(action, adjust = false) {
 	return {
 		INQ_NO: $("#inquiry-no").val(),
 		INQ_REV: $("#revision").val(),
-		INQH_DATE: adjust
-			? dayjs().add("-3", "second").format("YYYY-MM-DD HH:mm:ss")
-			: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+		INQH_DATE:
+			adjust === true
+				? dayjs().format("YYYY-MM-DD HH:mm:ss")
+				: dayjs().add("-2", "second").format("YYYY-MM-DD HH:mm:ss"),
 		INQH_USER: $("#user-login").attr("empno"),
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),
