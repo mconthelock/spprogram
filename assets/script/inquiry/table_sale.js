@@ -294,6 +294,14 @@ export async function setupSaleTableDetail(data = []) {
 				return data == null ? "" : data;
 			},
 		},
+		{
+			data: "INQD_FC_BASE",
+			className: "hiddenx",
+		},
+		{
+			data: "INQD_TC_BASE",
+			className: "hiddenx",
+		},
 	];
 	return opt;
 }

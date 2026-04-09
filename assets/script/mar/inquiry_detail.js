@@ -46,6 +46,7 @@ import {
 	createInquiry,
 	createInquiryFile,
 	updateInquiry,
+	findPriceRatio,
 } from "../service/index.js";
 import { initApp, fileExtension } from "../utils.js";
 
@@ -232,11 +233,16 @@ $(document).on("click", "#send-bm", async function (e) {
 
 async function createPath(opt) {
 	try {
+		//1. Check ว่ากรอก Required ครบหรือไม่
 		const chkheader = await verifyHeader(
 			opt.level == 0 ? ".req-1" : ".req-2",
 		);
 		if (!chkheader) return;
+
+		//2. เรียงข้อมูล Header จากฟอร์ม
 		const header = await getFormHeader();
+
+		//3. Check ว่า Inquiry ยังมีอยู่หรือไม่
 		const check_inq = await getInquiry({ INQ_NO: header.INQ_NO });
 		if (check_inq.length > 0) {
 			await showMessage(`Inquiry ${header.INQ_NO} is already exist!`);
@@ -251,7 +257,25 @@ async function createPath(opt) {
 		header.UPDATE_BY = $("#user-login").attr("empname");
 		header.UPDATE_AT = new Date();
 
+		//4. เช็คว่า Trader + Quotation Type สามารถนำไปหา Price Ratio ได้หรือไม่
+		let chkRatio = true;
+		if (opt.level != 0) {
+			const ratio = await findPriceRatio({
+				TRADER: header.INQ_TRADER,
+				QUOTATION: header.INQ_QUOTATION_TYPE,
+			});
+			if (ratio.length == 0) {
+				chkRatio = false;
+				await showMessage(
+					`Price Ratio for Trader ${header.INQ_TRADER} with Quotation Type ${header.INQ_QUOTATION_TYPE} is not found. Please check your master data!`,
+				);
+				return;
+			}
+		}
+
 		const details = table.rows().data().toArray();
+		console.log(details);
+		return;
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
@@ -309,10 +333,14 @@ $(document).on("click", "#update-bm", async function (e) {
 
 async function updatePath(opt) {
 	try {
-		// await showLoader();
+		//1. Check ว่ากรอก Required ครบหรือไม่
 		const chkheader = await verifyHeader(".req-2");
 		if (!chkheader) return;
+
+		//2. เรียงข้อมูล Header จากฟอร์ม
 		const header = await getFormHeader();
+
+		//3. Check ว่า Inquiry ยังมีอยู่หรือไม่
 		const check_inq = await getInquiry({ INQ_NO: header.INQ_NO });
 		if (check_inq.length == 0) {
 			await showMessage(
@@ -325,6 +353,17 @@ async function updatePath(opt) {
 		header.INQ_STATUS = opt.status;
 		header.UPDATE_BY = $("#user-login").attr("empname");
 		header.UPDATE_AT = new Date();
+
+		//4. เช็คว่า Trader + Quotation Type สามารถนำไปหา Price Ratio ได้หรือไม่
+		const chkRatio = await findPriceRatio({
+			TRADER: header.INQ_TRADER,
+			QUOTATION: header.INQ_QUOTATION_TYPE,
+		});
+		console.log(chkRatio);
+
+		return;
+
+		//5. เรียงข้อมูล Detail จากตาราง
 		const details = table.rows().data().toArray();
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);

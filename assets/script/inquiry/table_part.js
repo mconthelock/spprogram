@@ -272,16 +272,29 @@ export async function setupPartTableDetail(data = []) {
 			},
 		},
 		{
+			data: "INQD_FC_COST",
+			title: "FC Cost",
+			className: "hiddenx",
+		},
+		{
 			data: "INQD_FC_BASE",
 			title: "FC Base",
-			className: "hidden",
-			render: function (data, type, row, meta) {
-				data = data == "" ? "1.3" : data;
-				if (type === "display") {
-					return `<input type="type" class="w-12.5! " value="${data}">`;
-				}
-				return data;
-			},
+			className: "hiddenx",
+		},
+		{
+			data: "INQD_TC_COST",
+			title: "TC Cost",
+			className: "hiddenx",
+		},
+		{
+			data: "INQD_TC_BASE",
+			title: "TC Base",
+			className: "hiddenx",
+		},
+		{
+			data: "INQD_UNIT_PRICE",
+			title: "Unit Price",
+			className: "hiddenx",
 		},
 	];
 

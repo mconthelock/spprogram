@@ -47,7 +47,7 @@ export function initRow(id, seq) {
 		INQD_FC_COST: "",
 		INQD_TC_COST: "",
 		INQD_UNIT_PRICE: "",
-		INQD_FC_BASE: "",
+		INQD_FC_BASE: 1.3,
 		INQD_TC_BASE: "",
 		INQD_MAR_REMARK: "",
 		INQD_DES_REMARK: "",
@@ -396,13 +396,23 @@ $(document).on("click", "#elmes-cancel", async function (e) {
 //005: Supplier Change
 $(document).on("change", ".supplier", async function (e) {
 	e.preventDefault();
+	const trader = $("#trader").val();
+	const quo = $("#quotation-type").val();
+	const ratio = await findPriceRatio({
+		TRADER: trader,
+		QUOTATION: quo,
+	});
+
 	const newValue = $(this).val();
 	const table = $("#table").DataTable();
 	const row = table.row($(this).closest("tr"));
 	const currentData = row.data();
+
+	const priceRatio = ratio.find((r) => r.SUPPLIER === newValue)?.FORMULA || 0;
 	const newData = {
 		...currentData,
 		INQD_SUPPLIER: newValue,
+		INQD_TC_BASE: priceRatio,
 	};
 	row.data(newData).draw(false);
 	if (newValue == "") return;
