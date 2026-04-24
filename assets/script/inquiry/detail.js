@@ -90,6 +90,7 @@ export async function setupCard(data) {
 export async function createFormCard(cardData, data = {}) {
 	const card = document.createElement("div");
 	card.className = "bg-white rounded-lg shadow-lg overflow-hidden p-4";
+	card.setAttribute("id", cardData.id);
 	const header = document.createElement("div");
 	header.className = "divider divider-start divider-primary";
 	const headTxt = document.createElement("span");
@@ -656,6 +657,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 	if (data.length == 0) throw new Error(`Please insert inquiry detail.`);
 
 	const rows = table.rows().nodes();
+	//1. Check seq no. should not be duplicate or empty or less than 0
 	rows.each(function (index) {
 		const row = $(table.row(index).node());
 		const item = table.row(index).data();
@@ -690,10 +692,16 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			errorEl(row.find(".partname"));
 			return;
 		}
+	});
+	if (savelevel == 0) {
+		return check;
+	}
 
-		//Mar Send to Sale with out DWG and Photo
-		if (savelevel == 1) {
-			// If drawing is blank, Should attached image to reference part
+	// 2. Mar send to sale with out DWG and Photo, If drawing is blank, Should attached image to reference part
+	if (savelevel == 1) {
+		rows.each(function (index) {
+			const row = $(table.row(index).node());
+			const item = table.row(index).data();
 			const hasAtt = $("#attachment-file")[0].files.length;
 			if (item.INQD_DRAWING == "" && hasAtt == 0) {
 				check = false;
@@ -703,22 +711,82 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				errorEl(row.find(".drawing-line"));
 				return;
 			}
-		}
+		});
+		return check;
+	}
+
+	const errList = [];
+	rows.each(function (index) {
+		const row = $(table.row(index).node());
+		const item = table.row(index).data();
+
+		const drawing = item.INQD_DRAWING;
+		const variable = item.INQD_VARIABLE;
+		const supplier = item.INQD_SUPPLIER;
+		const unpreply = item.INQD_UNREPLY;
+
+		// if (seenKeys.has(item.INQD_SEQ)) {
+		// 	check = false;
+		// 	message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
+		// 	errorEl(row.find(".seqno"));
+		// 	return;
+		// } else {
+		// 	seenKeys.add(item.INQD_SEQ);
+		// }
+
+		// if (intVal(item.INQD_SEQ) <= 0) {
+		// 	check = false;
+		// 	message.push(`Please input seq no.`);
+		// 	errorEl(row.find(".seqno"));
+		// 	return;
+		// }
+
+		// if (intVal(item.INQD_ITEM) < 100 || intVal(item.INQD_ITEM) > 1000) {
+		// 	check = false;
+		// 	message.push(
+		// 		`Please input item no. or item no should be number in range 100-999`,
+		// 	);
+		// 	errorEl(row.find(".itemno"));
+		// 	return;
+		// }
+
+		// if (item.INQD_PARTNAME == "") {
+		// 	check = false;
+		// 	message.push(`Please input Part name`);
+		// 	errorEl(row.find(".partname"));
+		// 	return;
+		// }
+
+		//Mar Send to Sale with out DWG and Photo
+		// if (savelevel == 1) {
+		// 	// If drawing is blank, Should attached image to reference part
+		// 	const hasAtt = $("#attachment-file")[0].files.length;
+		// 	if (item.INQD_DRAWING == "" && hasAtt == 0) {
+		// 		check = false;
+		// 		message.push(
+		// 			`Please input Drawing no. or add some attachement to reference declaring part`,
+		// 		);
+		// 		errorEl(row.find(".drawing-line"));
+		// 		return;
+		// 	}
+		// }
 
 		//
-		if (savelevel == 2) {
-			if (
-				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
-				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null)
-			) {
-				check = false;
-				message.push(`Please select supplier.`);
-				errorEl(row.find(".supplier-line"));
-				return;
-			}
-		}
+		// if (savelevel == 2) {
+		// 	if (
+		// 		(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
+		// 		(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null)
+		// 	) {
+		// 		check = false;
+		// 		message.push(`Please select supplier.`);
+		// 		errorEl(row.find(".supplier-line"));
+		// 		return;
+		// 	}
+		// }
 
-		if (savelevel == 3) {
+		/*if (savelevel == 3) {
+			console.log("FORWARD", item.FORWARD);
+
 			if (
 				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
 				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null) &&
@@ -729,9 +797,9 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				errorEl(row.find(".supplier-line"));
 				return;
 			}
-		}
+		}*/
 
-		if (savelevel > 1) {
+		/*if (savelevel > 1) {
 			if (item.INQD_DRAWING == "" && item.INQD_SUPPLIER != "LOCAL") {
 				check = false;
 				message.push(`Please input Drawing no.`);
@@ -767,7 +835,7 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				errorEl(row.find(".remark-line"));
 				return;
 			}
-		}
+		}*/
 	});
 
 	if (check == false) throw new Error(message);

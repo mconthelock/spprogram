@@ -17,6 +17,7 @@ import {
 	getElmesItem,
 	getSecondItem,
 	getReason,
+	findPriceRatio,
 } from "../service/index.js";
 import {
 	projectConclude,
@@ -447,6 +448,7 @@ $(document).on("change", ".supplier", async function (e) {
 				const updatedData = {
 					...rowData,
 					INQD_SUPPLIER: newValue,
+					INQD_TC_BASE: priceRatio,
 				};
 				table.row(index).data(updatedData);
 			}

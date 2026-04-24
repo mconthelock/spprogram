@@ -299,7 +299,19 @@ export async function setupSaleTableDetail(data = []) {
 			className: "hiddenx",
 		},
 		{
+			data: "INQD_FC_COST",
+			className: "hiddenx",
+		},
+		{
 			data: "INQD_TC_BASE",
+			className: "hiddenx",
+		},
+		{
+			data: "INQD_TC_COST",
+			className: "hiddenx",
+		},
+		{
+			data: "INQD_UNIT_PRICE",
 			className: "hiddenx",
 		},
 	];

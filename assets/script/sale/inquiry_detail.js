@@ -79,6 +79,7 @@ $(document).ready(async () => {
 			$("#form-container").attr("data", vstr);
 		}
 		const cards = await setupCard(inqs[0]);
+		$("#viewmar").addClass("hidden");
 		$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
 		const detailsOption = await setupSaleTableDetail(details);
@@ -181,6 +182,8 @@ $(document).on("click", "#assign-pic", async function (e) {
 		};
 		await updateInquiryGroup(group);
 		await mailToSaleEngineer(inquiry);
+		const logs = await setLogsData(10);
+		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		window.location.replace(
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
 		);
@@ -228,6 +231,8 @@ $(document).on("click", "#forward-de", async function (e) {
 			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
 		};
 		await updateInquiryGroup(group);
+		const logs = await setLogsData(12);
+		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		await mailToDEGroupLeader(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
@@ -240,7 +245,7 @@ $(document).on("click", "#forward-de", async function (e) {
 	}
 });
 
-//008: Save and send to AS400
+//008: Save and send to AS400 (OK)
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
 	const user = await currentUser();
@@ -258,10 +263,11 @@ $(document).on("click", "#send-bm", async function (e) {
 		$("#sale-read").val(new Date());
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
-
 		const inquiry = await updatePath(30, 3, 2);
+		const logs = await setLogsData(30, true);
+		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		if (inquiry) {
-			const logs = await setLogsData(11, false);
+			const logs = await setLogsData(11);
 			await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 			const group = {
 				data: {
@@ -311,7 +317,10 @@ $(document).on("click", "#send-confirm", async function (e) {
 	try {
 		await activatedBtnRow($(this));
 		const details = table.rows().data().toArray();
+		console.log(detail);
+
 		await verifyDetail(table, details, 3);
+		return;
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
 		const group = {
@@ -434,7 +443,7 @@ async function updatePath(status, action, level = 1) {
 		};
 		const timelinedata = await setTimelineData(header);
 		if (status == 30) $("#remark").val("");
-		const history = await setLogsData(status, true);
+		//const history = await setLogsData(status, true);
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
 			state.deletedLineMap.forEach((value, key) => {
@@ -455,7 +464,6 @@ async function updatePath(status, action, level = 1) {
 			deleteLine,
 			deleteFile,
 			timelinedata,
-			history,
 		};
 		const inquiry = await updateInquiry(fomdata);
 		if (state.selectedFilesMap.size > 0) {
@@ -497,9 +505,9 @@ async function setLogsData(action, adjust = false) {
 		INQ_NO: $("#inquiry-no").val(),
 		INQ_REV: $("#revision").val(),
 		INQH_DATE:
-			adjust === true
+			adjust === false
 				? dayjs().format("YYYY-MM-DD HH:mm:ss")
-				: dayjs().add("-2", "second").format("YYYY-MM-DD HH:mm:ss"),
+				: dayjs().add("2", "second").format("YYYY-MM-DD HH:mm:ss"),
 		INQH_USER: $("#user-login").attr("empno"),
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),

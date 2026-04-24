@@ -25,7 +25,8 @@
             "class": "shownesting",
             "name": "INQ_QUOTATION_TYPE",
             "topic": "quotype",
-            "mapping": "QUOTYPE_DESC"
+            "mapping": "QUOTYPE_DESC",
+            "input": true
         },
         {
             "label": "Delivery Term",

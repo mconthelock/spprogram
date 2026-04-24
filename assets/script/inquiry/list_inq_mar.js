@@ -53,7 +53,7 @@ export async function tableInquiryOption(data, extopt = {}) {
 				const statusColor = colors.find(
 					(item) => item.id >= data.STATUS_ID,
 				);
-				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
+				return `<span class="badge text-xs text-nowrap ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
 		},
 		{
@@ -61,8 +61,8 @@ export async function tableInquiryOption(data, extopt = {}) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = displayname(data.SNAME).sname;
-				return `${dsp} (${data.SEMPNO})`;
+				const dsp = displayname(data.SNAME).fname;
+				return `<div class="text-nowrap">${dsp} (${data.SEMPNO})</div>`;
 			},
 		},
 		{

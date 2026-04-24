@@ -274,8 +274,6 @@ async function createPath(opt) {
 		}
 
 		const details = table.rows().data().toArray();
-		console.log(details);
-		return;
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
