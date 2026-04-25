@@ -57,7 +57,8 @@ export function initRow(id, seq) {
 		INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
 		CREATE_BY: $("#user-login").attr("empname"),
 		UPDATE_BY: $("#user-login").attr("empname"),
-		FORWARD: null,
+		INQD_DE: null,
+		// FORWARD: null,
 	};
 }
 
@@ -450,12 +451,11 @@ $(document).on("change", ".supplier", async function (e) {
 					INQD_SUPPLIER: newValue,
 					INQD_TC_BASE: priceRatio,
 				};
-				table.row(index).data(updatedData);
+				table.row(index).data(updatedData).draw(false);
 			}
 		});
 	}
-
-	// console.log(table);
+	// console.log(table.data().toArray());
 });
 
 // 004: Second part checkbox

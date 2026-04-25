@@ -184,7 +184,7 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<textarea class="w-12.5! uppercase cell-input edit-input variable-line">${
+					return `<textarea class="w-12.5! uppercase cell-input edit-input qty-line">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -211,7 +211,8 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return renderSupplier(data, row.INQ_ID);
+					//return renderSupplier(data, row.INQ_ID);
+					return data;
 				}
 				return data;
 			},
@@ -243,7 +244,7 @@ export async function setupPartTableDetail(data = []) {
 			render: function (data, type, row, meta) {
 				if (type === "display") {
 					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input"
-           ${data == "" || data == null ? "" : "checked"}/>`;
+                        ${data == "" || data == null ? "" : "checked"}/>`;
 				}
 				return data;
 			},
@@ -274,27 +275,27 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_FC_COST",
 			title: "FC Cost",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_FC_BASE",
 			title: "FC Base",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_TC_BASE",
 			title: "TC Base",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: "hiddenx",
+			className: "hidden",
 		},
 	];
 

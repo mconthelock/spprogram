@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
+
 import { displayname } from "@amec/webasset/api/amec";
 import { createBtn } from "@amec/webasset/components/buttons";
-import { displayEmpInfo } from "@amec/webasset/indexDB";
-import { statusColors } from "./index.js";
+import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
+import { statusColors } from "../inquiry/index.js";
 import { tableOpt } from "../utils.js";
 
 export async function tableInquiryDEOption(data, extopt = {}) {
@@ -52,7 +53,7 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 				const statusColor = colors.find(
 					(item) => item.id >= data.STATUS_ID,
 				);
-				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
+				return `<span class="badge text-xs text-nowrap ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
 		},
 		{
@@ -60,8 +61,8 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = displayname(data.SNAME).sname;
-				return `${dsp} (${data.SEMPNO})`;
+				const dsp = displayname(data.SNAME).fname;
+				return `<div class="text-nowrap">${dsp} (${data.SEMPNO})</div>`;
 			},
 		},
 		{
@@ -174,8 +175,8 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 		if ($(row).find(".sale-information").length > 0) {
 			$(row).find(".sale-information").text("Loading...");
 			const user = await displayEmpInfo(data.timeline.SE_USER);
-			const dsp = displayname(user.SNAME).sname;
-			$(row).find(".sale-information").text(`${dsp} (${user.SEMPNO})`);
+			const dsp = displayname(user.SNAME).fname;
+			$(row).find(".sale-information").html(`${dsp} (${user.SEMPNO})`);
 		}
 	};
 

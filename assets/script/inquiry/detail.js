@@ -357,8 +357,6 @@ export async function freightTable() {
 }
 
 export const stockHeader = async (name, item) => {
-	console.log(name, item);
-
 	//   const str = name.split("_");
 	const customers = await getCustomer();
 	const value = customers.find((item) => item.CUS_NAME == name);
@@ -651,16 +649,15 @@ export async function verifyDetail(table, data, savelevel = 0) {
 		}, 5000);
 	};
 
+	const rows = table.rows().nodes();
 	let check = true;
 	let message = [];
 	const seenKeys = new Set();
-	if (data.length == 0) throw new Error(`Please insert inquiry detail.`);
-
-	const rows = table.rows().nodes();
+	if (rows.length == 0) throw new Error(`Please insert inquiry detail.`);
 	//1. Check seq no. should not be duplicate or empty or less than 0
-	rows.each(function (index) {
-		const row = $(table.row(index).node());
-		const item = table.row(index).data();
+	$.each(data, function (index, dt) {
+		const row = $(table.row(dt.rowIndex).node());
+		const item = table.row(dt.rowIndex).data();
 		if (seenKeys.has(item.INQD_SEQ)) {
 			check = false;
 			message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
@@ -692,16 +689,21 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			errorEl(row.find(".partname"));
 			return;
 		}
+
+		//Qty should be more than 0
+		if (intVal(item.INQD_QTY) <= 0 || isNaN(intVal(item.INQD_QTY))) {
+			check = false;
+			message.push(`Please input qty more than 0.`);
+			errorEl(row.find(".qty-line"));
+			return false;
+		}
 	});
-	if (savelevel == 0) {
-		return check;
-	}
 
 	// 2. Mar send to sale with out DWG and Photo, If drawing is blank, Should attached image to reference part
 	if (savelevel == 1) {
-		rows.each(function (index) {
-			const row = $(table.row(index).node());
-			const item = table.row(index).data();
+		$.each(data, function (index, dt) {
+			const row = $(table.row(dt.rowIndex).node());
+			const item = table.row(dt.rowIndex).data();
 			const hasAtt = $("#attachment-file")[0].files.length;
 			if (item.INQD_DRAWING == "" && hasAtt == 0) {
 				check = false;
@@ -712,99 +714,34 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				return;
 			}
 		});
-		return check;
-	}
-
-	const errList = [];
-	rows.each(function (index) {
-		const row = $(table.row(index).node());
-		const item = table.row(index).data();
-
-		const drawing = item.INQD_DRAWING;
-		const variable = item.INQD_VARIABLE;
-		const supplier = item.INQD_SUPPLIER;
-		const unpreply = item.INQD_UNREPLY;
-
-		// if (seenKeys.has(item.INQD_SEQ)) {
-		// 	check = false;
-		// 	message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
-		// 	errorEl(row.find(".seqno"));
-		// 	return;
-		// } else {
-		// 	seenKeys.add(item.INQD_SEQ);
+		// if (check == false) {
+		// 	throw new Error([...new Set(message)]);
 		// }
-
-		// if (intVal(item.INQD_SEQ) <= 0) {
-		// 	check = false;
-		// 	message.push(`Please input seq no.`);
-		// 	errorEl(row.find(".seqno"));
-		// 	return;
-		// }
-
-		// if (intVal(item.INQD_ITEM) < 100 || intVal(item.INQD_ITEM) > 1000) {
-		// 	check = false;
-		// 	message.push(
-		// 		`Please input item no. or item no should be number in range 100-999`,
-		// 	);
-		// 	errorEl(row.find(".itemno"));
-		// 	return;
-		// }
-
-		// if (item.INQD_PARTNAME == "") {
-		// 	check = false;
-		// 	message.push(`Please input Part name`);
-		// 	errorEl(row.find(".partname"));
-		// 	return;
-		// }
-
-		//Mar Send to Sale with out DWG and Photo
-		// if (savelevel == 1) {
-		// 	// If drawing is blank, Should attached image to reference part
-		// 	const hasAtt = $("#attachment-file")[0].files.length;
-		// 	if (item.INQD_DRAWING == "" && hasAtt == 0) {
-		// 		check = false;
-		// 		message.push(
-		// 			`Please input Drawing no. or add some attachement to reference declaring part`,
-		// 		);
-		// 		errorEl(row.find(".drawing-line"));
-		// 		return;
-		// 	}
-		// }
-
-		//
-		// if (savelevel == 2) {
-		// 	if (
-		// 		(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
-		// 		(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null)
-		// 	) {
-		// 		check = false;
-		// 		message.push(`Please select supplier.`);
-		// 		errorEl(row.find(".supplier-line"));
-		// 		return;
-		// 	}
-		// }
-
-		/*if (savelevel == 3) {
-			console.log("FORWARD", item.FORWARD);
-
+		// return check;
+	} else if (savelevel > 1) {
+		$.each(data, function (index, dt) {
+			const row = $(table.row(dt.rowIndex).node());
+			const item = table.row(dt.rowIndex).data();
+			//If not unable to reply, supplier should not be empty
 			if (
 				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
-				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null) &&
-				(item.FORWARD == "" || item.FORWARD == null)
+				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null)
 			) {
 				check = false;
 				message.push(`Please select supplier.`);
 				errorEl(row.find(".supplier-line"));
-				return;
+				return false;
 			}
-		}*/
 
-		/*if (savelevel > 1) {
-			if (item.INQD_DRAWING == "" && item.INQD_SUPPLIER != "LOCAL") {
+			//Drawing can not null
+			if (
+				item.INQD_DRAWING == "" &&
+				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null)
+			) {
 				check = false;
 				message.push(`Please input Drawing no.`);
 				errorEl(row.find(".drawing-line"));
-				return;
+				return false;
 			}
 
 			const dwgno = validateDrawingNo(item.INQD_DRAWING);
@@ -812,19 +749,21 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				check = false;
 				message.push(`Please check Drawing no. format.`);
 				errorEl(row.find(".drawing-line"));
-				return;
+				return false;
 			}
 
+			//If vairable has value, should be in correct format
 			if (item.INQD_VARIABLE != "" && item.INQD_VARIABLE != null) {
 				const variavle = validateVariable(item.INQD_VARIABLE);
 				if (!variavle.isValid) {
 					check = false;
 					message.push(`Please check Variable format.`);
 					errorEl(row.find(".variable-line"));
-					return;
+					return false;
 				}
 			}
 
+			// Remark should not be empty when unable to reply reason is selected
 			if (
 				item.INQD_UNREPLY != "" &&
 				item.INQD_UNREPLY != null &&
@@ -833,12 +772,13 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				check = false;
 				message.push(`Please input remark for unable to reply reason.`);
 				errorEl(row.find(".remark-line"));
-				return;
+				return false;
 			}
-		}*/
-	});
-
-	if (check == false) throw new Error(message);
+		});
+	}
+	if (check == false) {
+		throw new Error([...new Set(message)]);
+	}
 	return check;
 }
 //End: Verify save form

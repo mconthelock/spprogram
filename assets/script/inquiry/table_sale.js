@@ -35,9 +35,9 @@ export async function setupSaleTableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25! supplier">`;
+		let selector = `<select class="select select-sm w-25! border-none rounded-none bg-transparent! supplier">`;
 		sup.forEach((el) => {
-			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
+			selector += `<option class="bg-white! rounded-none" value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
 		selector += `</select>`;
 		return selector;
@@ -184,7 +184,7 @@ export async function setupSaleTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					return `<textarea class="w-12.5! uppercase cell-input edit-input variable-line">${
+					return `<textarea class="w-12.5! uppercase cell-input edit-input qty-line">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -296,23 +296,23 @@ export async function setupSaleTableDetail(data = []) {
 		},
 		{
 			data: "INQD_FC_BASE",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_FC_COST",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_TC_BASE",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_TC_COST",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_UNIT_PRICE",
-			className: "hiddenx",
+			className: "hidden",
 		},
 	];
 	return opt;

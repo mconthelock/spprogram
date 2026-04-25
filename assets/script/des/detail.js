@@ -1,5 +1,6 @@
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
 import dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, revisionCode } from "@amec/webasset/utils";
@@ -46,29 +47,33 @@ $(document).ready(async () => {
 		const usrgroup = user.group; //Not use (Maybe)
 		const des = await getDesigner();
 		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
-
 		const inqs = await getInquiry({
 			INQ_ID: $("#inquiry-id").val(),
 			IS_DETAILS: true,
-			IS_GROUP: 1,
+			IS_GROUP: true,
 			IS_TIMELINE: true,
 		});
+
+		const group = inqs[0].inqgroup.find((g) => g.INQG_GROUP == desgroup);
+		let set_des_group = {
+			...group,
+			INQG_ASG: group.INQG_ASG == null ? user.empno : group.INQG_ASG,
+		};
+
+		inqs[0].inqgroup = set_des_group;
+		inqs[0].INQ_DATE = dayjs(inqs[0].INQ_DATE).format("YYYY-MM-DD");
+		inqs[0].INQ_REMARK = inqs[0].INQ_DES_REMARK;
 
 		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
+		$("#viewmar").addClass("hidden");
 		$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter(
 			(dt) =>
 				dt.INQD_LATEST == "1" &&
 				Math.floor(dt.INQD_ITEM / 100) == desgroup,
 		);
-		details = details.map((dt) => {
-			return {
-				...dt,
-				FORWARD: null,
-			};
-		});
 		const detailsOption = await setupDETableDetail(details);
 		table = await createTable(detailsOption);
 		//Inquiry History and Attachment

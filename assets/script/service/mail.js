@@ -105,7 +105,7 @@ async function createEmailData(data, emailto) {
 	const mailto = {
 		from: "SP Program <no-reply@MitsubishiElevatorAsia.co.th>",
 		to: "chalorms@MitsubishiElevatorAsia.co.th", //emailto
-		cc: ["chalorms@MitsubishiElevatorAsia.co.th", data.maruser.SRECMAIL],
+		// cc: ["chalorms@MitsubishiElevatorAsia.co.th", data.maruser.SRECMAIL],
 		subject: `Inquiry No. ${data.INQ_NO} Update`,
 		html: finalHtml,
 		// attachments: [

@@ -163,10 +163,13 @@ $(document).on("click", "#assign-pic", async function (e) {
 		return;
 	}
 	try {
-		await activatedBtnRow($(this));
 		$("#sale-leader-incharge").val(user.empno);
 		$("#sale-leader-confirm").val(new Date());
-		const inquiry = await updatePath(10, 1);
+		const inquiry = await updatePath({
+			level: 0,
+			status: 10,
+			obj: $(this),
+		});
 		const group = {
 			data: {
 				INQG_ASG: user.empno,
@@ -188,7 +191,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
-		await activatedBtnRow($(this), false);
+		// await activatedBtnRow($(this), false);
 		await showMessage(error.message || `Something went wrong.`);
 		return;
 	}
@@ -213,9 +216,6 @@ $(document).on("click", "#forward-de", async function (e) {
 		$("#sale-read").val(new Date());
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
-		//const sss = await setTimelineData({ INQ_NO: 11, INQ_REV: 1 });
-		//console.log(sss);
-		//return;
 		const inquiry = await updatePath(12, 2);
 		const group = {
 			data: {
@@ -315,12 +315,17 @@ $(document).on("click", "#send-confirm", async function (e) {
 	}
 
 	try {
-		await activatedBtnRow($(this));
-		const details = table.rows().data().toArray();
-		console.log(detail);
+		const details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail, index) => ({
+				...detail,
+				rowIndex: index,
+			}));
+		const filteredDetails = details.filter((dt) => dt.INQD_DE != "1");
+		await verifyDetail(table, filteredDetails, 3);
 
-		await verifyDetail(table, details, 3);
-		return;
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
 		const group = {
@@ -339,7 +344,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 		let isAmec = false;
 		let isMelina = false;
 		details.map((dt) => {
-			if (dt.FORWARD != null) {
+			if (dt.INQD_DE != null) {
 				const grp = Math.floor(dt.INQD_ITEM / 100);
 				designForward.push(grp);
 			}
@@ -348,39 +353,38 @@ $(document).on("click", "#send-confirm", async function (e) {
 			if (dt.INQD_SUPPLIER == "MELINA") isMelina = true;
 		});
 
-		const inquiry = await updatePath(11, 4, 1);
+		//const inquiry = await updatePath(11, 4, 1);
 		designForward = [...new Set(designForward)];
 		if (designForward.length > 0) {
+			const inquiry = await updatePath({
+				level: 3,
+				status: 11,
+				obj: $(this),
+			});
 			await forwardInquiry(designForward);
 			await mailToDEGroupLeader(inquiry);
-		} else if (isAmec) {
-			await setAS400Data(inquiry);
-			const logs = await setLogsData(30, true);
-			await createInquiryHistory({
-				...logs,
-				INQH_REMARK: null,
-				INQH_LATEST: 1,
-			});
-			await updateInquiryHeader(
-				{ INQ_STATUS: 30, INQ_LATEST: 1 },
-				inquiry.INQ_ID,
-			);
-			await mailToPKC(inquiry);
-		} else if (isMelina) {
-			//Old series
-			await updateInquiryHeader(
-				{ INQ_STATUS: 52, INQ_LATEST: 1 },
-				inquiry.INQ_ID,
-			);
 		} else {
-			//Other Supplier
-			await updateInquiryHeader(
-				{ INQ_STATUS: 50, INQ_LATEST: 1 },
-				inquiry.INQ_ID,
-			);
+			if (!isAmec) {
+				const inquiry = await updatePath({
+					level: 3,
+					status: isMelina ? 52 : 50,
+					obj: $(this),
+				});
+			} else {
+				const inquiry = await updatePath({
+					level: 3,
+					status: 30,
+					obj: $(this),
+				});
+				await mailToPKC(inquiry);
+				const logs = await setLogsData(30, true);
+				await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+			}
 		}
+		const logs = await setLogsData(11);
+		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+			`${process.env.APP_ENV}/se/inquiry/show/${$("#inquiry-id").val()}`,
 		);
 	} catch (error) {
 		console.log(error);
@@ -416,17 +420,23 @@ async function forwardInquiry(fwdata) {
 }
 
 // 015: Update and send to AS400
-async function updatePath(status, action, level = 1) {
+// async function updatePath(status, action, level = 0) {
+async function updatePath(option) {
 	try {
 		//Get header data
-		let isforward = 0;
-		let details = table.rows().data().toArray();
-		details = details.map((dt) => {
-			if (dt.INQD_DE != null) isforward = 1;
-			const { id, ...rest } = dt;
-			return rest;
-		});
-		await verifyDetail(table, details, level);
+		//let isforward = 0;
+		let details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail, index) => ({
+				...detail,
+				rowIndex: index,
+			}));
+		const isforward = details.some((dt) => dt.INQD_DE == "1") ? 1 : 0;
+		const filteredDetails = details.filter((dt) => dt.INQD_DE != "1");
+		await verifyDetail(table, filteredDetails, option.level);
+
 		const header = {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),
@@ -435,14 +445,14 @@ async function updatePath(status, action, level = 1) {
 			INQ_PRDSCH: $("#schedule").val(),
 			INQ_SERIES: $("#series").val(),
 			INQ_SPEC: $("#spec").val(),
-			INQ_STATUS: status,
+			INQ_STATUS: option.status,
 			INQ_SALE_REMARK: $("#remark").val(),
 			INQ_SALE_FORWARD: isforward,
 			UPDATE_BY: $("#user-login").attr("empname"),
 			UPDATE_AT: new Date(),
 		};
 		const timelinedata = await setTimelineData(header);
-		if (status == 30) $("#remark").val("");
+		if (option.status == 30) $("#remark").val("");
 		//const history = await setLogsData(status, true);
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
@@ -458,6 +468,14 @@ async function updatePath(status, action, level = 1) {
 			});
 		}
 
+		details = details.map((dt) => {
+			const { rowIndex, ...rest } = dt;
+			return {
+				...rest,
+				INQD_SUPPLIER: rest.INQD_DE == "1" ? "" : rest.INQD_SUPPLIER,
+				INQD_TC_BASE: rest.INQD_DE == "1" ? null : rest.INQD_TC_BASE,
+			};
+		});
 		const fomdata = {
 			header,
 			details,
@@ -465,6 +483,8 @@ async function updatePath(status, action, level = 1) {
 			deleteFile,
 			timelinedata,
 		};
+
+		await activatedBtnRow(option.obj);
 		const inquiry = await updateInquiry(fomdata);
 		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
@@ -478,6 +498,7 @@ async function updatePath(status, action, level = 1) {
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
+		await activatedBtnRow(option.obj, false);
 	}
 }
 
@@ -504,10 +525,9 @@ async function setLogsData(action, adjust = false) {
 	return {
 		INQ_NO: $("#inquiry-no").val(),
 		INQ_REV: $("#revision").val(),
-		INQH_DATE:
-			adjust === false
-				? dayjs().format("YYYY-MM-DD HH:mm:ss")
-				: dayjs().add("2", "second").format("YYYY-MM-DD HH:mm:ss"),
+		INQH_DATE: adjust
+			? dayjs().add("2", "second").format("YYYY-MM-DD HH:mm:ss")
+			: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		INQH_USER: $("#user-login").attr("empno"),
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),

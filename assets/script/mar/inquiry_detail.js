@@ -273,7 +273,15 @@ async function createPath(opt) {
 			}
 		}
 
-		const details = table.rows().data().toArray();
+		const details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail, index) => ({
+				...detail,
+				rowIndex: index,
+			}));
+
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
@@ -353,16 +361,30 @@ async function updatePath(opt) {
 		header.UPDATE_AT = new Date();
 
 		//4. เช็คว่า Trader + Quotation Type สามารถนำไปหา Price Ratio ได้หรือไม่
-		const chkRatio = await findPriceRatio({
-			TRADER: header.INQ_TRADER,
-			QUOTATION: header.INQ_QUOTATION_TYPE,
-		});
-		console.log(chkRatio);
-
-		return;
+		let chkRatio = true;
+		if (opt.level != 0) {
+			const ratio = await findPriceRatio({
+				TRADER: header.INQ_TRADER,
+				QUOTATION: header.INQ_QUOTATION_TYPE,
+			});
+			if (ratio.length == 0) {
+				chkRatio = false;
+				await showMessage(
+					`Price Ratio for Trader ${header.INQ_TRADER} with Quotation Type ${header.INQ_QUOTATION_TYPE} is not found. Please check your master data!`,
+				);
+				return;
+			}
+		}
 
 		//5. เรียงข้อมูล Detail จากตาราง
-		const details = table.rows().data().toArray();
+		const details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail, index) => ({
+				...detail,
+				rowIndex: index,
+			}));
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);
 
@@ -391,6 +413,7 @@ async function updatePath(opt) {
 			history,
 		};
 		const inquiry = await updateInquiry(fomdata);
+		//Attachments
 		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
 			attachment_form.append("INQ_NO", inquiry.INQ_NO);

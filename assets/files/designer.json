@@ -1,0 +1,97 @@
+{
+    "id": "designer",
+    "title": "Design Information",
+    "fields": [
+            {
+            "label": "MAR. In-charge",
+            "id":"mar-incharge",
+            "type": "staticText",
+            "class": "displayname",
+            "mapping":"INQ_MAR_PIC",
+            "name": "INQ_MAR_PIC"
+        },
+        {
+            "label": "Assigner",
+            "id":"de-leader-incharge",
+            "type": "staticText",
+            "class": "setnesting displayname",
+            "topic": "inqgroup",
+            "name": "INQG_ASG",
+            "mapping":"INQG_ASG",
+            "input": true
+        },
+        {
+            "label": "Read",
+            "id": "sale-leader-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "name": "SG_READ",
+            "topic": "timeline",
+            "mapping": "SG_READ"
+        },
+        {
+            "label": "Confirm",
+            "id": "sale-leader-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SG_CONFIRM",
+            "mapping": "SG_CONFIRM"
+        },
+        {
+            "label": "Designer",
+            "id": "desiger-incharge",
+            "type": "select",
+            "source": "getDesigner",
+            "class": "req-1",
+            "name": "INQG_DES"
+        },
+        {
+            "label": "Checker",
+            "id": "checker-incharge",
+            "type": "select",
+            "source": "getDesignerChecker",
+            "class": "req-1",
+            "name": "INQG_CHK"
+        },
+        {
+            "label": "SE Read",
+            "id": "sale-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SE_READ",
+            "mapping": "SE_READ"
+        },
+        {
+            "label": "SE Confirm",
+            "id": "sale-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SE_CONFIRM",
+            "mapping": "SE_CONFIRM"
+        },
+        {
+            "label": "Design Class",
+            "id": "des-class",
+            "type": "select",
+            "name": "INQG_CLASS",
+            "class": "req-1",
+            "options": [
+                {"id": "A", "text": "A"},
+                {"id": "B", "text": "B"},
+                {"id": "C", "text": "C"},
+                {"id": "D", "text": "D"},
+                {"id": "E", "text": "E"}
+            ]
+        },
+        {
+            "label": "Remark",
+            "id": "remark",
+            "type": "textarea" ,
+            "name": "INQ_REMARK",
+            "mapping": "INQ_REMARK"
+        }
+    ]
+}

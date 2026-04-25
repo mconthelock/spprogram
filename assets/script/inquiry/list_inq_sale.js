@@ -10,7 +10,6 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.data = data;
-	// opt.orderFixed = [0, "desc"];
 	opt.order = [
 		[0, "desc"],
 		[1, "desc"],
@@ -53,7 +52,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 				const statusColor = colors.find(
 					(item) => item.id >= data.STATUS_ID,
 				);
-				return `<span class="badge text-xs ${statusColor.color}">${data.STATUS_DESC}</span>`;
+				return `<span class="badge text-xs text-nowrap ${statusColor.color}">${data.STATUS_DESC}</span>`;
 			},
 		},
 		{
@@ -61,8 +60,8 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			title: "MAR. In-Charge",
 			render: (data) => {
 				if (data == null) return "";
-				const dsp = displayname(data.SNAME).sname;
-				return `${dsp} (${data.SEMPNO})`;
+				const dsp = displayname(data.SNAME).fname;
+				return `<div class="text-nowrap">${dsp} (${data.SEMPNO})</div>`;
 			},
 		},
 		{

@@ -13,9 +13,7 @@ $(async function () {
 	try {
 		await initApp({ submenu: ".navmenu-newinq" });
 		const data = await query();
-		const tableOpt = await tableInquiryDEOption(data, {
-			backReportBtn: true,
-		});
+		const tableOpt = await tableInquiryDEOption(data);
 		table = await createTable(tableOpt);
 	} catch (error) {
 		console.log(error);
@@ -41,10 +39,13 @@ async function query() {
 	switch (pageid) {
 		case "1":
 			result = data.filter((d) => {
-				if (d.INQ_STATUS < 20) return false;
-				return d.inqgroup.some(
-					(g) => g.INQG_GROUP == desgroup && g.INQG_ASG_DATE == null,
-				);
+				if (d.INQ_STATUS >= 11 && d.INQ_STATUS < 20) {
+					return d.inqgroup.some(
+						(g) =>
+							g.INQG_GROUP == desgroup && g.INQG_ASG_DATE == null,
+					);
+				}
+				return false;
 			});
 			break;
 		case "2":
