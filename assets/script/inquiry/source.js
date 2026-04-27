@@ -171,42 +171,52 @@ export const init = {
 	},
 
 	getDesigner: async function () {
-		const current = await currentUser();
-		const data = await srv.getAppUsers();
-		const result = data.filter((x) =>
-			["SLG", "SLE"].includes(x.appsgroups.GROUP_CODE),
-		);
-		let options = result.map((sale) => {
-			const group = sale.appsgroups.GROUP_CODE;
-			const emp = sale.data;
-			const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
-			const sname = name.split(" ");
-			const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
-			const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
-			return {
-				id: sale.USERS_ID,
-				text: `${fname} ${lname} (${emp.SEMPNO})`,
-			};
-		});
-
-		options = options.filter((el) => {
-			return el.id != current.empno;
-		});
-		return options;
-	},
-
-	getDesignerChecker: async function () {
+		const employee = await srv.getAppUsers();
 		const user = await currentUser();
 		const designers = await getDesigner();
-		const data = await srv.getAppUsers();
 		const desgroup = designers.find(
 			(d) => d.DES_USER == user.empno,
 		).DES_GROUP;
 
 		const options = designers
-			.filter((usr) => usr.DES_GROUP == desgroup)
+			.filter(
+				(usr) => usr.DES_GROUP == desgroup && usr.DES_CHECKER != null,
+			)
 			.map((des) => {
-				const emp = des.data;
+				const emp = employee.find((e) => {
+					return e.USERS_ID == des.DES_USER;
+				}).employee;
+				const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
+				const sname = name.split(" ");
+				const fname =
+					sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
+				const lname =
+					sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
+
+				return {
+					id: des.DES_USER,
+					text: `${fname} ${lname} (${emp.SEMPNO})`,
+				};
+			});
+		return options;
+	},
+
+	getDesignerChecker: async function () {
+		const employee = await srv.getAppUsers();
+		const user = await currentUser();
+		const designers = await getDesigner();
+		const desgroup = designers.find(
+			(d) => d.DES_USER == user.empno,
+		).DES_GROUP;
+
+		const options = designers
+			.filter(
+				(usr) => usr.DES_GROUP == desgroup && usr.DES_CHECKER != null,
+			)
+			.map((des) => {
+				const emp = employee.find((e) => {
+					return e.USERS_ID == des.DES_USER;
+				}).employee;
 				const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
 				const sname = name.split(" ");
 				const fname =
