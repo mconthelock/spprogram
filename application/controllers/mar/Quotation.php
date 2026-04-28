@@ -12,7 +12,7 @@ class Quotation extends MY_Controller {
     }
 
     public function detail($id, $mode = 1){
-        $lists = array('quotation|viewinfo|mar', 'quotation|viewinfo|maruser', 'quotation|viewinfo|viewmar');
+        $lists = array('quotation|viewinfo|mar', 'quotation|viewinfo|maruser', 'viewquo|viewinfo|viewmar');
         $data = array(
             'id' => $id,
             'list' => $lists[$mode-1],
@@ -22,7 +22,7 @@ class Quotation extends MY_Controller {
     }
 
      public function show($id, $mode = 3){
-        $lists = array('quotation|viewinfo|mar', 'quotation|viewinfo|maruser', 'quotation|viewinfo|viewmar');
+        $lists = array('viewquo|viewinfo|mar', 'viewquo|viewinfo|maruser', 'viewquo|viewinfo|viewmar');
          $data = array(
             'id' => $id,
             'list' => $lists[$mode-1],

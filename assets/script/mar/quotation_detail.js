@@ -146,6 +146,11 @@ async function quotationOut(inq) {
 }
 
 async function setupButton(group) {
+	const detail = table.rows().data().toArray();
+	const isAmec = detail.filter((dt) => {
+		return dt.INQD_SUPPLIER == "MELINA";
+	});
+
 	const issue = await createBtn({
 		id: "issue-quotation",
 		title: "Issue Quotation",
@@ -161,13 +166,15 @@ async function setupButton(group) {
 		icon: "fi fi-tr-circle-xmark text-xl",
 	});
 
-	const returnfin = await createBtn({
-		id: "returnfin",
-		title: "Return to Finance",
-		className:
-			"btn-accent text-white shadow-lg hover:bg-transparent hover:text-accent",
-		icon: "fi fi-tr-feedback-cycle-loop text-xl",
-	});
+	const returnFnc = `<div class="dropdown dropdown-right dropdown-center">
+        <div tabindex="0" role="button" class="btn btn-accent text-white shadow-lg hover:bg-transparent hover:text-accent">
+            <i class="fi fi-rr-edit text-xl"></i> Edit
+        </div>
+        <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+            <li class="${isAmec.length == 0 ? "text-gray-500 menu-disabled" : ""}"><a id="${isAmec.length > 0 ? "returnfin" : ""}" >Return to Finance</a></li>
+            <li><a href="${process.env.APP_ENV}/mar/inquiry/detail/${$("#inquiry-id").val()}">Revise Inquiry</a></li>
+        </ul>
+    </div>`;
 
 	const back = await createBtn({
 		id: "goback",
@@ -192,10 +199,10 @@ async function setupButton(group) {
 			$(".btn-container").append(exportBtn, back);
 			break;
 		case 2:
-			$(".btn-container").append(issue, reject, returnfin, back);
+			$(".btn-container").append(issue, reject, returnFnc, back);
 			break;
 		default:
-			$(".btn-container").append(issue, reject, returnfin, back);
+			$(".btn-container").append(issue, reject, returnFnc, back);
 			break;
 	}
 }
@@ -262,7 +269,17 @@ $(document).on("click", "#issue-quotation", async function (e) {
 
 $(document).on("click", "#reject-quotation", async function (e) {
 	e.preventDefault();
-	await updatePath({ level: 2, status: 98, obj: $(this) });
+	await updatePath({ level: 0, status: 98, obj: $(this) });
+});
+
+$(document).on("click", "#returnfin", async function (e) {
+	e.preventDefault();
+	if ($("#remark").val() == "") {
+		await showMessage("Please enter remark for your reason.");
+		$("#remark").focus();
+		return;
+	}
+	await updatePath({ level: 0, status: 39, obj: $(this) });
 });
 
 async function updatePath(opt) {
@@ -276,11 +293,6 @@ async function updatePath(opt) {
 		inqheader.INQ_STATUS = opt.status;
 		inqheader.UPDATE_BY = $("#user-login").attr("empname");
 		inqheader.UPDATE_AT = new Date();
-
-		// QUO_DATE
-		// QUO_VALIDITY
-		// QUO_NOTE
-
 		const details = table
 			.rows()
 			.data()

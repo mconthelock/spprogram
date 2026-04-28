@@ -371,7 +371,8 @@ $(document).on("click", ".export-sparq", async function (e) {
 			const dm = data[0].INQ_DELIVERY_METHOD;
 			if (dm == 1 || dm == 6)
 				seaDay = data[0].shipment.SHIPMENT_VALUE.toString();
-			if (dm == 2) airDay = data[0].shipment.SHIPMENT_VALUE.toString();
+			if (dm == 2 || dm == 6)
+				airDay = data[0].shipment.SHIPMENT_VALUE.toString();
 			if (dm == 5)
 				courierDay = data[0].shipment.SHIPMENT_VALUE.toString();
 			if (dm == 9) truckDay = data[0].shipment.SHIPMENT_VALUE.toString();
