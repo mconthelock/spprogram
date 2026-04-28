@@ -194,6 +194,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 			table.row.add(row).draw(false);
 		});
 		setSelect2({ allowClear: false });
+		$("#uploadRowBtn").addClass("btn-disabled").prop("disabled", true);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

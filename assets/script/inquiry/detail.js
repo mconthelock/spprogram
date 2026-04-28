@@ -40,7 +40,9 @@ export const statusColors = () => {
 		{ id: 19, color: "bg-cyan-500" }, //SE
 		{ id: 29, color: "bg-blue-500 text-white" }, //DE
 		{ id: 39, color: "bg-slate-500 text-white" }, //IS
-		{ id: 49, color: "bg-amber-500 text-white" }, //FIN
+		{ id: 44, color: "bg-amber-500 text-white" }, //FIN
+		{ id: 45, color: "bg-lime-500 text-white" }, //Price Approved
+		{ id: 52, color: "bg-violet-500 text-white" }, //Other supply + Old Series
 		{ id: 59, color: "bg-teal-500 text-white" }, //MAR [Post process]
 		{ id: 98, color: "bg-red-500 text-white" }, //Cancel
 		{ id: 99, color: "bg-primary text-white" }, //Finish
@@ -375,6 +377,7 @@ export const stockHeader = async (name, item) => {
 		const agent = `${value.CUS_AGENT} (${value.CUS_COUNTRY})`;
 		$("#agent").val(agent).trigger("change");
 		$("#country").val(value.CUS_COUNTRY).trigger("change");
+		$("#send-de").addClass("btn-disabled").prop("disabled", true);
 	}
 };
 
@@ -688,6 +691,30 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			message.push(`Please input Part name`);
 			errorEl(row.find(".partname"));
 			return;
+		}
+
+		if (item.INQD_MFGORDER !== "STOCK" && item.INQD_MFGORDER.length != 9) {
+			check = false;
+			message.push(`Please input correct MFG order no.`);
+			errorEl(row.find(".mfgno"));
+			return;
+		}
+
+		if (item.INQD_MFGORDER == "STOCK") {
+			if (item.INQD_SUPPLIER == "") {
+				check = false;
+				message.push(`Please input Supply By value.`);
+				errorEl(row.find(".supplier-line"));
+				return;
+			}
+
+			const dwgno = validateDrawingNo(item.INQD_DRAWING);
+			if (dwgno == null) {
+				check = false;
+				message.push(`Please check Drawing no. format.`);
+				errorEl(row.find(".drawing-line"));
+				return false;
+			}
 		}
 
 		//Qty should be more than 0

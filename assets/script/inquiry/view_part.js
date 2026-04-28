@@ -140,16 +140,26 @@ export async function setupPartViewDetail(data = []) {
 		{
 			data: "INQD_SENDPART",
 			title: `2<sup>nd</sup>`,
-			className: "text-center",
+			className: "text-center!",
 			render: function (data, type, row, meta) {
+				if (type === "display") {
+					return data == null
+						? ""
+						: `<i class="fi fi-rs-check-circle text-xl text-green-500"></i>`;
+				}
 				return data;
 			},
 		},
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: "text-center",
+			className: "text-center!",
 			render: function (data, type, row, meta) {
+				if (type === "display") {
+					return data == null
+						? ""
+						: `<i class="fi fi-rr-circle-xmark text-xl text-red-500"></i>`;
+				}
 				return data;
 			},
 		},

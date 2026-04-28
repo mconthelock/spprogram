@@ -211,8 +211,8 @@ export async function setupPartTableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					//return renderSupplier(data, row.INQ_ID);
-					return data;
+					return renderSupplier(data, row.INQ_ID);
+					// return data;
 				}
 				return data;
 			},

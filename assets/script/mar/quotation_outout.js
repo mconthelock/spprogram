@@ -135,7 +135,6 @@ async function getDataDetails(data) {
 		await showMessage(`Not found price ratio for this Sale Company.`);
 		return;
 	}
-
 	const period = await currentPeriod();
 	const currency = await getCurrency();
 	const exchange1 = currency.find(
@@ -144,6 +143,7 @@ async function getDataDetails(data) {
 			x.CURR_PERIOD == period.current.period &&
 			x.CURR_YEAR == period.current.year,
 	).CURR_RATE;
+
 	const exchange2 = currency.find(
 		(x) =>
 			x.CURR_CODE == priceRatio[0].CURRENCY &&
@@ -152,38 +152,20 @@ async function getDataDetails(data) {
 	).CURR_RATE;
 
 	const detail = [];
+	const detailObj = (data) => {
+		return typeof data == "object" ? data.result : data;
+	};
 	for (let i = 11; i < data.length; i++) {
 		if (data[i][3] != undefined && data[i][3] != null && data[i][3] != "") {
 			const row = {
-				INQD_CAR:
-					typeof data[i][4] == "object"
-						? data[i][4].result
-						: data[i][4],
-				INQD_ITEM:
-					typeof data[i][14] == "object"
-						? data[i][14].result
-						: data[i][14],
-				INQD_DRAWING:
-					typeof data[i][15] == "object"
-						? data[i][15].result
-						: data[i][15],
-				INQD_PARTNAME:
-					typeof data[i][16] == "object"
-						? data[i][16].result
-						: data[i][16],
-				INQD_VARIABLE:
-					typeof data[i][17] == "object"
-						? data[i][17].result
-						: data[i][17],
+				INQD_CAR: detailObj(data[i][4]),
+				INQD_ITEM: detailObj(data[i][14]),
+				INQD_DRAWING: detailObj(data[i][15]),
+				INQD_PARTNAME: detailObj(data[i][16]),
+				INQD_VARIABLE: detailObj(data[i][17]),
 				INQD_SUPPLIER: supplier,
-				INQD_QTY:
-					typeof data[i][18] == "object"
-						? data[i][18].result
-						: data[i][18],
-				INQD_UM:
-					typeof data[i][19] == "object"
-						? data[i][19].result
-						: data[i][19],
+				INQD_QTY: detailObj(data[i][18]),
+				INQD_UM: detailObj(data[i][19]),
 				INQD_FC_COST: 0,
 				INQD_FC_BASE: exchange1,
 				INQD_TC_COST: 0,

@@ -36,7 +36,7 @@ async function tableCondition() {
 	let q = {};
 	if ($("#pageid").val() == "3") {
 		q = {
-			INQ_STATUS: "> 50",
+			INQ_STATUS: ">= 97",
 			IS_QUOTATION: true,
 			quotation: {
 				QUO_VALIDITY: `>= ${dayjs().format("YYYY-MM-DD")}`,
@@ -51,7 +51,7 @@ async function tableCondition() {
 		};
 	} else {
 		q = {
-			INQ_STATUS: ">= 45",
+			INQ_STATUS: ">= 45 && < 97",
 			IS_TIMELINE: true,
 		};
 	}
@@ -354,6 +354,14 @@ $(document).on("click", ".export-sparq", async function (e) {
 				unreply = 1;
 				unreplycode = item.INQD_UNREPLY;
 				unreplyremark = item.INQD_DES_REMARK;
+			}
+
+			if (item.INQD_SUPPLIER == "LOCAL") {
+				remark = "Original dwg no. is supplyed by local.";
+				unreply = 1;
+				unreplycode = 99;
+				unreplyremark = "Original dwg no. is supplyed by local.";
+				Pattern2Flg = 0;
 			}
 
 			let seaDay = "",

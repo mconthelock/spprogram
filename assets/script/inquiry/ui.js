@@ -30,6 +30,7 @@ import { setupElmesTable } from "./table_elmes.js";
 import { setDeletedLineMap } from "./store.js";
 
 export function initRow(id, seq) {
+	const userGroup = $("#user-login").attr("groupcode");
 	return {
 		INQD_ID: "",
 		INQD_SEQ: intVal(seq),
@@ -54,10 +55,10 @@ export function initRow(id, seq) {
 		INQD_DES_REMARK: "",
 		INQD_FIN_REMARK: "",
 		INQD_LATEST: 1,
-		INQD_OWNER_GROUP: $("#user-login").attr("groupcode"),
+		INQD_OWNER_GROUP: userGroup,
 		CREATE_BY: $("#user-login").attr("empname"),
 		UPDATE_BY: $("#user-login").attr("empname"),
-		INQD_DE: null,
+		INQD_DE: userGroup === "LDR" || userGroup === "DES" ? 1 : null,
 		// FORWARD: null,
 	};
 }

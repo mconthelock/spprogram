@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { dateToSchedule, showMessage } from "@amec/webasset/utils";
+import { showMessage } from "@amec/webasset/utils";
 import { currentUser } from "@amec/webasset/api/amec";
 import * as srv from "../service/index.js";
 // import * as mst from "../service/master.js";
@@ -252,6 +252,8 @@ export const events = {
 				if ($('input[data-mapping="' + key + '"]').length > 0) {
 					const input = $('input[data-mapping="' + key + '"]');
 					if (input.attr("id") == "schedule") {
+						console.log(values[key]);
+
 						const val = await dateToSchedule(values[key]);
 						input.val(val);
 					} else {
@@ -450,3 +452,23 @@ const orinalMfgNo = (orders) => {
 	}
 	return mfgData;
 };
+
+export function dateToSchedule(data) {
+	const schd = [
+		{ id: "05", val: "X" },
+		{ id: "10", val: "A" },
+		{ id: "15x", val: "Y" },
+		{ id: "20", val: "B" },
+		{ id: "25", val: "Z" },
+		{ id: "28", val: "C" },
+		{ id: "29", val: "C" },
+		{ id: "30", val: "C" },
+		{ id: "31", val: "C" },
+	];
+	const fd = dayjs(data).format("YYYYMM");
+	const dd = dayjs(data).format("DD");
+	const letter = schd.find((x) => x.id == dd);
+	console.log(letter);
+	if (!letter) return fd + "C";
+	return `${fd}${letter.val}`;
+}

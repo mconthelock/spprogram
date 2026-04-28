@@ -7,12 +7,15 @@ import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showDigits, intVal } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { setDatePicker } from "@amec/webasset/flatpickr";
-import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
+import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
 import { initApp } from "../utils.js";
 import {
 	setupTableHistory,
 	setupTableAttachment,
 	setupCard,
+	verifyHeader,
+	verifyDetail,
+	getFormHeader,
 } from "../inquiry/index.js";
 import {
 	tablePartOption,
@@ -20,12 +23,14 @@ import {
 	tableViewOutOption,
 	tableViewWeightOption,
 } from "../quotation/index.js";
-import { getCustomer } from "../service/customers.js";
 import {
 	getInquiry,
 	getInquiryHistory,
 	getInquiryFile,
-} from "../service/inquiry.js";
+	getCustomer,
+	createQuotation,
+	updateInquiry,
+} from "../service/index.js";
 import * as exportquo from "../quotation/export_excel.js";
 
 var table;
@@ -142,14 +147,14 @@ async function quotationOut(inq) {
 
 async function setupButton(group) {
 	const issue = await createBtn({
-		id: "issue",
+		id: "issue-quotation",
 		title: "Issue Quotation",
 		className: "btn-primary text-white shadow-lg",
 		icon: "fi fi-tr-paper-plane-top text-xl rotate-[-45deg]",
 	});
 
 	const reject = await createBtn({
-		id: "reject",
+		id: "reject-quotation",
 		title: "Unable Process",
 		className:
 			"btn-error text-white shadow-lg hover:bg-transparent hover:text-error",
@@ -248,4 +253,99 @@ async function freightData(data) {
 	$("#table-freight")
 		.find(".courier-total")
 		.val(showDigits(totalWeight * courier, 0) || 0);
+}
+
+$(document).on("click", "#issue-quotation", async function (e) {
+	e.preventDefault();
+	await updatePath({ level: 2, status: 99, obj: $(this) });
+});
+
+$(document).on("click", "#reject-quotation", async function (e) {
+	e.preventDefault();
+	await updatePath({ level: 2, status: 98, obj: $(this) });
+});
+
+async function updatePath(opt) {
+	try {
+		//1. Check ว่ากรอก Required ครบหรือไม่
+		const chkheader = await verifyHeader(".req-2");
+		if (!chkheader) return;
+
+		const header = await getFormHeader();
+		const { QUO_DATE, QUO_VALIDITY, QUO_NOTE, ...inqheader } = header;
+		inqheader.INQ_STATUS = opt.status;
+		inqheader.UPDATE_BY = $("#user-login").attr("empname");
+		inqheader.UPDATE_AT = new Date();
+
+		// QUO_DATE
+		// QUO_VALIDITY
+		// QUO_NOTE
+
+		const details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail, index) => ({
+				...detail,
+				rowIndex: index,
+			}));
+		await verifyDetail(table, details, opt.level);
+		await activatedBtnRow($(this));
+
+		let deleteLine = [];
+		let deleteFile = [];
+		const timelinedata = await setTimelineData();
+		const history = await setLogsData(opt.status);
+		console.log(inqheader);
+
+		const fomdata = {
+			header: inqheader,
+			details,
+			deleteLine,
+			deleteFile,
+			timelinedata,
+			history,
+		};
+		const inquiry = await updateInquiry(fomdata);
+		const quo = await createQuotation(await setQuotationData(inquiry));
+		window.location.replace(
+			`${process.env.APP_ENV}/mar/quotation/detail/${inquiry.INQ_ID}/3/`,
+		);
+	} catch (error) {
+		console.log(error);
+		//await activatedBtnRow(opt.obj, false);
+		await showMessage(`Something went wrong.`);
+	}
+}
+
+async function setTimelineData() {
+	return {
+		INQ_NO: $("#inquiry-no").val(),
+		INQ_REV: $("#revision").val(),
+		MAR_USER: $("#user-login").attr("empno"),
+		MAR_SEND: new Date(),
+	};
+}
+
+async function setLogsData(action) {
+	return {
+		INQ_NO: $("#inquiry-no").val(),
+		INQ_REV: $("#revision").val(),
+		INQH_DATE: new Date(),
+		INQH_USER: $("#user-login").attr("empno"),
+		INQH_ACTION: action,
+		INQH_REMARK: $("#remark").val(),
+	};
+}
+
+async function setQuotationData(data) {
+	return {
+		QUO_INQ: data.INQ_ID,
+		QUO_REV: data.INQ_REV,
+		QUO_DATE: new Date(),
+		QUO_VALIDITY: dayjs().add(60, "day").toDate(),
+		QUO_PIC: $("#user-login").attr("empno"),
+		QUO_NOTE: $("#remark").val(),
+		QUO_LATEST: 1,
+	};
 }
