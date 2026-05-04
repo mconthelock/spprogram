@@ -6,9 +6,14 @@
     <table id="table" class="table table-zebra display text-xs">
         <thead>
             <tr>
+                <th rowspan="2"></th>
+                <th rowspan="2"></th>
+                <th rowspan="2"></th>
+                <th rowspan="2"></th>
                 <th rowspan="2">User ID</th>
                 <th rowspan="2">Department</th>
                 <th rowspan="2">Section</th>
+                <th rowspan="2">Authorization</th>
                 <th colspan="4">Group</th>
                 <th rowspan="2">Designer</th>
                 <th rowspan="2">Checker</th>

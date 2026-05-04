@@ -1,24 +1,28 @@
-import "datatables.net-responsive-dt/css/responsive.dataTables.min.css";
 import "@amec/webasset/css/select2.min.css";
 import "@amec/webasset/css/dataTable.min.css";
+
 import dayjs from "dayjs";
+import { showLoader } from "@amec/webasset/preloader";
+import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { displayEmpInfo, fillImages } from "@amec/webasset/indexDB";
-import * as service from "../service/master.js";
-import * as utils from "../utils.js";
+import { getAppUsers } from "../service/master.js";
+import { initApp, tableOpt } from "../utils.js";
 import { getDesigner } from "./data.js";
+import { data } from "jquery";
 var table;
 
 $(async function () {
 	try {
-		await utils.initApp();
-		let users = await service.getAppUsers();
+		await showLoader();
+		await initApp();
+		let users = await getAppUsers();
 		users = users.filter((u) =>
-			["LDE", "DE"].includes(u.appsgroups?.GROUP_CODE),
+			["LDR", "DES"].includes(u.appsgroups?.GROUP_CODE),
 		);
 		const opt = await createUserTable(users);
 		table = await createTable(opt, {
-			buttonFilter: { status: true, column: "2" },
+			buttonFilter: { status: true, column: "6" },
 		});
 	} catch (error) {
 		console.log(error);
@@ -28,40 +32,52 @@ $(async function () {
 });
 
 async function createUserTable(users = []) {
+	console.log(users);
 	const designer = await getDesigner();
-	const opt = { ...utils.tableOpt };
+	const opt = { ...tableOpt };
 	opt.data = users;
 	opt.pageLength = 15;
-	opt.order = [[0, "desc"]];
+	opt.order = [
+		[0, "asc"],
+		[1, "asc"],
+		[2, "asc"],
+	];
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-hidden"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.columns = [
+		{ data: "data.SDIVCODE", className: "hidden" },
+		{ data: "data.SDEPCODE", className: "hidden" },
+		{ data: "data.SSECCODE", className: "hidden" },
+		{ data: "appsgroups.GROUP_ID", className: "hidden" },
 		{
 			data: "USERS_ID",
 			render: (data, type, row) => {
 				if (type === "display") {
 					const emp = row.data;
 					return `<div class="flex items-center gap-5">
-          <div class="flex-none">
-            <div class="avatar">
-                <div class="ring-primary ring-offset-base-100 w-10 rounded-full ring-2 ring-offset-2">
-                    <img src="" id="image-${data}" class="hidden" />
-                    <div class="skeleton h-8 w-8"></div>
-                </div>
-            </div>
-          </div>
-          <div class="flex-1 flex flex-col gap-2">
-            <div class="text-start font-bold">${emp.SNAME}</div>
-            <div class="text-start text-xs text-gray-600">${emp.SEMPNO} - ${emp.SPOSNAME}</div>
-          </div>`;
+                        <div class="flex-none">
+                            <div class="avatar">
+                                <div class="ring-primary ring-offset-base-100 w-10 rounded-full ring-2 ring-offset-2">
+                                    <img src="" id="image-${data}" class="hidden" />
+                                    <div class="skeleton h-8 w-8"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <div class="text-start font-bold">${emp.SNAME}</div>
+                            <div class="text-start text-xs text-gray-600">${emp.SEMPNO} - ${emp.SPOSNAME}</div>
+                        </div>
+                    </div>`;
 				}
 				return data;
 			},
 		},
 		{ data: "data.SDEPT" },
 		{ data: "data.SSEC" },
+		{ data: "appsgroups.GROUP_DESC" },
 		{
 			data: "USERS_ID",
 			sortable: false,
+			className: "text-center!",
 			render: (data, type) => {
 				if (type === "display") {
 					const des = designer.find(
@@ -77,6 +93,7 @@ async function createUserTable(users = []) {
 		{
 			data: "USERS_ID",
 			sortable: false,
+			className: "text-center!",
 			render: (data, type) => {
 				if (type === "display") {
 					const des = designer.find(
@@ -91,6 +108,7 @@ async function createUserTable(users = []) {
 		},
 		{
 			data: "USERS_ID",
+			className: "text-center!",
 			sortable: false,
 			render: (data, type) => {
 				if (type === "display") {
@@ -106,6 +124,7 @@ async function createUserTable(users = []) {
 		},
 		{
 			data: "USERS_ID",
+			className: "text-center!",
 			sortable: false,
 			render: (data, type) => {
 				if (type === "display") {
@@ -121,6 +140,7 @@ async function createUserTable(users = []) {
 		},
 		{
 			data: "USERS_ID",
+			className: "text-center!",
 			sortable: false,
 			render: (data, type) => {
 				if (type === "display") {
@@ -134,13 +154,14 @@ async function createUserTable(users = []) {
 		},
 		{
 			data: "USERS_ID",
+			className: "text-center!",
 			sortable: false,
-			render: (data, type) => {
+			render: (data, type, row) => {
 				if (type === "display") {
 					const des = designer.find((d) => d.DES_USER === data);
 					return `<input type="checkbox" class="checkbox checkbox-neutral checker" id="checker-${data}" ${
 						des && des.DES_CHECKER === "1" ? "checked" : ""
-					}/>`;
+					} ${row.appsgroups.GROUP_CODE != "LDR" ? "disabled" : ""}/>`;
 				}
 				return data;
 			},

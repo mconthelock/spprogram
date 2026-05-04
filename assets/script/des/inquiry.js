@@ -24,58 +24,64 @@ $(async function () {
 });
 
 async function query() {
-	const pageid = $("#pageid").val();
-	const des = await getDesigner();
-	const user = $("#user-login").attr("empno");
-	const desgroup = des.find((d) => d.DES_USER == user).DES_GROUP;
-	const data = await getInquiry({
-		INQ_TYPE: "SP",
-		INQ_STATUS: "< 30",
-		IS_GROUP: 1,
-		IS_TIMELINE: 1,
-	});
+	try {
+		const pageid = $("#pageid").val();
+		const des = await getDesigner();
+		const user = $("#user-login").attr("empno");
+		const desgroup = des.find((d) => d.DES_USER == user).DES_GROUP;
+		const data = await getInquiry({
+			INQ_TYPE: "SP",
+			INQ_STATUS: "< 30",
+			IS_GROUP: 1,
+			IS_TIMELINE: 1,
+		});
 
-	let result = [];
-	switch (pageid) {
-		case "1":
-			result = data.filter((d) => {
-				if (d.INQ_STATUS >= 11 && d.INQ_STATUS < 20) {
+		let result = [];
+		switch (pageid) {
+			case "1":
+				result = data.filter((d) => {
+					if (d.INQ_STATUS >= 11 && d.INQ_STATUS < 20) {
+						return d.inqgroup.some(
+							(g) =>
+								g.INQG_GROUP == desgroup &&
+								g.INQG_ASG_DATE == null,
+						);
+					}
+					return false;
+				});
+				break;
+			case "2":
+				result = data.filter((d) => {
+					if (d.INQ_STATUS < 20) return false;
 					return d.inqgroup.some(
 						(g) =>
-							g.INQG_GROUP == desgroup && g.INQG_ASG_DATE == null,
+							g.INQG_GROUP == desgroup &&
+							g.INQG_ASG_DATE != null &&
+							g.INQG_DES_DATE == null,
 					);
-				}
-				return false;
-			});
-			break;
-		case "2":
-			result = data.filter((d) => {
-				if (d.INQ_STATUS < 20) return false;
-				return d.inqgroup.some(
-					(g) =>
-						g.INQG_GROUP == desgroup &&
-						g.INQG_ASG_DATE != null &&
-						g.INQG_DES_DATE == null,
-				);
-			});
-			break;
-		case "3":
-			result = data.filter((d) => {
-				if (d.INQ_STATUS < 20) return false;
-				return d.inqgroup.some(
-					(g) =>
-						g.INQG_GROUP == desgroup &&
-						g.INQG_ASG_DATE != null &&
-						g.INQG_DES_DATE != null &&
-						g.INQG_CHK_DATE == null,
-				);
-			});
-			break;
-		default:
-			result = data;
-			break;
+				});
+				break;
+			case "3":
+				result = data.filter((d) => {
+					if (d.INQ_STATUS < 20) return false;
+					return d.inqgroup.some(
+						(g) =>
+							g.INQG_GROUP == desgroup &&
+							g.INQG_ASG_DATE != null &&
+							g.INQG_DES_DATE != null &&
+							g.INQG_CHK_DATE == null,
+					);
+				});
+				break;
+			default:
+				result = data;
+				break;
+		}
+		return result;
+	} catch (error) {
+		console.log(error);
+		return [];
 	}
-	return result;
 }
 
 $(document).on("click", "#export1", async function (e) {

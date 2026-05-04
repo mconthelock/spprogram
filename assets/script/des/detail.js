@@ -44,7 +44,7 @@ $(document).ready(async () => {
 		await showLoader();
 		await initApp();
 		const user = await currentUser();
-		const usrgroup = user.group; //Not use (Maybe)
+		const usrgroup = user.group;
 		const des = await getDesigner();
 		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
 		const inqs = await getInquiry({
@@ -105,14 +105,6 @@ async function setupButton(revise, usergroup) {
 		className: `btn-primary text-white hover:shadow-lg ${revise ? `revised` : ``}`,
 	});
 
-	const forwardde = await createBtn({
-		id: "forward-de",
-		title: "Forward to DE",
-		tooltip: `Send the inquiry to Design Department without SE checking.`,
-		icon: "fi fi-tr-share-square text-xl",
-		className: `btn-accent text-white hover:shadow-lg ${revise ? `revised` : ``}`,
-	});
-
 	const sendIS = await createBtn({
 		id: "send-bm",
 		title: "Completed",
@@ -137,6 +129,129 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	if (usergroup != "SLG") $(".btn-container").append(confirm, back);
-	else $(".btn-container").append(assign, forwardde, sendIS, back);
+	if (usergroup == "DES") $(".btn-container").append(confirm, back);
+	else if (usergroup == "LDR")
+		$(".btn-container").append(assign, sendIS, back);
+	else $(".btn-container").append(back);
+}
+
+$(document).on("click", "#assign-pic", async function (e) {
+	e.preventDefault();
+	const chkheader = await verifyHeader(".req-1");
+	if (!chkheader) return;
+	const isRevise = $(this).hasClass("revised");
+	if (isRevise && $("#remark").val().trim() === "") {
+		await showMessage("Please provide a remark for the revision.");
+		$("#remark").focus();
+		return;
+	}
+
+	try {
+		const inquiry = await updatePath({
+			level: 0,
+			status: 21,
+			obj: $(this),
+		});
+	} catch (error) {
+		await showMessage(error.message || `Something went wrong.`);
+		return;
+	}
+});
+
+$(document).on("click", "#assign-pic", async function (e) {
+	e.preventDefault();
+	const chkheader = await verifyHeader(".req-1");
+	if (!chkheader) return;
+	const isRevise = $(this).hasClass("revised");
+	if (isRevise && $("#remark").val().trim() === "") {
+		await showMessage("Please provide a remark for the revision.");
+		$("#remark").focus();
+		return;
+	}
+
+	try {
+		const inquiry = await updatePath({
+			level: 0,
+			status: 21,
+			obj: $(this),
+		});
+	} catch (error) {
+		await showMessage(error.message || `Something went wrong.`);
+		return;
+	}
+});
+
+async function updatePath(option) {
+	try {
+		let details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail, index) => ({
+				...detail,
+				rowIndex: index,
+			}));
+		await verifyDetail(table, details, option.level);
+		const header = {
+			INQ_ID: $("#inquiry-id").val(),
+			INQ_NO: $("#inquiry-no").val(),
+			INQ_REV: $("#revision").val(),
+			INQ_PRJNO: $("#project-no").val(),
+			INQ_PRDSCH: $("#schedule").val(),
+			INQ_SERIES: $("#series").val(),
+			INQ_SPEC: $("#spec").val(),
+			INQ_STATUS: option.status,
+			INQ_SALE_REMARK: $("#remark").val(),
+			UPDATE_BY: $("#user-login").attr("empname"),
+			UPDATE_AT: new Date(),
+		};
+		const timelinedata = await setTimelineData(header);
+		if (option.status == 30) $("#remark").val("");
+		//const history = await setLogsData(status, true);
+		let deleteLine = [];
+		if (state.deletedLineMap.size > 0) {
+			state.deletedLineMap.forEach((value, key) => {
+				deleteLine.push(key);
+			});
+		}
+
+		let deleteFile = [];
+		if (state.deletedFilesMap.size > 0) {
+			state.deletedFilesMap.forEach((value, key) => {
+				deleteFile.push(key);
+			});
+		}
+
+		details = details.map((dt) => {
+			const { rowIndex, ...rest } = dt;
+			return {
+				...rest,
+				INQD_SUPPLIER: rest.INQD_DE == "1" ? "" : rest.INQD_SUPPLIER,
+				INQD_TC_BASE: rest.INQD_DE == "1" ? null : rest.INQD_TC_BASE,
+			};
+		});
+		const fomdata = {
+			header,
+			details,
+			deleteLine,
+			deleteFile,
+			timelinedata,
+		};
+
+		await activatedBtnRow(option.obj);
+		const inquiry = await updateInquiry(fomdata);
+		if (state.selectedFilesMap.size > 0) {
+			const attachment_form = new FormData();
+			attachment_form.append("INQ_NO", inquiry.INQ_NO);
+			state.selectedFilesMap.forEach((file, fileName) => {
+				attachment_form.append("files", file, fileName);
+			});
+			await createInquiryFile(attachment_form);
+		}
+		return inquiry;
+	} catch (error) {
+		console.log(error);
+		await showMessage(error.message || `Something went wrong.`);
+		await activatedBtnRow(option.obj, false);
+	}
 }

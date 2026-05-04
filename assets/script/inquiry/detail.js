@@ -25,6 +25,10 @@ import {
 	validateDrawingNo,
 	validateVariable,
 	getCustomer,
+	setAS400Header,
+	setAS400Detail,
+	setAS400Variable,
+	addAS400Data,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -943,4 +947,23 @@ export async function downloadClientFile(selectedFiles, fileName) {
 	} else {
 		await showMessage(`File "${fileName}" not found for download.`);
 	}
+}
+
+export async function setAS400Data(inq) {
+	let isAMEC = false;
+	inq.details.map((dt) => {
+		if (dt.INQD_SUPPLIER == "AMEC" && dt.INQD_LATEST == 1) isAMEC = true;
+	});
+	if (!isAMEC) return;
+
+	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
+	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
+	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
+	// await addAS400Data({
+	// 	header: q601kp1,
+	// 	detail: q601kp2,
+	// 	variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
+	// 	inquiryNo: inq.INQ_NO,
+	// });
+	return;
 }

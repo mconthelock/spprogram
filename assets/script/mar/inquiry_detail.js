@@ -32,6 +32,7 @@ import {
 	getFormHeader,
 	verifyHeader,
 	verifyDetail,
+	setAS400Data,
 } from "../inquiry/index.js";
 import {
 	bindDeleteLine,
@@ -126,7 +127,7 @@ async function setupButton(mode) {
 
 	const updateIS = await createBtn({
 		id: "update-bm",
-		title: "Send to Pre-BM",
+		title: "Update and Send to Pre-BM",
 		icon: "fi fi-ts-coins text-xl",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${mode}`,
 	});
@@ -148,9 +149,16 @@ async function setupButton(mode) {
 			"btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70",
 	});
 
-	if (mode == "create")
+	if (mode == "create") {
 		$(".btn-container").append(sendDE, sendIS, draft, back);
-	else $(".btn-container").append(updateDE, updateIS, back);
+	} else {
+		const details = table.rows().data().toArray();
+		if (details[0].INQD_MFGORDER.includes("STOCK")) {
+			$(".btn-container").append(updateIS, back);
+		} else {
+			$(".btn-container").append(updateDE, updateIS, back);
+		}
+	}
 }
 
 //Download template
@@ -208,7 +216,10 @@ $(document).on("change", "#import-tsv", async function (e) {
 //006: Save Draft
 $(document).on("click", "#draft", async function (e) {
 	e.preventDefault();
-	await createPath({ level: 0, status: 1, obj: $(this) });
+	const inquiry = await createPath({ level: 0, status: 1, obj: $(this) });
+	window.location.replace(
+		`${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`,
+	);
 });
 
 //007: Save and send to design
@@ -223,13 +234,54 @@ $(document).on("click", "#send-de", async function (e) {
 		};
 		table.row(index).data(updatedData);
 	});
-	await createPath({ level: 1, status: 2, obj: $(this) });
+	const inquiry = await createPath({ level: 1, status: 2, obj: $(this) });
+	window.location.replace(
+		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+	);
 });
 
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
-	await createPath({ level: 2, status: 30, obj: $(this) });
+	let isAmec = false;
+	let isMelina = false;
+	let isUnreply = false;
+	let status = 30;
+	let inquiry;
+	const details = table
+		.rows()
+		.data()
+		.toArray()
+		.map((detail) => {
+			if (detail.INQD_SUPPLIER == "AMEC") isAmec = true;
+			if (detail.INQD_SUPPLIER == "MELINA") isMelina = true;
+			if (detail.INQD_UNREPLY) isUnreply = true;
+			return detail;
+		});
+
+	if (!isAmec && !isMelina) {
+		inquiry = await createPath({
+			level: 2,
+			status: 50,
+			obj: $(this),
+		});
+	} else if (!isAmec && isMelina) {
+		inquiry = await createPath({
+			level: 2,
+			status: 52,
+			obj: $(this),
+		});
+	} else {
+		inquiry = await createPath({
+			level: 2,
+			status: 30,
+			obj: $(this),
+		});
+		await setAS400Data(inquiry);
+	}
+	window.location.replace(
+		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+	);
 });
 
 async function createPath(opt) {
@@ -299,11 +351,12 @@ async function createPath(opt) {
 			});
 			await createInquiryFile(attachment_form);
 		}
-		const url =
-			opt.status == 1
-				? `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
-				: `${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`;
-		window.location.replace(url);
+		return inquiry;
+		// const url =
+		// 	opt.status == 1
+		// 		? `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
+		// 		: `${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`;
+		// window.location.replace(url);
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow(opt.obj, false);
@@ -321,21 +374,68 @@ $(document).on("click", "#update-de", async function (e) {
 	}
 
 	if ($("#status").val() >= 10) {
-		await updatePath({ level: 1, status: 3, obj: $(this) });
+		const inquiry = await updatePath({ level: 1, status: 3, obj: $(this) });
 	} else {
-		await updatePath({ level: 1, status: 2, obj: $(this) });
+		const inquiry = await updatePath({ level: 1, status: 2, obj: $(this) });
 	}
+	window.location.replace(
+		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+	);
 });
 
 //013: Update and send to AS400
 $(document).on("click", "#update-bm", async function (e) {
 	e.preventDefault();
-	if ($(this).hasClass("revise") && $("#remark").val() == "") {
-		await showMessage("Please enter remark for revise inquiry.");
-		$("#remark").focus();
-		return;
+	try {
+		if ($(this).hasClass("revise") && $("#remark").val() == "") {
+			await showMessage("Please enter remark for revise inquiry.");
+			$("#remark").focus();
+			return;
+		}
+
+		let isAmec = false;
+		let isMelina = false;
+		let isUnreply = false;
+		let status = 30;
+		let inquiry;
+		const details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail) => {
+				if (detail.INQD_SUPPLIER == "AMEC") isAmec = true;
+				if (detail.INQD_SUPPLIER == "MELINA") isMelina = true;
+				if (detail.INQD_UNREPLY) isUnreply = true;
+				return detail;
+			});
+
+		if (!isAmec && !isMelina) {
+			inquiry = await updatePath({
+				level: 2,
+				status: 50,
+				obj: $(this),
+			});
+		} else if (!isAmec && isMelina) {
+			inquiry = await updatePath({
+				level: 2,
+				status: 52,
+				obj: $(this),
+			});
+		} else {
+			inquiry = await updatePath({
+				level: 2,
+				status: 30,
+				obj: $(this),
+			});
+			await setAS400Data(inquiry);
+		}
+		window.location.replace(
+			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error.message || `Something went wrong.`);
 	}
-	await updatePath({ level: 2, status: 30, obj: $(this) });
 });
 
 async function updatePath(opt) {
@@ -423,9 +523,10 @@ async function updatePath(opt) {
 			});
 			await createInquiryFile(attachment_form);
 		}
-		window.location.replace(
-			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+		// );
+		return inquiry;
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow(opt.obj, false);

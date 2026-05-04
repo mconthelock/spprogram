@@ -211,12 +211,22 @@ $(document).on("click", "#forward-de", async function (e) {
 	}
 
 	try {
-		await activatedBtnRow($(this));
 		$("#sale-leader-confirm").val(new Date());
 		$("#sale-read").val(new Date());
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
-		const inquiry = await updatePath(12, 2);
+		table
+			.rows()
+			.data()
+			.each((row, index) => {
+				row.INQD_DE = "1";
+			});
+		const inquiry = await updatePath({
+			level: 0,
+			status: 12,
+			obj: $(this),
+		});
+
 		const group = {
 			data: {
 				INQG_ASG: null,
