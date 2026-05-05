@@ -40,11 +40,9 @@ import { initApp } from "../utils.js";
 var table;
 
 $(document).ready(async () => {
+	await showLoader();
+	await initApp();
 	try {
-		await showLoader();
-		const app = await initApp();
-		console.log(app);
-
 		const user = await currentUser();
 		const usrgroup = user.group;
 		const inqs = await getInquiry({

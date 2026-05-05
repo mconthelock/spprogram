@@ -10,8 +10,9 @@ import { getInquiry, getTemplate, exportExcel } from "../service/index.js";
 import { getDesigner, dataExports } from "./data.js";
 var table;
 $(async function () {
+	await showLoader();
+	const app = await initApp();
 	try {
-		await initApp({ submenu: ".navmenu-newinq" });
 		const data = await query();
 		const tableOpt = await tableInquiryDEOption(data);
 		table = await createTable(tableOpt);

@@ -128,6 +128,11 @@ export async function setupSaleViewDetail(data = []) {
 			className: `w-62 min-w-62 cell-display border-r!`,
 		},
 		{
+			data: "INQD_SALE_REMARK",
+			title: "Sale Remark",
+			className: `w-62 min-w-62 cell-display border-r!`,
+		},
+		{
 			data: "INQD_DES_REMARK",
 			title: "Sale Remark",
 			className: `w-62 min-w-62 cell-display border-r!`,

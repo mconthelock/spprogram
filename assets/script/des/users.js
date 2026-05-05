@@ -13,9 +13,9 @@ import { data } from "jquery";
 var table;
 
 $(async function () {
+	await showLoader();
+	await initApp();
 	try {
-		await showLoader();
-		await initApp();
 		let users = await getAppUsers();
 		users = users.filter((u) =>
 			["LDR", "DES"].includes(u.appsgroups?.GROUP_CODE),
@@ -32,7 +32,6 @@ $(async function () {
 });
 
 async function createUserTable(users = []) {
-	console.log(users);
 	const designer = await getDesigner();
 	const opt = { ...tableOpt };
 	opt.data = users;

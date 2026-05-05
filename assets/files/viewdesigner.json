@@ -1,0 +1,65 @@
+{
+    "id": "viewdesigner",
+    "title": "Design Information",
+    "fields": [
+        {
+            "label": "Assigner",
+            "id":"de-leader-incharge",
+            "type": "staticText",
+            "class": "setnesting displayname",
+            "topic": "inqgroup",
+            "name": "INQG_ASG",
+            "mapping":"INQG_ASG",
+            "input": true
+        },
+        {
+            "label": "Read",
+            "id": "sale-leader-read",
+            "type": "hidden",
+            "class": "setnesting",
+            "name": "SG_READ",
+            "topic": "timeline",
+            "mapping": "SG_READ"
+        },
+        {
+            "label": "Confirm",
+            "id": "sale-leader-confirm",
+            "type": "hidden",
+            "class": "setnesting",
+            "topic": "timeline",
+            "name": "SG_CONFIRM",
+            "mapping": "SG_CONFIRM"
+        },
+        {
+            "label": "Designer",
+            "id": "desiger-incharge",
+            "type": "staticText",
+            "source": "getDesigner",
+            "class": "req-1",
+            "name": "INQG_DES"
+        },
+        {
+            "label": "Checker",
+            "id": "checker-incharge",
+            "type": "staticText",
+            "source": "getDesignerChecker",
+            "class": "req-1",
+            "name": "INQG_CHK"
+        },
+
+        {
+            "label": "Design Class",
+            "id": "des-class",
+            "type": "staticText",
+            "name": "INQG_CLASS",
+            "class": "req-1"
+        },
+        {
+            "label": "Remark",
+            "id": "remark",
+            "type": "staticText" ,
+            "name": "INQ_REMARK",
+            "mapping": "INQ_REMARK"
+        }
+    ]
+}

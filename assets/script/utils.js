@@ -3,24 +3,23 @@ import { initAuthen } from "@amec/webasset/authen";
 
 export const initApp = async (opt = {}) => {
 	try {
-		await initAuthen({
+		const app = await initAuthen({
 			icon: `${process.env.APP_ENV}/assets/images/cube.png`,
 			iconLogo: `${process.env.APP_ENV}/assets/images/cube.png`,
 			programName: "SP PROGRAM",
 			sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
 		});
+		if (!app) return false;
+
 		$(".mainmenu").find("details").attr("open", false);
 		if (opt.submenu !== undefined) {
 			$(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
 		}
-		return true;
+		return;
 	} catch (error) {
 		console.log(error);
 	}
-	await new Promise((r) => setTimeout(r, 1000));
-	//$("#main-contents").addClass("bg-primary/5 border border-primary/30");
-	//await showbgLoader({ show: false });
-	return;
+	//await new Promise((r) => setTimeout(r, 2000));
 };
 
 export const tableOpt = {

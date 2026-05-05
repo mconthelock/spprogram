@@ -23,9 +23,9 @@ import { initApp } from "../utils.js";
 
 var table;
 $(document).ready(async () => {
+	await showLoader();
+	await initApp();
 	try {
-		await showLoader();
-		await initApp();
 		const user = await currentUser();
 		const usrgroup = user.group;
 		const inqs = await getInquiry({
@@ -61,7 +61,7 @@ $(document).ready(async () => {
 		const tableAttach = await createTable(attachment, {
 			id: "#attachment",
 		});
-
+		$("#add-attachment").remove();
 		await setupButton();
 	} catch (error) {
 		console.log(error);

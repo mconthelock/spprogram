@@ -20,9 +20,9 @@ import {
 import { initApp } from "../utils.js";
 
 $(document).ready(async () => {
+	await showLoader();
+	await initApp({ submenu: ".navmenu-newinq" });
 	try {
-		await showLoader();
-		await initApp({ submenu: ".navmenu-newinq" });
 		const inq = await getInquiry({
 			INQ_ID: $("#inquiry-id").val(),
 			IS_DETAILS: true,

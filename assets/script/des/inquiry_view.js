@@ -12,7 +12,7 @@ import {
 	setupCard,
 	setupTableHistory,
 	setupTableAttachment,
-	setupDETableDetail,
+	setupSaleViewDetail,
 	verifyHeader,
 	verifyDetail,
 } from "../inquiry/index.js";
@@ -41,7 +41,7 @@ import { getDesigner, dataExports } from "./data.js";
 var table;
 $(document).ready(async () => {
 	await showLoader();
-	const app = await initApp();
+	await initApp();
 	try {
 		const user = await currentUser();
 		const usrgroup = user.group;
@@ -67,25 +67,25 @@ $(document).ready(async () => {
 		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
-		$("#viewmar").addClass("hidden");
-		$("#showremark").closest(".grid").addClass("hidden");
+		//$("#viewmar").addClass("hidden");
+		//$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter(
 			(dt) =>
 				dt.INQD_LATEST == "1" &&
 				Math.floor(dt.INQD_ITEM / 100) == desgroup,
 		);
-		const detailsOption = await setupDETableDetail(details);
+		const detailsOption = await setupSaleViewDetail(details);
 		table = await createTable(detailsOption);
 		//Inquiry History and Attachment
 		const logs = await getInquiryHistory(inqs[0].INQ_NO);
 		const file = await getInquiryFile({ INQ_NO: inqs[0].INQ_NO });
 		const history = await setupTableHistory(logs);
 		const tableHistory = await createTable(history, { id: "#history" });
-		const attachment = await setupTableAttachment(file);
+		const attachment = await setupTableAttachment(file, true);
 		const tableAttach = await createTable(attachment, {
 			id: "#attachment",
 		});
-
+		$("#add-attachment").remove();
 		await setSelect2({ allowClear: false });
 		await bindDeleteLine();
 		await setupButton(revise, usrgroup);

@@ -4,6 +4,7 @@
 		light --default,
 		dark --prefersdark;
 }
+@import "@amec/webasset/css/tooltip.min.css";
 
 /* view */
 @source "../../application/views/**/*.php";
