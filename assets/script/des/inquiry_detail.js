@@ -188,7 +188,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 			},
 		};
 		await updateInquiryGroup(group);
-		// const completed = await checkComplete(inquiry.INQ_ID);
+		const completed = await checkComplete(inquiry.INQ_ID);
 		window.location.replace(
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
 		);
@@ -231,7 +231,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 			},
 		};
 		await updateInquiryGroup(group);
-		// const completed = await checkComplete(inquiry.INQ_ID);
+		const completed = await checkComplete(inquiry.INQ_ID);
 		window.location.replace(
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
 		);
@@ -373,4 +373,8 @@ async function allowForeward() {
 	return { fw: confirm, status: status };
 }
 
-async function checkComplete() {}
+async function checkComplete(id) {
+	const data = await getInquiry({
+		INQ_ID: id,
+	});
+}
