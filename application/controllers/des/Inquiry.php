@@ -13,7 +13,7 @@ class Inquiry extends MY_Controller {
     }
 
     public function check(){
-        $this->views('des/inquiry/index', array('title' => 'Recheck Inquiry',  'pageid' => 3));
+        $this->views('des/inquiry/index', array('title' => 'Check Inquiry',  'pageid' => 3));
     }
 
     public function reassign(){

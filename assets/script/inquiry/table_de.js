@@ -98,7 +98,7 @@ export async function setupDETableDetail(data = []) {
 		{
 			data: "INQD_MFGORDER",
 			title: "MFG No.",
-			className: "sticky-column",
+			className: "sticky-column w-25! ",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -124,7 +124,7 @@ export async function setupDETableDetail(data = []) {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "sticky-column ",
+			className: "sticky-column min-w-62! w-62!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -139,7 +139,7 @@ export async function setupDETableDetail(data = []) {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: "drawing-line",
+			className: "drawing-line w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -154,7 +154,7 @@ export async function setupDETableDetail(data = []) {
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: "",
+			className: "w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -281,23 +281,23 @@ export async function setupDETableDetail(data = []) {
 		},
 		{
 			data: "INQD_FC_BASE",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_FC_COST",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_TC_BASE",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_TC_COST",
-			className: "hiddenx",
+			className: "hidden",
 		},
 		{
 			data: "INQD_UNIT_PRICE",
-			className: "hiddenx",
+			className: "hidden",
 		},
 	];
 	return opt;

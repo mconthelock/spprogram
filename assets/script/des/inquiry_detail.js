@@ -41,7 +41,7 @@ import { getDesigner, dataExports } from "./data.js";
 var table;
 $(document).ready(async () => {
 	await showLoader();
-	const app = await initApp();
+	await initApp();
 	try {
 		const user = await currentUser();
 		const usrgroup = user.group;
@@ -66,8 +66,8 @@ $(document).ready(async () => {
 		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
-		if (user.group == "LDR") {
-			$("#viewdesigner").remove();
+		if (user.group == "LDR" && $("#status").val() <= 22) {
+			$("#viewdesigner").addClass("hidden");
 		} else {
 			$("#designer").addClass("hidden");
 		}
@@ -111,11 +111,11 @@ async function setupButton(revise, usergroup) {
 	});
 
 	const sendIS = await createBtn({
-		id: "send-bm",
-		title: "Completed",
-		icon: "fi fi-ts-coins text-xl",
+		id: "send-complete",
+		title: "Complete",
+		icon: "fi fi-rr-paper-plane text-xl",
 		tooltip:
-			"Finish declare part process and Send to Pre-BM on AS400 (Only supply by AMEC item)",
+			"Finish declare part process and Pending for send to Pre-BM on AS400 (Only supply by AMEC item)",
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${revise ? `revised` : ``}`,
 	});
 
@@ -138,6 +138,8 @@ async function setupButton(revise, usergroup) {
 	});
 
 	if (usergroup == "DES") $(".btn-container").append(confirm, back);
+	else if (usergroup == "LDR" && $("#status").val() >= 24)
+		$(".btn-container").append(sendIS, back);
 	else if (usergroup == "LDR") $(".btn-container").append(assign, back);
 	else $(".btn-container").append(back);
 }
@@ -198,16 +200,16 @@ $(document).on("click", "#assign-pic", async function (e) {
 
 $(document).on("click", "#send-confirm", async function (e) {
 	e.preventDefault();
-	const chkheader = await verifyHeader(".req-1");
-	if (!chkheader) return;
+	//const chkheader = await verifyHeader(".req-1");
+	//if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
 		$("#remark").focus();
 		return;
 	}
-	const status = 24;
 	try {
+		const status = 24;
 		const inquiry = await updatePath({
 			level: 2,
 			status: status,
@@ -229,6 +231,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 			},
 		};
 		await updateInquiryGroup(group);
+		// const completed = await checkComplete(inquiry.INQ_ID);
 		window.location.replace(
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
 		);
@@ -237,10 +240,11 @@ $(document).on("click", "#send-confirm", async function (e) {
 		return;
 	}
 });
-$(document).on("click", "#send-bm", async function (e) {
+
+$(document).on("click", "#send-complete", async function (e) {
 	e.preventDefault();
-	const chkheader = await verifyHeader(".req-1");
-	if (!chkheader) return;
+	//const chkheader = await verifyHeader(".req-1");
+	//if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
@@ -249,11 +253,30 @@ $(document).on("click", "#send-bm", async function (e) {
 	}
 
 	try {
+		const status = 26;
 		const inquiry = await updatePath({
-			level: 0,
-			status: 21,
+			level: 2,
+			status: status,
 			obj: $(this),
 		});
+		const user = await currentUser();
+		const des = await getDesigner();
+		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+		const group = {
+			data: {
+				INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_STATUS: status,
+			},
+			condition: {
+				INQ_ID: inquiry.INQ_ID,
+				INQG_LATEST: 1,
+				INQG_GROUP: desgroup,
+			},
+		};
+		await updateInquiryGroup(group);
+		window.location.replace(
+			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		);
 	} catch (error) {
 		await showMessage(error.message || `Something went wrong.`);
 		return;

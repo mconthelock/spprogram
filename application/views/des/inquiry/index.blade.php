@@ -1,7 +1,7 @@
 @extends('layouts/template')
 
 @section('contents')
-    <input type="text" id="pageid" class="hiddenx" value="{{ $pageid }}">
+    <input type="text" id="pageid" class="hidden" value="{{ $pageid }}">
     <h2 class="card-title text-2xl">{{ $title }}</h2>
     <div class="divider m-0"></div>
 

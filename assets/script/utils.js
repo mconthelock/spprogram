@@ -19,7 +19,7 @@ export const initApp = async (opt = {}) => {
 	} catch (error) {
 		console.log(error);
 	}
-	//await new Promise((r) => setTimeout(r, 2000));
+	await new Promise((r) => setTimeout(r, 2000));
 };
 
 export const tableOpt = {
