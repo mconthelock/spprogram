@@ -27,8 +27,9 @@ select2();
 
 var table;
 $(async function () {
+	await showLoader();
+	await initApp();
 	try {
-		await initApp();
 		await setSeries();
 		await setOrderType();
 		await setTrader();
@@ -45,6 +46,8 @@ $(async function () {
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
+	} finally {
+		await showLoader({ show: false });
 	}
 });
 

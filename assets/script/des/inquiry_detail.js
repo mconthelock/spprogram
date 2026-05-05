@@ -53,7 +53,6 @@ $(document).ready(async () => {
 			IS_GROUP: true,
 			IS_TIMELINE: true,
 		});
-
 		const group = inqs[0].inqgroup.find((g) => g.INQG_GROUP == desgroup);
 		let set_des_group = {
 			...group,
@@ -67,6 +66,12 @@ $(document).ready(async () => {
 		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
+		if (user.group == "LDR") {
+			$("#viewdesigner").remove();
+		} else {
+			$("#designer").addClass("hidden");
+		}
+
 		$("#viewmar").addClass("hidden");
 		$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter(
@@ -155,7 +160,33 @@ $(document).on("click", "#assign-pic", async function (e) {
 			status: status,
 			obj: $(this),
 		});
-		const completed = await checkComplete(inquiry.INQ_ID);
+
+		const user = await currentUser();
+		const designer = $("#desiger-incharge").val();
+		const checker = $("#checker-incharge").val();
+		const des = await getDesigner();
+		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+		const group = {
+			data: {
+				INQG_ASG: user.empno,
+				INQG_DES: designer,
+				INQG_CHK: checker,
+				INQG_CLASS: $("#des-class").val(),
+				INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_DES_DATE:
+					status >= 24 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : null,
+				INQG_CHK_DATE:
+					status >= 28 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : null,
+				INQG_STATUS: status,
+			},
+			condition: {
+				INQ_ID: inquiry.INQ_ID,
+				INQG_LATEST: 1,
+				INQG_GROUP: desgroup,
+			},
+		};
+		await updateInquiryGroup(group);
+		// const completed = await checkComplete(inquiry.INQ_ID);
 		window.location.replace(
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
 		);
@@ -165,6 +196,47 @@ $(document).on("click", "#assign-pic", async function (e) {
 	}
 });
 
+$(document).on("click", "#send-confirm", async function (e) {
+	e.preventDefault();
+	const chkheader = await verifyHeader(".req-1");
+	if (!chkheader) return;
+	const isRevise = $(this).hasClass("revised");
+	if (isRevise && $("#remark").val().trim() === "") {
+		await showMessage("Please provide a remark for the revision.");
+		$("#remark").focus();
+		return;
+	}
+	const status = 24;
+	try {
+		const inquiry = await updatePath({
+			level: 2,
+			status: status,
+			obj: $(this),
+		});
+
+		const user = await currentUser();
+		const des = await getDesigner();
+		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+		const group = {
+			data: {
+				INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_STATUS: status,
+			},
+			condition: {
+				INQ_ID: inquiry.INQ_ID,
+				INQG_LATEST: 1,
+				INQG_GROUP: desgroup,
+			},
+		};
+		await updateInquiryGroup(group);
+		window.location.replace(
+			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		);
+	} catch (error) {
+		await showMessage(error.message || `Something went wrong.`);
+		return;
+	}
+});
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
 	const chkheader = await verifyHeader(".req-1");
@@ -212,7 +284,6 @@ async function updatePath(option) {
 			UPDATE_BY: $("#user-login").attr("empname"),
 			UPDATE_AT: new Date(),
 		};
-		const timelinedata = await setTimelineData(header);
 		if (option.status == 30) $("#remark").val("");
 		//const history = await setLogsData(status, true);
 		let deleteLine = [];
@@ -231,18 +302,13 @@ async function updatePath(option) {
 
 		details = details.map((dt) => {
 			const { rowIndex, ...rest } = dt;
-			return {
-				...rest,
-				INQD_SUPPLIER: rest.INQD_DE == "1" ? "" : rest.INQD_SUPPLIER,
-				INQD_TC_BASE: rest.INQD_DE == "1" ? null : rest.INQD_TC_BASE,
-			};
+			return rest;
 		});
 		const fomdata = {
 			header,
 			details,
 			deleteLine,
 			deleteFile,
-			timelinedata,
 		};
 
 		await activatedBtnRow(option.obj);

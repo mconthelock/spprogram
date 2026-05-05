@@ -6,12 +6,17 @@ import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtnRow } from "@amec/webasset/components/buttons";
 import { tableInquiryDEOption } from "../inquiry/index.js";
 import { initApp } from "../utils.js";
-import { getInquiry, getTemplate, exportExcel } from "../service/index.js";
+import {
+	getInquiry,
+	getTemplate,
+	exportExcel,
+	updateInquiryTimeline,
+} from "../service/index.js";
 import { getDesigner, dataExports } from "./data.js";
 var table;
 $(async function () {
 	await showLoader();
-	const app = await initApp();
+	await initApp();
 	try {
 		const data = await query();
 		const tableOpt = await tableInquiryDEOption(data);
@@ -36,41 +41,39 @@ async function query() {
 			IS_GROUP: 1,
 			IS_TIMELINE: 1,
 		});
-
 		let result = [];
 		switch (pageid) {
 			case "1":
 				result = data.filter((d) => {
-					if (d.INQ_STATUS >= 11 && d.INQ_STATUS < 20) {
-						return d.inqgroup.some(
-							(g) =>
-								g.INQG_GROUP == desgroup &&
-								g.INQG_ASG_DATE == null,
-						);
-					}
-					return false;
+					return d.inqgroup.some(
+						(g) =>
+							g.INQG_GROUP == desgroup && g.INQG_ASG_DATE == null,
+					);
 				});
 				break;
 			case "2":
+				console.log(data);
 				result = data.filter((d) => {
-					if (d.INQ_STATUS < 20) return false;
+					if (d.INQ_STATUS < 21) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup &&
 							g.INQG_ASG_DATE != null &&
-							g.INQG_DES_DATE == null,
+							g.INQG_DES_DATE == null &&
+							g.INQG_DES == user,
 					);
 				});
 				break;
 			case "3":
 				result = data.filter((d) => {
-					if (d.INQ_STATUS < 20) return false;
+					if (d.INQ_STATUS < 24) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup &&
 							g.INQG_ASG_DATE != null &&
 							g.INQG_DES_DATE != null &&
-							g.INQG_CHK_DATE == null,
+							g.INQG_CHK_DATE == null &&
+							g.INQG_CHK == user,
 					);
 				});
 				break;
@@ -84,6 +87,32 @@ async function query() {
 		return [];
 	}
 }
+
+$(document).on("click", ".process-btn", async function (e) {
+	e.preventDefault();
+	try {
+		const user = await currentUser();
+		const group = user.group;
+		const row = table.row($(this).closest("tr")).data();
+		const timeline = row.timeline;
+		if (timeline.DE_READ == null) {
+			await activatedBtnRow($(this));
+			const data = {
+				INQ_NO: row.INQ_NO,
+				INQ_REV: row.INQ_REV,
+				DE_READ: new Date(),
+			};
+			await updateInquiryTimeline(data);
+		}
+		window.location.replace(
+			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+		await activatedBtn($(this), false);
+	}
+});
 
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
@@ -106,40 +135,5 @@ $(document).on("click", "#export1", async function (e) {
 		await showMessage(`Something went wrong.`);
 	} finally {
 		await activatedBtnRow($(this), false);
-	}
-});
-
-$(document).on("click", ".process-btn", async function (e) {
-	e.preventDefault();
-	try {
-		const row = table.row($(this).closest("tr")).data();
-		const timeline = row.timeline;
-		const user = await currentUser();
-		const group = user.group;
-		// if (group == "SLG" && timeline.SG_READ == null) {
-		// 	await activatedBtnRow($(this));
-		// 	const data = {
-		// 		INQ_NO: row.INQ_NO,
-		// 		INQ_REV: row.INQ_REV,
-		// 		SG_USER: $("#user-login").attr("empno"),
-		// 		SG_READ: new Date(),
-		// 	};
-		// 	await updateInquiryTimeline(data);
-		// } else if (group == "SLE" && timeline.SE_READ == null) {
-		// 	await activatedBtnRow($(this));
-		// 	const data = {
-		// 		INQ_NO: row.INQ_NO,
-		// 		INQ_REV: row.INQ_REV,
-		// 		SE_READ: new Date(),
-		// 	};
-		// 	await updateInquiryTimeline(data);
-		// }
-		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/`,
-		);
-	} catch (error) {
-		console.log(error);
-		await showMessage(error);
-		await activatedBtn($(this), false);
 	}
 });

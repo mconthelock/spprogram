@@ -20,9 +20,9 @@ export async function setupDETableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25! border-none rounded-none bg-transparent! supplier" name="supplier[]">`;
+		let selector = `<select class="select select-sm w-25! border-none rounded-none supplier" name="supplier[]">`;
 		sup.forEach((el) => {
-			selector += `<option class="bg-white! rounded-none" value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
+			selector += `<option value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
 		selector += `</select>`;
 		return selector;

@@ -17,9 +17,9 @@ import { initApp } from "../utils.js";
 
 var table;
 $(document).ready(async () => {
+	await showLoader();
+	await initApp();
 	try {
-		await showLoader();
-		await initApp({ submenu: ".navmenu-newinq" });
 		const usergroup = $("#user-login").attr("groupcode");
 		const q = {
 			INQ_TYPE: "SP",

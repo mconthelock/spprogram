@@ -4,62 +4,49 @@
     "fields": [
         {
             "label": "Assigner",
-            "id":"de-leader-incharge",
+            "id":"view-de-leader-incharge",
             "type": "staticText",
-            "class": "setnesting displayname",
+            "class": "displayname",
             "topic": "inqgroup",
-            "name": "INQG_ASG",
-            "mapping":"INQG_ASG",
-            "input": true
-        },
-        {
-            "label": "Read",
-            "id": "sale-leader-read",
-            "type": "hidden",
-            "class": "setnesting",
-            "name": "SG_READ",
-            "topic": "timeline",
-            "mapping": "SG_READ"
-        },
-        {
-            "label": "Confirm",
-            "id": "sale-leader-confirm",
-            "type": "hidden",
-            "class": "setnesting",
-            "topic": "timeline",
-            "name": "SG_CONFIRM",
-            "mapping": "SG_CONFIRM"
+            "name": "INQG_ASG"
         },
         {
             "label": "Designer",
-            "id": "desiger-incharge",
+            "id": "view-desiger-incharge",
             "type": "staticText",
-            "source": "getDesigner",
-            "class": "req-1",
+            "class": "displayname",
+            "topic": "inqgroup",
             "name": "INQG_DES"
         },
         {
             "label": "Checker",
-            "id": "checker-incharge",
+            "id": "view-checker-incharge",
             "type": "staticText",
-            "source": "getDesignerChecker",
-            "class": "req-1",
+            "class": "displayname",
+            "topic": "inqgroup",
             "name": "INQG_CHK"
         },
-
         {
             "label": "Design Class",
-            "id": "des-class",
+            "id": "view-des-class",
             "type": "staticText",
+            "topic": "inqgroup",
+            "class": "setnesting",
             "name": "INQG_CLASS",
-            "class": "req-1"
+            "mapping": "INQG_CLASS"
         },
         {
             "label": "Remark",
             "id": "remark",
+            "type": "textarea" ,
+            "name": "INQ_REMARK"
+        },
+        {
+            "label": "Remark",
+            "id": "showremark",
             "type": "staticText" ,
             "name": "INQ_REMARK",
-            "mapping": "INQ_REMARK"
+            "input": true
         }
     ]
 }

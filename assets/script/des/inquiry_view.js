@@ -55,20 +55,13 @@ $(document).ready(async () => {
 		});
 
 		const group = inqs[0].inqgroup.find((g) => g.INQG_GROUP == desgroup);
-		let set_des_group = {
-			...group,
-			INQG_ASG: group.INQG_ASG == null ? user.empno : group.INQG_ASG,
-		};
-
-		inqs[0].inqgroup = set_des_group;
+		inqs[0].inqgroup = group;
 		inqs[0].INQ_DATE = dayjs(inqs[0].INQ_DATE).format("YYYY-MM-DD");
 		inqs[0].INQ_REMARK = inqs[0].INQ_DES_REMARK;
 
 		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
-		//$("#viewmar").addClass("hidden");
-		//$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter(
 			(dt) =>
 				dt.INQD_LATEST == "1" &&
@@ -86,6 +79,7 @@ $(document).ready(async () => {
 			id: "#attachment",
 		});
 		$("#add-attachment").remove();
+		$("#remark").closest(".grid").addClass("hidden");
 		await setSelect2({ allowClear: false });
 		await bindDeleteLine();
 		await setupButton(revise, usrgroup);
@@ -132,9 +126,10 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	if (usergroup == "DES") $(".btn-container").append(confirm, back);
-	else if (usergroup == "LDR") $(".btn-container").append(assign, back);
-	else $(".btn-container").append(back);
+	// if (usergroup == "DES") $(".btn-container").append(confirm, back);
+	// else if (usergroup == "LDR") $(".btn-container").append(assign, back);
+	// else $(".btn-container").append(back);
+	$(".btn-container").append(back);
 }
 
 $(document).on("click", "#assign-pic", async function (e) {

@@ -294,6 +294,7 @@ export async function createFieldInput(field) {
 			break;
 
 		case "staticText":
+			//console.log(field.id, field.value);
 			let text = !field.display ? field.value : field.display;
 			text = text == null ? "" : text;
 			let staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
