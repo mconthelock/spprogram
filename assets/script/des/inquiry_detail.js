@@ -42,7 +42,7 @@ var table;
 $(document).ready(async () => {
 	try {
 		await showLoader();
-		await initApp();
+		const app = await initApp();
 		const user = await currentUser();
 		const usrgroup = user.group;
 		const des = await getDesigner();
@@ -124,7 +124,10 @@ async function setupButton(revise, usergroup) {
 		id: "",
 		title: "Back",
 		type: "link",
-		href: `${process.env.APP_ENV}/se/inquiry`,
+		href:
+			usergroup == "DES"
+				? `${process.env.APP_ENV}/des/inquiry/design/`
+				: `${process.env.APP_ENV}/des/inquiry/`,
 		icon: "fi fi-rr-arrow-circle-left text-xl",
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
@@ -146,6 +149,9 @@ $(document).on("click", "#assign-pic", async function (e) {
 		return;
 	}
 
+	let fastForeward = false;
+	const assignTo = $("#assign-to").val();
+
 	try {
 		const inquiry = await updatePath({
 			level: 0,
@@ -158,7 +164,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 	}
 });
 
-$(document).on("click", "#assign-pic", async function (e) {
+$(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
 	const chkheader = await verifyHeader(".req-1");
 	if (!chkheader) return;

@@ -280,12 +280,12 @@ export async function createFieldInput(field) {
 			break;
 
 		case "status":
-			const statusBadge = `<div class="badge ${field.class}">${field.display}</div><input type="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
+			const statusBadge = `<div class="badge ${field.class}">${field.display}</div><input type="text" class="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
 			inputContainer.innerHTML = statusBadge;
 			break;
 
 		case "hidden":
-			const hidden = `<input type="hidden" class="${
+			const hidden = `<input type="text" class="hidden ${
 				field.class ? field.class : ""
 			}" id="${field.id ? field.id : ""}" name="${
 				field.name ? field.name : ""
@@ -299,8 +299,8 @@ export async function createFieldInput(field) {
 			let staticText = `<p class="text-sm h-full flex items-center text-gray-700 border-b border-gray-300 pb-2 ps-2 ${
 				field.class !== undefined ? field.class : ""
 			}" data-id="${field.id}">${text}</p>`;
-			if (field.input)
-				staticText += `<input type="hidden" name="${field.name}" value="${field.value}" id="${field.id}"/>`;
+			//if (field.input)
+			staticText += `<input type="text" class="hidden" name="${field.name}" value="${field.value}" id="${field.id}" autocomplete="off"/>`;
 			inputContainer.innerHTML = staticText;
 			break;
 

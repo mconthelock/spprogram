@@ -42,7 +42,9 @@ var table;
 $(document).ready(async () => {
 	try {
 		await showLoader();
-		await initApp();
+		const app = await initApp();
+		console.log(app);
+
 		const user = await currentUser();
 		const usrgroup = user.group;
 		const inqs = await getInquiry({

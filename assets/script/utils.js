@@ -13,10 +13,11 @@ export const initApp = async (opt = {}) => {
 		if (opt.submenu !== undefined) {
 			$(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
 		}
+		return true;
 	} catch (error) {
 		console.log(error);
 	}
-	await new Promise((r) => setTimeout(r, 500));
+	await new Promise((r) => setTimeout(r, 1000));
 	//$("#main-contents").addClass("bg-primary/5 border border-primary/30");
 	//await showbgLoader({ show: false });
 	return;

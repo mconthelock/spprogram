@@ -20,7 +20,7 @@ export async function setupDETableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25! border-none rounded-none bg-transparent! supplier">`;
+		let selector = `<select class="select select-sm w-25! border-none rounded-none bg-transparent! supplier" name="supplier[]">`;
 		sup.forEach((el) => {
 			selector += `<option class="bg-white! rounded-none" value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -77,7 +77,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<input type="text" class="w-12.5! cell-input input-number edit-input" value="${data}">`;
+					return `<input type="text" class="w-12.5! cell-input input-number edit-input" name="seq[]" value="${data}">`;
 				}
 				return data;
 			},
@@ -90,7 +90,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<input type="text" class="w-10! uppercase cell-input carno edit-input" value="${data == null ? "" : data}">`;
+					return `<input type="text" class="w-10! uppercase cell-input carno edit-input" name="carno[]" value="${data == null ? "" : data}">`;
 				}
 				return data;
 			},
@@ -103,7 +103,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-25! cell-input elmes-input mfgno" readonly maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-25! cell-input elmes-input mfgno" name="mfgno[]" readonly maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -116,7 +116,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-12.5! cell-input elmes-input itemno" maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-12.5! cell-input elmes-input itemno" name="itemno[]" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},
@@ -129,7 +129,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-62! cell-input edit-input partname" maxlength="50">${
+					return `<textarea class="w-62! cell-input edit-input partname" name="partname[]" maxlength="50">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -144,7 +144,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-62! uppercase cell-input edit-input drawing-line" maxlength="150">${
+					return `<textarea class="w-62! uppercase cell-input edit-input drawing-line" name="drawing[]" maxlength="150">${
 						data == "null" || data == null ? "" : data
 					}</textarea>`;
 				}
@@ -159,7 +159,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-62! uppercase cell-input edit-input variable-line" maxlength="250">${
+					return `<textarea class="w-62! uppercase cell-input edit-input variable-line" name="variable[]" maxlength="250">${
 						data == "null" || data == null ? "" : data
 					}</textarea>`;
 				}
@@ -174,7 +174,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-12.5! uppercase cell-input edit-input variable-line">${
+					return `<textarea class="w-12.5! uppercase cell-input edit-input variable-line" name="qty[]">${
 						data == null ? "" : data
 					}</textarea>`;
 				}
@@ -190,7 +190,7 @@ export async function setupDETableDetail(data = []) {
 				data = data == "" ? "PC" : data;
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<input type="type" class="w-12.5! uppercase cell-input edit-input" value="${data}">`;
+					return `<input type="type" class="w-12.5! uppercase cell-input edit-input" name="um[]" value="${data}">`;
 				}
 				return data;
 			},
@@ -220,9 +220,9 @@ export async function setupDETableDetail(data = []) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
 					if (data == null || data == "")
-						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" value="" />`;
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" name="ndpartlist[]" value="" />`;
 					else if (data == "1")
-						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" value="1" checked/>`;
+						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" name="revokepartlist[]" value="1" checked/>`;
 					else
 						return `<div class="tooltip tooltip-left" data-tip="Click to revoke 2nd part">
                             <button class="btn btn-xs btn-circle btn-ghost revokepartlist">${data}</button>
@@ -240,7 +240,7 @@ export async function setupDETableDetail(data = []) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
 
-					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input" ${data == "" || data == null ? "" : "checked"}/>`;
+					return `<input type="checkbox" class="checkbox checkbox-sm checkbox-error text-white unreply edit-input" name="unreply[]" ${data == "" || data == null ? "" : "checked"}/>`;
 				}
 				return data;
 			},
@@ -253,7 +253,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-62! cell-input edit-input remark bg-primary/10" maxlength="250">${
+					return `<textarea class="w-62! cell-input edit-input remark bg-primary/10" name="des_remark[]" maxlength="250">${
 						data == null ? "" : data
 					}</textarea>`;
 				}

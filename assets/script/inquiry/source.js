@@ -174,12 +174,13 @@ export const init = {
 		const employee = await srv.getAppUsers();
 		const user = await currentUser();
 		const designers = await getDesigner();
-		console.log(designers);
 		const desgroup = designers.find(
 			(d) => d.DES_USER == user.empno,
 		).DES_GROUP;
 		const options = designers
-			.filter((usr) => usr.DES_GROUP == desgroup)
+			.filter(
+				(usr) => usr.DES_GROUP == desgroup && usr.DES_ENGINEER == "1",
+			)
 			.map((des) => {
 				const emp = employee.find((e) => {
 					return e.USERS_ID == des.DES_USER;
@@ -209,7 +210,7 @@ export const init = {
 
 		const options = designers
 			.filter(
-				(usr) => usr.DES_GROUP == desgroup && usr.DES_CHECKER != null,
+				(usr) => usr.DES_GROUP == desgroup && usr.DES_CHECKER == "1",
 			)
 			.map((des) => {
 				const emp = employee.find((e) => {

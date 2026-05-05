@@ -2,14 +2,6 @@
     "id": "designer",
     "title": "Design Information",
     "fields": [
-            {
-            "label": "MAR. In-charge",
-            "id":"mar-incharge",
-            "type": "staticText",
-            "class": "displayname",
-            "mapping":"INQ_MAR_PIC",
-            "name": "INQ_MAR_PIC"
-        },
         {
             "label": "Assigner",
             "id":"de-leader-incharge",
