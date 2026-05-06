@@ -169,10 +169,10 @@ $(document).on("click", "#assign-pic", async function (e) {
 			obj: $(this),
 		});
 		await updateGroups(inquiry, status);
-		// await checkComplete(inquiry);
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
-		// );
+		await checkComplete(inquiry);
+		window.location.replace(
+			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -331,12 +331,12 @@ async function updateGroups(data, status) {
         const user = await currentUser();
         const chk = $("#designer").hasClass("hidden");
         const assign = chk ? $("#view-de-leader-incharge").val() : $("#de-leader-incharge").val();
-        const designer = chk ? $("#view-desiger-incharge").val() : $("#desiger-incharge");
-        const checker = chk ? $("#view-checker-incharge").val() : $("#checker-incharge");
+        const designer = chk ? $("#view-desiger-incharge").val() : $("#desiger-incharge").val();
+        const checker = chk ? $("#view-checker-incharge").val() : $("#checker-incharge").val();
         const desclass = chk ? $("#view-des-class").val() : $("#des-class").val();
         const des = await getDesigner();
         const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
-        const groups = data.inqgroup.find((g) => g.INQG_GROUP == desgroup);
+        const groups = data.inqgroup.find((g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1);
         const groups_data = {
             ...groups,
             INQG_ASG: assign,
@@ -348,7 +348,7 @@ async function updateGroups(data, status) {
             INQG_CHK_DATE: groups.INQG_CHK_DATE == null && status >= 26 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : groups.INQG_CHK_DATE,
             INQG_STATUS: status,
         };
-		await updateInquiryGroup({
+        await updateInquiryGroup({
             data: groups_data,
             condition: {
                 INQ_ID: data.INQ_ID,
