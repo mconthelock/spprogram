@@ -37,15 +37,15 @@
         },
         {
             "label": "Remark",
-            "id": "remark",
+            "id": "deremark",
             "type": "textarea" ,
-            "name": "INQ_REMARK"
+            "name": "INQ_DE_REMARK"
         },
         {
             "label": "Remark",
-            "id": "showremark",
+            "id": "view-deremark",
             "type": "staticText" ,
-            "name": "INQ_REMARK",
+            "name": "INQ_DE_REMARK",
             "input": true
         }
     ]

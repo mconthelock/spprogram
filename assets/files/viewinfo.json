@@ -59,6 +59,12 @@
             "id": "status",
             "type": "status",
             "name": "INQ_STATUS"
+        },
+        {
+            "label": "Status",
+            "id": "groupstatus",
+            "type": "status",
+            "name": "GROUP_STATUS"
         }
     ]
 }

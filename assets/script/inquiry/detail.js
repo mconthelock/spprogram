@@ -29,6 +29,7 @@ import {
 	setAS400Detail,
 	setAS400Variable,
 	addAS400Data,
+	getStatus,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -42,7 +43,11 @@ export const statusColors = () => {
 		{ id: 2, color: "bg-teal-500 text-white" }, //New
 		{ id: 9, color: "bg-yellow-400" }, //revise
 		{ id: 19, color: "bg-cyan-500" }, //SE
-		{ id: 29, color: "bg-blue-500 text-white" }, //DE
+		{ id: 20, color: "bg-blue-500 text-white" }, //DE
+		{ id: 21, color: "bg-skey-500 text-white" }, //DE ASSIGN
+		{ id: 24, color: "bg-cyan-300 text-black" }, //DE DECLARE
+		{ id: 28, color: "bg-blue-500 text-white" }, //DE CHECK
+		{ id: 29, color: "bg-gray-300 text-white" }, //DE NOT CONCERN
 		{ id: 39, color: "bg-slate-500 text-white" }, //IS
 		{ id: 44, color: "bg-amber-500 text-white" }, //FIN
 		{ id: 45, color: "bg-lime-500 text-white" }, //Price Approved
@@ -131,7 +136,7 @@ export async function createFormCard(cardData, data = {}) {
 
 		fieldWrapper.className = `grid grid-cols-3 items-center gap-2 min-h-[42px] m-1 ${
 			field.type == "hidden" ? "hidden" : ""
-		}`;
+		} ${field.id == "groupstatus" ? "hidden" : ""}`;
 		const label = document.createElement("label");
 		label.htmlFor = field.id || "";
 		label.className = "text-sm font-bold text-gray-600 col-span-1";
@@ -165,10 +170,17 @@ export async function setFieldValue(field, data = {}) {
 	};
 
 	const dspStatus = async (data, field) => {
+		const statusList = await getStatus();
+		const statusText = statusList.find(
+			(item) => item.STATUS_ID == field.value,
+		);
 		const colors = await statusColors();
-		const cls = colors.find((item) => item.id >= data.INQ_STATUS);
+		const cls = colors.find((item) => item.id >= field.value) || colors[0];
 		field.class = cls.color;
-		field.display = data.status == null ? "N/A" : data.status.STATUS_DESC;
+		field.display =
+			field.id == "status"
+				? statusText.STATUS_DESC
+				: statusText.STATUS_ACTION;
 		return field;
 	};
 
@@ -967,4 +979,20 @@ export async function setAS400Data(inq) {
 	// 	inquiryNo: inq.INQ_NO,
 	// });
 	return;
+}
+
+export async function finalStatus(details) {
+	let isAmec = false;
+	let isMelina = false;
+	let isUnreply = false;
+	let status = 30;
+	details.map((detail) => {
+		if (detail.INQD_SUPPLIER == "AMEC") isAmec = true;
+		if (detail.INQD_SUPPLIER == "MELINA") isMelina = true;
+		if (detail.INQD_UNREPLY) isUnreply = true;
+		return detail;
+	});
+	if (!isAmec && !isMelina) status = 50;
+	else if (!isAmec && isMelina) status = 52;
+	else status = 30;
 }

@@ -87,7 +87,7 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 				const color =
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
+						: des[0].INQG_STATUS >= 26
 							? "text-primary"
 							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
@@ -107,7 +107,7 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 				const color =
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
+						: des[0].INQG_STATUS >= 26
 							? "text-primary"
 							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
@@ -127,7 +127,7 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 				const color =
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
+						: des[0].INQG_STATUS >= 26
 							? "text-primary"
 							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
@@ -147,7 +147,7 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 				const color =
 					des[0].INQG_STATUS == null
 						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
+						: des[0].INQG_STATUS >= 26
 							? "text-primary"
 							: "text-secondary";
 				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;

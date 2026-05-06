@@ -10,23 +10,15 @@ pipeline {
             steps {
                 script {
                     if (env.BRANCH_NAME == 'develop') {
-
                         env.TARGET_DIR = '/var/amecweb/wwwroot/development/spprogram'
-                        env.ENV_CRED_ID = 'spprogram-env-dev'
-                        env.NODE_ENV = 'development'
+                        env.ENV_DIR = '/var/amecweb/file/env/spprogram/spprogram-env-dev'
                         env.DEPLOY_ENV = 'development'
-
                         echo ">>> MR merged → develop → DEPLOY DEVELOPMENT"
-
                     } else if (env.BRANCH_NAME == 'main') {
-
                         env.TARGET_DIR = '/var/amecweb/wwwroot/production/spprogram'
-                        env.ENV_CRED_ID = 'spprogram-env-prod'
-                        env.NODE_ENV = 'development'
+                        env.ENV_DIR = '/var/amecweb/file/env/spprogram/spprogram-env-prod'
                         env.DEPLOY_ENV = 'production'
-
                         echo ">>> MR merged → main → DEPLOY PRODUCTION"
-
                     } else {
                         error "❌ Branch ${env.BRANCH_NAME} is not deployable"
                     }
@@ -43,13 +35,13 @@ pipeline {
 
         stage('Install & Build') {
             steps {
-                withCredentials([file(credentialsId: "${env.ENV_CRED_ID}", variable: 'ENV_FILE')]) {
+                // withCredentials([file(credentialsId: "${env.ENV_CRED_ID}", variable: 'ENV_FILE')]) {
                     withCredentials([usernamePassword(credentialsId: 'gitlab-auth-id', passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
                         sh '''
-                            cp ${ENV_FILE} .env
 
                             git config --global url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf "https://webhub.mitsubishielevatorasia.co.th/"
 
+                            cp ${ENV_DIR} .env
                             npm install --include=dev
                             npm update @amec/webasset
                             npm run build
@@ -58,7 +50,7 @@ pipeline {
                             git config --global --unset url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf
                         '''
                     }
-                }
+                // }
             }
         }
 

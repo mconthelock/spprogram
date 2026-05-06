@@ -13,77 +13,47 @@
             "input": true
         },
         {
-            "label": "Read",
-            "id": "sale-leader-read",
-            "type": "hidden",
-            "class": "setnesting",
-            "name": "SG_READ",
-            "topic": "timeline",
-            "mapping": "SG_READ"
-        },
-        {
-            "label": "Confirm",
-            "id": "sale-leader-confirm",
-            "type": "hidden",
-            "class": "setnesting",
-            "topic": "timeline",
-            "name": "SG_CONFIRM",
-            "mapping": "SG_CONFIRM"
-        },
-        {
             "label": "Designer",
             "id": "desiger-incharge",
             "type": "select",
             "source": "getDesigner",
-            "class": "req-1",
-            "name": "INQG_DES"
+            "class": "req-1 setnesting",
+            "name": "INQG_DES",
+            "mapping":"INQG_DES",
+            "topic": "inqgroup"
         },
         {
             "label": "Checker",
             "id": "checker-incharge",
             "type": "select",
             "source": "getDesignerChecker",
-            "class": "req-1",
-            "name": "INQG_CHK"
-        },
-        {
-            "label": "SE Read",
-            "id": "sale-read",
-            "type": "hidden",
-            "class": "setnesting",
-            "topic": "timeline",
-            "name": "SE_READ",
-            "mapping": "SE_READ"
-        },
-        {
-            "label": "SE Confirm",
-            "id": "sale-confirm",
-            "type": "hidden",
-            "class": "setnesting",
-            "topic": "timeline",
-            "name": "SE_CONFIRM",
-            "mapping": "SE_CONFIRM"
+            "class": "req-1 setnesting",
+            "name": "INQG_CHK",
+            "mapping":"INQG_CHK",
+            "topic": "inqgroup"
         },
         {
             "label": "Design Class",
             "id": "des-class",
             "type": "select",
             "name": "INQG_CLASS",
-            "class": "req-1",
+            "class": "req-1 setnesting",
             "options": [
                 {"id": "A", "text": "A"},
                 {"id": "B", "text": "B"},
                 {"id": "C", "text": "C"},
                 {"id": "D", "text": "D"},
                 {"id": "E", "text": "E"}
-            ]
+            ],
+            "mapping": "INQG_CLASS",
+            "topic": "inqgroup"
         },
         {
             "label": "Remark",
-            "id": "remark",
+            "id": "deremark",
             "type": "textarea" ,
             "name": "INQ_REMARK",
-            "mapping": "INQ_REMARK"
+            "mapping": "INQ_DE_REMARK"
         }
     ]
 }
