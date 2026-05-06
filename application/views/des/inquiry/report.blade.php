@@ -4,6 +4,7 @@
     <h2 class="card-title text-2xl">Inquiry Report</h2>
     <div class="divider m-0"></div>
     <form action="#" id="form-container" class="hidden" autocomplete="off">
+        <input type="text" name="INQ_TYPE" value="SP" class="hidden">
         <div class="flex gap-8">
             <div class="flex-1 flex flex-col py-6 px-12 bg-white rounded-lg shadow">
                 <div class="divider divider-start font-bold text-primary">Search By Inquiry Information</div>
@@ -112,21 +113,21 @@
                 <div class="divider divider-start font-bold text-primary">Search by DE action.</div>
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Assigner</legend>
-                    <select class="select w-full s2" id="assigner" name="inqgroup.ASSIGNER">
+                    <select class="select w-full s2" id="de_leader" name="inqgroup.INQG_ASG">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Designer</legend>
-                    <select class="select w-full s2" id="designer" name="inqgroup.DESIGNER">
+                    <select class="select w-full s2" id="designer" name="inqgroup.INQG_DES">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
 
                 <fieldset class="fieldset">
                     <legend class="fieldset-legend">Checker</legend>
-                    <select class="select w-full s2" id="se_engineer" name="inqgroup.SE_USER">
+                    <select class="select w-full s2" id="de_checker" name="inqgroup.INQG_CHK">
                         <option disabled selected></option>
                     </select>
                 </fieldset>
@@ -136,13 +137,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="timeline.START_SG_READ" />
+                                name="timeline.START_DE_READ" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="timeline.END_SG_READ" />
+                                name="timeline.END_DE_READ" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -153,13 +154,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="timeline.START_SE_CONFIRM" />
+                                name="timeline.START_DE_CONFIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="timeline.END_SE_CONFIRM" />
+                                name="timeline.END_DE_CONFIRM" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>

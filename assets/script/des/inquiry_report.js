@@ -16,7 +16,9 @@ import {
 	setAgent,
 	setCountry,
 	setStatus,
-	setSaleEngineer,
+	setDesignLeader,
+	setDesigner,
+	setDesignChecker,
 	setReportButton,
 } from "../inquiry/index.js";
 import { getInquiry, getTemplate, exportExcel } from "../service/index.js";
@@ -36,7 +38,9 @@ $(async function () {
 		await setAgent();
 		await setCountry();
 		await setStatus();
-		await setSaleEngineer();
+		await setDesignLeader();
+		await setDesigner();
+		await setDesignChecker();
 		await setDatePicker();
 		await setSelect2({ allowClear: false });
 		await setReportButton();

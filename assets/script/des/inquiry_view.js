@@ -54,14 +54,18 @@ $(document).ready(async () => {
 			IS_TIMELINE: true,
 		});
 
-		const group = inqs[0].inqgroup.find((g) => g.INQG_GROUP == desgroup);
+		const group = inqs[0].inqgroup.find(
+			(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
+		);
 		inqs[0].inqgroup = group;
+		inqs[0].GROUP_STATUS = group.INQG_STATUS;
 		inqs[0].INQ_DATE = dayjs(inqs[0].INQ_DATE).format("YYYY-MM-DD");
 		inqs[0].INQ_REMARK = inqs[0].INQ_DES_REMARK;
-
 		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
+
+		// Details
 		let details = inqs[0].details.filter(
 			(dt) =>
 				dt.INQD_LATEST == "1" &&
@@ -69,6 +73,7 @@ $(document).ready(async () => {
 		);
 		const detailsOption = await setupSaleViewDetail(details);
 		table = await createTable(detailsOption);
+
 		//Inquiry History and Attachment
 		const logs = await getInquiryHistory(inqs[0].INQ_NO);
 		const file = await getInquiryFile({ INQ_NO: inqs[0].INQ_NO });
@@ -79,10 +84,19 @@ $(document).ready(async () => {
 			id: "#attachment",
 		});
 		$("#add-attachment").remove();
-		$("#remark").closest(".grid").addClass("hidden");
-		await setSelect2({ allowClear: false });
-		await bindDeleteLine();
-		await setupButton(revise, usrgroup);
+		$("#view-deremark").closest(".grid").addClass("hidden");
+		const back = await createBtn({
+			id: "",
+			title: "Back",
+			type: "link",
+			href:
+				usrgroup == "DES"
+					? `${process.env.APP_ENV}/des/inquiry/design/`
+					: `${process.env.APP_ENV}/des/inquiry/`,
+			icon: "fi fi-rr-arrow-circle-left text-xl",
+			className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
+		});
+		$(".btn-container").append(back);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
@@ -90,193 +104,3 @@ $(document).ready(async () => {
 		await showLoader({ show: false });
 	}
 });
-
-async function setupButton(revise, usergroup) {
-	const assign = await createBtn({
-		id: "assign-pic",
-		title: "Assign PIC",
-		icon: "fi fi-rs-user-check text-xl",
-		className: `btn-primary text-white hover:shadow-lg ${revise ? `revised` : ``}`,
-	});
-
-	const sendIS = await createBtn({
-		id: "send-bm",
-		title: "Completed",
-		icon: "fi fi-ts-coins text-xl",
-		tooltip:
-			"Finish declare part process and Send to Pre-BM on AS400 (Only supply by AMEC item)",
-		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${revise ? `revised` : ``}`,
-	});
-
-	const confirm = await createBtn({
-		id: "send-confirm",
-		title: "Confirm",
-		className: `btn-primary text-white hover:shadow-lg ${revise ? `revised` : ``}`,
-	});
-
-	const back = await createBtn({
-		id: "",
-		title: "Back",
-		type: "link",
-		href:
-			usergroup == "DES"
-				? `${process.env.APP_ENV}/des/inquiry/design/`
-				: `${process.env.APP_ENV}/des/inquiry/`,
-		icon: "fi fi-rr-arrow-circle-left text-xl",
-		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
-	});
-
-	// if (usergroup == "DES") $(".btn-container").append(confirm, back);
-	// else if (usergroup == "LDR") $(".btn-container").append(assign, back);
-	// else $(".btn-container").append(back);
-	$(".btn-container").append(back);
-}
-
-$(document).on("click", "#assign-pic", async function (e) {
-	e.preventDefault();
-	const chkheader = await verifyHeader(".req-1");
-	if (!chkheader) return;
-	const isRevise = $(this).hasClass("revised");
-	if (isRevise && $("#remark").val().trim() === "") {
-		await showMessage("Please provide a remark for the revision.");
-		$("#remark").focus();
-		return;
-	}
-	var { fw, status } = await allowForeward();
-	if (!fw) status = 21;
-	try {
-		const inquiry = await updatePath({
-			level: status >= 24 ? 2 : 0,
-			status: status,
-			obj: $(this),
-		});
-		const completed = await checkComplete(inquiry.INQ_ID);
-		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
-		);
-	} catch (error) {
-		await showMessage(error.message || `Something went wrong.`);
-		return;
-	}
-});
-
-$(document).on("click", "#send-bm", async function (e) {
-	e.preventDefault();
-	const chkheader = await verifyHeader(".req-1");
-	if (!chkheader) return;
-	const isRevise = $(this).hasClass("revised");
-	if (isRevise && $("#remark").val().trim() === "") {
-		await showMessage("Please provide a remark for the revision.");
-		$("#remark").focus();
-		return;
-	}
-
-	try {
-		const inquiry = await updatePath({
-			level: 0,
-			status: 21,
-			obj: $(this),
-		});
-	} catch (error) {
-		await showMessage(error.message || `Something went wrong.`);
-		return;
-	}
-});
-
-async function updatePath(option) {
-	try {
-		let details = table
-			.rows()
-			.data()
-			.toArray()
-			.map((detail, index) => ({
-				...detail,
-				rowIndex: index,
-			}));
-		await verifyDetail(table, details, option.level);
-		const header = {
-			INQ_ID: $("#inquiry-id").val(),
-			INQ_NO: $("#inquiry-no").val(),
-			INQ_REV: $("#revision").val(),
-			INQ_PRJNO: $("#project-no").val(),
-			INQ_PRDSCH: $("#schedule").val(),
-			INQ_SERIES: $("#series").val(),
-			INQ_SPEC: $("#spec").val(),
-			INQ_STATUS: option.status,
-			INQ_SALE_REMARK: $("#remark").val(),
-			UPDATE_BY: $("#user-login").attr("empname"),
-			UPDATE_AT: new Date(),
-		};
-		const timelinedata = await setTimelineData(header);
-		if (option.status == 30) $("#remark").val("");
-		//const history = await setLogsData(status, true);
-		let deleteLine = [];
-		if (state.deletedLineMap.size > 0) {
-			state.deletedLineMap.forEach((value, key) => {
-				deleteLine.push(key);
-			});
-		}
-
-		let deleteFile = [];
-		if (state.deletedFilesMap.size > 0) {
-			state.deletedFilesMap.forEach((value, key) => {
-				deleteFile.push(key);
-			});
-		}
-
-		details = details.map((dt) => {
-			const { rowIndex, ...rest } = dt;
-			return {
-				...rest,
-				INQD_SUPPLIER: rest.INQD_DE == "1" ? "" : rest.INQD_SUPPLIER,
-				INQD_TC_BASE: rest.INQD_DE == "1" ? null : rest.INQD_TC_BASE,
-			};
-		});
-		const fomdata = {
-			header,
-			details,
-			deleteLine,
-			deleteFile,
-			timelinedata,
-		};
-
-		await activatedBtnRow(option.obj);
-		const inquiry = await updateInquiry(fomdata);
-		if (state.selectedFilesMap.size > 0) {
-			const attachment_form = new FormData();
-			attachment_form.append("INQ_NO", inquiry.INQ_NO);
-			state.selectedFilesMap.forEach((file, fileName) => {
-				attachment_form.append("files", file, fileName);
-			});
-			await createInquiryFile(attachment_form);
-		}
-		return inquiry;
-	} catch (error) {
-		console.log(error);
-		await showMessage(error.message || `Something went wrong.`);
-		await activatedBtnRow(option.obj, false);
-	}
-}
-
-async function allowForeward() {
-	let confirm = false;
-	let status = 21;
-	const user = await currentUser();
-	const designer = $("#desiger-incharge").val();
-	const checker = $("#checker-incharge").val();
-	if (user.empno == designer) {
-		status = 24;
-		if (user.empno == checker) {
-			status = 28;
-		}
-		confirm = await showConfirm({
-			title: "Fast-Forward Confirmation",
-			message:
-				"You have assigned yourself as the designer/checker. Do you want to fast-forward the inquiry to the next stage without duplication process?",
-		});
-	}
-
-	return { fw: confirm, status: status };
-}
-
-async function checkComplete() {}

@@ -95,6 +95,69 @@ export const setSaleEngineer = async () => {
 	});
 };
 
+export const setDesignLeader = async () => {
+	const id = "#de_leader";
+	let users = await getAppUsers();
+	users = users.filter((u) =>
+		["DES", "LDR", "DSV"].includes(u.appsgroups?.GROUP_CODE),
+	);
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
+	users.map((el) => {
+		$(`${id}`).append(
+			new Option(
+				`${el.data.SNAME} (${el.data.SEMPNO})`,
+				el.data.SEMPNO,
+				false,
+				false,
+			),
+		);
+	});
+};
+
+export const setDesigner = async () => {
+	const id = "#designer";
+	let users = await getAppUsers();
+	users = users.filter((u) =>
+		["DES", "LDR", "DSV"].includes(u.appsgroups?.GROUP_CODE),
+	);
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
+	users.map((el) => {
+		$(`${id}`).append(
+			new Option(
+				`${el.data.SNAME} (${el.data.SEMPNO})`,
+				el.data.SEMPNO,
+				false,
+				false,
+			),
+		);
+	});
+};
+
+export const setDesignChecker = async () => {
+	const id = "#de_checker";
+	let users = await getAppUsers();
+	users = users.filter((u) =>
+		["DES", "LDR", "DSV"].includes(u.appsgroups?.GROUP_CODE),
+	);
+	$(`${id}`)
+		.empty()
+		.append(new Option("", "", false, false));
+	users.map((el) => {
+		$(`${id}`).append(
+			new Option(
+				`${el.data.SNAME} (${el.data.SEMPNO})`,
+				el.data.SEMPNO,
+				false,
+				false,
+			),
+		);
+	});
+};
+
 export const setReportButton = async () => {
 	const search = await createBtn({
 		id: "search",

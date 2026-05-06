@@ -942,6 +942,28 @@ export async function getSearchHeader(formdata) {
 		formdata["timeline"] = timelies;
 		formdata["IS_TIMELINE"] = true;
 	}
+
+	const group_key = [
+		"inqgroup.INQG_ASG",
+		"inqgroup.INQG_DES",
+		"inqgroup.INQG_CHK",
+	];
+	let groups = {};
+	group_key.forEach((key) => {
+		if (formdata[key]) {
+			const vkey = key.replace("inqgroup.", "");
+			if (vkey.startsWith("START_"))
+				groups = { ...groups, [vkey]: `>= ${formdata[key]}` };
+			else if (vkey.startsWith("END_"))
+				groups = { ...groups, [vkey]: `<= ${formdata[key]}` };
+			else groups = { ...groups, [vkey]: formdata[key] };
+			delete formdata[key];
+		}
+	});
+	if (Object.keys(groups).length > 0) {
+		formdata["inqgroup"] = groups;
+	}
+
 	formdata["IS_GROUP"] = true;
 	return formdata;
 }

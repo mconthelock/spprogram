@@ -56,7 +56,9 @@ $(document).ready(async () => {
 			IS_TIMELINE: true,
 		});
 
-		const group = inqs[0].inqgroup.find((g) => g.INQG_GROUP == desgroup);
+		const group = inqs[0].inqgroup.find(
+			(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
+		);
 		let set_des_group = {
 			...group,
 			INQG_ASG: group.INQG_ASG == null ? user.empno : group.INQG_ASG,
@@ -342,7 +344,7 @@ async function updateGroups(data, status) {
             INQG_ASG: assign,
             INQG_DES: designer,
             INQG_CHK: checker,
-            INQG_CLASS: status > 21 ? groups.INQG_CLASS : desclass,
+            INQG_CLASS: desclass,
             INQG_ASG_DATE: groups.INQG_ASG_DATE == null && status >= 21 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : groups.INQG_ASG_DATE,
             INQG_DES_DATE: groups.INQG_DES_DATE == null && status >= 24 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : groups.INQG_DES_DATE,
             INQG_CHK_DATE: groups.INQG_CHK_DATE == null && status >= 26 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : groups.INQG_CHK_DATE,
