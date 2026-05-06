@@ -65,6 +65,9 @@ $(document).ready(async () => {
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
 
+		$("#groupstatus").closest(".grid").removeClass("hidden");
+		$("#status").closest(".grid").addClass("hidden");
+
 		// Details
 		let details = inqs[0].details.filter(
 			(dt) =>

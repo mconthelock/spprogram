@@ -120,7 +120,15 @@ export async function setupSaleViewDetail(data = []) {
 		{
 			data: "INQD_UNREPLY",
 			title: "U/N",
-			className: "text-center!",
+			className: "text-center! ",
+			render: function (data, type, row, meta) {
+				if (type === "display") {
+					return data == null
+						? ""
+						: `<i class="fi fi-rr-circle-xmark text-xl text-red-500 justify-center!"></i>`;
+				}
+				return data;
+			},
 		},
 		{
 			data: "INQD_MAR_REMARK",
@@ -134,7 +142,7 @@ export async function setupSaleViewDetail(data = []) {
 		},
 		{
 			data: "INQD_DES_REMARK",
-			title: "Sale Remark",
+			title: "DE Remark",
 			className: `w-62 min-w-62 cell-display border-r!`,
 		},
 	];

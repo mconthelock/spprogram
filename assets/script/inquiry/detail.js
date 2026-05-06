@@ -704,13 +704,6 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			return;
 		}
 
-		if (item.INQD_PARTNAME == "") {
-			check = false;
-			message.push(`Please input Part name`);
-			errorEl(row.find(".partname"));
-			return;
-		}
-
 		if (item.INQD_MFGORDER !== "STOCK" && item.INQD_MFGORDER.length != 9) {
 			check = false;
 			message.push(`Please input correct MFG order no.`);
@@ -735,8 +728,18 @@ export async function verifyDetail(table, data, savelevel = 0) {
 			}
 		}
 
+		if (item.INQD_PARTNAME == "" && item.INQD_UNREPLY == null) {
+			check = false;
+			message.push(`Please input Part name`);
+			errorEl(row.find(".partname"));
+			return;
+		}
+
 		//Qty should be more than 0
-		if (intVal(item.INQD_QTY) <= 0 || isNaN(intVal(item.INQD_QTY))) {
+		if (
+			(intVal(item.INQD_QTY) <= 0 || isNaN(intVal(item.INQD_QTY))) &&
+			item.INQD_UNREPLY == null
+		) {
 			check = false;
 			message.push(`Please input qty more than 0.`);
 			errorEl(row.find(".qty-line"));
@@ -789,16 +792,25 @@ export async function verifyDetail(table, data, savelevel = 0) {
 				return false;
 			}
 
-			const dwgno = validateDrawingNo(item.INQD_DRAWING);
-			if (dwgno == null) {
-				check = false;
-				message.push(`Please check Drawing no. format.`);
-				errorEl(row.find(".drawing-line"));
-				return false;
+			if (
+				item.INQD_DRAWING != "" &&
+				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null)
+			) {
+				const dwgno = validateDrawingNo(item.INQD_DRAWING);
+				if (dwgno == null) {
+					check = false;
+					message.push(`Please check Drawing no. format.`);
+					errorEl(row.find(".drawing-line"));
+					return false;
+				}
 			}
 
 			//If vairable has value, should be in correct format
-			if (item.INQD_VARIABLE != "" && item.INQD_VARIABLE != null) {
+			if (
+				item.INQD_VARIABLE != "" &&
+				item.INQD_VARIABLE != null &&
+				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null)
+			) {
 				const variavle = validateVariable(item.INQD_VARIABLE);
 				if (!variavle.isValid) {
 					check = false;

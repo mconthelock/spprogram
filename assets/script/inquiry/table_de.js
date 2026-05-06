@@ -3,8 +3,23 @@ import { currentUser } from "@amec/webasset/api/amec";
 import { tableOpt } from "../utils.js";
 
 export async function setupDETableDetail(data = []) {
-	const renderText = (data) => {
-		return `<div class="w-full text-xs text-start! px-2 py-3">${data == null ? "" : data}</div>`;
+	const renderText = (str, logs, key) => {
+		if (logs == undefined) return str;
+		let li = ``;
+		const log = logs.sort(
+			(a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE),
+		);
+		log.map((el) => {
+			li += `<li class="flex gap-4 p-1 border-b">
+        <div>${el[key] == null ? "" : el[key]}</div>
+        <div class="text-xs">${moment(el.UPDATE_AT).format(
+			"yyyy-MM-DD h:mm a",
+		)}</div>
+        <div class="text-xs">${displayname(el.UPDATE_BY).fname}</div>
+      </li>`;
+		});
+		const element = `<ul class="hidden">${li}</ul>${str}`;
+		return element;
 	};
 
 	const renderLog = (data, logs, key) => {
@@ -17,7 +32,6 @@ export async function setupDETableDetail(data = []) {
 		}
 		return update;
 	};
-
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
 		let selector = `<select class="select select-sm w-25! border-none rounded-none supplier" name="supplier[]">`;
@@ -76,8 +90,12 @@ export async function setupDETableDetail(data = []) {
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
-					if (row.INQD_DE != "1") return renderText(data);
-					return `<input type="text" class="w-12.5! cell-input input-number edit-input" name="seq[]" value="${data}">`;
+					if (data % 1 !== 0) data = showDigits(data, 2);
+					const log = renderLog(data, row.logs, "INQD_SEQ");
+					const str = `<input type="text" class="w-12.5! cell-input input-number edit-input ${log ? `detail-log` : ``}"
+                        ${row.INQD_OWNER_GROUP == `MAR` ? `readonly="readonly"` : ``} maxlength="5"
+                        value="${data}">`;
+					return renderText(str, row.logs, "INQD_SEQ");
 				}
 				return data;
 			},
@@ -103,7 +121,7 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					return `<textarea class="w-25! cell-input elmes-input mfgno" name="mfgno[]" readonly maxlength="50">${data == null ? "" : data}</textarea>`;
+					return `<textarea class="w-25! cell-input elmes-input mfgno" name="mfgno[]" maxlength="50">${data == null ? "" : data}</textarea>`;
 				}
 				return data;
 			},

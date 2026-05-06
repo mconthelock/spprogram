@@ -5,7 +5,7 @@ export async function setupElmesTable(data) {
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl mt-3 overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.data = data;
-	opt.pageLength = 15;
+	opt.pageLength = 10;
 	opt.order = [[1, "asc"]];
 	opt.columns = [
 		{ data: "seq", title: "seq", className: "hidden" },
@@ -59,7 +59,9 @@ export async function setupElmesTable(data) {
 		$("#tableElmes")
 			.closest(".dt-container")
 			.find(".table-page")
-			.append(`<div class="flex gap-3">${addDwgBtn}${cancleBtn}</div>`);
+			.append(
+				`<div class="flex mt-5 gap-3">${addDwgBtn}${cancleBtn}</div>`,
+			);
 	};
 	return opt;
 }

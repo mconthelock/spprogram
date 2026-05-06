@@ -77,7 +77,8 @@ $(document).ready(async () => {
 		else $("#viewdesigner").addClass("hidden");
 		$("#groupstatus").closest(".grid").removeClass("hidden");
 		$("#status").closest(".grid").addClass("hidden");
-		$("#view-deremark").closest(".grid").addClass("hidden");
+
+		$("#show-deremark").closest(".grid").addClass("hidden");
 		$("#viewmar").addClass("hidden");
 		let details = inqs[0].details.filter(
 			(dt) =>
@@ -143,11 +144,13 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
+	console.log(usergroup, $("#groupstatus").val());
+
 	if (usergroup == "LDR" && $("#groupstatus").val() < 21)
 		$(".btn-container").append(assign, back);
 	else if (usergroup == "LDR" && $("#groupstatus").val() >= 24)
 		$(".btn-container").append(checker, back);
-	else if (usergroup == "LDR" && usergroup == "DES")
+	else if (usergroup == "LDR" || usergroup == "DES")
 		$(".btn-container").append(confirm, back);
 	else $(".btn-container").append(back);
 }
@@ -217,7 +220,7 @@ $(document).on("click", "#send-checked", async function (e) {
 		return;
 	}
 	try {
-		const status = 24;
+		const status = 26;
 		const inquiry = await updatePath({
 			level: 2,
 			status: status,
@@ -362,12 +365,8 @@ async function updateGroups(data, status) {
 }
 
 async function checkComplete(inquiry) {
-	const data = await getInquiry({
-		INQ_ID: inquiry.INQ_ID,
-		IS_GROUP: true,
-	});
 	let complete = true;
-	for (const item of data[0].inqgroup) {
+	for (const item of inquiry.inqgroup) {
 		if (item.INQG_STATUS < 26) {
 			complete = false;
 		}
@@ -379,7 +378,7 @@ async function checkComplete(inquiry) {
 			{
 				INQ_STATUS: status,
 			},
-			id,
+			inquiry.INQ_ID,
 		);
 		await updateInquiryTimeline({
 			INQ_NO: inquiry.INQ_NO,
