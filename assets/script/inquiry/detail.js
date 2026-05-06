@@ -44,7 +44,7 @@ export const statusColors = () => {
 		{ id: 9, color: "bg-yellow-400" }, //revise
 		{ id: 19, color: "bg-cyan-500" }, //SE
 		{ id: 20, color: "bg-blue-500 text-white" }, //DE
-		{ id: 21, color: "bg-skey-500 text-white" }, //DE ASSIGN
+		{ id: 21, color: "bg-sky-500 text-white" }, //DE ASSIGN
 		{ id: 24, color: "bg-cyan-300 text-black" }, //DE DECLARE
 		{ id: 28, color: "bg-blue-500 text-white" }, //DE CHECK
 		{ id: 29, color: "bg-gray-300 text-white" }, //DE NOT CONCERN

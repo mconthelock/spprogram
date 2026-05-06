@@ -71,9 +71,8 @@ $(document).ready(async () => {
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
 
-		if (user.group == "LDR" && $("#groupstatus").val() <= 22)
-			$("#viewdesigner").addClass("hidden");
-		else $("#designer").addClass("hidden");
+		if ($("#groupstatus").val() > 20) $("#designer").addClass("hidden");
+		else $("#viewdesigner").addClass("hidden");
 		$("#groupstatus").closest(".grid").removeClass("hidden");
 		$("#status").closest(".grid").addClass("hidden");
 		$("#view-deremark").closest(".grid").addClass("hidden");
@@ -85,6 +84,7 @@ $(document).ready(async () => {
 		);
 		const detailsOption = await setupDETableDetail(details);
 		table = await createTable(detailsOption);
+
 		//Inquiry History and Attachment
 		const logs = await getInquiryHistory(inqs[0].INQ_NO);
 		const file = await getInquiryFile({ INQ_NO: inqs[0].INQ_NO });
@@ -141,10 +141,12 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	if (usergroup == "LDR" && $("#status").val())
-		if (usergroup == "DES") $(".btn-container").append(confirm, back);
-		else $(".btn-container").append(checker, back);
-	else if (usergroup == "LDR") $(".btn-container").append(assign, back);
+	if (usergroup == "LDR" && $("#groupstatus").val() < 21)
+		$(".btn-container").append(assign, back);
+	else if (usergroup == "LDR" && $("#groupstatus").val() >= 24)
+		$(".btn-container").append(checker, back);
+	else if (usergroup == "LDR" && usergroup == "DES")
+		$(".btn-container").append(confirm, back);
 	else $(".btn-container").append(back);
 }
 
@@ -152,6 +154,12 @@ $(document).on("click", "#assign-pic", async function (e) {
 	e.preventDefault();
 	const chkheader = await verifyHeader(".req-1");
 	if (!chkheader) return;
+	const isRevise = $(this).hasClass("revised");
+	if (isRevise && $("#deremark").val().trim() === "") {
+		await showMessage("Please provide a remark for the revision.");
+		$("#deremark").focus();
+		return;
+	}
 	try {
 		var { fw, status } = await allowForeward();
 		if (!fw) status = 21;
@@ -161,11 +169,12 @@ $(document).on("click", "#assign-pic", async function (e) {
 			obj: $(this),
 		});
 		await updateGroups(inquiry, status);
-		await checkComplete(inquiry);
-		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		// await checkComplete(inquiry);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		// );
 	} catch (error) {
+		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
 		return;
 	}
@@ -173,6 +182,12 @@ $(document).on("click", "#assign-pic", async function (e) {
 
 $(document).on("click", "#send-confirm", async function (e) {
 	e.preventDefault();
+	const isRevise = $(this).hasClass("revised");
+	if (isRevise && $("#view-deremark").val().trim() === "") {
+		await showMessage("Please provide a remark for the revision.");
+		$("#view-deremark").focus();
+		return;
+	}
 	try {
 		const status = 24;
 		const inquiry = await updatePath({
@@ -185,6 +200,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
+		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
 		return;
 	}
@@ -192,7 +208,12 @@ $(document).on("click", "#send-confirm", async function (e) {
 
 $(document).on("click", "#send-checked", async function (e) {
 	e.preventDefault();
-
+	const isRevise = $(this).hasClass("revised");
+	if (isRevise && $("#view-deremark").val().trim() === "") {
+		await showMessage("Please provide a remark for the revision.");
+		$("#view-deremark").focus();
+		return;
+	}
 	try {
 		const status = 24;
 		const inquiry = await updatePath({
@@ -206,19 +227,13 @@ $(document).on("click", "#send-checked", async function (e) {
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
+		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
 		return;
 	}
 });
 
 async function updatePath(option) {
-	const isRevise = $(this).hasClass("revised");
-	if (isRevise && $("#deremark").val().trim() === "") {
-		await showMessage("Please provide a remark for the revision.");
-		$("#deremark").focus();
-		return;
-	}
-
 	try {
 		let details = table
 			.rows()
@@ -240,7 +255,7 @@ async function updatePath(option) {
 			INQ_STATUS: 20,
 			INQ_DE_REMARK: $("#deremark").val(),
 			UPDATE_BY: $("#user-login").attr("empname"),
-			UPDATE_AT: new Date(),
+			UPDATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		};
 		const history = await setLogsData(option.status);
 		let deleteLine = [];
@@ -281,29 +296,6 @@ async function updatePath(option) {
 			});
 			await createInquiryFile(attachment_form);
 		}
-
-		//Group Update
-		const user = await currentUser();
-		const des = await getDesigner();
-		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
-		const groups = inquiry.inqgroup.filter(
-			(el) => el.INQG_GROUP == desgroup,
-		);
-		// const groups_update = {
-		//     data: {
-		//         INQG_DES_DATE: groups.INQG_DES_DATE,
-		// if (option.status >= 24)
-		// 	data: {
-		// 		INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-		// 		INQG_STATUS: status,
-		// 	},
-		// 	condition: {
-		// 		INQ_ID: inquiry.INQ_ID,
-		// 		INQG_LATEST: 1,
-		// 		INQG_GROUP: desgroup,
-		// 	},
-		// };
-
 		return inquiry;
 	} catch (error) {
 		console.log(error);
@@ -356,11 +348,14 @@ async function updateGroups(data, status) {
             INQG_CHK_DATE: groups.INQG_CHK_DATE == null && status >= 26 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : groups.INQG_CHK_DATE,
             INQG_STATUS: status,
         };
-        await updateInquiryGroup({data: groups_data, condition: {
-            INQ_ID: data.INQ_ID,
-            INQG_LATEST: 1,
-            INQG_GROUP: desgroup,
-        },});
+		await updateInquiryGroup({
+            data: groups_data,
+            condition: {
+                INQ_ID: data.INQ_ID,
+                INQG_LATEST: 1,
+                INQG_GROUP: desgroup,
+            },
+        });
     }
 }
 
