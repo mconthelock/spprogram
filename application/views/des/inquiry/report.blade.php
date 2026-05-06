@@ -4,7 +4,6 @@
     <h2 class="card-title text-2xl">Inquiry Report</h2>
     <div class="divider m-0"></div>
     <form action="#" id="form-container" class="hidden" autocomplete="off">
-        <input type="text" name="INQ_TYPE" value="SP" class="hidden">
         <div class="flex gap-8">
             <div class="flex-1 flex flex-col py-6 px-12 bg-white rounded-lg shadow">
                 <div class="divider divider-start font-bold text-primary">Search By Inquiry Information</div>

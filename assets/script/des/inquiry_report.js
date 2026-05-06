@@ -5,11 +5,12 @@ import select2 from "select2";
 import { setDatePicker } from "@amec/webasset/flatpickr";
 import { setSelect2 } from "@amec/webasset/select2";
 import { showLoader } from "@amec/webasset/preloader";
+import { currentUser } from "@amec/webasset/api/amec";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtnRow } from "@amec/webasset/components/buttons";
 import {
-	tableInquirySaleOption,
+	tableInquiryDEOption,
 	setSeries,
 	setOrderType,
 	setTrader,
@@ -22,11 +23,11 @@ import {
 	setReportButton,
 } from "../inquiry/index.js";
 import { getInquiry, getTemplate, exportExcel } from "../service/index.js";
-import { dataExports } from "./data.js";
 import { bindSearchReport } from "../inquiry/ui.js";
 import { initApp } from "../utils.js";
-select2();
+import { getDesigner, dataExports } from "./data.js";
 
+select2();
 var table;
 $(async function () {
 	await showLoader();
@@ -57,8 +58,19 @@ $(async function () {
 
 async function createReportTable(formdata) {
 	try {
-		let data = await getInquiry({ ...formdata, INQ_TYPE: "SP" });
-		const opt = await tableInquirySaleOption(data, { back: true });
+		const user = await currentUser();
+		const usrgroup = user.group;
+		const des = await getDesigner();
+		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+
+		const data = await getInquiry({ ...formdata, INQ_TYPE: "SP" });
+		const result = data.filter((d) => {
+			return d.inqgroup.some(
+				(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
+			);
+		});
+
+		const opt = await tableInquiryDEOption(result, { back: true });
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);

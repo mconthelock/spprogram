@@ -159,14 +159,22 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				const process = createBtn({
+				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Process",
 					icon: "fi fi fi-ss-arrow-circle-right text-lg",
 					className: `btn-xs btn-accent w-[80px] text-white hover:shadow-lg hover:text-white process-btn`,
 				});
 
-				return `<div class="flex gap-1 justify-center items-center w-fit">${process}</div>`;
+				const view = createBtn({
+					id: `view-${data}`,
+					title: "View",
+					icon: "fi fi-rr-search text-lg",
+					type: "link",
+					className: `btn-xs btn-outline btn-accent  hover:shadow-lg hover:text-white`,
+					href: `${process.env.APP_ENV}/des/inquiry/show/${data}/`,
+				});
+				return `<div class="flex gap-1 justify-center items-center w-fit">${extopt.back === true ? view : edit}</div>`;
 			},
 		},
 	];

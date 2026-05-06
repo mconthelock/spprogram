@@ -170,6 +170,7 @@ export async function setFieldValue(field, data = {}) {
 	};
 
 	const dspStatus = async (data, field) => {
+		if (!field.value) return field;
 		const statusList = await getStatus();
 		const statusText = statusList.find(
 			(item) => item.STATUS_ID == field.value,
