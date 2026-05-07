@@ -9,13 +9,13 @@ export const initApp = async (opt = {}) => {
 			programName: "SP PROGRAM",
 			sidebarClass: `size-xl text-gray-50 bg-primary md:h-[calc(100vh-2.5rem)]! md:rounded-3xl! md:py-5 md:shadow-lg`,
 		});
-		if (!app) return false;
 
+		if (!app) return false;
 		$(".mainmenu").find("details").attr("open", false);
 		if (opt.submenu !== undefined) {
 			$(`.mainmenu${opt.submenu}`).find("details").attr("open", true);
 		}
-		return;
+		return app;
 	} catch (error) {
 		console.log(error);
 	}
@@ -39,7 +39,7 @@ export const tableOpt = {
 		search: "",
 		searchPlaceholder: "Filter records...",
 		loadingRecords: `<span class="loading loading-spinner loading-xl"></span>`,
-		emptyTable: `<span class="text-[14px] text-gray-600 font-medium">Have no record found</span>`,
+		emptyTable: `<div class="text-left text-[14px] text-gray-400 ps-5 font-bold flex items-center gap-2"><i class="fi fi-rr-exclamation text-2xl text-warning"></i>Have no record found</div>`,
 		zeroRecords: "ไม่พบข้อมูลที่ต้องการ",
 		lengthMenu: "_MENU_",
 		infoFiltered: "(กรองข้อมูลจากทั้งหมด _MAX_ รายการ)",

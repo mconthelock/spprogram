@@ -81,7 +81,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_SEQ",
 			title: "No.",
-			className: "sticky-column seqno",
+			className: "sticky-column seqno w-12.5! min-w-12.5!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -98,7 +98,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_CAR",
 			title: "CAR",
-			className: "sticky-column text-center!",
+			className: "sticky-column text-center! w-10! min-w-10!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -114,7 +114,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_MFGORDER",
 			title: "MFG No.",
-			className: "sticky-column",
+			className: "sticky-column w-25! min-w-25!",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
@@ -126,7 +126,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className: "sticky-column",
+			className: "sticky-column w-12.5! min-w-12.5!",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
@@ -138,7 +138,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "sticky-column ",
+			className: "sticky-column w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {
@@ -152,7 +152,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: "",
+			className: "w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
@@ -166,7 +166,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: "",
+			className: "w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type) {
 				if (type === "display") {
@@ -180,7 +180,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className: "",
+			className: "w-12.5! min-w-12.5!",
 			sortable: false,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -194,7 +194,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_UM",
 			title: "U/M",
-			className: "",
+			className: "w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				data = data == "" ? "PC" : data;
@@ -251,7 +251,7 @@ export async function setupPartTableDetail(data = []) {
 		},
 		{
 			data: "INQD_MAR_REMARK",
-			className: "remark-line",
+			className: "remark-line w-62! min-w-62!",
 			title: "Remark",
 			sortable: false,
 			render: function (data, type) {
@@ -264,9 +264,27 @@ export async function setupPartTableDetail(data = []) {
 			},
 		},
 		{
+			data: "INQD_SALE_REMARK",
+			className: `min-w-[250px] cell-display`,
+			title: "Sale Remark",
+			sortable: false,
+			render: function (data) {
+				return data == null ? "" : data;
+			},
+		},
+		{
 			data: "INQD_DES_REMARK",
 			className: `min-w-[250px] cell-display`,
 			title: "D/E Remark",
+			sortable: false,
+			render: function (data) {
+				return data == null ? "" : data;
+			},
+		},
+		{
+			data: "INQD_FIN_REMARK",
+			className: `min-w-[250px] cell-display`,
+			title: "FIN Remark",
 			sortable: false,
 			render: function (data) {
 				return data == null ? "" : data;

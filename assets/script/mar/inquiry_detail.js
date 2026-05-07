@@ -47,6 +47,7 @@ import {
 	createInquiry,
 	createInquiryFile,
 	updateInquiry,
+	updateInquiryGroup,
 	findPriceRatio,
 } from "../service/index.js";
 import { initApp, fileExtension } from "../utils.js";
@@ -98,6 +99,15 @@ $(document).ready(async () => {
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
+		$("#form-container-wrapper").html(
+			`<div class="flex flex-col w-full justify-center items-center gap-5 h-64">
+                <h1 class="text-xl font-bold">Cannot load inquiry details</h1>
+                <div>${error.message || "Something went wrong."}</div>
+                <a href="${process.env.APP_ENV}/mar/inquiry" class="btn btn-error "> <i class="fi fi-rr-arrow-small-left text-2xl"></i> Back to inquiry list</a>
+            </div>
+
+            `,
+		);
 	} finally {
 		await showLoader({ show: false });
 	}
@@ -352,11 +362,6 @@ async function createPath(opt) {
 			await createInquiryFile(attachment_form);
 		}
 		return inquiry;
-		// const url =
-		// 	opt.status == 1
-		// 		? `${process.env.APP_ENV}/mar/inquiry/edit/${inquiry.INQ_ID}`
-		// 		: `${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`;
-		// window.location.replace(url);
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow(opt.obj, false);
@@ -373,11 +378,8 @@ $(document).on("click", "#update-de", async function (e) {
 		return;
 	}
 
-	if ($("#status").val() >= 10) {
-		const inquiry = await updatePath({ level: 1, status: 3, obj: $(this) });
-	} else {
-		const inquiry = await updatePath({ level: 1, status: 2, obj: $(this) });
-	}
+	const inquiry = await updatePath({ level: 1, status: 2, obj: $(this) });
+	await updateGroups(inquiry);
 	window.location.replace(
 		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
 	);
@@ -523,9 +525,6 @@ async function updatePath(opt) {
 			});
 			await createInquiryFile(attachment_form);
 		}
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-		// );
 		return inquiry;
 	} catch (error) {
 		console.log(error);
@@ -552,4 +551,22 @@ async function setLogsData(action) {
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),
 	};
+}
+
+async function updateGroups(data) {
+	// prettier-ignore
+	{
+        const groups_data = {
+            INQG_DES_DATE: null,
+            INQG_CHK_DATE: null,
+            INQG_STATUS: 3,
+        };
+        await updateInquiryGroup({
+            data: groups_data,
+            condition: {
+                INQ_ID: data.INQ_ID,
+                INQG_LATEST: 1
+            },
+        });
+    }
 }

@@ -17,7 +17,10 @@ import { initApp } from "../utils.js";
 var table;
 $(async function () {
 	try {
-		await initApp({ submenu: ".navmenu-newinq" });
+		await showLoader();
+		const app = await initApp({ submenu: ".navmenu-newinq" });
+		if (!app) return;
+
 		let data;
 		if ($("#pageid").val() == "2") {
 			data = await getInquiry({
