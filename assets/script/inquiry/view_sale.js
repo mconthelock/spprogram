@@ -133,17 +133,22 @@ export async function setupSaleViewDetail(data = []) {
 		{
 			data: "INQD_MAR_REMARK",
 			title: "MAR Remark",
-			className: `w-62 min-w-62 cell-display border-r!`,
+			className: `w-62! min-w-62! cell-display bg-gray-200!`,
 		},
 		{
 			data: "INQD_SALE_REMARK",
 			title: "Sale Remark",
-			className: `w-62 min-w-62 cell-display border-r!`,
+			className: `w-62! min-w-62! cell-display bg-gray-100!`,
 		},
 		{
 			data: "INQD_DES_REMARK",
 			title: "DE Remark",
-			className: `w-62 min-w-62 cell-display border-r!`,
+			className: `w-62! min-w-62! cell-display bg-gray-200!`,
+		},
+		{
+			data: "INQD_FIN_REMARK",
+			title: "FIN Remark",
+			className: `w-62! min-w-62! cell-display bg-gray-100!`,
 		},
 	];
 	return opt;

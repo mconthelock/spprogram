@@ -265,7 +265,7 @@ export async function setupPartTableDetail(data = []) {
 		},
 		{
 			data: "INQD_SALE_REMARK",
-			className: `min-w-[250px] cell-display`,
+			className: `min-w-[250px] cell-display bg-gray-200`,
 			title: "Sale Remark",
 			sortable: false,
 			render: function (data) {
@@ -274,7 +274,7 @@ export async function setupPartTableDetail(data = []) {
 		},
 		{
 			data: "INQD_DES_REMARK",
-			className: `min-w-[250px] cell-display`,
+			className: `min-w-[250px] cell-display bg-gray-100`,
 			title: "D/E Remark",
 			sortable: false,
 			render: function (data) {
@@ -283,7 +283,7 @@ export async function setupPartTableDetail(data = []) {
 		},
 		{
 			data: "INQD_FIN_REMARK",
-			className: `min-w-[250px] cell-display`,
+			className: `min-w-[250px] cell-display bg-gray-200`,
 			title: "FIN Remark",
 			sortable: false,
 			render: function (data) {

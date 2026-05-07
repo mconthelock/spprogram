@@ -296,13 +296,11 @@ $(document).on("click", "#send-bm", async function (e) {
 
 async function createPath(opt) {
 	try {
-		//1. Check ว่ากรอก Required ครบหรือไม่
+		//1. Check ว่ากรอก Required ครบหรือไม่/เรียงข้อมูล Header จากฟอร์ม
 		const chkheader = await verifyHeader(
 			opt.level == 0 ? ".req-1" : ".req-2",
 		);
 		if (!chkheader) return;
-
-		//2. เรียงข้อมูล Header จากฟอร์ม
 		const header = await getFormHeader();
 
 		//3. Check ว่า Inquiry ยังมีอยู่หรือไม่
@@ -316,8 +314,8 @@ async function createPath(opt) {
 		header.INQ_STATUS = opt.status;
 		header.INQ_TYPE = "SP";
 		header.CREATE_BY = $("#user-login").attr("empname");
-		header.CREATE_AT = new Date();
 		header.UPDATE_BY = $("#user-login").attr("empname");
+		header.CREATE_AT = new Date();
 		header.UPDATE_AT = new Date();
 
 		//4. เช็คว่า Trader + Quotation Type สามารถนำไปหา Price Ratio ได้หรือไม่
@@ -344,8 +342,7 @@ async function createPath(opt) {
 				...detail,
 				rowIndex: index,
 			}));
-
-		await verifyDetail(table, details, opt.level);
+		await verifyDetail(details, opt.level);
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
 		const history = await setLogsData(opt.status);

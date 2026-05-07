@@ -662,7 +662,7 @@ export async function verifyHeader(cls) {
 	return check;
 }
 
-export async function verifyDetail(table, data, savelevel = 0) {
+export async function verifyDetail(data, savelevel = 0) {
 	const errorEl = (obj) => {
 		obj.addClass("!bg-red-200");
 		setTimeout(() => {
@@ -670,15 +670,18 @@ export async function verifyDetail(table, data, savelevel = 0) {
 		}, 5000);
 	};
 
-	const rows = table.rows().nodes();
+	//const rows = table.rows().nodes();
+	const table = $("#table").DataTable();
 	let check = true;
 	let message = [];
 	const seenKeys = new Set();
-	if (rows.length == 0) throw new Error(`Please insert inquiry detail.`);
+	if (table.rows().nodes().length == 0)
+		throw new Error(`Please insert inquiry detail.`);
 	//1. Check seq no. should not be duplicate or empty or less than 0
 	$.each(data, function (index, dt) {
-		const row = $(table.row(dt.rowIndex).node());
-		const item = table.row(dt.rowIndex).data();
+		const rowApi = table.row(dt.rowIndex);
+		const row = $(rowApi.node());
+		const item = rowApi.data();
 		if (seenKeys.has(item.INQD_SEQ)) {
 			check = false;
 			message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
@@ -750,8 +753,9 @@ export async function verifyDetail(table, data, savelevel = 0) {
 	// 2. Mar send to sale with out DWG and Photo, If drawing is blank, Should attached image to reference part
 	if (savelevel == 1) {
 		$.each(data, function (index, dt) {
-			const row = $(table.row(dt.rowIndex).node());
-			const item = table.row(dt.rowIndex).data();
+			const rowApi = table.row(dt.rowIndex);
+			const row = $(rowApi.node());
+			const item = rowApi.data();
 			const hasAtt = $("#attachment-file")[0].files.length;
 			if (item.INQD_DRAWING == "" && hasAtt == 0) {
 				check = false;

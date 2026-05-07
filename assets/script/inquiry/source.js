@@ -251,8 +251,6 @@ export const events = {
 				if ($('input[data-mapping="' + key + '"]').length > 0) {
 					const input = $('input[data-mapping="' + key + '"]');
 					if (input.attr("id") == "schedule") {
-						console.log(values[key]);
-
 						const val = await dateToSchedule(values[key]);
 						input.val(val);
 					} else {
@@ -289,8 +287,6 @@ export const events = {
 									(x) => x.AGENT == values.AGENT,
 								);
 								val = `${agn.AGENT} (${agn.country.CTNAME})`;
-								console.log(val);
-
 								$('select[data-mapping="' + key + '"]').val(
 									val,
 								);
@@ -467,7 +463,6 @@ export function dateToSchedule(data) {
 	const fd = dayjs(data).format("YYYYMM");
 	const dd = dayjs(data).format("DD");
 	const letter = schd.find((x) => x.id == dd);
-	console.log(letter);
 	if (!letter) return fd + "C";
 	return `${fd}${letter.val}`;
 }
