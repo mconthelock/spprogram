@@ -194,7 +194,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_UM",
 			title: "U/M",
-			className: "w-62! min-w-62!",
+			className: "",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				data = data == "" ? "PC" : data;

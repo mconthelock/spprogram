@@ -39,7 +39,7 @@ export const tableOpt = {
 		search: "",
 		searchPlaceholder: "Filter records...",
 		loadingRecords: `<span class="loading loading-spinner loading-xl"></span>`,
-		emptyTable: `<div class="text-left text-[14px] text-gray-400 ps-5 font-bold flex items-center gap-2"><i class="fi fi-rr-exclamation text-2xl text-warning"></i>Have no record found</div>`,
+		emptyTable: `<div class="text-gray-400/75 font-bold flex items-center justify-center gap-2 py-2"><i class="fi fi-rr-exclamation text-xl"></i>Data not found</div>`,
 		zeroRecords: "ไม่พบข้อมูลที่ต้องการ",
 		lengthMenu: "_MENU_",
 		infoFiltered: "(กรองข้อมูลจากทั้งหมด _MAX_ รายการ)",

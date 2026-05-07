@@ -72,7 +72,7 @@ export async function setupPartViewDetail(data = []) {
 		{
 			data: "INQD_MFGORDER",
 			title: "MFG No.",
-			className: "sticky-column",
+			className: "sticky-column w-25! min-w-25!",
 			sortable: false,
 			render: function (data, type) {
 				return data;
@@ -90,7 +90,7 @@ export async function setupPartViewDetail(data = []) {
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "sticky-column min-w-62!",
+			className: "sticky-column w-62! min-w-62!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				return data;

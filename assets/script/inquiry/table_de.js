@@ -3,23 +3,24 @@ import { currentUser } from "@amec/webasset/api/amec";
 import { tableOpt } from "../utils.js";
 
 export async function setupDETableDetail(data = []) {
-	const renderText = (str, logs, key) => {
-		if (logs == undefined) return str;
-		let li = ``;
-		const log = logs.sort(
-			(a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE),
-		);
-		log.map((el) => {
-			li += `<li class="flex gap-4 p-1 border-b">
-        <div>${el[key] == null ? "" : el[key]}</div>
-        <div class="text-xs">${moment(el.UPDATE_AT).format(
-			"yyyy-MM-DD h:mm a",
-		)}</div>
-        <div class="text-xs">${displayname(el.UPDATE_BY).fname}</div>
-      </li>`;
-		});
-		const element = `<ul class="hidden">${li}</ul>${str}`;
-		return element;
+	const renderText = (data) => {
+		return `<div class="text-xs px-2.5 py-2">${data == null ? "" : data}</div>`;
+		//if (logs == undefined) return str;
+		// 	let li = ``;
+		// 	const log = logs.sort(
+		// 		(a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE),
+		// 	);
+		// 	log.map((el) => {
+		// 		li += `<li class="flex gap-4 p-1 border-b">
+		//     <div>${el[key] == null ? "" : el[key]}</div>
+		//     <div class="text-xs">${moment(el.UPDATE_AT).format(
+		// 		"yyyy-MM-DD h:mm a",
+		// 	)}</div>
+		//     <div class="text-xs">${displayname(el.UPDATE_BY).fname}</div>
+		//   </li>`;
+		// 	});
+		// 	const element = `<ul class="hidden">${li}</ul>${str}`;
+		// 	return element;
 	};
 
 	const renderLog = (data, logs, key) => {
@@ -32,6 +33,7 @@ export async function setupDETableDetail(data = []) {
 		}
 		return update;
 	};
+
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
 		let selector = `<select class="select select-sm w-25! border-none rounded-none supplier" name="supplier[]">`;
@@ -264,6 +266,37 @@ export async function setupDETableDetail(data = []) {
 			},
 		},
 		{
+			data: "INQD_DE",
+			title: `<div class="flex flex-col"><div class="text-xs">Sale</div><div class="text-xs">Confirm</div></div>`,
+			className: "text-center!",
+			sortable: false,
+			render: function (data, type, row) {
+				if (type === "display") {
+					if (row.INQD_DE == "1") return "";
+					return `<i class="fi fi-rr-check-circle text-xl justify-center text-primary"></i>`;
+				}
+				return data;
+			},
+		},
+		{
+			data: "INQD_MAR_REMARK",
+			className: `w-62 min-w-62 cell-display border-r! bg-slate-200 text-xs`,
+			title: "MAR Remark",
+			sortable: false,
+			render: function (data, type) {
+				return data == null ? "" : data;
+			},
+		},
+		{
+			data: "INQD_SALE_REMARK",
+			className: `w-62 min-w-62 cell-display border-r! bg-slate-100 text-xs`,
+			title: "Sale Remark",
+			sortable: false,
+			render: function (data, type) {
+				return data == null ? "" : data;
+			},
+		},
+		{
 			data: "INQD_DES_REMARK",
 			title: "D/E Remark",
 			className: `w-62 min-w-62 remark-line`,
@@ -276,25 +309,6 @@ export async function setupDETableDetail(data = []) {
 					}</textarea>`;
 				}
 				return data;
-			},
-		},
-
-		{
-			data: "INQD_MAR_REMARK",
-			className: `w-62 min-w-62 cell-display border-r! bg-slate-200 text-xs`,
-			title: "MAR Remark",
-			sortable: false,
-			render: function (data, type) {
-				return data == null ? "" : data;
-			},
-		},
-		{
-			data: "INQD_SALE_REMARK",
-			className: `w-62 min-w-62 cell-display border-r! bg-slate-200 text-xs`,
-			title: "Sale Remark",
-			sortable: false,
-			render: function (data, type) {
-				return data == null ? "" : data;
 			},
 		},
 		{

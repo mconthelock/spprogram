@@ -6,6 +6,15 @@ import { statusColors } from "../inquiry/index.js";
 import { tableOpt } from "../utils.js";
 
 export async function tableInquirySaleOption(data, extopt = {}) {
+	const renderMark = (data) => {
+		const color =
+			data == 29
+				? "text-gray-400"
+				: data >= 26
+					? "text-primary"
+					: "text-secondary";
+		return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+	};
 	const colors = await statusColors();
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
@@ -74,14 +83,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-
-				const color =
-					des[0].INQG_STATUS == null
-						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
-							? "text-primary"
-							: "text-secondary";
-				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+				return renderMark(des[0].INQG_STATUS);
 			},
 		},
 		{
@@ -94,14 +96,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-
-				const color =
-					des[0].INQG_STATUS == null
-						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
-							? "text-primary"
-							: "text-secondary";
-				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+				return renderMark(des[0].INQG_STATUS);
 			},
 		},
 		{
@@ -114,14 +109,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-
-				const color =
-					des[0].INQG_STATUS == null
-						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
-							? "text-primary"
-							: "text-secondary";
-				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+				return renderMark(des[0].INQG_STATUS);
 			},
 		},
 		{
@@ -134,14 +122,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-
-				const color =
-					des[0].INQG_STATUS == null
-						? "text-gray-500"
-						: des[0].INQG_STATUS >= 9
-							? "text-primary"
-							: "text-secondary";
-				return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
+				return renderMark(des[0].INQG_STATUS);
 			},
 		},
 		{

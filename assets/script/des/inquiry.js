@@ -16,7 +16,9 @@ import { getDesigner, dataExports } from "./data.js";
 var table;
 $(async function () {
 	await showLoader();
-	await initApp();
+	const app = await initApp();
+	if (!app) return;
+
 	try {
 		const data = await query();
 		const tableOpt = await tableInquiryDEOption(data);
@@ -37,7 +39,7 @@ async function query() {
 		const desgroup = des.find((d) => d.DES_USER == user).DES_GROUP;
 		const data = await getInquiry({
 			INQ_TYPE: "SP",
-			INQ_STATUS: "20",
+			INQ_STATUS: ">= 11",
 			IS_GROUP: 1,
 			IS_TIMELINE: 1,
 		});
@@ -45,6 +47,7 @@ async function query() {
 		switch (pageid) {
 			case "1":
 				result = data.filter((d) => {
+					if (d.INQ_STATUS > 30) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup && g.INQG_ASG_DATE == null,
@@ -53,6 +56,7 @@ async function query() {
 				break;
 			case "2":
 				result = data.filter((d) => {
+					if (d.INQ_STATUS > 30) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup &&
@@ -65,6 +69,7 @@ async function query() {
 				break;
 			case "3":
 				result = data.filter((d) => {
+					if (d.INQ_STATUS > 30) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup &&

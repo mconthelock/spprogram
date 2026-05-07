@@ -4,8 +4,9 @@ class Inquiry extends MY_Controller {
         parent::__construct();
     }
 
-    public function index(){
-        $this->views('sale/inquiry/index', array('title' => 'Assign Engineer'));
+    public function index($id = 1){
+        $data = array('pageid' => $id);
+        $this->views('sale/inquiry/index', $data);
     }
 
     public function detail($id){

@@ -9,7 +9,6 @@
     <table id="table" class="table table-zebra display text-xs"></table>
 @endsection
 
-
 @section('scripts')
     <script src="{{ $_ENV['APP_JS'] }}/des_inquiry.js?ver={{ $GLOBALS['version'] }}"></script>
 @endsection

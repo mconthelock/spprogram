@@ -664,6 +664,7 @@ export async function verifyHeader(cls) {
 
 export async function verifyDetail(data, savelevel = 0) {
 	const errorEl = (obj) => {
+		if (!obj || obj.length === 0) return;
 		obj.addClass("!bg-red-200");
 		setTimeout(() => {
 			obj.removeClass("!bg-red-200");
@@ -677,11 +678,12 @@ export async function verifyDetail(data, savelevel = 0) {
 	const seenKeys = new Set();
 	if (table.rows().nodes().length == 0)
 		throw new Error(`Please insert inquiry detail.`);
+
 	//1. Check seq no. should not be duplicate or empty or less than 0
-	$.each(data, function (index, dt) {
-		const rowApi = table.row(dt.rowIndex);
-		const row = $(rowApi.node());
-		const item = rowApi.data();
+	table.rows().every(function () {
+		const item = this.data();
+		const row = this.node() ? $(this.node()) : $();
+
 		if (seenKeys.has(item.INQD_SEQ)) {
 			check = false;
 			message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
@@ -752,10 +754,9 @@ export async function verifyDetail(data, savelevel = 0) {
 
 	// 2. Mar send to sale with out DWG and Photo, If drawing is blank, Should attached image to reference part
 	if (savelevel == 1) {
-		$.each(data, function (index, dt) {
-			const rowApi = table.row(dt.rowIndex);
-			const row = $(rowApi.node());
-			const item = rowApi.data();
+		table.rows().every(function () {
+			const item = this.data();
+			const row = this.node() ? $(this.node()) : $();
 			const hasAtt = $("#attachment-file")[0].files.length;
 			if (item.INQD_DRAWING == "" && hasAtt == 0) {
 				check = false;
@@ -771,9 +772,9 @@ export async function verifyDetail(data, savelevel = 0) {
 		// }
 		// return check;
 	} else if (savelevel > 1) {
-		$.each(data, function (index, dt) {
-			const row = $(table.row(dt.rowIndex).node());
-			const item = table.row(dt.rowIndex).data();
+		table.rows().every(function () {
+			const item = this.data();
+			const row = this.node() ? $(this.node()) : $();
 			//If not unable to reply, supplier should not be empty
 			if (
 				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&

@@ -27,6 +27,7 @@ export const dataExports = async (data) => {
 				...row,
 				MAR_SEND: el.timeline.MAR_SEND,
 				SG_READ: el.timeline.SG_READ,
+				SALE_CLASS: el.timeline.SALE_CLASS,
 				SG_CONFIIRM: el.timeline.SG_CONFIRM,
 				SE_READ: el.timeline.SE_READ,
 				SE_CONFIRM: el.timeline.SE_CONFIRM,

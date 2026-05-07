@@ -58,7 +58,9 @@ var table;
 $(document).ready(async () => {
 	try {
 		await showLoader();
-		await initApp({ submenu: ".navmenu-newinq" });
+		const app = await initApp({ submenu: ".navmenu-newinq" });
+		if (!app) return;
+
 		let inqs, inq, details, logs, file;
 		let mode = "create";
 		const currentUrl = window.location.href;
@@ -240,7 +242,7 @@ $(document).on("click", "#send-de", async function (e) {
 		const rowData = table.row(index).data();
 		const updatedData = {
 			...rowData,
-			INQD_SUPPLIER: "",
+			//INQD_SUPPLIER: "",
 		};
 		table.row(index).data(updatedData);
 	});
