@@ -718,7 +718,7 @@ export async function verifyDetail(data, savelevel = 0) {
 			return;
 		}
 
-		if (item.INQD_MFGORDER == "STOCK") {
+		if (item.INQD_MFGORDER == "STOCK" && savelevel > 1) {
 			if (item.INQD_SUPPLIER == "") {
 				check = false;
 				message.push(`Please input Supply By value.`);

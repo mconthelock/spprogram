@@ -213,7 +213,8 @@ $(document).on("click", "#forward-de", async function (e) {
 	try {
 		$("#sale-leader-confirm").val(new Date());
 		$("#sale-read").val(new Date());
-		$("#sale-incharge").val(user.empno);
+		const engineer = $("#sale-incharge").val();
+		$("#sale-incharge").val(engineer == "" ? user.empno : engineer);
 		$("#sale-confirm").val(new Date());
 		table
 			.rows()
@@ -226,6 +227,7 @@ $(document).on("click", "#forward-de", async function (e) {
 			status: 12,
 			obj: $(this),
 		});
+		// return;
 
 		const group = {
 			data: {
@@ -493,8 +495,10 @@ async function updatePath(option) {
 			deleteFile,
 			timelinedata,
 		};
-
+		console.log(fomdata);
+		// return;
 		await activatedBtnRow(option.obj);
+		await showLoader();
 		const inquiry = await updateInquiry(fomdata);
 		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
@@ -509,6 +513,8 @@ async function updatePath(option) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
 		await activatedBtnRow(option.obj, false);
+	} finally {
+		await showLoader({ show: false });
 	}
 }
 

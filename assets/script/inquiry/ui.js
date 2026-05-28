@@ -332,6 +332,12 @@ $(document).on("change", ".elmes-input", async function (e) {
 			$(row.node()).find(".partname").focus();
 		}
 	}
+
+	if ($(this).hasClass("itemno")) {
+		$(row.node()).find(".partname").focus();
+	} else {
+		$(row.node()).find(".itemno").focus();
+	}
 });
 
 $(document).on("click", "#elmes-confirm", async function (e) {

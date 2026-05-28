@@ -237,19 +237,24 @@ $(document).on("click", "#draft", async function (e) {
 //007: Save and send to design
 $(document).on("click", "#send-de", async function (e) {
 	e.preventDefault();
-	const rows = table.rows().nodes();
-	rows.each(function (index) {
-		const rowData = table.row(index).data();
-		const updatedData = {
-			...rowData,
-			//INQD_SUPPLIER: "",
-		};
-		table.row(index).data(updatedData);
-	});
-	const inquiry = await createPath({ level: 1, status: 2, obj: $(this) });
-	window.location.replace(
-		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-	);
+	try {
+		const rows = table.rows().nodes();
+		rows.each(function (index) {
+			const rowData = table.row(index).data();
+			const updatedData = {
+				...rowData,
+				//INQD_SUPPLIER: "",
+			};
+			table.row(index).data(updatedData);
+		});
+		const inquiry = await createPath({ level: 1, status: 2, obj: $(this) });
+		window.location.replace(
+			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	}
 });
 
 //008: Save and send to AS400
@@ -344,7 +349,10 @@ async function createPath(opt) {
 				...detail,
 				rowIndex: index,
 			}));
+		// console.log(details, opt.level);
+		// return;
 		await verifyDetail(details, opt.level);
+		await showLoader();
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
 		const history = await setLogsData(opt.status);
@@ -365,6 +373,8 @@ async function createPath(opt) {
 		console.log(error);
 		await activatedBtnRow(opt.obj, false);
 		await showMessage(error.message || `Something went wrong.`);
+	} finally {
+		await showLoader({ show: false });
 	}
 }
 
