@@ -37,7 +37,7 @@ export async function tableOutOption(data = []) {
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			className: "cell-display border-r!",
+			className: "cell-display border-r! text-nowrap!",
 		},
 		{
 			data: "INQD_QTY",

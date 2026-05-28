@@ -194,7 +194,7 @@ $(document).on("change", "#import-tsv", async function (e) {
 		await showLoader();
 		const file = e.target.files[0];
 		const ext = fileExtension(file.name);
-		const allow = ["xlsx", "tsv", "txt"];
+		const allow = ["xlsx", "tsv", "txt", "csv"];
 		if (!allow.includes(ext)) {
 			const msg = `Invalid file type. Please upload one of the following types: ${allow.join(
 				", ",

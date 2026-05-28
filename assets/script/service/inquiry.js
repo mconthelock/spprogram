@@ -407,6 +407,7 @@ export async function dataDetails(data) {
 				...sh[0],
 				...ord[0],
 				...el.pcategory[0],
+				INQD_UNITPRICE: Math.ceil(dt.INQD_UNIT_PRICE),
 				INQ_ID: el.INQ_ID,
 				INQ_NO: el.INQ_NO,
 				INQ_DATE: el.INQ_DATE,

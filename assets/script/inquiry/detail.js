@@ -518,38 +518,40 @@ export async function importText(file) {
 		// 5:COURIER
 		// 6:SEA or AIR
 		// 9:TRUCK
-		const newRow = {
-			...strrow,
-			INQD_SEQ: el[3],
-			INQD_MFGORDER: el[9],
-			INQD_DRAWING: el[4],
-			INQD_PARTNAME: el[5],
-			INQD_QTY: el[6],
-			INQD_UM: el[7],
-			INQD_VARIABLE: el[8],
-			INQD_CAR: el[10],
-			INQD_ITEM: el[11],
-			INQ_NO: el[0],
-			INQ_SHIPMENT: el[1], //Type of Transport
-			INQ_TERM: el[2], //Contract Term
-		};
 
-		// Old Version
+		//New Sparq Version
 		// const newRow = {
 		// 	...strrow,
-		// 	INQD_CAR: el[8],
-		// 	INQD_MFGORDER: el[7].replaceAll("-", ""),
-		// 	INQD_ITEM: el[9].substring(0, 3),
-		// 	INQD_PARTNAME: el[3],
-		// 	INQD_DRAWING: el[2],
-		// 	INQD_QTY: el[4],
-		// 	INQD_UM: el[5],
-		// 	INQD_SUPPLIER: "AMEC",
-		// 	INQD_OWNER: "MAR",
+		// 	INQD_SEQ: el[3],
+		// 	INQD_MFGORDER: el[9],
+		// 	INQD_DRAWING: el[4],
+		// 	INQD_PARTNAME: el[5],
+		// 	INQD_QTY: el[6],
+		// 	INQD_UM: el[7],
+		// 	INQD_VARIABLE: el[8],
+		// 	INQD_CAR: el[10],
+		// 	INQD_ITEM: el[11],
 		// 	INQ_NO: el[0],
-		// 	INQD_VARIABLE: variavle.isValid ? el[6] : "",
-		// 	INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
+		// 	INQ_SHIPMENT: el[1], //Type of Transport
+		// 	INQ_TERM: el[2], //Contract Term
 		// };
+
+		//Old Version
+		const newRow = {
+			...strrow,
+			INQD_CAR: el[8],
+			INQD_MFGORDER: el[7].replaceAll("-", ""),
+			INQD_ITEM: el[9].substring(0, 3),
+			INQD_PARTNAME: el[3],
+			INQD_DRAWING: el[2],
+			INQD_QTY: el[4],
+			INQD_UM: el[5],
+			INQD_SUPPLIER: "AMEC",
+			INQD_OWNER: "MAR",
+			INQ_NO: el[0],
+			INQD_VARIABLE: variavle.isValid ? el[6] : "",
+			INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
+		};
 		// ---------- Check 2na on Elmes here ----------
 		readdata.push(newRow);
 	});

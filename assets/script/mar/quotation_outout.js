@@ -74,118 +74,6 @@ $(document).ready(async () => {
 	}
 });
 
-async function getDataHeader(data) {
-	const terms = await getDeliveryTerm();
-	const term =
-		typeof data[11][22] == "object" ? data[11][22].result : data[11][22];
-	const termsData = terms.find((x) => x.TERM_DESC == term);
-
-	const methods = await getMethod();
-	const method =
-		typeof data[11][24] == "object" ? data[11][24].result : data[11][24];
-	const methodData = methods.find((x) => x.METHOD_DESC == method);
-
-	const agents = await getAgent();
-	const country =
-		typeof data[6][3] == "object" ? data[6][3].result : data[6][3];
-	const agn = agents.find((x) => x.country.CTNAME == country.toUpperCase());
-	return {
-		INQ_NO: data[11][3],
-		INQ_REV: "*",
-		INQ_TRADER: data[1][3],
-		INQ_AGENT: agn.AGENT,
-		INQ_COUNTRY: country.toUpperCase(),
-		INQ_PRJNO: data[2][3],
-		INQ_PRJNAME: data[3][3],
-		INQ_CONTRACTOR: data[4][3],
-		INQ_ENDUSER: data[5][3],
-		INQ_USERPART: data[7][3],
-		INQ_TYPE: "Out2out",
-		INQ_QUOTATION_TYPE: 25,
-		INQ_DELIVERY_TERM: termsData.TERM_ID,
-		INQ_DELIVERY_METHOD: methodData.METHOD_ID,
-		INQ_SHIPMENT: 1,
-		//INQ_CUR: priceRatio[0].CURRENCY,
-		//INQ_TCCUR: priceRatio[0].SUPPLIER_CUR,
-		INQ_PORT: data[11][3],
-		INQ_MAR_PIC: $("#user-login").attr("empno"),
-		INQ_STATUS: 2,
-		status: { id: 2, STATUS_DESC: "New" },
-	};
-}
-
-async function getDataDetails(data) {
-	let supplier;
-	if (data[0][14].richText.length > 0) {
-		const title = data[0][14].richText[1].text;
-		if (title.search("TOKAN") >= 0) supplier = "TOKAN";
-		else {
-			if (data[11][26] != "" && data[11][26].toUpperCase() == "KISWIRE")
-				supplier = "KISWIRE";
-			else supplier = "TOKYO ROPE";
-		}
-	}
-
-	const priceRatio = await findPriceRatio({
-		TRADER: data[1][3],
-		SUPPLIER: supplier,
-		QUOTATION: 25,
-	});
-	if (priceRatio.length == 0) {
-		await showMessage(`Not found price ratio for this Sale Company.`);
-		return;
-	}
-	const period = await currentPeriod();
-	const currency = await getCurrency();
-	const exchange1 = currency.find(
-		(x) =>
-			x.CURR_CODE == priceRatio[0].SUPPLIER_CUR &&
-			x.CURR_PERIOD == period.current.period &&
-			x.CURR_YEAR == period.current.year,
-	).CURR_RATE;
-
-	const exchange2 = currency.find(
-		(x) =>
-			x.CURR_CODE == priceRatio[0].CURRENCY &&
-			x.CURR_PERIOD == period.current.period &&
-			x.CURR_YEAR == period.current.year,
-	).CURR_RATE;
-
-	const detail = [];
-	const detailObj = (data) => {
-		return typeof data == "object" ? data.result : data;
-	};
-	for (let i = 11; i < data.length; i++) {
-		if (data[i][3] != undefined && data[i][3] != null && data[i][3] != "") {
-			const row = {
-				INQD_CAR: detailObj(data[i][4]),
-				INQD_ITEM: detailObj(data[i][14]),
-				INQD_DRAWING: detailObj(data[i][15]),
-				INQD_PARTNAME: detailObj(data[i][16]),
-				INQD_VARIABLE: detailObj(data[i][17]),
-				INQD_SUPPLIER: supplier,
-				INQD_QTY: detailObj(data[i][18]),
-				INQD_UM: detailObj(data[i][19]),
-				INQD_FC_COST: 0,
-				INQD_FC_BASE: exchange1,
-				INQD_TC_COST: 0,
-				INQD_TC_BASE: priceRatio[0].FORMULA,
-				INQD_EXRATE: exchange2,
-				INQD_UNIT_PRICE: 0,
-				INQD_RUNNO: i + 1,
-				INQD_SEQ: i + 1,
-				INQD_TCCUR: priceRatio[0].SUPPLIER_CUR,
-			};
-			detail.push(row);
-		}
-	}
-	return {
-		detail,
-		currency1: priceRatio[0].CURRENCY,
-		currency2: priceRatio[0].SUPPLIER_CUR,
-	};
-}
-
 $(document).on("click", "#import-data-btn", async function () {
 	$("#importouttooutfile").click();
 });
@@ -195,6 +83,7 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 		//showLoader({ show: true });
 		const fl = e.target.files;
 		const data = await readInput(fl[0]);
+		console.log(data);
 		const header = await getDataHeader(data);
 		const { detail, currency1, currency2 } = await getDataDetails(data);
 		header.INQ_CUR = currency1;
@@ -244,6 +133,118 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 		await showLoader({ show: false });
 	}
 });
+
+async function getDataHeader(data) {
+	const terms = await getDeliveryTerm();
+	const term =
+		typeof data[11][13] == "object" ? data[11][13].result : data[11][13];
+	const termsData = terms.find((x) => x.TERM_DESC == term);
+
+	const methods = await getMethod();
+	const method =
+		typeof data[11][15] == "object" ? data[11][15].result : data[11][15];
+	const methodData = methods.find((x) => x.METHOD_DESC == method);
+
+	const agents = await getAgent();
+	const country =
+		typeof data[6][3] == "object" ? data[6][3].result : data[6][3];
+	const agn = agents.find((x) => x.country.CTNAME == country.toUpperCase());
+	return {
+		INQ_NO: data[11][3],
+		INQ_REV: "*",
+		INQ_TRADER: data[1][3],
+		INQ_AGENT: agn.AGENT,
+		INQ_COUNTRY: country.toUpperCase(),
+		INQ_PRJNO: data[2][3],
+		INQ_PRJNAME: data[3][3],
+		INQ_CONTRACTOR: data[4][3],
+		INQ_ENDUSER: data[5][3],
+		INQ_USERPART: data[7][3],
+		INQ_TYPE: "Out2out",
+		INQ_QUOTATION_TYPE: 25,
+		INQ_DELIVERY_TERM: termsData.TERM_ID,
+		INQ_DELIVERY_METHOD: methodData.METHOD_ID,
+		INQ_SHIPMENT: 1,
+		//INQ_CUR: priceRatio[0].CURRENCY,
+		//INQ_TCCUR: priceRatio[0].SUPPLIER_CUR,
+		INQ_PORT: data[11][3],
+		INQ_MAR_PIC: $("#user-login").attr("empno"),
+		INQ_STATUS: 2,
+		status: { id: 2, STATUS_DESC: "New" },
+	};
+}
+
+async function getDataDetails(data) {
+	let supplier;
+	if (data[0][8].length > 0) {
+		const title = data[0][8];
+		if (title.search("TOKAN") >= 0) supplier = "TOKAN";
+		else {
+			if (data[11][17] != "" && data[11][17].toUpperCase() == "KISWIRE")
+				supplier = "KISWIRE";
+			else supplier = "TOKYO ROPE";
+		}
+	}
+
+	const priceRatio = await findPriceRatio({
+		TRADER: data[1][3],
+		SUPPLIER: supplier,
+		QUOTATION: 25,
+	});
+	if (priceRatio.length == 0) {
+		await showMessage(`Not found price ratio for this Sale Company.`);
+		return;
+	}
+	const period = await currentPeriod();
+	const currency = await getCurrency();
+	const exchange1 = currency.find(
+		(x) =>
+			x.CURR_CODE == priceRatio[0].SUPPLIER_CUR &&
+			x.CURR_PERIOD == period.current.period &&
+			x.CURR_YEAR == period.current.year,
+	).CURR_RATE;
+
+	const exchange2 = currency.find(
+		(x) =>
+			x.CURR_CODE == priceRatio[0].CURRENCY &&
+			x.CURR_PERIOD == period.current.period &&
+			x.CURR_YEAR == period.current.year,
+	).CURR_RATE;
+
+	const detail = [];
+	const detailObj = (data) => {
+		return typeof data == "object" ? data.result : data;
+	};
+	for (let i = 11; i < data.length; i++) {
+		if (data[i][3] != undefined && data[i][3] != null && data[i][3] != "") {
+			const row = {
+				INQD_CAR: detailObj(data[i][3]),
+				INQD_ITEM: detailObj(data[i][5]),
+				INQD_DRAWING: detailObj(data[i][6]),
+				INQD_PARTNAME: detailObj(data[i][7]),
+				INQD_VARIABLE: detailObj(data[i][8]),
+				INQD_SUPPLIER: supplier,
+				INQD_QTY: detailObj(data[i][9]),
+				INQD_UM: detailObj(data[i][10]),
+				INQD_FC_COST: 0,
+				INQD_FC_BASE: exchange1,
+				INQD_TC_COST: 0,
+				INQD_TC_BASE: priceRatio[0].FORMULA,
+				INQD_EXRATE: exchange2,
+				INQD_UNIT_PRICE: 0,
+				INQD_RUNNO: i + 1,
+				INQD_SEQ: i + 1,
+				INQD_TCCUR: priceRatio[0].SUPPLIER_CUR,
+			};
+			detail.push(row);
+		}
+	}
+	return {
+		detail,
+		currency1: priceRatio[0].CURRENCY,
+		currency2: priceRatio[0].SUPPLIER_CUR,
+	};
+}
 
 $(document).on("change", ".fccost ", async function () {
 	const row = table.row($(this).closest("tr"));

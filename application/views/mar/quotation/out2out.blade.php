@@ -11,7 +11,7 @@
         <div class="divider divider-start divider-primary">
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
-        <table id="table" class="table table-zebra table-edit text-md!"></table>
+        <table id="table" class="table table-zebra table-edit text-xs"></table>
     </div>
 
     <div class="btn-container flex gap-2 my-3"></div>
