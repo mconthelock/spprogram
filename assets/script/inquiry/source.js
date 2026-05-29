@@ -139,7 +139,7 @@ export const init = {
 			const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
 			return {
 				id: el.USERS_ID,
-				text: `${fname} ${lname}`,
+				text: `${fname} ${lname} (${emp.SEMPNO})`,
 			};
 		});
 		return options;
@@ -164,9 +164,9 @@ export const init = {
 			};
 		});
 
-		options = options.filter((el) => {
-			return el.id != current.empno;
-		});
+		// options = options.filter((el) => {
+		// 	return el.id != current.empno;
+		// });
 		return options;
 	},
 

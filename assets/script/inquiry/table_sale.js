@@ -46,6 +46,7 @@ export async function setupSaleTableDetail(data = []) {
 	const isRevise = $("#revision").val() != "*" ? true : false;
 	const user = await currentUser();
 	const usrgroup = user.group;
+	const pageid = $("#pageid").val();
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.paging = false;
@@ -253,7 +254,7 @@ export async function setupSaleTableDetail(data = []) {
 		{
 			data: "INQD_DE",
 			title: `<div class="tooltip  tooltip-bottom" data-tip="Forward to DE"><i class="fi fi-sr-redo text-xl"></i></div>`,
-			className: `text-center! ${usrgroup == "SLG" ? "hidden" : ""}`,
+			className: `text-center! ${pageid == "1" ? "hidden" : ""}`,
 			sortable: false,
 			render: function (data, type, row, meta) {
 				if (type === "display") {

@@ -78,7 +78,7 @@ async function setupButton() {
 		icon: "fi fi-rr-edit text-xl",
 		className: `btn-accent text-white hover:shadow-lg `,
 		type: "link",
-		href: `${process.env.APP_ENV}/se/inquiry/detail/${$("#inquiry-id").val()}/`,
+		href: `${process.env.APP_ENV}/se/inquiry/detail/${$("#inquiry-id").val()}/2/`,
 	});
 
 	const exportxls = await createBtn({

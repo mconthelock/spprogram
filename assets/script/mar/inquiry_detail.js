@@ -164,12 +164,13 @@ async function setupButton(mode) {
 	if (mode == "create") {
 		$(".btn-container").append(sendDE, sendIS, draft, back);
 	} else {
-		const details = table.rows().data().toArray();
+		/*const details = table.rows().data().toArray();
 		if (details[0].INQD_MFGORDER.includes("STOCK")) {
 			$(".btn-container").append(updateIS, back);
 		} else {
 			$(".btn-container").append(updateDE, updateIS, back);
-		}
+		}*/
+		$(".btn-container").append(updateDE, updateIS, back);
 	}
 }
 
@@ -373,7 +374,6 @@ async function createPath(opt) {
 		console.log(error);
 		await activatedBtnRow(opt.obj, false);
 		await showMessage(error.message || `Something went wrong.`);
-	} finally {
 		await showLoader({ show: false });
 	}
 }
@@ -499,6 +499,7 @@ async function updatePath(opt) {
 			}));
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);
+		await showLoader();
 
 		let deleteLine = [];
 		if (state.deletedLineMap.size > 0) {
@@ -539,6 +540,7 @@ async function updatePath(opt) {
 		console.log(error);
 		await activatedBtnRow(opt.obj, false);
 		await showMessage(`Something went wrong.`);
+		await showLoader({ show: false });
 	}
 }
 

@@ -99,7 +99,7 @@ export async function setupPartViewDetail(data = []) {
 		{
 			data: "INQD_DRAWING",
 			title: "Drawing No.",
-			className: "min-w-62!",
+			className: "min-w-62! text-left!",
 			sortable: false,
 			render: function (data, type, row, meta) {
 				return data;
@@ -108,7 +108,7 @@ export async function setupPartViewDetail(data = []) {
 		{
 			data: "INQD_VARIABLE",
 			title: "Variable",
-			className: "min-w-50!",
+			className: "min-w-50! text-left!",
 			sortable: false,
 			render: function (data, type) {
 				return data;

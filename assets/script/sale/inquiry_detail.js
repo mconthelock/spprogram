@@ -38,7 +38,6 @@ import { state } from "../inquiry/store.js";
 import { initApp } from "../utils.js";
 
 var table;
-
 $(document).ready(async () => {
 	await showLoader();
 	await initApp();
@@ -145,8 +144,12 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	if (usergroup != "SLG") $(".btn-container").append(confirm, back);
-	else $(".btn-container").append(assign, forwardde, sendIS, back);
+	if ($("#pageid").val() == 1) {
+		if (usergroup != "SLG") $(".btn-container").append(back);
+		else $(".btn-container").append(assign, forwardde, sendIS, back);
+	} else {
+		$(".btn-container").append(confirm, back);
+	}
 }
 
 // Submit Form
@@ -338,6 +341,8 @@ $(document).on("click", "#send-confirm", async function (e) {
 		const filteredDetails = details.filter((dt) => dt.INQD_DE != "1");
 		await verifyDetail(table, filteredDetails, 3);
 
+		await activatedBtnRow($(this));
+		await showLoader();
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
 		const group = {
@@ -367,8 +372,9 @@ $(document).on("click", "#send-confirm", async function (e) {
 
 		//const inquiry = await updatePath(11, 4, 1);
 		designForward = [...new Set(designForward)];
+		let inquiry;
 		if (designForward.length > 0) {
-			const inquiry = await updatePath({
+			inquiry = await updatePath({
 				level: 3,
 				status: 11,
 				obj: $(this),
@@ -377,13 +383,13 @@ $(document).on("click", "#send-confirm", async function (e) {
 			await mailToDEGroupLeader(inquiry);
 		} else {
 			if (!isAmec) {
-				const inquiry = await updatePath({
+				inquiry = await updatePath({
 					level: 3,
 					status: isMelina ? 52 : 50,
 					obj: $(this),
 				});
 			} else {
-				const inquiry = await updatePath({
+				inquiry = await updatePath({
 					level: 3,
 					status: 30,
 					obj: $(this),
@@ -396,14 +402,13 @@ $(document).on("click", "#send-confirm", async function (e) {
 		const logs = await setLogsData(11);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${$("#inquiry-id").val()}`,
+			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
 		);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
 		await activatedBtnRow($(this), false);
-	} finally {
-		await activatedBtnRow($(this), false);
+		await showLoader({ show: false });
 	}
 });
 
@@ -495,8 +500,7 @@ async function updatePath(option) {
 			deleteFile,
 			timelinedata,
 		};
-		console.log(fomdata);
-		// return;
+
 		await activatedBtnRow(option.obj);
 		await showLoader();
 		const inquiry = await updateInquiry(fomdata);
@@ -513,7 +517,6 @@ async function updatePath(option) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
 		await activatedBtnRow(option.obj, false);
-	} finally {
 		await showLoader({ show: false });
 	}
 }

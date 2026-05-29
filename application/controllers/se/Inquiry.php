@@ -9,8 +9,8 @@ class Inquiry extends MY_Controller {
         $this->views('sale/inquiry/index', $data);
     }
 
-    public function detail($id){
-        $this->views('sale/inquiry/detail', array('id'=> $id, 'title' => 'Inquiry Detail'));
+    public function detail($id, $pageid = 1){
+        $this->views('sale/inquiry/detail', array('id'=> $id, 'title' => 'Inquiry Detail', 'pageid' => $pageid));
     }
 
     public function show($id){

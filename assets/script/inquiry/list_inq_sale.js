@@ -15,6 +15,7 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 					: "text-secondary";
 		return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 	};
+	const pageid = $("#pageid").val();
 	const colors = await statusColors();
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;

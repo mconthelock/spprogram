@@ -164,8 +164,8 @@ export async function setFieldValue(field, data = {}) {
 		const sname = name.split(" ");
 		const fname = sname[0].charAt(0).toUpperCase() + sname[0].slice(1);
 		const lname = sname[1].charAt(0).toUpperCase() + sname[1].slice(1);
-		field.display = `${fname} ${lname}`;
-		field.value = val;
+		((field.display = `${fname} ${lname} (${emp.SEMPNO})`),
+			(field.value = val));
 		return field;
 	};
 
@@ -238,6 +238,8 @@ export async function createFieldInput(field) {
 			break;
 
 		case "select":
+			console.log(field);
+
 			let options = [];
 			let optStr = "<option value=''></option>";
 			if (field.source) {
@@ -263,11 +265,16 @@ export async function createFieldInput(field) {
 			inputContainer.innerHTML = selectInput;
 			elementToListen = inputContainer.querySelector(`#${field.id}`);
 			setTimeout(async () => {
+				const avt = field.class.includes("displayname") ? true : false;
 				const jQueryElement = $(`#${field.id}`);
 				await setSelect2({
 					element: `#${field.id}`,
 					placeholder: field.label || "",
 					allowClear: false,
+					avatar: avt,
+					avatarData: options.map((opt) => {
+						return opt.id;
+					}),
 				});
 				jQueryElement.removeAttr("aria-hidden");
 				if (field.onChange && events[field.onChange]) {
