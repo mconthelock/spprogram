@@ -193,6 +193,21 @@ export async function tableCostOption(data = []) {
 			},
 		},
 		{
+			data: "INQD_SALE_REMARK",
+			title: "SE Remark",
+			className: `w-62 min-w-62 cell-display border-r!`,
+			render: function (data, type) {
+				if (type === "display") {
+					if (data == null) return "";
+					return `<div class="flex">
+            <div class="px-2 min-w-50 max-w-50 break-all text-xs line-clamp-1">${data}</div>
+            <div class="tooltip tooltip-left" data-tip="${data}"><i class="fi fi-rr-info text-lg"></i></div>
+          </div>`;
+				}
+				return data;
+			},
+		},
+		{
 			data: "INQD_DES_REMARK",
 			title: "D/E Remark",
 			className: `w-62 min-w-62 cell-display border-r!`,
