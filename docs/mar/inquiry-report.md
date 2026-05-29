@@ -10,7 +10,7 @@ outline: deep
 
 หน้าจอในส่วนของ Inquiry Report จะถูกแบ่งออกเป็น 2 ส่วนหลัก คือหน้าสำหรับ ระบุเงื่อนไขการค้นหา (Search Filter) และหน้าสำหรับ แสดงผลลัพธ์ข้อมูล (Report List) เพื่อให้คุณสามารถดึงข้อมูลออกมาวิเคราะห์ได้อย่างแม่นยำ
 
-![alt text](../images/mar/inquiry-report-1.png)
+<ImagePopup src="../images/mar/inquiry-report-1.png" alt="" caption="SP Program" />
 
 ## 🔍 1. หน้าจอเงื่อนไขการค้นหา (Inquiry Report Search)
 
@@ -28,7 +28,7 @@ outline: deep
 
 - Reset: ล้างค่าเงื่อนไขที่กรอกไว้ทั้งหมดเพื่อเริ่มใหม่
 
-![alt text](../images/mar/inquiry-report-2.png)
+<ImagePopup src="../images/mar/inquiry-report-2.png" alt="" caption="SP Program" />
 
 ## 📊 2. หน้าจอแสดงผลลัพธ์รายงาน (Inquiry Report List)
 

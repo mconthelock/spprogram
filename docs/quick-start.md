@@ -2,48 +2,42 @@
 outline: deep
 ---
 
-# Runtime API Examples
+# Overview
 
-This page demonstrates usage of some of the runtime APIs provided by VitePress.
+::: info 🎯 ภาพรวมระบบ
+SP PROGRAM เป็นระบบบริหารกระบวนการตั้งแต่รับความต้องการจากลูกค้า ไปจนถึงการเตรียมราคาและออกใบเสนอราคา โดยเชื่อมการทำงานของหลายฝ่ายเข้าด้วยกันใน workflow เดียว ทำให้แต่ละทีมเห็นสถานะงานของตนเองชัดเจน ลดการส่งต่อข้อมูลแบบกระจัดกระจาย และช่วยให้การคำนวณราคาเป็นมาตรฐานมากขึ้น
+:::
 
-The main `useData()` API can be used to access site, theme, and page data for the current page. It works in both `.md` and `.vue` files:
+<ImagePopup src="./images/home.png" alt="Home Page" caption="SP Program" />
 
-```md
-<script setup>
-import { useData } from 'vitepress'
+## วัตถุประสงค์ของระบบ
 
-const { theme, page, frontmatter } = useData()
-</script>
+ระบบนี้ถูกออกแบบมาเพื่อเป็นศูนย์กลางของงานเชิงพาณิชย์ของโครงการ ช่วยให้ทีม Sale, Design, Finance และ MAR ทำงานต่อเนื่องกันตั้งแต่การสร้าง Inquiry การตรวจสอบข้อมูลทางเทคนิค การคำนวณต้นทุน การอนุมัติราคา ไปจนถึงการออก Quotation ให้ลูกค้า
 
-## Results
+## กระบวนการหลักของธุรกิจ
 
-### Theme Data
-<pre>{{ theme }}</pre>
+1. รับความต้องการของลูกค้าเข้าระบบเป็น Inquiry
+2. ส่งต่อให้ทีมที่เกี่ยวข้องตรวจสอบแบบ รายการสินค้า และข้อมูลประกอบ
+3. ให้ฝ่ายการเงินคำนวณต้นทุนและกำหนดราคาขาย
+4. ตรวจสอบและอนุมัติราคาให้พร้อมใช้งานเชิงพาณิชย์
+5. ส่งต่อให้ทีมการตลาดหรือฝ่ายขายนำไปออกใบเสนอราคาและติดตามงานต่อ
 
-### Page Data
-<pre>{{ page }}</pre>
+## บทบาทของผู้ใช้งาน
 
-### Page Frontmatter
-<pre>{{ frontmatter }}</pre>
-```
+- MAR เป็นผู้เริ่มต้นข้อมูลและรวบรวมความต้องการจากลูกค้า
+- SE/SALE รับผิดชอบในการตรวจสอบรายการ Drawing ที่ลูกค้าต้องการ โดยอ้างอิงจาก Original Order เป็นหลัก
+- D/E หรือทีมเทคนิคช่วยยืนยันข้อมูลด้านแบบ รายการ และความถูกต้องของข้อมูลผลิตภัณฑ์ต่อจากแผนก SE ในกรณีที่แผนก SE ไม่สามารถยืนยันรายการเหล่านั้นได้
+- Finance คำนวณต้นทุน กำไร และราคาต่อหน่วยก่อนส่งต่อ
+- MAR รับช่วงงานเพื่อจัดการใบเสนอราคา ติดตามสถานะ และสื่อสารกับลูกค้า
 
-<script setup>
-import { useData } from 'vitepress'
+## Change log
 
-const { site, theme, page, frontmatter } = useData()
-</script>
+### Update 2026-06-03
 
-## Results
-
-### Theme Data
-<pre>{{ theme }}</pre>
-
-### Page Data
-<pre>{{ page }}</pre>
-
-### Page Frontmatter
-<pre>{{ frontmatter }}</pre>
-
-## More
-
-Check out the documentation for the [full list of runtime APIs](https://vitepress.dev/reference/runtime-api#usedata).
+- ปรับโครงสร้าง Front end มาใช้ Tailwind
+- เปลี่ยนระบบ Authentication มาเป็น New Webflow base
+- เพิ่ม SE เป็นผู้ใช้กลุ่มหลักที่มาทำงานแทน D/E
+- เปลี่ยนให้ DE ทำงานเฉพาะรายการที่ Sale Foreward ไป
+- ดึงรายการ Secoundary Part List จาก Elmes มาใส่ใน Inquiry List ในกรณีที SE หรือ DE ระบุว่า Drawing นั้นมี Secound
+- ทุกรายการที่ส่งไป Fin จะมีการ Matching ราคาก่อน
+- เปลี่ยน Template **Out to out** ([IS-DEV26-000143](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=143))

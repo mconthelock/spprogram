@@ -1,49 +1,55 @@
 {
-  "hash": "b5f1a90f",
+  "hash": "193835c5",
   "configHash": "36794335",
-  "lockfileHash": "a112ef8f",
-  "browserHash": "391e9e8a",
+  "lockfileHash": "89372f9e",
+  "browserHash": "4f6a04e0",
   "optimized": {
     "vue": {
       "src": "../../../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "4e29649c",
+      "fileHash": "fff32a97",
       "needsInterop": false
     },
     "vitepress > @vue/devtools-api": {
       "src": "../../../../node_modules/@vue/devtools-api/dist/index.js",
       "file": "vitepress___@vue_devtools-api.js",
-      "fileHash": "0018d70b",
+      "fileHash": "3d431079",
       "needsInterop": false
     },
     "vitepress > @vueuse/core": {
       "src": "../../../../node_modules/@vueuse/core/dist/index.js",
       "file": "vitepress___@vueuse_core.js",
-      "fileHash": "87c869f2",
+      "fileHash": "422c554a",
       "needsInterop": false
     },
     "vitepress > @vueuse/integrations/useFocusTrap": {
       "src": "../../../../node_modules/@vueuse/integrations/dist/useFocusTrap.js",
       "file": "vitepress___@vueuse_integrations_useFocusTrap.js",
-      "fileHash": "942e2f45",
+      "fileHash": "03409991",
       "needsInterop": false
     },
     "vitepress > mark.js/src/vanilla.js": {
       "src": "../../../../node_modules/mark.js/src/vanilla.js",
       "file": "vitepress___mark__js_src_vanilla__js.js",
-      "fileHash": "0928cc75",
+      "fileHash": "d74d260a",
       "needsInterop": false
     },
     "vitepress > minisearch": {
       "src": "../../../../node_modules/minisearch/dist/es/index.js",
       "file": "vitepress___minisearch.js",
-      "fileHash": "67bf920f",
+      "fileHash": "52b6c4aa",
       "needsInterop": false
     },
     "three": {
       "src": "../../../../node_modules/three/build/three.module.js",
       "file": "three.js",
-      "fileHash": "a93d17bd",
+      "fileHash": "afd28f1f",
+      "needsInterop": false
+    },
+    "@fancyapps/ui": {
+      "src": "../../../../node_modules/@fancyapps/ui/dist/index.esm.js",
+      "file": "@fancyapps_ui.js",
+      "fileHash": "29ae54b1",
       "needsInterop": false
     }
   },

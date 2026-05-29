@@ -8,7 +8,7 @@ outline: deep
 หน้านี้เป็นจุดเริ่มต้นของกระบวนการทำงาน (Workflow) เพื่อรวบรวมความต้องการจากลูกค้าหรือฝ่ายขาย ก่อนจะส่งต่อไปยังแผนกเทคนิค (Design/Pre-BM) เพื่อดำเนินการในขั้นตอนต่อไป
 :::
 
-![alt text](../images/mar/inquiry-new-1.png)
+<ImagePopup src="../images/mar/inquiry-new-1.png" alt="" caption="SP Program" />
 
 คู่มือนี้จะช่วยให้คุณบันทึกข้อมูล Inquiry ใหม่เข้าสู่ระบบ SP PROGRAM ได้อย่างถูกต้องตามขั้นตอน
 
@@ -32,7 +32,7 @@ outline: deep
 
 - หากมีไฟล์รายการจำนวนมาก สามารถใช้ปุ่ม Upload (ไอคอนเมฆชี้ขึ้น) เพื่อนำเข้าข้อมูลจากไฟล์ Excel ได้โดยตรง
 
-![alt text](../images/mar/inquiry-new-2.png)
+<ImagePopup src="../images/mar/inquiry-new-2.png" alt="" caption="SP Program" />
 
 ::: info 🆕 **Update 2026**
 ระบบมีการแก้ไขไฟล์ Import from SPARQ (TSV ไฟล์) โดยมีรายละเอียดดังนี้:
@@ -71,3 +71,4 @@ outline: deep
 ## 💡 ข้อควรระวัง (Tips)
 
 - กรณีที่ไม่สามารถระบุ Drawing ได้ จะต้องแนบรูปภาพอย่างน้อย 1 รูป
+- Original MFG No. จะต้องระบุให้ครบ 9 Digits หรือระบุเป็นคำว่า **STOCK** เท่านั้น

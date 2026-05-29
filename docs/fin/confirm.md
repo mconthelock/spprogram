@@ -8,7 +8,7 @@ outline: deep
 สำหรับผู้ใช้งานแผนกการเงิน (Finance User) หน้าจอในส่วนของ Cost Management จะเป็นเครื่องมือหลักในการจัดการต้นทุนเพื่อเตรียมข้อมูลราคาให้ MAR นำไปเสนอราคาต่อลูกค้า โดยมีขั้นตอนการทำงานหลักดังนี้:
 :::
 
-![alt text](../images/fin/confirm.png)
+<ImagePopup src="../images/fin/confirm.png" alt="Inquiry's Cost Management" caption="Inquiry's Cost Management" />
 
 ## 💰 หน้าจอ Inquiry's Cost Management (หน้ารวมรายการ)
 
@@ -20,7 +20,7 @@ outline: deep
 
 - การเข้าสู่หน้าจัดการราคา: เมื่อเลือกรายการได้แล้ว ให้คลิกปุ่ม "Process" ที่ด้านขวาสุดเพื่อเข้าสู่หน้าจอการใส่รายละเอียดต้นทุน
 
-![alt text](../images/fin/confirm-detail.png)
+<ImagePopup src="../images/fin/confirm-detail.png" alt="Inquiry Detail" caption="Inquiry Detail" />
 
 ## 📑 หน้าจอ Inquiry Detail (หน้าบันทึกราคาและต้นทุน)
 

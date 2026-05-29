@@ -8,7 +8,7 @@ outline: deep
 หน้านี้ใช้สำหรับสร้าง "Inquiry ชิ้นส่วนที่มีใน Direct Sale Item Master" โดยมีรายละเอียดส่วนที่เพิ่มมาดังนี้:
 :::
 
-![alt text](../images/mar/inquiry-stock-1.png)
+<ImagePopup src="../images/mar/inquiry-stock-1.png" alt="" caption="SP Program" />
 
 ## Customer Information (ข้อมูลลูกค้า)
 

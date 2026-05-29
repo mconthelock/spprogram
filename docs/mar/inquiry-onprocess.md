@@ -8,7 +8,7 @@ outline: deep
 หน้าจอนี้ทำหน้าที่เป็น Dashboard หลักเพื่อให้ผู้ใช้ติดตามได้ว่าแต่ละ Inquiry อยู่ในขั้นตอนไหน ใครเป็นผู้รับผิดชอบ และมีสถานะปัจจุบันเป็นอย่างไร
 :::
 
-![alt text](../images/mar/inquiry-onprocess.png)
+<ImagePopup src="../images/mar/inquiry-onprocess.png" alt="" caption="SP Program" />
 
 ## 1. ส่วนควบคุมและค้นหา (Top Controls)
 

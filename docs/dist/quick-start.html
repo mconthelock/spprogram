@@ -3,231 +3,23 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Runtime API Examples | SP Program</title>
+    <title>Overview | SP Program</title>
     <meta name="description" content="A VitePress site">
     <meta name="generator" content="VitePress v2.0.0-alpha.15">
-    <link rel="preload stylesheet" href="/spprogram/docs/assets/style.vvVTy-W5.css" as="style">
+    <link rel="preload stylesheet" href="/spprogram/docs/assets/style.D4GmusYo.css" as="style">
     <link rel="preload stylesheet" href="/spprogram/docs/vp-icons.css" as="style">
     
-    <script type="module" src="/spprogram/docs/assets/app.KOzWrpAJ.js"></script>
-    <link rel="preload" href="/spprogram/docs/assets/inter-roman-latin.Di8DUHzh.woff2" as="font" type="font/woff2" crossorigin="">
-    <link rel="modulepreload" href="/spprogram/docs/assets/chunks/theme.DWEaceCX.js">
-    <link rel="modulepreload" href="/spprogram/docs/assets/chunks/framework.D4ENExQD.js">
-    <link rel="modulepreload" href="/spprogram/docs/assets/quick-start.md.rIThOCVt.lean.js">
+    <script type="module" src="/spprogram/docs/assets/app.CMGe46xw.js"></script>
+    <link rel="modulepreload" href="/spprogram/docs/assets/chunks/theme.ByKGOLcS.js">
+    <link rel="modulepreload" href="/spprogram/docs/assets/chunks/framework.Dj9U2e5L.js">
+    <link rel="modulepreload" href="/spprogram/docs/assets/quick-start.md.DI1qkmx7.lean.js">
     <link rel="icon" href="http://localhost:8080/spprogram/assets/images/icon_512.png">
     <script id="check-dark-mode">(()=>{const e=localStorage.getItem("vitepress-theme-appearance")||"auto",a=window.matchMedia("(prefers-color-scheme: dark)").matches;(!e||e==="auto"?a:e==="dark")&&document.documentElement.classList.add("dark")})();</script>
     <script id="check-mac-os">document.documentElement.classList.toggle("mac",/Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
   </head>
   <body>
-    <div id="app"><div class="Layout" data-v-1df9f90f><!--[--><!--]--><!--[--><span tabindex="-1" data-v-331ec75c></span><a href="#VPContent" class="VPSkipLink visually-hidden" data-v-331ec75c>Skip to content</a><!--]--><!----><header class="VPNav" data-v-1df9f90f data-v-da52a441><div class="VPNavBar" data-v-da52a441 data-v-70946a35><div class="wrapper" data-v-70946a35><div class="container" data-v-70946a35><div class="title" data-v-70946a35><div class="VPNavBarTitle has-sidebar" data-v-70946a35 data-v-1e38c6bc><a class="title" href="/spprogram/docs/" data-v-1e38c6bc><!--[--><!--]--><!--[--><img class="VPImage logo" src="http://localhost:8080/spprogram/assets/images/icon_512.png" alt data-v-8426fc1a><!--]--><span data-v-1e38c6bc>SP Program</span><!--[--><!--]--></a></div></div><div class="content" data-v-70946a35><div class="content-body" data-v-70946a35><!--[--><!--]--><div class="VPNavBarSearch search" data-v-70946a35><!--[--><!----><div id="local-search"><button type="button" aria-label="Search" aria-keyshortcuts="/ control+k meta+k" class="DocSearch DocSearch-Button"><span class="DocSearch-Button-Container"><span class="vpi-search DocSearch-Search-Icon"></span><span class="DocSearch-Button-Placeholder">Search</span></span><span class="DocSearch-Button-Keys"><kbd class="DocSearch-Button-Key"></kbd><kbd class="DocSearch-Button-Key"></kbd></span></button></div><!--]--></div><nav aria-labelledby="main-nav-aria-label" class="VPNavBarMenu menu" data-v-70946a35 data-v-39714824><span id="main-nav-aria-label" class="visually-hidden" data-v-39714824> Main Navigation </span><!--[--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/spprogram/docs/" tabindex="0" data-v-39714824 data-v-52a1d768><!--[--><span data-v-52a1d768>Home</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink active" href="/spprogram/docs/quick-start.html" tabindex="0" data-v-39714824 data-v-52a1d768><!--[--><span data-v-52a1d768>Guide</span><!--]--></a><!--]--><!--]--></nav><!----><div class="VPNavBarAppearance appearance" data-v-70946a35 data-v-6c893767><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-6c893767 data-v-5337faa4 data-v-1d5665e3><span class="check" data-v-1d5665e3><span class="icon" data-v-1d5665e3><!--[--><span class="vpi-sun sun" data-v-5337faa4></span><span class="vpi-moon moon" data-v-5337faa4></span><!--]--></span></span></button></div><!----><div class="VPFlyout VPNavBarExtra extra" data-v-70946a35 data-v-bf2fac68 data-v-42cb505d><button type="button" class="button" aria-haspopup="true" aria-expanded="false" aria-label="extra navigation" data-v-42cb505d><span class="vpi-more-horizontal icon" data-v-42cb505d></span></button><div class="menu" data-v-42cb505d><div class="VPMenu" data-v-42cb505d data-v-25a6cce8><!----><!--[--><!--[--><!----><div class="group" data-v-bf2fac68><div class="item appearance" data-v-bf2fac68><p class="label" data-v-bf2fac68>Appearance</p><div class="appearance-action" data-v-bf2fac68><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-bf2fac68 data-v-5337faa4 data-v-1d5665e3><span class="check" data-v-1d5665e3><span class="icon" data-v-1d5665e3><!--[--><span class="vpi-sun sun" data-v-5337faa4></span><span class="vpi-moon moon" data-v-5337faa4></span><!--]--></span></span></button></div></div></div><!----><!--]--><!--]--></div></div></div><!--[--><!--]--><button type="button" class="VPNavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false" aria-controls="VPNavScreen" data-v-70946a35 data-v-e5dd9c1c><span class="container" data-v-e5dd9c1c><span class="top" data-v-e5dd9c1c></span><span class="middle" data-v-e5dd9c1c></span><span class="bottom" data-v-e5dd9c1c></span></span></button></div></div></div></div><div class="divider" data-v-70946a35><div class="divider-line" data-v-70946a35></div></div></div><!----></header><div class="VPLocalNav has-sidebar empty" data-v-1df9f90f data-v-db738f89><div class="container" data-v-db738f89><button class="menu" aria-expanded="false" aria-controls="VPSidebarNav" data-v-db738f89><span class="vpi-align-left menu-icon" data-v-db738f89></span><span class="menu-text" data-v-db738f89>Menu</span></button><div class="VPLocalNavOutlineDropdown" style="--vp-vh:0px;" data-v-db738f89 data-v-0bf0e06f><button data-v-0bf0e06f>Return to top</button><!----></div></div></div><aside class="VPSidebar" data-v-1df9f90f data-v-af661f50><div class="curtain" data-v-af661f50></div><nav class="nav" id="VPSidebarNav" aria-labelledby="sidebar-aria-label" tabindex="-1" data-v-af661f50><span class="visually-hidden" id="sidebar-aria-label" data-v-af661f50> Sidebar Navigation </span><!--[--><!--]--><!--[--><div class="no-transition group" data-v-8d50c081><section class="VPSidebarItem level-0 has-active" data-v-8d50c081 data-v-d81de50c><!----><div class="items" data-v-d81de50c><!--[--><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/quick-start.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>Quick Start</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/mar/inquiry-new.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>MAR User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/sale/inquiry.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>Sale User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/de/inquiry.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>D/E User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/fin/confirm.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>Finance User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/pkc/inquiry.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>PKC User Guide</p><!--]--></a><!----></div><!----></div><!--]--></div></section></div><!--]--><!--[--><!--]--></nav></aside><div class="VPContent has-sidebar" id="VPContent" data-v-1df9f90f data-v-c87f25bf><div class="VPDoc has-sidebar has-aside" data-v-c87f25bf data-v-7011f0d8><!--[--><!--]--><div class="container" data-v-7011f0d8><div class="aside" data-v-7011f0d8><div class="aside-curtain" data-v-7011f0d8></div><div class="aside-container" data-v-7011f0d8><div class="aside-content" data-v-7011f0d8><div class="VPDocAside" data-v-7011f0d8 data-v-3f215769><!--[--><!--]--><!--[--><!--]--><nav aria-labelledby="doc-outline-aria-label" class="VPDocAsideOutline" data-v-3f215769 data-v-60d5052e><div class="content" data-v-60d5052e><div class="outline-marker" data-v-60d5052e></div><div aria-level="2" class="outline-title" id="doc-outline-aria-label" role="heading" data-v-60d5052e>On this page</div><ul class="VPDocOutlineItem root" data-v-60d5052e data-v-1ce71065><!--[--><!--]--></ul></div></nav><!--[--><!--]--><div class="spacer" data-v-3f215769></div><!--[--><!--]--><!----><!--[--><!--]--><!--[--><!--]--></div></div></div></div><div class="content" data-v-7011f0d8><div class="content-container" data-v-7011f0d8><!--[--><!--]--><main class="main" data-v-7011f0d8><div style="position:relative;" class="vp-doc _spprogram_docs_quick-start" data-v-7011f0d8><div><h1 id="runtime-api-examples" tabindex="-1">Runtime API Examples <a class="header-anchor" href="#runtime-api-examples" aria-label="Permalink to “Runtime API Examples”">​</a></h1><p>This page demonstrates usage of some of the runtime APIs provided by VitePress.</p><p>The main <code>useData()</code> API can be used to access site, theme, and page data for the current page. It works in both <code>.md</code> and <code>.vue</code> files:</p><div class="language-md"><button title="Copy Code" class="copy"></button><span class="lang">md</span><pre class="shiki shiki-themes github-light github-dark" style="--shiki-light:#24292e;--shiki-dark:#e1e4e8;--shiki-light-bg:#fff;--shiki-dark-bg:#24292e;" tabindex="0" dir="ltr"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">&lt;script setup&gt;</span></span>
-<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">import { useData } from &#39;vitepress&#39;</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">const { theme, page, frontmatter } = useData()</span></span>
-<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">&lt;/script&gt;</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;">## Results</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;">### Theme Data</span></span>
-<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">&lt;pre&gt;{{ theme }}&lt;/pre&gt;</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;">### Page Data</span></span>
-<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">&lt;pre&gt;{{ page }}&lt;/pre&gt;</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#005CC5;--shiki-light-font-weight:bold;--shiki-dark:#79B8FF;--shiki-dark-font-weight:bold;">### Page Frontmatter</span></span>
-<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">&lt;pre&gt;{{ frontmatter }}&lt;/pre&gt;</span></span></code></pre></div><h2 id="results" tabindex="-1">Results <a class="header-anchor" href="#results" aria-label="Permalink to “Results”">​</a></h2><h3 id="theme-data" tabindex="-1">Theme Data <a class="header-anchor" href="#theme-data" aria-label="Permalink to “Theme Data”">​</a></h3><pre>{
-  &quot;logo&quot;: &quot;http://localhost:8080/spprogram/assets/images/icon_512.png&quot;,
-  &quot;search&quot;: {
-    &quot;provider&quot;: &quot;local&quot;
-  },
-  &quot;nav&quot;: [
-    {
-      &quot;text&quot;: &quot;Home&quot;,
-      &quot;link&quot;: &quot;/&quot;
-    },
-    {
-      &quot;text&quot;: &quot;Guide&quot;,
-      &quot;link&quot;: &quot;/quick-start&quot;
-    }
-  ],
-  &quot;sidebar&quot;: {
-    &quot;/&quot;: [
-      {
-        &quot;text&quot;: &quot;Quick Start&quot;,
-        &quot;link&quot;: &quot;/quick-start&quot;
-      },
-      {
-        &quot;text&quot;: &quot;MAR User Guide&quot;,
-        &quot;link&quot;: &quot;/mar/inquiry-new&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Sale User Guide&quot;,
-        &quot;link&quot;: &quot;/sale/inquiry&quot;
-      },
-      {
-        &quot;text&quot;: &quot;D/E User Guide&quot;,
-        &quot;link&quot;: &quot;/de/inquiry&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Finance User Guide&quot;,
-        &quot;link&quot;: &quot;/fin/confirm&quot;
-      },
-      {
-        &quot;text&quot;: &quot;PKC User Guide&quot;,
-        &quot;link&quot;: &quot;/pkc/inquiry&quot;
-      }
-    ],
-    &quot;/mar/&quot;: [
-      {
-        &quot;text&quot;: &quot;Inquiry&quot;,
-        &quot;collapsed&quot;: true,
-        &quot;items&quot;: [
-          {
-            &quot;text&quot;: &quot;Add new inquiry&quot;,
-            &quot;link&quot;: &quot;/mar/inquiry-new&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Add stock part inquiry&quot;,
-            &quot;link&quot;: &quot;/mar/inquiry-stock&quot;
-          },
-          {
-            &quot;text&quot;: &quot;On process inquiry&quot;,
-            &quot;link&quot;: &quot;/mar/inquiry-onprocess&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Pending pre-bm inquiry&quot;,
-            &quot;link&quot;: &quot;/mar/inquiry-prebm&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Inquiry report&quot;,
-            &quot;link&quot;: &quot;/mar/inquiry-report&quot;
-          }
-        ]
-      },
-      {
-        &quot;text&quot;: &quot;Quotation&quot;,
-        &quot;collapsed&quot;: true,
-        &quot;items&quot;: [
-          {
-            &quot;text&quot;: &quot;Issue Quotation&quot;,
-            &quot;link&quot;: &quot;/mar/quotation-issue&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Pending Weight&quot;,
-            &quot;link&quot;: &quot;/mar/quotation-weight&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Quotation Released&quot;,
-            &quot;link&quot;: &quot;/mar/quotation-release&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Add Out-Out quotation&quot;,
-            &quot;link&quot;: &quot;/mar/quotation-out&quot;
-          }
-        ]
-      },
-      {
-        &quot;text&quot;: &quot;Orders&quot;,
-        &quot;link&quot;: &quot;/mar/orders&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Price List&quot;,
-        &quot;collapsed&quot;: true,
-        &quot;items&quot;: [
-          {
-            &quot;text&quot;: &quot;Price List&quot;,
-            &quot;link&quot;: &quot;/mar/price-history&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Items/Drawing&quot;,
-            &quot;link&quot;: &quot;/mar/price-item&quot;
-          }
-        ]
-      },
-      {
-        &quot;text&quot;: &quot;Master&quot;,
-        &quot;collapsed&quot;: true,
-        &quot;items&quot;: [
-          {
-            &quot;text&quot;: &quot;Price Ratio&quot;,
-            &quot;link&quot;: &quot;/mar/master-ratio&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Inquiry Controller&quot;,
-            &quot;link&quot;: &quot;/mar/master-control&quot;
-          },
-          {
-            &quot;text&quot;: &quot;Currency&quot;,
-            &quot;link&quot;: &quot;/mar/master-cur&quot;
-          }
-        ]
-      },
-      {
-        &quot;text&quot;: &quot;Back to Home&quot;,
-        &quot;link&quot;: &quot;/quick-start&quot;
-      }
-    ],
-    &quot;/sale/&quot;: [
-      {
-        &quot;text&quot;: &quot;Back to Home&quot;,
-        &quot;link&quot;: &quot;/quick-start&quot;
-      }
-    ],
-    &quot;/de/&quot;: [
-      {
-        &quot;text&quot;: &quot;Back to Home&quot;,
-        &quot;link&quot;: &quot;/quick-start&quot;
-      }
-    ],
-    &quot;/fin/&quot;: [
-      {
-        &quot;text&quot;: &quot;Price Confirmation&quot;,
-        &quot;link&quot;: &quot;/fin/confirm&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Check inquiry&quot;,
-        &quot;link&quot;: &quot;/fin/check&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Price Approval&quot;,
-        &quot;link&quot;: &quot;/fin/approve&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Running Inquiry&quot;,
-        &quot;link&quot;: &quot;/fin/inquiry&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Price List&quot;,
-        &quot;link&quot;: &quot;/fin/price-list&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Item Master&quot;,
-        &quot;link&quot;: &quot;/fin/item&quot;
-      },
-      {
-        &quot;text&quot;: &quot;Back to Home&quot;,
-        &quot;link&quot;: &quot;/quick-start&quot;
-      }
-    ],
-    &quot;/pkc/&quot;: [
-      {
-        &quot;text&quot;: &quot;Back to Home&quot;,
-        &quot;link&quot;: &quot;/quick-start&quot;
-      }
-    ]
-  }
-}</pre><h3 id="page-data" tabindex="-1">Page Data <a class="header-anchor" href="#page-data" aria-label="Permalink to “Page Data”">​</a></h3><pre>{
-  &quot;title&quot;: &quot;Runtime API Examples&quot;,
-  &quot;description&quot;: &quot;&quot;,
-  &quot;frontmatter&quot;: {
-    &quot;outline&quot;: &quot;deep&quot;
-  },
-  &quot;headers&quot;: [],
-  &quot;relativePath&quot;: &quot;quick-start.md&quot;,
-  &quot;filePath&quot;: &quot;quick-start.md&quot;
-}</pre><h3 id="page-frontmatter" tabindex="-1">Page Frontmatter <a class="header-anchor" href="#page-frontmatter" aria-label="Permalink to “Page Frontmatter”">​</a></h3><pre>{
-  &quot;outline&quot;: &quot;deep&quot;
-}</pre><h2 id="more" tabindex="-1">More <a class="header-anchor" href="#more" aria-label="Permalink to “More”">​</a></h2><p>Check out the documentation for the <a href="https://vitepress.dev/reference/runtime-api#usedata" target="_blank" rel="noreferrer">full list of runtime APIs</a>.</p></div></div></main><footer class="VPDocFooter" data-v-7011f0d8 data-v-e257564d><!--[--><!--]--><!----><nav class="prev-next" aria-labelledby="doc-footer-aria-label" data-v-e257564d><span class="visually-hidden" id="doc-footer-aria-label" data-v-e257564d>Pager</span><div class="pager" data-v-e257564d><!----></div><div class="pager" data-v-e257564d><a class="VPLink link pager-link next" href="/spprogram/docs/mar/inquiry-new.html" data-v-e257564d><!--[--><span class="desc" data-v-e257564d>Next page</span><span class="title" data-v-e257564d>MAR User Guide</span><!--]--></a></div></nav></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><!----><!--[--><!--]--></div></div>
-    <script>window.__VP_HASH_MAP__=JSON.parse("{\"de_inquiry.md\":\"BxBQNkko\",\"fin_approve.md\":\"DSCna1kJ\",\"fin_check.md\":\"msJcRzZ8\",\"fin_confirm.md\":\"COBFOCw4\",\"fin_inquiry.md\":\"WX7u1wfZ\",\"fin_item.md\":\"eYuYJCu1\",\"fin_price-list.md\":\"blPAvqcb\",\"index.md\":\"BMecVB4j\",\"mar_inquiry-new.md\":\"DYezENAO\",\"mar_inquiry-onprocess.md\":\"BEZn0vQo\",\"mar_inquiry-prebm.md\":\"BUe7h7Af\",\"mar_inquiry-report.md\":\"CBUC8VNI\",\"mar_inquiry-stock.md\":\"Bvqs_9l0\",\"mar_master-control.md\":\"Jh-lbn6T\",\"mar_master-cur.md\":\"BpQvtZ-U\",\"mar_master-ratio.md\":\"2GCLFGZL\",\"mar_orders.md\":\"Dy7fhw1T\",\"mar_price-history.md\":\"B6WpwMhP\",\"mar_price-item.md\":\"DkxUr_3E\",\"mar_quotation-issue.md\":\"1dLTDFZM\",\"mar_quotation-out.md\":\"DKYVgOOP\",\"mar_quotation-release.md\":\"BrY5Cslh\",\"mar_quotation-weight.md\":\"C0vtBL-D\",\"pkc_inquiry.md\":\"Dkn99-aN\",\"quick-start.md\":\"rIThOCVt\",\"sale_inquiry.md\":\"DaYeDzdK\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"en-US\",\"dir\":\"ltr\",\"title\":\"SP Program\",\"description\":\"A VitePress site\",\"base\":\"/spprogram/docs/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"logo\":\"http://localhost:8080/spprogram/assets/images/icon_512.png\",\"search\":{\"provider\":\"local\"},\"nav\":[{\"text\":\"Home\",\"link\":\"/\"},{\"text\":\"Guide\",\"link\":\"/quick-start\"}],\"sidebar\":{\"/\":[{\"text\":\"Quick Start\",\"link\":\"/quick-start\"},{\"text\":\"MAR User Guide\",\"link\":\"/mar/inquiry-new\"},{\"text\":\"Sale User Guide\",\"link\":\"/sale/inquiry\"},{\"text\":\"D/E User Guide\",\"link\":\"/de/inquiry\"},{\"text\":\"Finance User Guide\",\"link\":\"/fin/confirm\"},{\"text\":\"PKC User Guide\",\"link\":\"/pkc/inquiry\"}],\"/mar/\":[{\"text\":\"Inquiry\",\"collapsed\":true,\"items\":[{\"text\":\"Add new inquiry\",\"link\":\"/mar/inquiry-new\"},{\"text\":\"Add stock part inquiry\",\"link\":\"/mar/inquiry-stock\"},{\"text\":\"On process inquiry\",\"link\":\"/mar/inquiry-onprocess\"},{\"text\":\"Pending pre-bm inquiry\",\"link\":\"/mar/inquiry-prebm\"},{\"text\":\"Inquiry report\",\"link\":\"/mar/inquiry-report\"}]},{\"text\":\"Quotation\",\"collapsed\":true,\"items\":[{\"text\":\"Issue Quotation\",\"link\":\"/mar/quotation-issue\"},{\"text\":\"Pending Weight\",\"link\":\"/mar/quotation-weight\"},{\"text\":\"Quotation Released\",\"link\":\"/mar/quotation-release\"},{\"text\":\"Add Out-Out quotation\",\"link\":\"/mar/quotation-out\"}]},{\"text\":\"Orders\",\"link\":\"/mar/orders\"},{\"text\":\"Price List\",\"collapsed\":true,\"items\":[{\"text\":\"Price List\",\"link\":\"/mar/price-history\"},{\"text\":\"Items/Drawing\",\"link\":\"/mar/price-item\"}]},{\"text\":\"Master\",\"collapsed\":true,\"items\":[{\"text\":\"Price Ratio\",\"link\":\"/mar/master-ratio\"},{\"text\":\"Inquiry Controller\",\"link\":\"/mar/master-control\"},{\"text\":\"Currency\",\"link\":\"/mar/master-cur\"}]},{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/sale/\":[{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/de/\":[{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/fin/\":[{\"text\":\"Price Confirmation\",\"link\":\"/fin/confirm\"},{\"text\":\"Check inquiry\",\"link\":\"/fin/check\"},{\"text\":\"Price Approval\",\"link\":\"/fin/approve\"},{\"text\":\"Running Inquiry\",\"link\":\"/fin/inquiry\"},{\"text\":\"Price List\",\"link\":\"/fin/price-list\"},{\"text\":\"Item Master\",\"link\":\"/fin/item\"},{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/pkc/\":[{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}]}},\"locales\":{},\"scrollOffset\":134,\"cleanUrls\":false,\"additionalConfig\":{}}");</script>
+    <div id="app"><div class="Layout" data-v-1df9f90f><!--[--><!--]--><!--[--><span tabindex="-1" data-v-331ec75c></span><a href="#VPContent" class="VPSkipLink visually-hidden" data-v-331ec75c>Skip to content</a><!--]--><!----><header class="VPNav" data-v-1df9f90f data-v-da52a441><div class="VPNavBar" data-v-da52a441 data-v-70946a35><div class="wrapper" data-v-70946a35><div class="container" data-v-70946a35><div class="title" data-v-70946a35><div class="VPNavBarTitle has-sidebar" data-v-70946a35 data-v-1e38c6bc><a class="title" href="/spprogram/docs/" data-v-1e38c6bc><!--[--><!--]--><!--[--><img class="VPImage logo" src="http://localhost:8080/spprogram/assets/images/icon_512.png" alt data-v-8426fc1a><!--]--><span data-v-1e38c6bc>SP Program</span><!--[--><!--]--></a></div></div><div class="content" data-v-70946a35><div class="content-body" data-v-70946a35><!--[--><!--]--><div class="VPNavBarSearch search" data-v-70946a35><!--[--><!----><div id="local-search"><button type="button" aria-label="Search" aria-keyshortcuts="/ control+k meta+k" class="DocSearch DocSearch-Button"><span class="DocSearch-Button-Container"><span class="vpi-search DocSearch-Search-Icon"></span><span class="DocSearch-Button-Placeholder">Search</span></span><span class="DocSearch-Button-Keys"><kbd class="DocSearch-Button-Key"></kbd><kbd class="DocSearch-Button-Key"></kbd></span></button></div><!--]--></div><nav aria-labelledby="main-nav-aria-label" class="VPNavBarMenu menu" data-v-70946a35 data-v-39714824><span id="main-nav-aria-label" class="visually-hidden" data-v-39714824> Main Navigation </span><!--[--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/spprogram/docs/" tabindex="0" data-v-39714824 data-v-52a1d768><!--[--><span data-v-52a1d768>Home</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink active" href="/spprogram/docs/quick-start.html" tabindex="0" data-v-39714824 data-v-52a1d768><!--[--><span data-v-52a1d768>Guide</span><!--]--></a><!--]--><!--]--></nav><!----><div class="VPNavBarAppearance appearance" data-v-70946a35 data-v-6c893767><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-6c893767 data-v-5337faa4 data-v-1d5665e3><span class="check" data-v-1d5665e3><span class="icon" data-v-1d5665e3><!--[--><span class="vpi-sun sun" data-v-5337faa4></span><span class="vpi-moon moon" data-v-5337faa4></span><!--]--></span></span></button></div><!----><div class="VPFlyout VPNavBarExtra extra" data-v-70946a35 data-v-bf2fac68 data-v-42cb505d><button type="button" class="button" aria-haspopup="true" aria-expanded="false" aria-label="extra navigation" data-v-42cb505d><span class="vpi-more-horizontal icon" data-v-42cb505d></span></button><div class="menu" data-v-42cb505d><div class="VPMenu" data-v-42cb505d data-v-25a6cce8><!----><!--[--><!--[--><!----><div class="group" data-v-bf2fac68><div class="item appearance" data-v-bf2fac68><p class="label" data-v-bf2fac68>Appearance</p><div class="appearance-action" data-v-bf2fac68><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-bf2fac68 data-v-5337faa4 data-v-1d5665e3><span class="check" data-v-1d5665e3><span class="icon" data-v-1d5665e3><!--[--><span class="vpi-sun sun" data-v-5337faa4></span><span class="vpi-moon moon" data-v-5337faa4></span><!--]--></span></span></button></div></div></div><!----><!--]--><!--]--></div></div></div><!--[--><!--]--><button type="button" class="VPNavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false" aria-controls="VPNavScreen" data-v-70946a35 data-v-e5dd9c1c><span class="container" data-v-e5dd9c1c><span class="top" data-v-e5dd9c1c></span><span class="middle" data-v-e5dd9c1c></span><span class="bottom" data-v-e5dd9c1c></span></span></button></div></div></div></div><div class="divider" data-v-70946a35><div class="divider-line" data-v-70946a35></div></div></div><!----></header><div class="VPLocalNav has-sidebar empty" data-v-1df9f90f data-v-db738f89><div class="container" data-v-db738f89><button class="menu" aria-expanded="false" aria-controls="VPSidebarNav" data-v-db738f89><span class="vpi-align-left menu-icon" data-v-db738f89></span><span class="menu-text" data-v-db738f89>Menu</span></button><div class="VPLocalNavOutlineDropdown" style="--vp-vh:0px;" data-v-db738f89 data-v-0bf0e06f><button data-v-0bf0e06f>Return to top</button><!----></div></div></div><aside class="VPSidebar" data-v-1df9f90f data-v-af661f50><div class="curtain" data-v-af661f50></div><nav class="nav" id="VPSidebarNav" aria-labelledby="sidebar-aria-label" tabindex="-1" data-v-af661f50><span class="visually-hidden" id="sidebar-aria-label" data-v-af661f50> Sidebar Navigation </span><!--[--><!--]--><!--[--><div class="no-transition group" data-v-8d50c081><section class="VPSidebarItem level-0 has-active" data-v-8d50c081 data-v-d81de50c><!----><div class="items" data-v-d81de50c><!--[--><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/quick-start.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>Quick Start</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/mar/inquiry-new.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>MAR User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/sale/inquiry.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>Sale User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/de/inquiry.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>D/E User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/fin/confirm.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>Finance User Guide</p><!--]--></a><!----></div><!----></div><div class="VPSidebarItem level-1 is-link" data-v-d81de50c data-v-d81de50c><div class="item" data-v-d81de50c><div class="indicator" data-v-d81de50c></div><a class="VPLink link link" href="/spprogram/docs/pkc/inquiry.html" data-v-d81de50c><!--[--><p class="text" data-v-d81de50c>PKC User Guide</p><!--]--></a><!----></div><!----></div><!--]--></div></section></div><!--]--><!--[--><!--]--></nav></aside><div class="VPContent has-sidebar" id="VPContent" data-v-1df9f90f data-v-c87f25bf><div class="VPDoc has-sidebar has-aside" data-v-c87f25bf data-v-7011f0d8><!--[--><!--]--><div class="container" data-v-7011f0d8><div class="aside" data-v-7011f0d8><div class="aside-curtain" data-v-7011f0d8></div><div class="aside-container" data-v-7011f0d8><div class="aside-content" data-v-7011f0d8><div class="VPDocAside" data-v-7011f0d8 data-v-3f215769><!--[--><!--]--><!--[--><!--]--><nav aria-labelledby="doc-outline-aria-label" class="VPDocAsideOutline" data-v-3f215769 data-v-60d5052e><div class="content" data-v-60d5052e><div class="outline-marker" data-v-60d5052e></div><div aria-level="2" class="outline-title" id="doc-outline-aria-label" role="heading" data-v-60d5052e>On this page</div><ul class="VPDocOutlineItem root" data-v-60d5052e data-v-1ce71065><!--[--><!--]--></ul></div></nav><!--[--><!--]--><div class="spacer" data-v-3f215769></div><!--[--><!--]--><!----><!--[--><!--]--><!--[--><!--]--></div></div></div></div><div class="content" data-v-7011f0d8><div class="content-container" data-v-7011f0d8><!--[--><!--]--><main class="main" data-v-7011f0d8><div style="position:relative;" class="vp-doc _spprogram_docs_quick-start" data-v-7011f0d8><div><h1 id="overview" tabindex="-1">Overview <a class="header-anchor" href="#overview" aria-label="Permalink to “Overview”">​</a></h1><div class="info custom-block"><p class="custom-block-title">🎯 ภาพรวมระบบ</p><p>SP PROGRAM เป็นระบบบริหารกระบวนการตั้งแต่รับความต้องการจากลูกค้า ไปจนถึงการเตรียมราคาและออกใบเสนอราคา โดยเชื่อมการทำงานของหลายฝ่ายเข้าด้วยกันใน workflow เดียว ทำให้แต่ละทีมเห็นสถานะงานของตนเองชัดเจน ลดการส่งต่อข้อมูลแบบกระจัดกระจาย และช่วยให้การคำนวณราคาเป็นมาตรฐานมากขึ้น</p></div><button type="button" class="image-popup" aria-label="Home Page" data-v-89643ea7><img src="./images/home.png" alt="Home Page" loading="lazy" data-v-89643ea7></button><h2 id="วัตถุประสงค์ของระบบ" tabindex="-1">วัตถุประสงค์ของระบบ <a class="header-anchor" href="#วัตถุประสงค์ของระบบ" aria-label="Permalink to “วัตถุประสงค์ของระบบ”">​</a></h2><p>ระบบนี้ถูกออกแบบมาเพื่อเป็นศูนย์กลางของงานเชิงพาณิชย์ของโครงการ ช่วยให้ทีม Sale, Design, Finance และ MAR ทำงานต่อเนื่องกันตั้งแต่การสร้าง Inquiry การตรวจสอบข้อมูลทางเทคนิค การคำนวณต้นทุน การอนุมัติราคา ไปจนถึงการออก Quotation ให้ลูกค้า</p><h2 id="กระบวนการหลักของธุรกิจ" tabindex="-1">กระบวนการหลักของธุรกิจ <a class="header-anchor" href="#กระบวนการหลักของธุรกิจ" aria-label="Permalink to “กระบวนการหลักของธุรกิจ”">​</a></h2><ol><li>รับความต้องการของลูกค้าเข้าระบบเป็น Inquiry</li><li>ส่งต่อให้ทีมที่เกี่ยวข้องตรวจสอบแบบ รายการสินค้า และข้อมูลประกอบ</li><li>ให้ฝ่ายการเงินคำนวณต้นทุนและกำหนดราคาขาย</li><li>ตรวจสอบและอนุมัติราคาให้พร้อมใช้งานเชิงพาณิชย์</li><li>ส่งต่อให้ทีมการตลาดหรือฝ่ายขายนำไปออกใบเสนอราคาและติดตามงานต่อ</li></ol><h2 id="บทบาทของผู้ใช้งาน" tabindex="-1">บทบาทของผู้ใช้งาน <a class="header-anchor" href="#บทบาทของผู้ใช้งาน" aria-label="Permalink to “บทบาทของผู้ใช้งาน”">​</a></h2><ul><li>MAR เป็นผู้เริ่มต้นข้อมูลและรวบรวมความต้องการจากลูกค้า</li><li>SE/SALE รับผิดชอบในการตรวจสอบรายการ Drawing ที่ลูกค้าต้องการ โดยอ้างอิงจาก Original Order เป็นหลัก</li><li>D/E หรือทีมเทคนิคช่วยยืนยันข้อมูลด้านแบบ รายการ และความถูกต้องของข้อมูลผลิตภัณฑ์ต่อจากแผนก SE ในกรณีที่แผนก SE ไม่สามารถยืนยันรายการเหล่านั้นได้</li><li>Finance คำนวณต้นทุน กำไร และราคาต่อหน่วยก่อนส่งต่อ</li><li>MAR รับช่วงงานเพื่อจัดการใบเสนอราคา ติดตามสถานะ และสื่อสารกับลูกค้า</li></ul><h2 id="change-log" tabindex="-1">Change log <a class="header-anchor" href="#change-log" aria-label="Permalink to “Change log”">​</a></h2><h3 id="update-2026-06-03" tabindex="-1">Update 2026-06-03 <a class="header-anchor" href="#update-2026-06-03" aria-label="Permalink to “Update 2026-06-03”">​</a></h3><ul><li>ปรับโครงสร้าง Front end มาใช้ Tailwind</li><li>เปลี่ยนระบบ Authentication มาเป็น New Webflow base</li><li>เพิ่ม SE เป็นผู้ใช้กลุ่มหลักที่มาทำงานแทน D/E</li><li>เปลี่ยนให้ DE ทำงานเฉพาะรายการที่ Sale Foreward ไป</li><li>ทุกรายการที่ส่งไป Fin จะมีการ Matching ราคาก่อน</li><li>เปลี่ยน Template &quot;Out to out&quot; <a href="https://www.example.com" target="_blank" rel="noreferrer">title</a></li></ul></div></div></main><footer class="VPDocFooter" data-v-7011f0d8 data-v-e257564d><!--[--><!--]--><!----><nav class="prev-next" aria-labelledby="doc-footer-aria-label" data-v-e257564d><span class="visually-hidden" id="doc-footer-aria-label" data-v-e257564d>Pager</span><div class="pager" data-v-e257564d><!----></div><div class="pager" data-v-e257564d><a class="VPLink link pager-link next" href="/spprogram/docs/mar/inquiry-new.html" data-v-e257564d><!--[--><span class="desc" data-v-e257564d>Next page</span><span class="title" data-v-e257564d>MAR User Guide</span><!--]--></a></div></nav></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><!----><!--[--><!--]--></div></div>
+    <script>window.__VP_HASH_MAP__=JSON.parse("{\"de_assign.md\":\"DV0po_WN\",\"de_check.md\":\"DFAQhnEu\",\"de_declare.md\":\"CoQVWPX0\",\"de_inquiry.md\":\"QKTw--yt\",\"de_report.md\":\"CuZ0hssA\",\"fin_approve.md\":\"D0wWbg4N\",\"fin_check.md\":\"Dcgrujfl\",\"fin_confirm.md\":\"9YmUHM2M\",\"fin_inquiry.md\":\"j0YZUi_M\",\"fin_item.md\":\"B5xNg4o0\",\"fin_price-list.md\":\"9NwVFrOW\",\"index.md\":\"CCrbn6Fp\",\"mar_inquiry-new.md\":\"Csrkz-DG\",\"mar_inquiry-onprocess.md\":\"BwOz0ZKq\",\"mar_inquiry-prebm.md\":\"CN1zFtNc\",\"mar_inquiry-report.md\":\"S-HcHvVh\",\"mar_inquiry-stock.md\":\"CLEZ6TqO\",\"mar_master-control.md\":\"Db6F0VOS\",\"mar_master-cur.md\":\"DMBZInb3\",\"mar_master-ratio.md\":\"i1iJQwuz\",\"mar_orders.md\":\"DsKMQIom\",\"mar_price-history.md\":\"-WaveUcR\",\"mar_price-item.md\":\"CYtuLLS9\",\"mar_quotation-issue.md\":\"D2WX_q3r\",\"mar_quotation-out.md\":\"Co_1WZlE\",\"mar_quotation-release.md\":\"B_D86TSj\",\"mar_quotation-weight.md\":\"CYrcrD7V\",\"pkc_inquiry.md\":\"DIhTrpcd\",\"quick-start.md\":\"DI1qkmx7\",\"sale_inquiry.md\":\"CGpICF33\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"en-US\",\"dir\":\"ltr\",\"title\":\"SP Program\",\"description\":\"A VitePress site\",\"base\":\"/spprogram/docs/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"logo\":\"http://localhost:8080/spprogram/assets/images/icon_512.png\",\"search\":{\"provider\":\"local\"},\"nav\":[{\"text\":\"Home\",\"link\":\"/\"},{\"text\":\"Guide\",\"link\":\"/quick-start\"}],\"sidebar\":{\"/\":[{\"text\":\"Quick Start\",\"link\":\"/quick-start\"},{\"text\":\"MAR User Guide\",\"link\":\"/mar/inquiry-new\"},{\"text\":\"Sale User Guide\",\"link\":\"/sale/inquiry\"},{\"text\":\"D/E User Guide\",\"link\":\"/de/inquiry\"},{\"text\":\"Finance User Guide\",\"link\":\"/fin/confirm\"},{\"text\":\"PKC User Guide\",\"link\":\"/pkc/inquiry\"}],\"/mar/\":[{\"text\":\"Inquiry\",\"collapsed\":true,\"items\":[{\"text\":\"Add new inquiry\",\"link\":\"/mar/inquiry-new\"},{\"text\":\"Add stock part inquiry\",\"link\":\"/mar/inquiry-stock\"},{\"text\":\"On process inquiry\",\"link\":\"/mar/inquiry-onprocess\"},{\"text\":\"Pending pre-bm inquiry\",\"link\":\"/mar/inquiry-prebm\"},{\"text\":\"Inquiry report\",\"link\":\"/mar/inquiry-report\"}]},{\"text\":\"Quotation\",\"collapsed\":true,\"items\":[{\"text\":\"Issue Quotation\",\"link\":\"/mar/quotation-issue\"},{\"text\":\"Pending Weight\",\"link\":\"/mar/quotation-weight\"},{\"text\":\"Quotation Released\",\"link\":\"/mar/quotation-release\"},{\"text\":\"Add Out-Out quotation\",\"link\":\"/mar/quotation-out\"}]},{\"text\":\"Orders\",\"link\":\"/mar/orders\"},{\"text\":\"Price List\",\"collapsed\":true,\"items\":[{\"text\":\"Price List\",\"link\":\"/mar/price-history\"},{\"text\":\"Items/Drawing\",\"link\":\"/mar/price-item\"}]},{\"text\":\"Master\",\"collapsed\":true,\"items\":[{\"text\":\"Price Ratio\",\"link\":\"/mar/master-ratio\"},{\"text\":\"Inquiry Controller\",\"link\":\"/mar/master-control\"},{\"text\":\"Currency\",\"link\":\"/mar/master-cur\"}]},{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/sale/\":[{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/de/\":[{\"text\":\"Assign Designer\",\"link\":\"/de/assign\"},{\"text\":\"Declare Inquiry\",\"link\":\"/de/declare\"},{\"text\":\"Check Inquiry\",\"link\":\"/de/check\"},{\"text\":\"Inquiry Report\",\"link\":\"/de/report\"},{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/fin/\":[{\"text\":\"Price Confirmation\",\"link\":\"/fin/confirm\"},{\"text\":\"Check inquiry\",\"link\":\"/fin/check\"},{\"text\":\"Price Approval\",\"link\":\"/fin/approve\"},{\"text\":\"Running Inquiry\",\"link\":\"/fin/inquiry\"},{\"text\":\"Price List\",\"link\":\"/fin/price-list\"},{\"text\":\"Item Master\",\"link\":\"/fin/item\"},{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}],\"/pkc/\":[{\"text\":\"Back to Home\",\"link\":\"/quick-start\"}]}},\"locales\":{},\"scrollOffset\":134,\"cleanUrls\":false,\"additionalConfig\":{}}");</script>
     
   </body>
 </html>

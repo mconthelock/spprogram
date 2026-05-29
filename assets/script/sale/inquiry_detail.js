@@ -301,7 +301,7 @@ $(document).on("click", "#send-bm", async function (e) {
 			await setAS400Data(inquiry);
 			await mailToPKC(inquiry);
 			window.location.replace(
-				`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+				`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}/`,
 			);
 		} else {
 			await activatedBtnRow($(this), false);
