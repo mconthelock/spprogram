@@ -15,6 +15,11 @@
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
         <table id="table" class="table table-zebra table-edit text-xs"></table>
+
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">Remark</legend>
+            <textarea class="textarea h-24 w-full" placeholder="Put your remark here" id="fin-remark"></textarea>
+        </fieldset>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-3" id="additional-info">

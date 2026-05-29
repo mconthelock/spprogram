@@ -19,8 +19,10 @@ import { initApp } from "../utils.js";
 var table;
 $(async function () {
 	try {
-		await showLoader({ show: true });
-		await initApp();
+		await showLoader();
+		const app = await initApp();
+		if (!app) return;
+
 		const pageid = $("#pageid").val() || "1";
 		let q = {
 			INQ_STATUS: ">= 30 && < 46",
@@ -46,13 +48,16 @@ $(document).on("change", ".quick-remark", async function (e) {
 	const load = $(this).siblings(".quick-remark-load");
 	try {
 		load.removeClass("hidden");
-		await updateInquiryHeader(
+		const inq = await updateInquiryHeader(
 			{
 				INQ_FIN_REMARK: remark,
 				INQ_LATEST: 1,
+				INQ_NO: data.INQ_NO,
+				INQ_STATUS: 40,
 			},
 			data.INQ_ID,
 		);
+		table.row($(this).closest("tr")).data(inq).draw();
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

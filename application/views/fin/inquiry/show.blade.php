@@ -1,12 +1,12 @@
 @extends('layouts/template')
 
 @section('contents')
-    <input type="text" name="inquiry-id" id="inquiry-id" value="{{ $id }}" class="hiddenx">
-    <input type="text" id="page-id" value="{{ $mode }}" class="hiddenx">
-    <input type="text" id="page-show" value="1" class="hiddenx">
-    <input type="text" id="fin-confirm-date" class="hiddenx">
-    <input type="text" id="fck-confirm-date" class="hiddenx">
-    <input type="text" id="fmn-confirm-date" class="hiddenx">
+    <input type="text" name="inquiry-id" id="inquiry-id" value="{{ $id }}" class="hidden">
+    <input type="text" id="page-id" value="{{ $mode }}" class="hidden">
+    <input type="text" id="page-show" value="1" class="hidden">
+    <input type="text" id="fin-confirm-date" class="hidden">
+    <input type="text" id="fck-confirm-date" class="hidden">
+    <input type="text" id="fmn-confirm-date" class="hidden">
     <h2 class="card-title text-2xl">Inquiry Detail</h2>
     <div class="divider m-0"></div>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="viewprj|viewinfo|viewmar"></main>
@@ -16,6 +16,12 @@
             <span class="font-extrabold text-md text-primary ps-3">Detail</span>
         </div>
         <table id="table" class="table table-zebra table-edit text-xs"></table>
+
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">FIN Remark</legend>
+            {{-- <textarea class="textarea h-24 w-full" placeholder="Put your remark here" id="fin-remark"></textarea> --}}
+            <div class="bg-slate-100 border border-slate-300 h-24 p-4 rounded-xl" id="fin-remark-div"></div>
+        </fieldset>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-3" id="additional-info">

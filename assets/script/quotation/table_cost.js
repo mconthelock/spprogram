@@ -100,7 +100,7 @@ export async function tableCostOption(data = []) {
 				if (type === "display") {
 					data = data == null ? "" : data;
 					if (row.INQD_SUPPLIER == "AMEC") {
-						return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fccost" value="${showDigits(data, 0)}"/></div>`;
+						return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fccost" value="${data == 0 ? "" : showDigits(data, 0)}"/></div>`;
 					}
 					return showDigits(data, 0);
 				}
@@ -121,7 +121,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `w-20 min-w-20 cell-display border-r! INQD_TC_COST`,
+			className: `w-20 min-w-20 cell-display border-r! INQD_TC_COST text-right!`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -132,7 +132,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_TC_BASE",
 			title: "%TC",
-			className: `w-12 min-w-12 cell-display border-r!`,
+			className: `w-12 min-w-12 cell-display border-r! INQD_TC_BASE text-right!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -143,7 +143,7 @@ export async function tableCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-20 min-w-20 cell-display border-r!`,
+			className: `w-20 min-w-20 cell-display border-r! text-right!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);

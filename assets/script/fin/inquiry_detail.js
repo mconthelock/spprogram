@@ -26,8 +26,10 @@ import {
 var table;
 $(async function () {
 	try {
-		await showLoader({ show: true });
-		await initApp();
+		await showLoader();
+		const app = await initApp();
+		if (!app) return;
+
 		const pageid = $("#page-id").val() || "4";
 		const showPage = $("#page-show").val();
 		const inq = await getInquiry({
@@ -42,6 +44,8 @@ $(async function () {
 		$("#fin-confirm-date").val(times.FIN_CONFIRM ?? "");
 		$("#fck-confirm-date").val(times.FCK_CONFIRM ?? "");
 		$("#fmn-confirm-date").val(times.FMN_CONFIRM ?? "");
+		$("#fin-remark").val(inq[0].INQ_FIN_REMARK ?? "");
+		$("#fin-remark-div").html(inq[0].INQ_FIN_REMARK ?? "");
 		const card = await setupCard(inq[0]);
 		let optDetail;
 		let details = inq[0].details;
@@ -68,7 +72,6 @@ $(async function () {
 					};
 				});
 			items = items.filter((item) => item.FCCOST > 0);
-
 			details = details.map((detail) => {
 				const item = items.find((i) => i.ITEM_NO == detail.ITEM_NO);
 				return {
@@ -109,7 +112,7 @@ async function setupButton(pageid) {
 		id: "save-btn-draft",
 		title: "Save",
 		icon: "fi fi-sr-disk text-xl",
-		className: `btn-outline btn-primary text-primary hover:text-white fin-confirm-btn`,
+		className: `btn-outline btn-primary text-primary hover:text-white fin-confirm-btn btn-draft`,
 		other: "data-action='40'",
 	});
 
@@ -285,10 +288,9 @@ $(document).on("change", "#import-file", async function (e) {
 $(document).on("click", ".fin-confirm-btn", async function (e) {
 	e.preventDefault();
 	try {
-		await showLoader({ show: true });
-		await activatedBtnRow($(this));
 		const pageid = $("#page-id").val() || "4";
 		const action = intVal($(this).attr("data-action"));
+		const isDraft = $(this).hasClass("btn-draft");
 		if (action == 43) {
 			const details = table.rows().data().toArray();
 			const totalPrice = details.reduce(
@@ -298,6 +300,20 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 			);
 			if (totalPrice == 0) {
 				await showMessage("Please input price before confirm.");
+				return;
+			}
+
+			let valid = true;
+			details.map((ds) => {
+				if (ds.INQD_FC_COST == 0 && ds.INQD_FIN_REMARK == null) {
+					valid = false;
+				}
+			});
+
+			if (!valid) {
+				await showMessage(
+					"Please input price or remark for AMEC item before confirm.",
+				);
 				return;
 			}
 		}
@@ -310,20 +326,26 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 			FMN_CONFIRM:
 				action == 45 ? new Date() : $("#fmn-confirm-date").val(),
 		};
+
+		await showLoader({ show: true });
+		await activatedBtnRow($(this));
 		const inquiry = await updatePath({
 			status: action,
 			timeline: timeline,
 		});
-		window.location.replace(
-			`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}/${pageid}/`,
-		);
-		await showLoader({ show: false });
+		if (!isDraft)
+			window.location.replace(
+				`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}/${pageid}/`,
+			);
+		else {
+			await activatedBtnRow($(this), false);
+			showLoader({ show: false });
+		}
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
+		showLoader({ show: false });
 		return;
-	} finally {
-		await activatedBtnRow($(this), false);
 	}
 });
 
@@ -333,6 +355,7 @@ async function updatePath(opt) {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),
 			INQ_REV: $("#revision").val(),
+			INQ_FIN_REMARK: $("#fin-remark").val(),
 			INQ_STATUS: opt.status,
 		};
 		const details = table.rows().data().toArray();

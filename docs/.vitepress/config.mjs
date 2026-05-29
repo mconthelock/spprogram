@@ -29,7 +29,7 @@ export default defineConfig({
 		],
 		sidebar: {
 			"/": [
-				{ text: "Quick Start", link: "/quick-start" },
+				{ text: "Overview", link: "/quick-start" },
 				{
 					text: "MAR User Guide",
 					link: "/mar/inquiry-new",

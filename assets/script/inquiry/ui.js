@@ -822,6 +822,7 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 
 	const getUsers = async (userId) => {
 		const users = await displayEmpInfo(userId);
+		if (!users) return null;
 		const user = await displayname(users.SNAME);
 		return user;
 	};
@@ -835,6 +836,7 @@ $(document).on("click", "#export-detail-fin", async function (e) {
 		IS_TIMELINE: true,
 		IS_DETAILS: true,
 	});
+
 	const file = template.buffer;
 	const workbook = new ExcelJS.Workbook();
 	await workbook.xlsx.load(file).then(async (workbook) => {
