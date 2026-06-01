@@ -19,6 +19,7 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 		[1, "desc"],
 	];
 	opt.columns = [
+		{ data: "INQ_ID", className: "" },
 		{ data: "UPDATE_AT", className: "hidden" },
 		{
 			data: "INQ_DATE",
@@ -64,7 +65,7 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 				const statusColor = colors.find(
 					(item) => item.id >= data.STATUS_ID,
 				);
-				return `<span class="badge text-xs text-nowrap ${statusColor.color}">${data.STATUS_DESC}</span>`;
+				return `<span class="badge text-xs text-nowrap ${statusColor.color}">${data.STATUS_ACTION}</span>`;
 			},
 		},
 		{

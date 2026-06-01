@@ -148,7 +148,7 @@ async function quotationOut(inq) {
 async function setupButton(group) {
 	const detail = table.rows().data().toArray();
 	const isAmec = detail.filter((dt) => {
-		return dt.INQD_SUPPLIER == "MELINA";
+		return dt.INQD_SUPPLIER == "AMEC";
 	});
 
 	const issue = await createBtn({
@@ -301,6 +301,8 @@ async function updatePath(opt) {
 				...detail,
 				rowIndex: index,
 			}));
+
+		console.log(details);
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow($(this));
 

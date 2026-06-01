@@ -308,6 +308,8 @@ export const updateInquiryTimeline = async (data) => {
 export const dataExports = async (data) => {
 	const details = [];
 	data.forEach(async (el) => {
+		const exchangeRate =
+			el.INQ_TYPE == "Out2out" ? el.details[0].INQD_EXRATE : 1;
 		let row = {
 			...el,
 			inquirySupplier: await inquirySupplier(el),
@@ -323,10 +325,11 @@ export const dataExports = async (data) => {
 			CUST_RQS: el.orders.length == 0 ? null : el.orders[0].CUST_RQS,
 			DSTN: el.orders.length == 0 ? null : el.orders[0].DSTN,
 			FINUSER:
-				el.timeline.length == 0
+				el.timeline.length == 0 || el.timeline.FINUSER == null
 					? null
 					: el.timeline.finusers[0].SNAME || "",
 			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+			exchangeRate: exchangeRate,
 		};
 
 		delete row.details;

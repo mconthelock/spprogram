@@ -49,6 +49,8 @@ export const statusColors = () => {
 		{ id: 28, color: "bg-blue-500 text-white" }, //DE CHECK
 		{ id: 29, color: "bg-gray-300 text-white" }, //DE NOT CONCERN
 		{ id: 39, color: "bg-slate-500 text-white" }, //IS
+		{ id: 40, color: "bg-amber-500 text-white" }, //FIN
+		{ id: 42, color: "bg-red-500 text-white" }, //FIN
 		{ id: 44, color: "bg-amber-500 text-white" }, //FIN
 		{ id: 45, color: "bg-lime-500 text-white" }, //Price Approved
 		{ id: 52, color: "bg-violet-500 text-white" }, //Other supply + Old Series

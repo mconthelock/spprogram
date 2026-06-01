@@ -41,3 +41,7 @@ SP PROGRAM เป็นระบบบริหารกระบวนการ
 - ดึงรายการ Secoundary Part List จาก Elmes มาใส่ใน Inquiry List ในกรณีที SE หรือ DE ระบุว่า Drawing นั้นมี Secound
 - ทุกรายการที่ส่งไป Fin จะมีการ Matching ราคาก่อน
 - เปลี่ยน Template **Out to out** ([IS-DEV26-000143](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=143))
+- เปลี่ยน Template import tsv file จาก Sparq เพือนำข้อมูลเข้ารบบ SP Program ([IS-DEV26-000114](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=114&empno=12069&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp&menu=2))
+- ระบบจะแจ้งเตือน FIN User ในกรณ๊ที่ Confirm ราคาเป็น 0 หรือ "" แล้วไม่มี Remark ([IS-DEV26-000088](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=88&empno=12069&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp&menu=2))
+- Inquiry Report สำหรับ MAR User เพิ่ม Currency, Exchange Rate และ Column ที่เป็นวันที่ Format Excel จะเป็น "Date" ([IS-DEV25-000497](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/view-form.asp?no=5&orgNo=050601&y=14&empNo=12069&y2=2025&runNo=497&m=&menu=2&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp))
+- Auto Export excel เพื่อให้ User นำไปใช้ทำ Power BI ทุกวันศุกร์ ([IS-DEV25-000407](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/view-form.asp?no=5&orgNo=050601&y=14&empNo=12069&y2=2025&runNo=407&m=&menu=2&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp))

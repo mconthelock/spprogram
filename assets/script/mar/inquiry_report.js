@@ -23,8 +23,9 @@ import {
 	getTemplate,
 	exportExcel,
 	deleteInquiry,
+	dataExports,
 } from "../service/index.js";
-import { dataExports } from "./data.js";
+// import { dataExports } from "./data.js";
 import { initApp } from "../utils.js";
 
 var table;
@@ -79,9 +80,7 @@ $(document).on("click", "#export1", async function (e) {
 			IS_FIN: true,
 		};
 		let data = await getInquiry(query);
-		const template = await getTemplate(
-			"export_inquiry_list_template_for_mar.xlsx",
-		);
+		const template = await getTemplate("export_inquiry_list.xlsx");
 		let result = await dataExports(data);
 		await exportExcel(result, template, {
 			filename: "Inquiry List.xlsx",

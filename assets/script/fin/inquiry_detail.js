@@ -44,6 +44,7 @@ $(async function () {
 		$("#fin-confirm-date").val(times.FIN_CONFIRM ?? "");
 		$("#fck-confirm-date").val(times.FCK_CONFIRM ?? "");
 		$("#fmn-confirm-date").val(times.FMN_CONFIRM ?? "");
+
 		$("#fin-remark").val(inq[0].INQ_FIN_REMARK ?? "");
 		$("#fin-remark-div").html(inq[0].INQ_FIN_REMARK ?? "");
 		const card = await setupCard(inq[0]);
@@ -128,7 +129,7 @@ async function setupButton(pageid) {
 		title: "Return",
 		icon: "fi fi-br-undo text-xl",
 		className: `btn-error text-white fin-confirm-btn`,
-		other: "data-action='39'",
+		other: "data-action='4'",
 	});
 
 	const fckConfirm = await createBtn({
@@ -149,7 +150,7 @@ async function setupButton(pageid) {
 	const fmnConfirm = await createBtn({
 		id: "approve-btn",
 		title: "Approve",
-		className: `btn-error text-white fin-confirm-btn`,
+		className: `btn-primary text-white fin-confirm-btn`,
 		other: "data-action='45'",
 	});
 
@@ -157,6 +158,7 @@ async function setupButton(pageid) {
 		id: "reject-btn",
 		title: "Reject",
 		className: `btn-error text-white fin-confirm-btn`,
+		icon: "fi fi-ts-circle-xmark text-xl",
 		other: "data-action='42'",
 	});
 
@@ -370,7 +372,7 @@ async function updatePath(opt) {
 			INQH_DATE: new Date(),
 			INQH_USER: $("#user-login").attr("empno"),
 			INQH_ACTION: opt.status,
-			INQH_REMARK: $("#remark").val(),
+			INQH_REMARK: $("#fin-remark").val(),
 		};
 		const fomdata = {
 			header,

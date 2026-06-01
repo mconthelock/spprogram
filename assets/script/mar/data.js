@@ -5,10 +5,9 @@ import {
 	inquiryValues,
 	nextWorkingDay,
 } from "../service/index.js";
-export const dataExports = async (data) => {
+export const dataExportsTemp = async (data) => {
 	const details = [];
 	data.forEach(async (el) => {
-		console.log(el.timeline);
 		let row = {
 			...el,
 			inquirySupplier: await inquirySupplier(el),
