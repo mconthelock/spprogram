@@ -30,7 +30,9 @@ $(async function () {
 		};
 		let data = await getInquiry(q);
 		data = await dataFilter(data, pageid);
-		const opt = await tableInquiryFinOption(data);
+		const opt = await tableInquiryFinOption(data, {
+			columnSelect: { status: true, class: "w-[50px]! px-[10px]!" },
+		});
 		table = await createTable(opt);
 		localStorage.setItem("spinquiryquery", JSON.stringify(q));
 	} catch (error) {
