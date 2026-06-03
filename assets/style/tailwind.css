@@ -186,6 +186,9 @@
 		display: flex;
 		align-items: center;
 	}
+	.dt-orderable-none .dt-column-header .dt-column-order {
+		display: none;
+	}
 	.dt-paging-button:not(.first):not(.last):not(.previous):not(.next) {
 		@apply text-white!;
 	}

@@ -6,7 +6,7 @@
             "label": "MAR. In-charge",
             "id":"mar-incharge",
             "name": "INQ_MAR_PIC",
-            "class": "req-2 displayname",
+            "class": "req-2 show-avatar",
             "source": "getMarPerson",
             "type": "select"
 

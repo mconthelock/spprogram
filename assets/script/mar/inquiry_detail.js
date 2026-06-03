@@ -33,6 +33,7 @@ import {
 	verifyHeader,
 	verifyDetail,
 	setAS400Data,
+	setCostTatble,
 } from "../inquiry/index.js";
 import {
 	bindDeleteLine,
@@ -74,7 +75,7 @@ $(document).ready(async () => {
 			inq = inqs[0];
 			if (inqs[0].INQ_STATUS >= 10) {
 				inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
-				inqs[0].INQ_MAR_PIC = $("#user-login").attr("empno");
+				//inqs[0].INQ_MAR_PIC = $("#user-login").attr("empno");
 				mode = "revise";
 			}
 			details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
@@ -261,45 +262,55 @@ $(document).on("click", "#send-de", async function (e) {
 //008: Save and send to AS400
 $(document).on("click", "#send-bm", async function (e) {
 	e.preventDefault();
-	let isAmec = false;
-	let isMelina = false;
-	let isUnreply = false;
-	let status = 30;
-	let inquiry;
-	const details = table
-		.rows()
-		.data()
-		.toArray()
-		.map((detail) => {
-			if (detail.INQD_SUPPLIER == "AMEC") isAmec = true;
-			if (detail.INQD_SUPPLIER == "MELINA") isMelina = true;
-			if (detail.INQD_UNREPLY) isUnreply = true;
-			return detail;
-		});
+	try {
+		let isAmec = false;
+		let isMelina = false;
+		let isUnreply = false;
+		let status = 30;
+		let inquiry;
+		const details = table
+			.rows()
+			.data()
+			.toArray()
+			.map((detail) => {
+				if (detail.INQD_SUPPLIER == "AMEC") isAmec = true;
+				if (detail.INQD_SUPPLIER == "MELINA") isMelina = true;
+				if (detail.INQD_UNREPLY) isUnreply = true;
+				return detail;
+			});
 
-	if (!isAmec && !isMelina) {
-		inquiry = await createPath({
-			level: 2,
-			status: 50,
-			obj: $(this),
-		});
-	} else if (!isAmec && isMelina) {
-		inquiry = await createPath({
-			level: 2,
-			status: 52,
-			obj: $(this),
-		});
-	} else {
-		inquiry = await createPath({
-			level: 2,
-			status: 30,
-			obj: $(this),
-		});
-		await setAS400Data(inquiry);
+		if (!isAmec && !isMelina) {
+			inquiry = await createPath({
+				level: 2,
+				status: 50,
+				obj: $(this),
+			});
+		} else if (!isAmec && isMelina) {
+			inquiry = await createPath({
+				level: 2,
+				status: 52,
+				obj: $(this),
+			});
+		} else {
+			inquiry = await createPath({
+				level: 2,
+				status: 30,
+				obj: $(this),
+			});
+			await setAS400Data(inquiry);
+		}
+		if (inquiry) {
+			// window.location.replace(
+			// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+			// );
+			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
+		} else {
+			await showMessage(`Something went wrong while creating inquiry.`);
+		}
+	} catch (error) {
+		console.log(error);
+		await showMessage(error.message || `Something went wrong.`);
 	}
-	window.location.replace(
-		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-	);
 });
 
 async function createPath(opt) {
@@ -381,17 +392,22 @@ async function createPath(opt) {
 //012: Update and send to design
 $(document).on("click", "#update-de", async function (e) {
 	e.preventDefault();
-	if ($(this).hasClass("revise") && $("#remark").val() == "") {
-		await showMessage("Please enter remark for revise inquiry.");
-		$("#remark").focus();
-		return;
-	}
+	try {
+		if ($(this).hasClass("revise") && $("#remark").val() == "") {
+			await showMessage("Please enter remark for revise inquiry.");
+			$("#remark").focus();
+			return;
+		}
 
-	const inquiry = await updatePath({ level: 1, status: 2, obj: $(this) });
-	await updateGroups(inquiry);
-	window.location.replace(
-		`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-	);
+		const inquiry = await updatePath({ level: 1, status: 2, obj: $(this) });
+		if (inquiry) {
+			await updateGroups(inquiry);
+			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
+		}
+	} catch (error) {
+		console.log(error);
+		await showMessage(error.message || `Something went wrong.`);
+	}
 });
 
 //013: Update and send to AS400
@@ -440,9 +456,10 @@ $(document).on("click", "#update-bm", async function (e) {
 			});
 			await setAS400Data(inquiry);
 		}
-		window.location.replace(
-			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+		// );
+		window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -559,7 +576,7 @@ async function setLogsData(action) {
 		INQ_REV: $("#revision").val(),
 		INQH_DATE: new Date(),
 		INQH_USER: $("#user-login").attr("empno"),
-		INQH_ACTION: action,
+		INQH_ACTION: 3,
 		INQH_REMARK: $("#remark").val(),
 	};
 }

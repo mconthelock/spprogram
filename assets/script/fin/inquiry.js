@@ -10,6 +10,7 @@ import {
 	getInquiry,
 	updateInquiryHeader,
 	updateInquiryTimeline,
+	createInquiryHistory,
 	getTemplate,
 	exportExcel,
 } from "../service/index.js";
@@ -30,10 +31,14 @@ $(async function () {
 		};
 		let data = await getInquiry(q);
 		data = await dataFilter(data, pageid);
-		const opt = await tableInquiryFinOption(data, {
-			columnSelect: { status: true, class: "w-[50px]! px-[10px]!" },
-		});
-		table = await createTable(opt);
+		const opt = await tableInquiryFinOption(data);
+		const sel = {
+			columnSelect: {
+				status: true,
+				class: "w-[50px]! max-w-[50px]! px-[10px]!",
+			},
+		};
+		table = await createTable(opt, pageid == "3" ? sel : {});
 		localStorage.setItem("spinquiryquery", JSON.stringify(q));
 	} catch (error) {
 		console.log(error);
@@ -139,4 +144,52 @@ $(document).on("click", "#export1", async function (e) {
 	} finally {
 		await activatedBtnRow($(this), false);
 	}
+});
+
+$(document).on("click", "#approveAll", async function (e) {
+	e.preventDefault();
+	const action = $(this).attr("data-action");
+	try {
+		const data = table
+			.rows()
+			.data()
+			.toArray()
+			.filter((row) => row.selected === true);
+		if (data.length === 0) {
+			await showMessage("Please select at least one item.");
+			return;
+		}
+		await activatedBtnRow($(this));
+		for (const row of data) {
+			await updateInquiryHeader(
+				{ INQ_STATUS: action, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
+				row.INQ_ID,
+			);
+			let datatimeline = {
+				INQ_NO: row.INQ_NO,
+				INQ_REV: row.INQ_REV,
+				FMN_CONFIRM: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			};
+			await updateInquiryTimeline(datatimeline);
+			const history = {
+				INQ_NO: row.INQ_NO,
+				INQ_REV: row.INQ_REV,
+				INQH_DATE: new Date(),
+				INQH_USER: $("#user-login").attr("empno"),
+				INQH_ACTION: action,
+				INQH_LATEST: 1,
+			};
+			await createInquiryHistory(history);
+		}
+		window.location.reload();
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+		await activatedBtnRow($(this), false);
+	}
+});
+
+$(document).on("click", "#rejectAll", function () {
+	const checked = $(this).is(":checked");
+	$(".select-row").prop("checked", checked).trigger("change");
 });

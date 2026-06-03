@@ -30,6 +30,10 @@ import {
 	setAS400Variable,
 	addAS400Data,
 	getStatus,
+	currentPeriod,
+	getItems,
+	updateInquiryDetail,
+	findPriceRatio,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -102,7 +106,7 @@ export async function setupCard(data) {
 
 export async function createFormCard(cardData, data = {}) {
 	const card = document.createElement("div");
-	card.className = "bg-white rounded-lg shadow-lg overflow-hidden p-4";
+	card.className = `bg-white rounded-lg shadow-lg overflow-hidden p-4 border border-slate-300`;
 	card.setAttribute("id", cardData.id);
 	const header = document.createElement("div");
 	header.className = "divider divider-start divider-primary";
@@ -240,8 +244,6 @@ export async function createFieldInput(field) {
 			break;
 
 		case "select":
-			console.log(field);
-
 			let options = [];
 			let optStr = "<option value=''></option>";
 			if (field.source) {
@@ -267,7 +269,10 @@ export async function createFieldInput(field) {
 			inputContainer.innerHTML = selectInput;
 			elementToListen = inputContainer.querySelector(`#${field.id}`);
 			setTimeout(async () => {
-				const avt = field.class.includes("displayname") ? true : false;
+				let avt = false;
+				if (field.class && field.class.includes("show-avatar")) {
+					avt = true;
+				}
 				const jQueryElement = $(`#${field.id}`);
 				await setSelect2({
 					element: `#${field.id}`,
@@ -278,6 +283,7 @@ export async function createFieldInput(field) {
 						return opt.id;
 					}),
 				});
+				jQueryElement.val(field.value).trigger("change");
 				jQueryElement.removeAttr("aria-hidden");
 				if (field.onChange && events[field.onChange]) {
 					jQueryElement.on("change", events[field.onChange]);
@@ -1023,13 +1029,93 @@ export async function setAS400Data(inq) {
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
 	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
-	// await addAS400Data({
-	// 	header: q601kp1,
-	// 	detail: q601kp2,
-	// 	variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
-	// 	inquiryNo: inq.INQ_NO,
-	// });
+	await addAS400Data({
+		header: q601kp1,
+		detail: q601kp2,
+		variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
+		inquiryNo: inq.INQ_NO,
+	});
+	await setCostTatble(inq);
 	return;
+}
+
+export async function setCostTatble(inq) {
+	const period = await currentPeriod();
+	const ratio = await findPriceRatio({
+		TRADER: inq.INQ_TRADER,
+		SUPPLIER: "AMEC",
+		QUOTATION: inq.INQ_QUOTATION_TYPE,
+	});
+	let items = await getItems({ CATEGORY: 99, ITEM_STATUS: 1 });
+	items = items.map((d) => {
+		// const currentPeriod = period.current;
+		const currentPeriod = { period: 1, year: 2024 };
+		const current = d.prices.filter(
+			(p) =>
+				p.FYYEAR == currentPeriod.year &&
+				parseInt(p.PERIOD) == currentPeriod.period,
+		);
+		return {
+			...d,
+			FCCOST: current.length > 0 ? current[0].FCCOST : 0,
+			FCBASE: current.length > 0 ? current[0].FCBASE : 0,
+			TCCOST: current.length > 0 ? current[0].TCCOST : 0,
+		};
+	});
+	// items = items.filter((item) => item.FCCOST > 0);
+	// console.log(items);
+	const updatedDetails = inq.details.map(async (detail) => {
+		if (detail.INQD_SUPPLIER != "AMEC") return;
+		const item = items.find((i) => {
+			if (
+				i.ITEM_NO == detail.INQD_ITEM &&
+				i.ITEM_DWG.replace(/ /g, "") ==
+					detail.INQD_DRAWING.replace(/ /g, "")
+			) {
+				if (i.ITEM_VARIABLE == null) {
+					const values = {
+						INQD_ID: detail.INQD_ID,
+						INQD_FC_COST: i.FCCOST,
+						INQD_FC_BASE: i.FCBASE,
+						INQD_TC_COST: i.TCCOST,
+						INQD_TC_BASE: ratio[0].FORMULA,
+						INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
+						ITEMID: i.ITEM_ID,
+					};
+					updateInquiryDetail(values);
+				} else {
+					//Compare variable if exist
+					if (detail.INQD_VARIABLE != null) {
+						const inqvar = validateVariable(detail.INQD_VARIABLE);
+						const itemvar = validateVariable(i.ITEM_VARIABLE);
+						const keysMatch =
+							Object.keys(inqvar.parsedData).length ===
+								Object.keys(itemvar.parsedData).length &&
+							Object.keys(inqvar.parsedData).every(
+								(key) =>
+									itemvar.parsedData.hasOwnProperty(key) &&
+									inqvar.parsedData[key] ===
+										itemvar.parsedData[key],
+							);
+						if (keysMatch) {
+							const values = {
+								INQD_ID: detail.INQD_ID,
+								INQD_FC_COST: i.FCCOST,
+								INQD_FC_BASE: i.FCBASE,
+								INQD_TC_COST: i.TCCOST,
+								INQD_TC_BASE: ratio[0].FORMULA,
+								INQD_UNIT_PRICE: Math.ceil(
+									i.TCCOST * ratio[0].FORMULA,
+								),
+								ITEMID: i.ITEM_ID,
+							};
+							updateInquiryDetail(values);
+						}
+					}
+				}
+			}
+		});
+	});
 }
 
 export async function finalStatus(details) {

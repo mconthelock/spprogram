@@ -16,6 +16,7 @@ import {
 	verifyHeader,
 	verifyDetail,
 	finalStatus,
+	setAS400Data,
 } from "../inquiry/index.js";
 import {
 	getInquiry,

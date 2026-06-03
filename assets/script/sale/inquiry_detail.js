@@ -15,6 +15,7 @@ import {
 	setupSaleTableDetail,
 	verifyHeader,
 	verifyDetail,
+	setAS400Data,
 } from "../inquiry/index.js";
 import {
 	getInquiry,
@@ -551,23 +552,4 @@ async function setLogsData(action, adjust = false) {
 		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),
 	};
-}
-
-async function setAS400Data(inq) {
-	let isAMEC = false;
-	inq.details.map((dt) => {
-		if (dt.INQD_SUPPLIER == "AMEC" && dt.INQD_LATEST == 1) isAMEC = true;
-	});
-	if (!isAMEC) return;
-
-	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
-	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
-	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
-	// await addAS400Data({
-	// 	header: q601kp1,
-	// 	detail: q601kp2,
-	// 	variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
-	// 	inquiryNo: inq.INQ_NO,
-	// });
-	return;
 }

@@ -337,7 +337,7 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 		});
 		if (!isDraft)
 			window.location.replace(
-				`${process.env.APP_ENV}/fin/inquiry/show/${inquiry.INQ_ID}/${pageid}/`,
+				`${process.env.APP_ENV}/fin/inquiry/index/${pageid}/`,
 			);
 		else {
 			await activatedBtnRow($(this), false);

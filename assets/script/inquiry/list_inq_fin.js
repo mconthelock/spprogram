@@ -19,7 +19,6 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 		[1, "desc"],
 	];
 	opt.columns = [
-		{ data: "INQ_ID", className: "" },
 		{ data: "UPDATE_AT", className: "hidden" },
 		{
 			data: "INQ_DATE",
@@ -162,23 +161,43 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 		},
 	];
 
-	opt.createdRow = async function (row, data) {
-		if (data.timeline && data.timeline.FIN_USER != null) {
-			const user = await displayEmpInfo(data.timeline.FIN_USER);
-			$(row)
-				.find(`#fin-${data.INQ_ID}`)
-				.text(user ? displayname(user.SNAME).fname : "");
-		}
-
-		if (data.timeline && data.timeline.FCK_USER != null) {
-			const checker = await displayEmpInfo(data.timeline.FCK_USER);
-			$(row)
-				.find(`#checker-${data.INQ_ID}`)
-				.text(checker ? displayname(checker.SNAME).fname : "");
-		}
+	opt.drawCallback = async function () {
+		const api = this.api();
+		api.rows({ page: "current" }).every(async function () {
+			const data = this.data();
+			const row = this.node();
+			if (data.timeline && data.timeline.FIN_USER != null) {
+				const user = await displayEmpInfo(data.timeline.FIN_USER);
+				$(row)
+					.find(`#fin-${data.INQ_ID}`)
+					.text(user ? displayname(user.SNAME).fname : "");
+			}
+			if (data.timeline && data.timeline.FCK_USER != null) {
+				const checker = await displayEmpInfo(data.timeline.FCK_USER);
+				$(row)
+					.find(`#checker-${data.INQ_ID}`)
+					.text(checker ? displayname(checker.SNAME).fname : "");
+			}
+		});
 	};
 
 	opt.initComplete = async function () {
+		const approveAll = await createBtn({
+			id: "approveAll",
+			title: "Approve All",
+			icon: "fi fi-br-check text-xl",
+			className: `btn-primary text-white hover:shadow-lg`,
+			other: "data-action='45'",
+		});
+
+		const rejectAll = await createBtn({
+			id: "rejectAll",
+			title: "Reject All",
+			icon: "fi fi-ts-circle-xmark text-xl",
+			className: `btn-error text-white hover:shadow-lg`,
+			other: "data-action='42'",
+		});
+
 		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Inquiry",
@@ -192,9 +211,15 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 			icon: "fi fi fi-rr-undo text-xl",
 			className: `btn-accent btn-outline text-accent hover:shadow-lg hover:text-white`,
 		});
-		$(".table-info").append(
-			`<div class="flex gap-2 btn-container">${export1}${extopt.back === true ? back : ""}</div>`,
-		);
+
+		if (pageid == "3")
+			$(".table-info").append(
+				`<div class="flex gap-2 btn-container">${approveAll}${rejectAll}${export1}${extopt.back === true ? back : ""}</div>`,
+			);
+		else
+			$(".table-info").append(
+				`<div class="flex gap-2 btn-container">${export1}${extopt.back === true ? back : ""}</div>`,
+			);
 		$("#datatable_loading").addClass("hidden");
 		await this.api().columns.adjust();
 	};

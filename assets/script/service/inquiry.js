@@ -191,6 +191,23 @@ export const createInquiryDetail = async (data) => {
 	});
 };
 
+export const updateInquiryDetail = async (data) => {
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: `${process.env.APP_API}/sp/detail/update/`,
+			type: "POST",
+			dataType: "json",
+			data: data,
+			success: function (response) {
+				resolve(response);
+			},
+			error: function (error) {
+				reject(error);
+			},
+		});
+	});
+};
+
 //History
 export const getInquiryHistory = async (id) => {
 	return new Promise((resolve, reject) => {
