@@ -35,7 +35,7 @@ export async function setupSaleTableDetail(data = []) {
 
 	const renderSupplier = (data, id) => {
 		const sup = ["", "AMEC", "MELINA", "LOCAL"];
-		let selector = `<select class="select select-sm w-25! border-none rounded-none bg-transparent! supplier">`;
+		let selector = `<select class="select select-sm w-25!  supplier">`;
 		sup.forEach((el) => {
 			selector += `<option class="bg-white! rounded-none" value="${el}" ${el == data ? "selected" : ""}>${el}</option>`;
 		});
@@ -57,7 +57,7 @@ export async function setupSaleTableDetail(data = []) {
 	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.columns = [
 		{
-			data: "INQD_RUNNO",
+			data: "INQD_SEQ",
 			className: "hidden",
 		},
 		{

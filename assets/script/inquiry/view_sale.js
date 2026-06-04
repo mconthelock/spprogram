@@ -55,7 +55,7 @@ export async function setupSaleViewDetail(data = []) {
 	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.columns = [
 		{
-			data: "INQD_RUNNO",
+			data: "INQD_SEQ",
 			className: "hidden",
 		},
 		{
@@ -126,6 +126,19 @@ export async function setupSaleViewDetail(data = []) {
 					return data == null
 						? ""
 						: `<i class="fi fi-rr-circle-xmark text-xl text-red-500 justify-center!"></i>`;
+				}
+				return data;
+			},
+		},
+		{
+			data: "INQD_DE",
+			title: `<div class="tooltip  tooltip-bottom" data-tip="Forward to DE"><i class="fi fi-sr-redo text-xl"></i></div>`,
+			className: "text-center!",
+			render: function (data, type, row, meta) {
+				if (type === "display") {
+					return data == null
+						? ""
+						: `<span class="text-lg">&#10004;</span>`;
 				}
 				return data;
 			},

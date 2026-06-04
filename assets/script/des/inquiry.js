@@ -39,15 +39,17 @@ async function query() {
 		const desgroup = des.find((d) => d.DES_USER == user).DES_GROUP;
 		const data = await getInquiry({
 			INQ_TYPE: "SP",
-			INQ_STATUS: ">= 11",
+			INQ_STATUS: "< 29",
 			IS_GROUP: 1,
 			IS_TIMELINE: 1,
 		});
+		console.log(data);
+
 		let result = [];
 		switch (pageid) {
 			case "1":
 				result = data.filter((d) => {
-					if (d.INQ_STATUS > 30) return false;
+					if (d.INQ_STATUS < 11) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup && g.INQG_ASG_DATE == null,
@@ -56,11 +58,11 @@ async function query() {
 				break;
 			case "2":
 				result = data.filter((d) => {
-					if (d.INQ_STATUS > 30) return false;
+					if (d.INQ_STATUS < 11) return false;
 					return d.inqgroup.some(
 						(g) =>
 							g.INQG_GROUP == desgroup &&
-							g.INQG_STATUS < 24 &&
+							// g.INQG_STATUS < 24 &&
 							g.INQG_ASG_DATE != null &&
 							g.INQG_DES_DATE == null &&
 							g.INQG_DES == user,

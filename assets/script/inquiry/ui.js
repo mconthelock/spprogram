@@ -591,8 +591,13 @@ $(document).on("click", "#save-reason", async function (e) {
 			return;
 		}
 		const groupcode = (await currentUser()).group;
+		console.log(groupcode);
+
 		const marremark = groupcode == "MAR" ? remark : null;
-		const deremark = groupcode != "MAR" ? remark : null;
+		const saleremark =
+			groupcode == "SLG" || groupcode == "SLE" ? remark : null;
+		const deremark =
+			groupcode == "LDR" || groupcode == "DES" ? remark : null;
 		const target = $("#reason-target").val();
 		const row = table.row(target);
 		const data = row.data();
@@ -601,8 +606,10 @@ $(document).on("click", "#save-reason", async function (e) {
 			INQD_UNREPLY: selected.val(),
 			INQD_MAR_REMARK:
 				marremark == null ? data.INQD_MAR_REMARK : marremark,
+			INQD_SALE_REMARK:
+				saleremark == null ? data.INQD_SALE_REMARK : saleremark,
 			INQD_DES_REMARK: deremark == null ? data.INQD_DES_REMARK : deremark,
-			INQD_SUPPLIER: "N/A",
+			INQD_SUPPLIER: null,
 		};
 		table.row(target).data(newData);
 		setSelect2({ allowClear: false });
