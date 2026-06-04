@@ -176,14 +176,14 @@ $(document).on("click", "#assign-pic", async function (e) {
 		});
 		const group = {
 			data: {
-				INQG_ASG: user.empno,
-				INQG_DES: $("#sale-incharge").val(),
-				INQG_CHK: $("#sale-incharge").val(),
-				INQG_CLASS: $("#des-class").val(),
-				INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_DES_DATE: null,
-				INQG_CHK_DATE: null,
-				INQG_STATUS: 21,
+				// INQG_ASG: user.empno,
+				// INQG_DES: $("#sale-incharge").val(),
+				// INQG_CHK: $("#sale-incharge").val(),
+				// INQG_CLASS: $("#des-class").val(),
+				// INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				// INQG_DES_DATE: null,
+				// INQG_CHK_DATE: null,
+				INQG_STATUS: 29,
 			},
 			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
 		};
@@ -191,9 +191,10 @@ $(document).on("click", "#assign-pic", async function (e) {
 		await mailToSaleEngineer(inquiry);
 		const logs = await setLogsData(10);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
-		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		window.location.replace(`${process.env.APP_ENV}/se/inquiry/`);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		// );
 	} catch (error) {
 		// await activatedBtnRow($(this), false);
 		await showMessage(error.message || `Something went wrong.`);
@@ -232,7 +233,6 @@ $(document).on("click", "#forward-de", async function (e) {
 			obj: $(this),
 		});
 		// return;
-
 		const group = {
 			data: {
 				INQG_ASG: null,
@@ -242,7 +242,7 @@ $(document).on("click", "#forward-de", async function (e) {
 				INQG_ASG_DATE: null,
 				INQG_DES_DATE: null,
 				INQG_CHK_DATE: null,
-				INQG_STATUS: 1,
+				INQG_STATUS: 12,
 			},
 			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
 		};
@@ -250,9 +250,10 @@ $(document).on("click", "#forward-de", async function (e) {
 		const logs = await setLogsData(12);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		await mailToDEGroupLeader(inquiry);
-		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		window.location.replace(`${process.env.APP_ENV}/se/inquiry/`);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		// );
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow($(this), false);
@@ -287,23 +288,24 @@ $(document).on("click", "#send-bm", async function (e) {
 			await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 			const group = {
 				data: {
-					INQG_ASG: user.empno,
+					/*INQG_ASG: user.empno,
 					INQG_DES: user.empno,
 					INQG_CHK: user.empno,
 					INQG_CLASS: $("#des-class").val(),
 					INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 					INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-					INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-					INQG_STATUS: 9,
+					INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),*/
+					INQG_STATUS: 29,
 				},
 				condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
 			};
 			await updateInquiryGroup(group);
 			await setAS400Data(inquiry);
 			await mailToPKC(inquiry);
-			window.location.replace(
-				`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}/`,
-			);
+			// window.location.replace(
+			// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}/`,
+			// );
+			window.location.replace(`${process.env.APP_ENV}/se/inquiry/`);
 		} else {
 			await activatedBtnRow($(this), false);
 			await showMessage(`Failed to update data inquiry.`);
@@ -348,11 +350,11 @@ $(document).on("click", "#send-confirm", async function (e) {
 		$("#sale-confirm").val(new Date());
 		const group = {
 			data: {
-				INQG_DES: user.empno,
-				INQG_CHK: user.empno,
-				INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_STATUS: 9,
+				//INQG_DES: user.empno,
+				//INQG_CHK: user.empno,
+				//INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				//INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				INQG_STATUS: 29,
 			},
 			condition: { INQ_ID: $("#inquiry-id").val() },
 		};
@@ -402,9 +404,10 @@ $(document).on("click", "#send-confirm", async function (e) {
 		}
 		const logs = await setLogsData(11);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
-		window.location.replace(
-			`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
+		// );
+		window.location.replace(`${process.env.APP_ENV}/se/inquiry/index/2/`);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -424,7 +427,7 @@ async function forwardInquiry(fwdata) {
 				INQG_ASG_DATE: null,
 				INQG_DES_DATE: null,
 				INQG_CHK_DATE: null,
-				INQG_STATUS: 1,
+				INQG_STATUS: 12,
 			},
 			condition: {
 				INQ_ID: $("#inquiry-id").val(),

@@ -44,7 +44,9 @@ async function query() {
 	let data = await getInquiry(q);
 	if (pageid == "1") {
 		$("#page-title").text("Assign Sale Engineer");
-		data = data.filter((item) => item.INQ_STATUS < 10);
+		data = data.filter(
+			(item) => item.INQ_STATUS > 1 && item.INQ_STATUS < 4,
+		);
 	} else {
 		$("#page-title").text("Declare Inquiry List");
 		const user = $("#user-login").attr("empno");

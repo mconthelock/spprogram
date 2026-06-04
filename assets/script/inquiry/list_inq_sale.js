@@ -7,12 +7,7 @@ import { tableOpt } from "../utils.js";
 
 export async function tableInquirySaleOption(data, extopt = {}) {
 	const renderMark = (data) => {
-		const color =
-			data == 29
-				? "text-gray-400"
-				: data >= 26
-					? "text-primary"
-					: "text-secondary";
+		let color = data >= 28 ? "text-green-400" : "text-secondary";
 		return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 	};
 	const pageid = $("#pageid").val();

@@ -145,8 +145,7 @@ async function setupButton(revise, usergroup) {
 		className: `btn-outline btn-neutral text-neutral hover:text-white hover:bg-neutral/70`,
 	});
 
-	console.log(usergroup, $("#groupstatus").val());
-
+	// console.log(usergroup, $("#groupstatus").val());
 	if (usergroup == "LDR" && $("#groupstatus").val() < 21)
 		$(".btn-container").append(assign, back);
 	else if (usergroup == "LDR" && $("#groupstatus").val() >= 24)
