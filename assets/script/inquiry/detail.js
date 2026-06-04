@@ -283,7 +283,9 @@ export async function createFieldInput(field) {
 						return opt.id;
 					}),
 				});
-				jQueryElement.val(field.value).trigger("change");
+				if (field.value) {
+					jQueryElement.val(field.value).trigger("change");
+				}
 				jQueryElement.removeAttr("aria-hidden");
 				if (field.onChange && events[field.onChange]) {
 					jQueryElement.on("change", events[field.onChange]);
@@ -1048,8 +1050,8 @@ export async function setCostTatble(inq) {
 	});
 	let items = await getItems({ CATEGORY: 99, ITEM_STATUS: 1 });
 	items = items.map((d) => {
-		// const currentPeriod = period.current;
-		const currentPeriod = { period: 1, year: 2024 };
+		const currentPeriod = period.current;
+		//const currentPeriod = { period: 1, year: 2024 };
 		const current = d.prices.filter(
 			(p) =>
 				p.FYYEAR == currentPeriod.year &&
@@ -1062,8 +1064,7 @@ export async function setCostTatble(inq) {
 			TCCOST: current.length > 0 ? current[0].TCCOST : 0,
 		};
 	});
-	// items = items.filter((item) => item.FCCOST > 0);
-	// console.log(items);
+	items = items.filter((item) => item.FCCOST > 0);
 	const updatedDetails = inq.details.map(async (detail) => {
 		if (detail.INQD_SUPPLIER != "AMEC") return;
 		const item = items.find((i) => {
