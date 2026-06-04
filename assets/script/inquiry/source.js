@@ -128,8 +128,7 @@ export const init = {
 
 	getMarPerson: async function () {
 		const data = await srv.getAppUsers();
-		console.log(data);
-
+		// console.log(data);
 		const result = data.filter(
 			(x) =>
 				["MAR"].includes(x.appsgroups.GROUP_CODE) &&
