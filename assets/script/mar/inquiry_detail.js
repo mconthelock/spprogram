@@ -75,7 +75,7 @@ $(document).ready(async () => {
 			inq = inqs[0];
 			if (inqs[0].INQ_STATUS >= 10) {
 				inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
-				//inqs[0].INQ_MAR_PIC = $("#user-login").attr("empno");
+				inqs[0].INQ_MAR_PIC = $("#user-login").attr("empno");
 				mode = "revise";
 			}
 			details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
@@ -367,7 +367,7 @@ async function createPath(opt) {
 		await showLoader();
 		await activatedBtnRow(opt.obj);
 		const timelinedata = await setTimelineData(opt.status);
-		const history = await setLogsData(opt.status);
+		const history = await setLogsData(2);
 		const fomdata = { header, details, timelinedata, history };
 		const inquiry = await createInquiry(fomdata);
 
@@ -533,7 +533,7 @@ async function updatePath(opt) {
 		}
 
 		const timelinedata = await setTimelineData();
-		const history = await setLogsData(opt.status);
+		const history = await setLogsData(3);
 		const fomdata = {
 			header,
 			details,
@@ -576,7 +576,7 @@ async function setLogsData(action) {
 		INQ_REV: $("#revision").val(),
 		INQH_DATE: new Date(),
 		INQH_USER: $("#user-login").attr("empno"),
-		INQH_ACTION: 3,
+		INQH_ACTION: action,
 		INQH_REMARK: $("#remark").val(),
 	};
 }

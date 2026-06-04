@@ -128,11 +128,14 @@ export const init = {
 
 	getMarPerson: async function () {
 		const data = await srv.getAppUsers();
+		console.log(data);
+
 		const result = data.filter(
 			(x) =>
 				["MAR"].includes(x.appsgroups.GROUP_CODE) &&
-				x.data.CSTATUS == "1",
+				x.employee.CSTATUS == "1",
 		);
+
 		let options = result.map((el) => {
 			const emp = el.data;
 			const name = emp.SNAME.replace(/  /g, " ").toLowerCase();
@@ -153,7 +156,7 @@ export const init = {
 		const result = data.filter(
 			(x) =>
 				["SLG", "SLE"].includes(x.appsgroups.GROUP_CODE) &&
-				x.data.CSTATUS == "1",
+				x.employee.CSTATUS == "1",
 		);
 		let options = result.map((sale) => {
 			const group = sale.appsgroups.GROUP_CODE;
