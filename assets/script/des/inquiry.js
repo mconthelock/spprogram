@@ -43,19 +43,19 @@ async function query() {
 			IS_GROUP: 1,
 			IS_TIMELINE: 1,
 		});
-		console.log(desgroup);
+		// console.log(desgroup);
 		let result = [];
 		switch (pageid) {
 			case "1":
 				result = data.filter((d) => {
 					if (d.INQ_STATUS < 11) return false;
 					return d.inqgroup.some((g) => {
-						console.log(
-							g.INQG_DES,
-							g.INQG_GROUP,
-							g.INQG_STATUS,
-							g.INQG_ASG_DATE,
-						);
+						// console.log(
+						// 	g.INQG_DES,
+						// 	g.INQG_GROUP,
+						// 	g.INQG_STATUS,
+						// 	g.INQG_ASG_DATE,
+						// );
 
 						return (
 							g.INQG_GROUP == desgroup &&
@@ -64,8 +64,7 @@ async function query() {
 						);
 					});
 				});
-				console.log(result);
-
+				// console.log(result);
 				break;
 			case "2":
 				result = data.filter((d) => {
