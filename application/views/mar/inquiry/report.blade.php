@@ -109,13 +109,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.GE_QUO_DATE" />
+                                name="quotation.START_QUO_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.LE_QUO_DATE" />
+                                name="quotation.END_QUO_DATE" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>
@@ -126,13 +126,13 @@
                     <div class="flex w-full items-center">
                         <label class="input">
                             <input type="text" class="grow fdate sdate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.GE_QUO_VALIDITY" />
+                                name="quotation.START_QUO_VALIDITY" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                         <div class="divider divider-horizontal"><i class="fi fi-ts-arrow-right text-2xl"></i></div>
                         <label class="input">
                             <input type="text" class="grow fdate edate-report" placeholder="yyyy-mm-dd"
-                                name="quotation.LE_QUO_VALIDITY" />
+                                name="quotation.END_QUO_VALIDITY" />
                             <i class="fi fi-tr-calendar-clock text-xl"></i>
                         </label>
                     </div>

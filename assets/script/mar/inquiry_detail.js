@@ -542,6 +542,9 @@ async function updatePath(opt) {
 			timelinedata,
 			history,
 		};
+
+		//console.log(fomdata);
+
 		const inquiry = await updateInquiry(fomdata);
 		//Attachments
 		if (state.selectedFilesMap.size > 0) {
