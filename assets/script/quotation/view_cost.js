@@ -127,7 +127,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_TC_BASE",
 			title: "%TC",
-			className: `w-12 min-w-12 cell-display border-r!`,
+			className: `w-12 min-w-12 cell-display border-r! hidden`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -138,7 +138,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-24 min-w-24 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r! hidden`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -149,7 +149,7 @@ export async function tableViewCostOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-24 min-w-24 cell-display border-r!`,
+			className: `w-24 min-w-24 cell-display border-r! hidden`,
 			render: function (data, type, row) {
 				const price = intVal(data) * intVal(row.INQD_QTY);
 				if (type === "display") {

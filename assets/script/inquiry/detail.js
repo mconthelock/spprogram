@@ -965,19 +965,19 @@ export async function getSearchHeader(formdata) {
 		"timeline.END_SG_CONFIRM",
 		"timeline.END_SE_CONFIRM",
 	];
-	let timelies = {};
+	let timelimes = {};
 	timeline_key.forEach((key) => {
 		if (formdata[key]) {
 			const vkey = key.replace("timeline.", "");
 			if (vkey.startsWith("START_"))
-				timelies = { ...timelies, [vkey]: `>= ${formdata[key]}` };
+				timelimes = { ...timelimes, [vkey]: `>= ${formdata[key]}` };
 			else if (vkey.startsWith("END_"))
-				timelies = { ...timelies, [vkey]: `<= ${formdata[key]}` };
+				timelimes = { ...timelimes, [vkey]: `<= ${formdata[key]}` };
 			delete formdata[key];
 		}
 	});
-	if (Object.keys(timelies).length > 0) {
-		formdata["timeline"] = timelies;
+	if (Object.keys(timelimes).length > 0) {
+		formdata["timeline"] = timelimes;
 		formdata["IS_TIMELINE"] = true;
 	}
 
@@ -1001,8 +1001,30 @@ export async function getSearchHeader(formdata) {
 	if (Object.keys(groups).length > 0) {
 		formdata["inqgroup"] = groups;
 	}
-
 	formdata["IS_GROUP"] = true;
+
+	const quotation_key = [
+		"quotation.START_QUO_DATE",
+		"quotation.END_QUO_DATE",
+		"quotation.START_QUO_VALIDITY",
+		"quotation.END_QUO_VALIDITY",
+	];
+	let quotations = {};
+	quotation_key.forEach((key) => {
+		if (formdata[key]) {
+			const vkey = key.replace("quotation.", "");
+			if (vkey.startsWith("START_"))
+				quotations = { ...quotations, [vkey]: `>= ${formdata[key]}` };
+			else if (vkey.startsWith("END_"))
+				quotations = { ...quotations, [vkey]: `<= ${formdata[key]}` };
+			delete formdata[key];
+		}
+	});
+	if (Object.keys(quotations).length > 0) {
+		formdata["quotation"] = quotations;
+		formdata["IS_QUOTATION"] = true;
+	}
+
 	return formdata;
 }
 

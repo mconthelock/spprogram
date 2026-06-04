@@ -289,7 +289,8 @@ async function updatePath(opt) {
 		if (!chkheader) return;
 
 		const header = await getFormHeader();
-		const { QUO_DATE, QUO_VALIDITY, QUO_NOTE, ...inqheader } = header;
+		const { QUO_DATE, QUO_VALIDITY, QUO_NOTE, GROUP_STATUS, ...inqheader } =
+			header;
 		inqheader.INQ_STATUS = opt.status;
 		inqheader.UPDATE_BY = $("#user-login").attr("empname");
 		inqheader.UPDATE_AT = new Date();

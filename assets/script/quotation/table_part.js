@@ -94,12 +94,12 @@ export async function tablePartOption(data = []) {
 		{
 			data: "INQD_TC_COST",
 			title: "TC Cost",
-			className: `w-24 min-w-24 border-r! INQD_TC_COST`,
+			className: `w-24 min-w-24 border-r! bg-primary/20 INQD_TC_COST`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					data = data == null ? "" : data;
 					if (row.INQD_SUPPLIER == "MELINA") {
-						return `<input type="text" class="w-full outline-0 text-right input-number inqprice" value="${data}"/></div>`;
+						return `<input type="text" class="w-full! text-end text-md! cell-input input-number inqprice" value="${data}"/></div>`;
 					}
 					return showDigits(data, 0);
 				}
