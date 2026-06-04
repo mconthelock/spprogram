@@ -209,6 +209,7 @@ export async function tablePartOption(data = []) {
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
 			total += intVal(price.amount);
+			console.log(price, total);
 		});
 
 		api.column(11).footer().innerHTML = "";
