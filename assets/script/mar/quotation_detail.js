@@ -70,13 +70,19 @@ async function quotationPart(inq) {
 	let mode = intVal($("#inquiry-mode").val());
 	if (inq[0].INQ_PKC_REQ == 0) $("#with-tab").remove();
 	else {
-		// const freight = await freightData(inq[0].weight);
+		//const freight = await freightData(inq[0].weight);
 		const weightOpt = await tableViewWeightOption(inq[0].weight);
 		const tableWeight = await createTable(weightOpt, {
 			id: "#table-weight",
 		});
 		$("#without-tab").remove();
-		if (mode < 3 && inq[0].timeline.PKC_CONFIRM == null) {
+		if (
+			mode < 3 &&
+			inq[0].timeline.PKC_CONFIRM == null &&
+			inq[0].INQ_STATUS != 50
+		) {
+			console.log("xxx");
+
 			mode = 3;
 		}
 	}
@@ -152,6 +158,8 @@ async function quotationOut(inq) {
 }
 
 async function setupButton(group) {
+	console.log(group);
+
 	const detail = table.rows().data().toArray();
 	const isAmec = detail.filter((dt) => {
 		return dt.INQD_SUPPLIER == "AMEC";
@@ -366,7 +374,7 @@ async function setQuotationData(data) {
 		QUO_INQ: data.INQ_ID,
 		QUO_REV: data.INQ_REV,
 		QUO_DATE: new Date(),
-		QUO_VALIDITY: dayjs().add(60, "day").toDate(),
+		QUO_VALIDITY: $("#user-login").attr("empno"),
 		QUO_PIC: $("#user-login").attr("empno"),
 		QUO_NOTE: $("#remark").val(),
 		QUO_LATEST: 1,

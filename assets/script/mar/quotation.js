@@ -333,7 +333,7 @@ $(document).on("click", ".export-sparq", async function (e) {
 			IS_QUOTATION: true,
 		});
 		const rows = [];
-		console.log(data);
+		// console.log(data);
 
 		const details = data[0].details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		details.forEach((item, i) => {
