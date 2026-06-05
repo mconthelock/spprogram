@@ -301,7 +301,7 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 			// console.log(filteredDetails);
 			const totalPrice = filteredDetails.reduce(
 				(acc, cur) =>
-					acc + intVal(cur.INQD_UNIT_PRICE) * intVal(cur.INQD_QTY),
+					acc + intVal(cur.INQD_TC_COST) * intVal(cur.INQD_QTY),
 				0,
 			);
 			if (totalPrice == 0) {
@@ -323,7 +323,6 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 				return;
 			}
 		}
-
 		const timeline = {
 			FIN_CONFIRM:
 				action == 43 ? new Date() : $("#fin-confirm-date").val(),
