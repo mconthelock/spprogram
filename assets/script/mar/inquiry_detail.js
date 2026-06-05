@@ -513,6 +513,7 @@ async function updatePath(opt) {
 			.map((detail, index) => ({
 				...detail,
 				rowIndex: index,
+				INQD_DE: null,
 			}));
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow(opt.obj);

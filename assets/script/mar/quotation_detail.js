@@ -97,7 +97,7 @@ async function quotationPart(inq) {
 			: dayjs(inq[0].quotation.QUO_DATE).format("YYYY-MM-DD");
 	inq[0].QUO_VALIDITY =
 		inq[0].quotation == null
-			? dayjs().add(60, "day").format("YYYY-MM-DD")
+			? dayjs().add(180, "day").format("YYYY-MM-DD")
 			: dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
 	const card = await setupCard(inq[0]);
 	// Table Detail
@@ -374,7 +374,7 @@ async function setQuotationData(data) {
 		QUO_INQ: data.INQ_ID,
 		QUO_REV: data.INQ_REV,
 		QUO_DATE: new Date(),
-		QUO_VALIDITY: $("#user-login").attr("empno"),
+		QUO_VALIDITY: $("#expiredate").val(),
 		QUO_PIC: $("#user-login").attr("empno"),
 		QUO_NOTE: $("#remark").val(),
 		QUO_LATEST: 1,
