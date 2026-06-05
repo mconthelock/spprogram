@@ -2,7 +2,8 @@ import { showDigits, intVal } from "@amec/webasset/utils";
 import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
-export async function tablePartOption(data = []) {
+export async function tablePartOption(data = [], ratio = {}) {
+	data = await findCostBase(data, ratio);
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.lengthChange = false;
@@ -12,7 +13,7 @@ export async function tablePartOption(data = []) {
 	opt.pageLength = 20;
 	opt.columns = [
 		{
-			data: "INQD_RUNNO",
+			data: "INQD_SEQ",
 			className: "hidden",
 		},
 		{
@@ -110,7 +111,7 @@ export async function tablePartOption(data = []) {
 			data: "INQD_TC_BASE",
 			title: "%TC",
 			className: `w-12 min-w-12 cell-display border-r!`,
-			render: function (data, type) {
+			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 3);
 				}
@@ -209,7 +210,7 @@ export async function tablePartOption(data = []) {
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
 			total += intVal(price.amount);
-			console.log(price, total);
+			// console.log(price, total);
 		});
 
 		api.column(11).footer().innerHTML = "";
@@ -218,4 +219,24 @@ export async function tablePartOption(data = []) {
 		api.column(16).footer().innerHTML = showDigits(total, 0);
 	};
 	return opt;
+}
+
+export async function findCostBase(data, ratio) {
+	console.log(ratio);
+
+	const rows = data.map((el) => {
+		if (intVal(el.INQD_TC_BASE) == 0) {
+			const tcbase =
+				ratio.find((val) => val.SUPPLIER == el.INQD_SUPPLIER)
+					?.FORMULA || 0;
+			const unitprice = Math.ceil(tcbase * el.INQD_TC_COST);
+			el = {
+				...el,
+				INQD_TC_BASE: tcbase ? intVal(tcbase) : 0,
+				INQD_UNIT_PRICE: unitprice,
+			};
+		}
+		return el;
+	});
+	return rows;
 }

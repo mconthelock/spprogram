@@ -30,6 +30,7 @@ import {
 	getCustomer,
 	createQuotation,
 	updateInquiry,
+	findPriceRatio,
 } from "../service/index.js";
 import * as exportquo from "../quotation/export_excel.js";
 
@@ -94,9 +95,13 @@ async function quotationPart(inq) {
 			: dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
 	const card = await setupCard(inq[0]);
 	// Table Detail
+	const ratio = await findPriceRatio({
+		TRADER: inq[0].INQ_TRADER,
+		QUOTATION: inq[0].INQ_QUOTATION_TYPE,
+	});
 	let optDetail;
 	if (mode == 3) optDetail = await tableViewFactOption(inq[0].details);
-	else optDetail = await tablePartOption(inq[0].details);
+	else optDetail = await tablePartOption(inq[0].details, ratio);
 	table = await createTable(optDetail);
 
 	await setDatePicker();
@@ -209,9 +214,12 @@ async function setupButton(group) {
 }
 
 $(document).on("change", ".inqty", async function () {
+	console.log("sss");
 	const qty = $(this).val();
 	const row = table.row($(this).closest("tr")).data();
-	const data = { ...row, INQD_QTY: qty };
+	const tccost = intVal(row.INQD_TC_COST);
+	const unitprice = Math.ceil(tccost * row.INQD_TC_BASE);
+	const data = { ...row, INQD_QTY: qty, INQD_UNIT_PRICE: unitprice };
 	table.row($(this).closest("tr")).data(data).draw();
 });
 
@@ -304,7 +312,7 @@ async function updatePath(opt) {
 				rowIndex: index,
 			}));
 
-		console.log(details);
+		// console.log(details);
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow($(this));
 
@@ -312,8 +320,7 @@ async function updatePath(opt) {
 		let deleteFile = [];
 		const timelinedata = await setTimelineData();
 		const history = await setLogsData(opt.status);
-		console.log(inqheader);
-
+		//console.log(inqheader);
 		const fomdata = {
 			header: inqheader,
 			details,
