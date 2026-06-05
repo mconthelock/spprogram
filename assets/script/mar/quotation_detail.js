@@ -128,7 +128,8 @@ async function quotationFactory(inq) {
 	inq[0].INQ_CUSTRQS = dayjs(inq[0].INQ_CUSTRQS).format("YYYY-MM-DD");
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewFactOption(inq[0].details);
-	const tableDetail = await createTable(optDetail);
+	//const tableDetail =
+	table = await createTable(optDetail);
 	await setupButton(3);
 }
 
@@ -141,7 +142,7 @@ async function quotationOut(inq) {
 
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewOutOption(inq[0].details);
-	const tableDetail = await createTable(optDetail);
+	table = await createTable(optDetail);
 	await setupButton(3);
 }
 
