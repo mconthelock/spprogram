@@ -78,8 +78,7 @@ $(document).on("click", ".process-btn", async function (e) {
 	try {
 		const row = table.row($(this).closest("tr")).data();
 		const timeline = row.timeline;
-		console.log(timeline);
-
+		// console.log(timeline);
 		const user = await currentUser();
 		const group = user.group;
 		let datatimeline = {
