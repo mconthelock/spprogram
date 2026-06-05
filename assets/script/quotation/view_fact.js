@@ -3,6 +3,7 @@ import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
 export async function tableViewFactOption(data = []) {
+	console.log("View Oprion");
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.lengthChange = false;
@@ -55,6 +56,24 @@ export async function tableViewFactOption(data = []) {
 			data: "INQD_UM",
 			title: "U/M",
 			className: `w-16 min-w-16 cell-display border-r!`,
+		},
+		{
+			data: "INQD_SENDPART",
+			title: "2nd",
+			className: `w-12 min-w-12 cell-display border-r! text-center!`,
+		},
+		{
+			data: "INQD_UNREPLY",
+			title: "U/N",
+			className: `w-12 min-w-12 cell-display border-r! text-center!`,
+			render: function (data, type) {
+				if (type === "display") {
+					return data == null
+						? ""
+						: `<i class="fi fi-sr-circle-xmark text-xl text-error justify-center"></i>`;
+				}
+				return data;
+			},
 		},
 		{
 			data: "INQD_TC_COST",
