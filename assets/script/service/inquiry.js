@@ -411,12 +411,13 @@ export async function inquiryValues(data) {
 export async function dataDetails(data) {
 	const result = [];
 	data.forEach((el) => {
-		// console.log(el);
-		const orders = el.orders;
-		const sheet = el.sheet;
-		const details = el.details;
+		console.log(el);
+		const orders = el.orders || [];
+		const sheet = el.sheet || [];
+		const details = el.details || [];
 		const values = details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		values.map(async (dt) => {
+			console.log(dt);
 			const sh = sheet.filter((s) => s.LINENO === dt.INQD_SEQ);
 			const ord =
 				sh.length > 0
@@ -424,9 +425,9 @@ export async function dataDetails(data) {
 					: [];
 			let row = {
 				...dt,
-				...sh[0],
-				...ord[0],
-				...el.pcategory[0],
+				...(sh.length > 0 ? sh[0] : {}),
+				...(ord.length > 0 ? ord[0] : {}),
+				...(el.pcategory ? el.pcategory[0] : {}),
 				INQD_UNITPRICE: Math.ceil(dt.INQD_UNIT_PRICE),
 				INQ_ID: el.INQ_ID,
 				INQ_NO: el.INQ_NO,

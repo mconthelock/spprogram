@@ -295,7 +295,11 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 		const isDraft = $(this).hasClass("btn-draft");
 		if (action == 43) {
 			const details = table.rows().data().toArray();
-			const totalPrice = details.reduce(
+			const filteredDetails = details.filter(
+				(dt) => dt.INQD_SUPPLIER == "AMEC",
+			);
+			// console.log(filteredDetails);
+			const totalPrice = filteredDetails.reduce(
 				(acc, cur) =>
 					acc + intVal(cur.INQD_UNIT_PRICE) * intVal(cur.INQD_QTY),
 				0,
@@ -306,7 +310,7 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 			}
 
 			let valid = true;
-			details.map((ds) => {
+			filteredDetails.map((ds) => {
 				if (ds.INQD_FC_COST == 0 && ds.INQD_FIN_REMARK == null) {
 					valid = false;
 				}
@@ -361,6 +365,10 @@ async function updatePath(opt) {
 			INQ_STATUS: opt.status,
 		};
 		const details = table.rows().data().toArray();
+		const filteredDetails = details.fileter(
+			(dt) => dt.INQD_SUPPLIER == "AMEC",
+		);
+
 		const timelinedata = {
 			...opt.timeline,
 			INQ_NO: $("#inquiry-no").val(),
@@ -376,7 +384,7 @@ async function updatePath(opt) {
 		};
 		const fomdata = {
 			header,
-			details,
+			details: filteredDetails,
 			deleteLine: [],
 			deleteFile: [],
 			timelinedata,
