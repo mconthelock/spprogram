@@ -227,6 +227,7 @@ $(document).on("click", "#send-checked", async function (e) {
 			obj: $(this),
 		});
 		await updateGroups(inquiry, status);
+		// console.log(inquiry);
 		await checkComplete(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
@@ -291,7 +292,6 @@ async function updatePath(option) {
 
 		await activatedBtnRow(option.obj);
 		const inquiry = await updateInquiry(fomdata);
-
 		//Attachment File
 		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
@@ -365,18 +365,30 @@ async function updateGroups(data, status) {
 }
 
 async function checkComplete(inquiry) {
+	const inqs = await getInquiry({
+		INQ_ID: inquiry.INQ_ID,
+		IS_GROUP: true,
+	});
 	let complete = true;
-	for (const item of inquiry.inqgroup) {
+	for (const item of inqs[0].inqgroup) {
+		// console.log(item);
 		if (item.INQG_STATUS < 26) {
 			complete = false;
 		}
 	}
+
+	// console.log(complete);
 	if (complete) {
 		const details = table.rows().data().toArray();
 		const status = await finalStatus(details);
+		// console.log(status);
 		await updateInquiryHeader(
 			{
 				INQ_STATUS: status,
+				INQ_LATEST: 1,
+				INQ_NO: inquiry.INQ_NO,
+				UPDATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				UPDATE_BY: $("#user-login").attr("empname"),
 			},
 			inquiry.INQ_ID,
 		);

@@ -1156,4 +1156,5 @@ export async function finalStatus(details) {
 	if (!isAmec && !isMelina) status = 50;
 	else if (!isAmec && isMelina) status = 52;
 	else status = 30;
+	return status;
 }
