@@ -269,21 +269,24 @@ $(document).on("click", "#import-btn", async function (e) {
 $(document).on("change", "#import-file", async function (e) {
 	const file = e.target.files[0];
 	const excelData = await readInput(file, { startRow: 2, endCol: 3 });
+	const rows = table.rows().data();
 	for (const key in excelData) {
-		const row = table.row(key).data();
-		if (row) {
-			const fccost = excelData[key][1];
-			const remark = excelData[key][2] == "" ? null : excelData[key][2];
-			const tccost = Math.ceil(fccost * row.INQD_FC_BASE);
-			const data = {
-				...row,
-				INQD_FC_COST: fccost,
-				INQD_TC_COST: tccost,
-				INQD_UNIT_PRICE: Math.ceil(tccost * row.INQD_TC_BASE),
-				INQD_FIN_REMARK: remark,
-			};
-			table.row(key).data(data).draw();
-		}
+		rows.map((data, index) => {
+			if (data.INQD_SEQ == excelData[key][0]) {
+				const fccost = excelData[key][1];
+				const remark =
+					excelData[key][2] == "" ? null : excelData[key][2];
+				const tccost = Math.ceil(fccost * data.INQD_FC_BASE);
+				const dataCost = {
+					...data,
+					INQD_FC_COST: fccost,
+					INQD_TC_COST: tccost,
+					INQD_UNIT_PRICE: Math.ceil(tccost * data.INQD_TC_BASE),
+					INQD_FIN_REMARK: remark,
+				};
+				table.row(index).data(dataCost).draw();
+			}
+		});
 	}
 });
 
@@ -338,6 +341,7 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 			status: action,
 			timeline: timeline,
 		});
+		if (!inquiry) throw new Error("Failed to update inquiry");
 		if (!isDraft)
 			window.location.replace(
 				`${process.env.APP_ENV}/fin/inquiry/index/${pageid}/`,
@@ -364,7 +368,7 @@ async function updatePath(opt) {
 			INQ_STATUS: opt.status,
 		};
 		const details = table.rows().data().toArray();
-		const filteredDetails = details.fileter(
+		const filteredDetails = details.filter(
 			(dt) => dt.INQD_SUPPLIER == "AMEC",
 		);
 

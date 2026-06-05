@@ -14,11 +14,11 @@ export async function tableCostOption(data = []) {
 	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"><"table-info flex  flex-none gap-5"i>>`;
 	opt.columns = [
 		{
-			data: "INQD_RUNNO",
+			data: "INQD_SEQ",
 			className: "hidden",
 		},
 		{
-			data: "INQD_SEQ",
+			data: "INQD_RUNNO",
 			title: "No",
 			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
 		},
