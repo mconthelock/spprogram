@@ -272,7 +272,7 @@ $(document).on("change", "#import-file", async function (e) {
 	const rows = table.rows().data();
 	for (const key in excelData) {
 		rows.map((data, index) => {
-			if (data.INQD_SEQ == excelData[key][0]) {
+			if (data.INQD_RUNNO == excelData[key][0]) {
 				const fccost = excelData[key][1];
 				const remark =
 					excelData[key][2] == "" ? null : excelData[key][2];
