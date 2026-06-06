@@ -1,6 +1,7 @@
 @extends('layouts/template')
 
 @section('contents')
+    <input type="text" id="page-report" class="hidden" value="1">
     <h2 class="card-title text-2xl">Inquiry Report</h2>
     <div class="divider m-0"></div>
     <form action="#" id="form-container" class="hidden" autocomplete="off">

@@ -24,6 +24,7 @@ import {
 	setupStockPriceList,
 	verifyHeader,
 	getFormHeader,
+	setAS400Data,
 } from "../inquiry/index.js";
 import {
 	getItemsCustomer,
@@ -293,6 +294,7 @@ $(document).on("click", "#savedata", async function (e) {
 			QUO_PIC: inquiry.INQ_MAR_PIC,
 			QUO_LATEST: 1,
 		});
+		await setAS400Data(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/mar/quotation/detail/${inquiry.INQ_ID}/3/`,
 		);

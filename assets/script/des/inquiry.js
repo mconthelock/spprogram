@@ -107,6 +107,7 @@ async function query() {
 $(document).on("click", ".process-btn", async function (e) {
 	e.preventDefault();
 	try {
+		const pageid = $("#pageid").val();
 		const user = await currentUser();
 		const group = user.group;
 		const row = table.row($(this).closest("tr")).data();
@@ -121,7 +122,7 @@ $(document).on("click", ".process-btn", async function (e) {
 			await updateInquiryTimeline(data);
 		}
 		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/`,
+			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/${pageid}/`,
 		);
 	} catch (error) {
 		console.log(error);

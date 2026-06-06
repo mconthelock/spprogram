@@ -24,8 +24,8 @@ class Inquiry extends MY_Controller {
        $this->views('des/inquiry/report', array('title' => 'Report'));
     }
 
-    public function detail($id){
-        $this->views('des/inquiry/detail', array('title' => 'Inquiry Detail', 'id' => $id));
+    public function detail($id, $pageid = 1){
+        $this->views('des/inquiry/detail', array('title' => 'Inquiry Detail', 'id' => $id, 'pageid' => $pageid));
     }
 
    public function show($id){

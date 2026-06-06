@@ -1,6 +1,7 @@
 @extends('layouts/template')
 
 @section('contents')
+    <input type="text" id="pageid" value="{{ $pageid }}" class="hidden">
     <input type="text" name="inquiry-id" id="inquiry-id" value="{{ $id }}" class="hidden">
     <h2 class="card-title text-2xl">Inquiry Detail</h2>
     <div class="divider m-0"></div>
