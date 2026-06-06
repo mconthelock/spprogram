@@ -8,9 +8,15 @@ import { displayname } from "@amec/webasset/api/amec";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { createBtn, activatedBtn } from "@amec/webasset/components/buttons";
-import { getTemplate, exportExcel, cloneRows } from "../service/excel";
-import { statusColors } from "../inquiry/detail.js";
-import { getInquiry, dataExports, dataDetails } from "../service/inquiry.js";
+import { statusColors, setAS400Data } from "../inquiry/index.js";
+import {
+	getTemplate,
+	exportExcel,
+	cloneRows,
+	getInquiry,
+	dataExports,
+	dataDetails,
+} from "../service/index.js";
 import { initApp, tableOpt } from "../utils.js";
 import * as exportquo from "../quotation/export_excel.js";
 
@@ -219,12 +225,14 @@ async function tableInquiryOption(data) {
 				const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
 				const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
 				const revise = `<a class="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
+				const sendtoAs400 = `<a class="resend-prebm"><i class="fi fi-rr-user-robot text-lg"></i>Re-send to Pre-B/M</a>`;
 				const dropdown = `<div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-xs btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
                         <li>${sparq}</li>
                         <li>${order}</li>
                         <li>${revise}</li>
+                        <li>${sendtoAs400}</li>
                     </ul>
                 </div>`;
 				return `<div class="flex justify-end gap-2">${edit}${view}${excel}${dropdown}</div>`;
@@ -472,6 +480,25 @@ $(document).on("click", ".export-order", async function (e) {
 		await exportExcel(result, template, {
 			filename: `${data[0].INQ_NO}.xlsx`,
 		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await showLoader({ show: false });
+	}
+});
+
+$(document).on("click", ".resend-prebm", async function (e) {
+	e.preventDefault();
+	try {
+		await showLoader();
+		const row = table.row($(this).closest("tr")).data();
+		const id = row.INQ_ID;
+		const data = await getInquiry({
+			INQ_ID: id,
+			IS_DETAILS: true,
+		});
+		await setAS400Data(data[0]);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

@@ -299,6 +299,7 @@ $(document).on("click", "#savedata", async function (e) {
 			`${process.env.APP_ENV}/mar/quotation/detail/${inquiry.INQ_ID}/3/`,
 		);
 	} catch (error) {
+		console.log(error);
 		await activatedBtnRow($(this), false);
 		await showMessage(error.message || `Something went wrong.`);
 	}

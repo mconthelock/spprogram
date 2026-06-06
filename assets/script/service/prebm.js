@@ -18,7 +18,7 @@ export async function setAS400Header(header, MFGNO) {
 	const user = await currentUser();
 	const strc = [
 		{ Q6K101: header.INQ_NO },
-		{ Q6K102: MFGNO.trim().substring(0, 8) },
+		{ Q6K102: MFGNO == null ? "" : MFGNO.trim().substring(0, 8) },
 		{ Q6K103: header.INQ_PRJNO.trim().substring(0, 15) },
 		{ Q6K104: header.INQ_PRDSCH.trim().substring(0, 7) },
 		{ Q6K105: header.INQ_SERIES },
