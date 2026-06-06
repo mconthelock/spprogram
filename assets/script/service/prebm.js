@@ -72,6 +72,9 @@ Q6K226            A= AMEC ,M = MELINA                             1
 export async function setAS400Detail(INQ_NO, details) {
 	const user = await currentUser();
 	const rows = [];
+	details = details.filter(
+		(el) => el.INQD_SUPPLIER == "AMEC" && el.INQD_LATEST == 1,
+	);
 	details.map(async (el, i) => {
 		if (el.INQD_LATEST == 1) {
 			const strc = [

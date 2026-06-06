@@ -123,8 +123,10 @@ $(document).on("click", ".process-btn", async function (e) {
 		// 	};
 		// 	await updateInquiryTimeline(data);
 		// }
+
+		const page = group == "DES" ? "2" : "1";
 		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/`,
+			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/${page}/`,
 		);
 	} catch (error) {
 		console.log(error);
