@@ -349,13 +349,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 		$("#sale-incharge").val(user.empno);
 		$("#sale-confirm").val(new Date());
 		const group = {
-			data: {
-				//INQG_DES: user.empno,
-				//INQG_CHK: user.empno,
-				//INQG_DES_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				//INQG_CHK_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-				INQG_STATUS: 29,
-			},
+			data: { INQG_STATUS: 29 },
 			condition: { INQ_ID: $("#inquiry-id").val() },
 		};
 		await updateInquiryGroup(group);
@@ -397,6 +391,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 					status: 30,
 					obj: $(this),
 				});
+				await setAS400Data(inquiry);
 				await mailToPKC(inquiry);
 				const logs = await setLogsData(30, true);
 				await createInquiryHistory({ ...logs, INQH_LATEST: 1 });

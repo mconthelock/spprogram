@@ -211,11 +211,11 @@ export async function getAmecName(data, param) {
 }
 
 export async function nextWorkingDay(data, param) {
-	let daterange = await await ameccaledar();
+	let daterange = await ameccaledar();
 	const inq_date = dayjs(data.INQ_DATE).format("YYYYMMDD");
-	daterange = daterange.filter(
-		(item) => item.DAYOFF == 0 && item.WORKID >= inq_date,
-	);
+	daterange = daterange.filter((item) => {
+		return item.DAYOFF == 0 && item.WORKID >= inq_date;
+	});
 	let current = 0;
 	for (let i = 0; i < param; i++) {
 		current = daterange[i].WORKID;

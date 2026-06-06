@@ -245,7 +245,7 @@ $(document).on("click", "#send-de", async function (e) {
 			const rowData = table.row(index).data();
 			const updatedData = {
 				...rowData,
-				//INQD_SUPPLIER: "",
+				INQD_DE: null,
 			};
 			table.row(index).data(updatedData);
 		});
