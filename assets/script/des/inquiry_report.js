@@ -105,3 +105,30 @@ $(document).on("click", "#export1", async function (e) {
 		await activatedBtnRow($(this), false);
 	}
 });
+
+$(document).on("click", ".process-btn", async function (e) {
+	e.preventDefault();
+	try {
+		const user = await currentUser();
+		const group = user.group;
+		const row = table.row($(this).closest("tr")).data();
+		// console.log(row);
+		// const timeline = row.timeline;
+		// if (timeline.DE_READ == null) {
+		// 	await activatedBtnRow($(this));
+		// 	const data = {
+		// 		INQ_NO: row.INQ_NO,
+		// 		INQ_REV: row.INQ_REV,
+		// 		DE_READ: new Date(),
+		// 	};
+		// 	await updateInquiryTimeline(data);
+		// }
+		window.location.replace(
+			`${process.env.APP_ENV}/des/inquiry/detail/${row.INQ_ID}/`,
+		);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+		await activatedBtn($(this), false);
+	}
+});

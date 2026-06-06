@@ -46,10 +46,13 @@ $(document).ready(async () => {
 	await showLoader();
 	await initApp();
 	try {
+		const pageid = $("#pageid").val();
+
 		const user = await currentUser();
 		const usrgroup = user.group;
 		const des = await getDesigner();
 		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+
 		const inqs = await getInquiry({
 			INQ_ID: $("#inquiry-id").val(),
 			IS_DETAILS: true,
@@ -60,28 +63,23 @@ $(document).ready(async () => {
 		const group = inqs[0].inqgroup.find(
 			(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
 		);
-		let set_des_group = {
+		const groupData = {
 			...group,
 			INQG_ASG: group.INQG_ASG == null ? user.empno : group.INQG_ASG,
 		};
 
-		inqs[0].GROUP_STATUS = set_des_group.INQG_STATUS;
-		inqs[0].inqgroup = set_des_group;
+		inqs[0].GROUP_STATUS = groupData.INQG_STATUS;
+		inqs[0].inqgroup = groupData;
 		inqs[0].INQ_DATE = dayjs(inqs[0].INQ_DATE).format("YYYY-MM-DD");
 		inqs[0].INQ_REMARK = inqs[0].INQ_DES_REMARK;
 
-		let revise = inqs[0].INQ_STATUS > 30 ? true : false;
+		const revise = inqs[0].INQ_STATUS >= 26 ? true : false;
 		if (revise) inqs[0].INQ_REV = await revisionCode(inqs[0].INQ_REV);
 		const cards = await setupCard(inqs[0]);
+		const cardsDecorage = await setupPage(pageid);
 
-		if ($("#groupstatus").val() > 20) $("#designer").addClass("hidden");
-		else $("#viewdesigner").addClass("hidden");
-		$("#groupstatus").closest(".grid").removeClass("hidden");
-		$("#status").closest(".grid").addClass("hidden");
-
-		$("#show-deremark").closest(".grid").addClass("hidden");
-		$("#viewmar").addClass("hidden");
-		let details = inqs[0].details.filter(
+		//Setup Table Detail
+		const details = inqs[0].details.filter(
 			(dt) =>
 				dt.INQD_LATEST == "1" &&
 				Math.floor(dt.INQD_ITEM / 100) == desgroup,
@@ -110,6 +108,18 @@ $(document).ready(async () => {
 	}
 });
 
+async function setupPage(pageid) {
+	if (pageid == 1) {
+		$("#viewdesigner").addClass("hidden");
+	} else {
+		$("#designer").addClass("hidden");
+	}
+	$("#groupstatus").closest(".grid").removeClass("hidden");
+	$("#status").closest(".grid").addClass("hidden");
+	$("#show-deremark").closest(".grid").addClass("hidden");
+	$("#viewmar").addClass("hidden");
+}
+
 async function setupButton(revise, usergroup) {
 	const assign = await createBtn({
 		id: "assign-pic",
@@ -133,6 +143,14 @@ async function setupButton(revise, usergroup) {
 		className: `btn-neutral text-white hover:shadow-lg hover:bg-neutral/70 ${revise ? `revised` : ``}`,
 	});
 
+	const checker_reject = await createBtn({
+		id: "send-checked-reject",
+		title: "Return",
+		icon: "fi fi-rr-undo text-xl",
+		tooltip: `Finish declare part process and Pending for send to Pre-BM on AS400 (Only supply by AMEC item)`,
+		className: `btn-error text-white hover:shadow-lg hover:bg-neutral/70 ${revise ? `revised` : ``}`,
+	});
+
 	const back = await createBtn({
 		id: "",
 		title: "Back",
@@ -149,7 +167,7 @@ async function setupButton(revise, usergroup) {
 	if (usergroup == "LDR" && $("#groupstatus").val() < 21)
 		$(".btn-container").append(assign, back);
 	else if (usergroup == "LDR" && $("#groupstatus").val() >= 24)
-		$(".btn-container").append(checker, back);
+		$(".btn-container").append(checker, checker_reject, back);
 	else if (usergroup == "LDR" || usergroup == "DES")
 		$(".btn-container").append(confirm, back);
 	else $(".btn-container").append(back);
@@ -166,19 +184,41 @@ $(document).on("click", "#assign-pic", async function (e) {
 		return;
 	}
 	try {
-		var { fw, status } = await allowForeward();
-		if (!fw) status = 21;
+		const status = await allowForeward(21);
 		const inquiry = await updatePath({
 			level: status >= 24 ? 2 : 0,
 			status: status,
 			obj: $(this),
 		});
 		if (!inquiry) throw new Error("Failed to update inquiry.");
-		await updateGroups(inquiry, status);
+
+		let groupData = await setDesignGroup(inquiry.inqgroup);
+		groupData = {
+			...groupData,
+			INQG_ASG: $("#de-leader-incharge").val(),
+			INQG_DES: $("#desiger-incharge").val(),
+			INQG_CHK: $("#checker-incharge").val(),
+			INQG_CLASS: $("#des-class").val(),
+			INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			INQG_DES_DATE:
+				status >= 24 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : null,
+			INQG_CHK_DATE:
+				status >= 26 ? dayjs().format("YYYY-MM-DD HH:mm:ss") : null,
+			INQG_STATUS: status,
+		};
+		// await updateGroups(inquiry, status);
+		await updateInquiryGroup({
+			data: groupData,
+			condition: {
+				INQG_LATEST: 1,
+				INQG_ID: groupData.INQG_ID,
+			},
+		});
 		await checkComplete(inquiry);
-		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		window.location.replace(`${process.env.APP_ENV}/des/inquiry/`);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		// );
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -188,6 +228,10 @@ $(document).on("click", "#assign-pic", async function (e) {
 
 $(document).on("click", "#send-confirm", async function (e) {
 	e.preventDefault();
+	const user = await currentUser();
+	const des = await getDesigner();
+	const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#view-deremark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
@@ -196,6 +240,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 	}
 	try {
 		const status = 24;
+		// var { fw, status } = await allowForeward(21);
 		const inquiry = await updatePath({
 			level: 2,
 			status: status,
@@ -203,9 +248,10 @@ $(document).on("click", "#send-confirm", async function (e) {
 		});
 		if (!inquiry) throw new Error("Failed to update inquiry.");
 		await updateGroups(inquiry, status);
-		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		window.location.replace(`${process.env.APP_ENV}/des/inquiry/design/`);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		// );
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -215,6 +261,10 @@ $(document).on("click", "#send-confirm", async function (e) {
 
 $(document).on("click", "#send-checked", async function (e) {
 	e.preventDefault();
+	const user = await currentUser();
+	const des = await getDesigner();
+	const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#view-deremark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
@@ -232,9 +282,44 @@ $(document).on("click", "#send-checked", async function (e) {
 		await updateGroups(inquiry, status);
 		// console.log(inquiry);
 		await checkComplete(inquiry);
-		window.location.replace(
-			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		window.location.replace(`${process.env.APP_ENV}/des/inquiry/check/`);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		// );
+	} catch (error) {
+		console.log(error);
+		await showMessage(error.message || `Something went wrong.`);
+		return;
+	}
+});
+
+$(document).on("click", "#send-checked-reject", async function (e) {
+	e.preventDefault();
+	const user = await currentUser();
+	const des = await getDesigner();
+	const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+
+	// const isRevise = $(this).hasClass("revised");
+	// if (isRevise && $("#view-deremark").val().trim() === "") {
+	// 	await showMessage("Please provide a remark for the revision.");
+	// 	$("#view-deremark").focus();
+	// 	return;
+	// }
+	try {
+		const status = 23;
+		const inquiry = await updatePath({
+			level: 2,
+			status: status,
+			obj: $(this),
+		});
+		if (!inquiry) throw new Error("Failed to update inquiry.");
+		await updateGroups(inquiry, status);
+		// console.log(inquiry);
+		await checkComplete(inquiry);
+		// window.location.replace(
+		// 	`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
+		// );
+		window.location.replace(`${process.env.APP_ENV}/des/inquiry/check/`);
 	} catch (error) {
 		console.log(error);
 		await showMessage(error.message || `Something went wrong.`);
@@ -312,9 +397,9 @@ async function updatePath(option) {
 	}
 }
 
-async function allowForeward() {
+async function allowForeward(start) {
 	let confirm = false;
-	let status = 21;
+	let status = start;
 	const user = await currentUser();
 	const designer = $("#desiger-incharge").val();
 	const checker = $("#checker-incharge").val();
@@ -329,8 +414,8 @@ async function allowForeward() {
 				"You have assigned yourself as the designer/checker. Do you want to fast-forward the inquiry to the next stage without duplication process?",
 		});
 	}
-
-	return { fw: confirm, status: status };
+	if (confirm) return status;
+	else return start;
 }
 
 async function updateGroups(data, status) {
@@ -413,4 +498,14 @@ async function setLogsData(action) {
 		INQH_ACTION: action,
 		INQH_REMARK: $("#deremark").val(),
 	};
+}
+
+async function setDesignGroup(data) {
+	const user = await currentUser();
+	const des = await getDesigner();
+	const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+	let groupData = data.find(
+		(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
+	);
+	return groupData;
 }

@@ -7,6 +7,7 @@ import { statusColors } from "../inquiry/index.js";
 import { tableOpt } from "../utils.js";
 
 export async function tableInquiryDEOption(data, extopt = {}) {
+	const report = $("#page-report").length == 0 ? false : true;
 	const colors = await statusColors();
 	const opt = { ...tableOpt };
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5 mb-3"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
@@ -159,6 +160,8 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
+				console.log(report);
+
 				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Process",
