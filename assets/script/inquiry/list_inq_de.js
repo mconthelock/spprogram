@@ -160,13 +160,12 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
-				console.log(report);
-
+				const disable = row.INQ_STATUS < 11 ? true : false;
 				const edit = createBtn({
 					id: `edit-${data}`,
 					title: "Process",
 					icon: "fi fi fi-ss-arrow-circle-right text-lg",
-					className: `btn-xs btn-accent w-[80px] text-white hover:shadow-lg hover:text-white process-btn`,
+					className: `btn-xs btn-accent w-[80px] text-white hover:shadow-lg hover:text-white process-btn ${disable ? "disabled" : ""}`,
 				});
 
 				const view = createBtn({
