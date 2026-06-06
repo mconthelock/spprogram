@@ -174,7 +174,8 @@ export async function tableInquiryDEOption(data, extopt = {}) {
 					className: `btn-xs btn-outline btn-accent  hover:shadow-lg hover:text-white`,
 					href: `${process.env.APP_ENV}/des/inquiry/show/${data}/`,
 				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${extopt.back === true ? view : edit}</div>`;
+				// return `<div class="flex gap-1 justify-center items-center w-fit">${extopt.back === true ? view : edit}</div>`;
+				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}</div>`;
 			},
 		},
 	];

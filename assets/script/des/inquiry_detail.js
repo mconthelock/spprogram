@@ -173,6 +173,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 			status: status,
 			obj: $(this),
 		});
+		if (!inquiry) throw new Error("Failed to update inquiry.");
 		await updateGroups(inquiry, status);
 		await checkComplete(inquiry);
 		window.location.replace(
@@ -200,6 +201,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 			status: status,
 			obj: $(this),
 		});
+		if (!inquiry) throw new Error("Failed to update inquiry.");
 		await updateGroups(inquiry, status);
 		window.location.replace(
 			`${process.env.APP_ENV}/des/inquiry/show/${inquiry.INQ_ID}`,
@@ -226,6 +228,7 @@ $(document).on("click", "#send-checked", async function (e) {
 			status: status,
 			obj: $(this),
 		});
+		if (!inquiry) throw new Error("Failed to update inquiry.");
 		await updateGroups(inquiry, status);
 		// console.log(inquiry);
 		await checkComplete(inquiry);

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { showbgLoader } from "@amec/webasset/preloader";
 import { initAuthen } from "@amec/webasset/authen";
 
@@ -81,10 +82,18 @@ export function getCalendar(sdate, edate) {
 }
 
 export const ameccaledar = async () => {
-	const setCalendar = async () => {
+	const removeOldCalendars = (localname) => {
+		Object.keys(localStorage).forEach((key) => {
+			if (key.startsWith("sp-calendars-") && key !== localname) {
+				localStorage.removeItem(key);
+			}
+		});
+	};
+
+	const setCalendar = async (localname) => {
 		const exp = dayjs().add(30, "days").format("YYYY-MM-DD");
 		const qsdate = `${new Date().getFullYear() - 3}-01-01`;
-		const qedate = dayjs(exp).add(60, "days").format("YYYY-MM-DD");
+		const qedate = dayjs(exp).add(180, "days").format("YYYY-MM-DD");
 		const sdate = dayjs(qsdate).format("YYYYMMDD");
 		const edate = dayjs(qedate).format("YYYYMMDD");
 		const calendar = await getCalendar(sdate, edate);
@@ -92,21 +101,23 @@ export const ameccaledar = async () => {
 			value: calendar,
 			expiry: exp,
 		};
-		localStorage.setItem("calendar", JSON.stringify(item));
+		localStorage.setItem(localname, JSON.stringify(item));
 	};
+
 	let calendar;
-	let daterange = localStorage.getItem("calendar");
-	if (daterange) {
-		const item = JSON.parse(daterange);
-		const now = new Date();
-		if (now.getTime() > item.expiry) {
-			localStorage.removeItem("calendar");
-			await setCalendar();
-		}
-	} else {
-		await setCalendar();
+	let localname = `sp-calendars-${dayjs().format("YYYYMM")}`;
+	let daterange = localStorage.getItem(`${localname}`);
+	//console.log(daterange);
+	if (daterange == null) {
+		//const item = JSON.parse(daterange);
+		//const now = new Date();
+		//if (now.getTime() > item.expiry) {
+		//localStorage.removeItem(localname);
+		await setCalendar(localname);
+		//}
 	}
-	calendar = JSON.parse(localStorage.getItem("calendar")).value;
+	calendar = JSON.parse(localStorage.getItem(localname)).value;
+	await removeOldCalendars(localname);
 	return calendar;
 };
 
