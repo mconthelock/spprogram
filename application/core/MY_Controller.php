@@ -10,7 +10,8 @@
         public function __construct(){
             parent::__construct();
             $this->blade = new PhpBlade($this->views, $this->cache);
-            $GLOBALS['version'] = $_ENV['STATE'] == 'production' ?  $_ENV['VERSION'] :time() ;
+            //$GLOBALS['version'] = $_ENV['STATE'] == 'production' ?  $_ENV['VERSION'] :time() ;
+            $GLOBALS['version'] = time();
             $this->callback = "{$_ENV['APP_HOST']}/form/authen/index/{$_ENV['APP_ID']}";
         }
 
