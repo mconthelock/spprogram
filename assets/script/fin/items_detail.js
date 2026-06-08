@@ -129,6 +129,7 @@ $(document).on("click", "#save-data", async function () {
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
+	} finally {
 		await activatedBtnRow($(this), false);
 		await showLoader({ show: false });
 	}

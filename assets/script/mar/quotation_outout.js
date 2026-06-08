@@ -83,7 +83,6 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 		//showLoader({ show: true });
 		const fl = e.target.files;
 		const data = await readInput(fl[0]);
-		console.log(data);
 		const header = await getDataHeader(data);
 		const { detail, currency1, currency2 } = await getDataDetails(data);
 		header.INQ_CUR = currency1;
@@ -240,6 +239,13 @@ async function getDataDetails(data) {
 			detail.push(row);
 		}
 	}
+	detail.sort((a, b) => a.INQD_CAR.localeCompare(b.INQD_CAR));
+	detail.forEach((row, index) => {
+		row.INQD_SEQ = index + 1;
+		row.INQD_RUNNO = index + 1;
+	});
+	console.log(detail);
+
 	return {
 		detail,
 		currency1: priceRatio[0].CURRENCY,
