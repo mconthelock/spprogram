@@ -215,6 +215,7 @@ async function getDataDetails(data) {
 	const detailObj = (data) => {
 		return typeof data == "object" ? data.result : data;
 	};
+
 	for (let i = 11; i < data.length; i++) {
 		if (data[i][3] != undefined && data[i][3] != null && data[i][3] != "") {
 			const row = {

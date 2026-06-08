@@ -22,7 +22,7 @@ export const dataExportsTemp = async (data) => {
 			IDS_DATE: el.orders.length == 0 ? null : el.orders[0].IDS_DATE,
 			CUST_RQS: el.orders.length == 0 ? null : el.orders[0].CUST_RQS,
 			DSTN: el.orders.length == 0 ? null : el.orders[0].DSTN,
-			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+			QUO_DATE: el.timeline.QT_READ,
 			MAR_SEND: el.timeline.MAR_SEND,
 			DE_READ: el.timeline.DE_READ,
 			DE_CONFIRM: el.timeline.DE_CONFIRM,

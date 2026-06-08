@@ -79,6 +79,15 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 		},
 		{
 			data: "timeline",
+			title: "D/E Date",
+			className: "text-nowrap text-left!",
+			render: (data) => {
+				if (data.DE_CONFIRM == null) return "";
+				return dayjs(data.DE_CONFIRM).format("YYYY-MM-DD HH:mm");
+			},
+		},
+		{
+			data: "timeline",
 			title: "B/M Date",
 			className: "text-nowrap text-left!",
 			render: (data) => {
