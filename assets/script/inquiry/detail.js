@@ -52,7 +52,8 @@ export const statusColors = () => {
 		{ id: 24, color: "bg-cyan-300 text-black" }, //DE DECLARE
 		{ id: 28, color: "bg-blue-500 text-white" }, //DE CHECK
 		{ id: 29, color: "bg-gray-300 text-white" }, //DE NOT CONCERN
-		{ id: 39, color: "bg-slate-500 text-white" }, //IS
+		{ id: 30, color: "bg-slate-500 text-white" }, //IS
+		{ id: 31, color: "bg-slate-800 text-white" }, //IS
 		{ id: 40, color: "bg-amber-500 text-white" }, //FIN
 		{ id: 42, color: "bg-red-500 text-white" }, //FIN
 		{ id: 44, color: "bg-amber-500 text-white" }, //FIN
@@ -729,7 +730,10 @@ export async function verifyDetail(data, savelevel = 0) {
 			return;
 		}
 
-		if (item.INQD_MFGORDER !== "STOCK" && item.INQD_MFGORDER.length != 9) {
+		if (
+			(item.INQD_MFGORDER != "STOCK" || item.INQD_MFGORDER != "-") &&
+			item.INQD_MFGORDER.length != 9
+		) {
 			check = false;
 			message.push(`Please input correct MFG order no.`);
 			errorEl(row.find(".mfgno"));
