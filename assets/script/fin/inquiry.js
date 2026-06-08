@@ -64,7 +64,7 @@ $(document).on("change", ".quick-remark", async function (e) {
 			},
 			data.INQ_ID,
 		);
-		table.row($(this).closest("tr")).data(inq).draw();
+		table.row($(this).closest("tr")).data(inq).draw(false);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

@@ -100,7 +100,7 @@ export async function tableCostOption(data = []) {
 				if (type === "display") {
 					data = data == null ? "" : data;
 					if (row.INQD_SUPPLIER == "AMEC") {
-						return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fccost" value="${data == 0 ? "" : showDigits(data, 0)}"/></div>`;
+						return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fccost" value="${intVal(data) == 0 ? "" : showDigits(data, 0)}"/></div>`;
 					}
 					return showDigits(data, 0);
 				}
@@ -113,7 +113,7 @@ export async function tableCostOption(data = []) {
 			className: `w-12 min-w-12 border-r! bg-primary/10`,
 			render: function (data, type) {
 				if (type === "display") {
-					return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fcbase" value="${data == 0 ? "1.3" : showDigits(data, 2)}"/></div>`;
+					return `<input type="text" class="w-full outline-0 text-right px-2 input-number inqprice fcbase" value="${intVal(data) == 0 ? "1.30" : showDigits(data, 2)}"/></div>`;
 				}
 				return data;
 			},
