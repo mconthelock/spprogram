@@ -1,3 +1,4 @@
+export * from "./list_inq_admin.js";
 export * from "./list_inq_de.js";
 export * from "./list_inq_fin.js";
 export * from "./list_inq_mar.js";

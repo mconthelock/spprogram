@@ -72,52 +72,95 @@ Q6K226            A= AMEC ,M = MELINA                             1
 export async function setAS400Detail(INQ_NO, details) {
 	const user = await currentUser();
 	const rows = [];
-	details = details.filter(
-		(el) => el.INQD_SUPPLIER == "AMEC" && el.INQD_LATEST == 1,
+	const filteredDetails = details.filter(
+		(el) => el.INQD_SUPPLIER === "AMEC" && el.INQD_LATEST === 1,
 	);
-	details.map(async (el, i) => {
-		if (el.INQD_LATEST == 1) {
-			const strc = [
-				{ Q6K201: INQ_NO },
-				{ Q6K202: el.INQD_RUNNO },
-				{ Q6K203: el.INQD_CAR },
-				{ Q6K204: el.INQD_ITEM },
-				{ Q6K205: el.INQD_PARTNAME.trim().substring(0, 30) },
-				{ Q6K217: el.INQD_QTY },
-				{ Q6K223: user.empno },
-				{ Q6K226: "A" },
-			];
 
-			let dwg = el.INQD_DRAWING.replace(/\s+/g, "");
-			const dwgval = await formatDrawingNo(dwg);
-			const dwgarr = dwgval.split(" ");
-			let prefix = 206;
-			dwgarr.map((part, index) => {
-				const key = `Q6K${prefix + index}`;
-				if (index > 2) {
-					part = part.replace(/L/g, "");
-				}
-				strc.push({ [key]: part });
-			});
+	for (const el of filteredDetails) {
+		let dwg = el.INQD_DRAWING.replace(/\s+/g, "");
+		const dwgval = await formatDrawingNo(dwg);
+		const dwgarr = dwgval.split(" ");
 
-			let row = [];
-			strc.map((item) => {
-				const key = Object.keys(item)[0];
-				const value = item[key];
-				const data = {
-					field: key,
-					value: value,
-					op: "eq",
-					type:
-						key === "Q6K202" || key === "Q6K217"
-							? "number"
-							: "string",
-				};
-				row.push(data);
+		let drawingFields = {};
+		let prefix = 206;
+
+		dwgarr.forEach((part, index) => {
+			const key = `Q6K${prefix + index}`;
+			if (index > 2) {
+				part = part.replace(/L/g, "");
+			}
+			drawingFields[key] = part;
+		});
+
+		const targetData = {
+			Q6K201: INQ_NO,
+			Q6K202: el.INQD_RUNNO,
+			Q6K203: el.INQD_CAR,
+			Q6K204: el.INQD_ITEM,
+			Q6K205: el.INQD_PARTNAME.trim()
+				.substring(0, 30)
+				.replace(/'/g, "''"),
+			Q6K217: el.INQD_QTY,
+			Q6K223: user.empno,
+			Q6K226: "A",
+			...drawingFields, // ใส่ Q6K206, Q6K207 ต่อท้ายตรงนี้เลย
+		};
+
+		const row = [];
+		for (const [key, value] of Object.entries(targetData)) {
+			row.push({
+				field: key,
+				value: value,
+				op: "eq",
+				type:
+					key === "Q6K202" || key === "Q6K217" ? "number" : "string",
 			});
-			rows.push(row);
 		}
-	});
+		rows.push(row);
+	}
+	// details.map(async (el, i) => {
+	// 	if (el.INQD_LATEST == 1) {
+	// 		const strc = [
+	// 			{ Q6K201: INQ_NO },
+	// 			{ Q6K202: el.INQD_RUNNO },
+	// 			{ Q6K203: el.INQD_CAR },
+	// 			{ Q6K204: el.INQD_ITEM },
+	// 			{ Q6K205: el.INQD_PARTNAME.trim().substring(0, 30) },
+	// 			{ Q6K217: el.INQD_QTY },
+	// 			{ Q6K223: user.empno },
+	// 			{ Q6K226: "A" },
+	// 		];
+
+	// 		let dwg = el.INQD_DRAWING.replace(/\s+/g, "");
+	// 		const dwgval = await formatDrawingNo(dwg);
+	// 		const dwgarr = dwgval.split(" ");
+	// 		let prefix = 206;
+	// 		dwgarr.map((part, index) => {
+	// 			const key = `Q6K${prefix + index}`;
+	// 			if (index > 2) {
+	// 				part = part.replace(/L/g, "");
+	// 			}
+	// 			strc.push({ [key]: part });
+	// 		});
+
+	// 		let row = [];
+	// 		strc.map((item) => {
+	// 			const key = Object.keys(item)[0];
+	// 			const value = item[key];
+	// 			const data = {
+	// 				field: key,
+	// 				value: value,
+	// 				op: "eq",
+	// 				type:
+	// 					key === "Q6K202" || key === "Q6K217"
+	// 						? "number"
+	// 						: "string",
+	// 			};
+	// 			row.push(data);
+	// 		});
+	// 		rows.push(row);
+	// 	}
+	// });
 	return rows;
 }
 /*

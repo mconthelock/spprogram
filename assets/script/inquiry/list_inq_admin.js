@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import { displayname } from "@amec/webasset/api/amec";
 import { createBtn } from "@amec/webasset/components/buttons";
-import { statusColors } from "../inquiry/index.js";
+import { statusColors } from "./index.js";
 import { tableOpt } from "../utils.js";
 
-export async function tableInquiryOption(data, extopt = {}) {
+export async function tableInquiryAdminOption(data, extopt = {}) {
 	// const renderMark = (data) => {
 	// 	const color =
 	// 		data == 29
@@ -14,7 +14,7 @@ export async function tableInquiryOption(data, extopt = {}) {
 	// 				: "text-secondary";
 	// 	return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 	// };
-	const renderMark = (status, data) => {
+	const renderMark = (data) => {
 		if (status >= 30)
 			return `<i class="fi fi-rr-check-circle text-xl justify-center text-green-400"></i>`;
 		let color = data >= 26 ? "text-green-400" : "text-secondary";
@@ -145,32 +145,17 @@ export async function tableInquiryOption(data, extopt = {}) {
 					type: "link",
 					icon: "fi fi-rr-search text-lg",
 					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
-					href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
+					href: `${process.env.APP_ENV}/admin/inquiry/show/${data}/`,
 				});
 
 				const edit = createBtn({
 					id: `edit-${data}`,
-					title: "Edit",
+					title: "Send Pre B/M",
 					type: "link",
-					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent text-white w-[80px] ms-1 hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
-					href: `${process.env.APP_ENV}/mar/inquiry/detail/${data}/`,
+					icon: "fi fi-sr-location-arrow text-lg",
+					className: `btn-xs btn-accent text-white text-nowrap ms-1 hover:shadow-lg process-btn`,
 				});
-
-				const secure = createBtn({
-					id: `edit-${data}`,
-					title: "Edit",
-					icon: "fi fi-rr-edit text-lg",
-					className: `btn-xs btn-accent btn-disabled w-[80px] cursor-not-allowed! ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
-				});
-
-				const deleted = createBtn({
-					id: `delete-${data}`,
-					title: ``,
-					icon: "fi fi-br-trash text-2xl",
-					className: `btn-xs btn-link text-error p-0! hover:bg-transparent! hover:shadow-none! delete-inquiry`,
-				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${secure}${deleted}</div>`;
+				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}</div>`;
 			},
 		},
 	];
