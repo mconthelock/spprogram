@@ -29,7 +29,8 @@
             "label": "Additional Notes",
             "id": "quonote",
             "type": "textarea" ,
-            "name": "QUO_NOTE"
+            "name": "QUO_NOTE",
+            "mapping": "QUO_NOTE"
         },
         {
             "label": "",
