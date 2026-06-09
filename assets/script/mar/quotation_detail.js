@@ -97,7 +97,9 @@ async function quotationPart(inq) {
 		inq[0].quotation == null
 			? dayjs().add(180, "day").format("YYYY-MM-DD")
 			: dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
+	inq[0].QUO_NOTE = inq[0].quotation == null ? "" : inq[0].quotation.QUO_NOTE;
 	const card = await setupCard(inq[0]);
+	$("#viewquo_out").addClass("hidden");
 	// Table Detail
 	const ratio = await findPriceRatio({
 		TRADER: inq[0].INQ_TRADER,
@@ -135,10 +137,19 @@ async function quotationFactory(inq) {
 			? null
 			: inq[0].INQ_ACTUAL_PO.toUpperCase();
 	inq[0].INQ_CUSTRQS = dayjs(inq[0].INQ_CUSTRQS).format("YYYY-MM-DD");
+	inq[0].QUO_DATE =
+		inq[0].quotation == null
+			? dayjs().format("YYYY-MM-DD")
+			: dayjs(inq[0].quotation.QUO_DATE).format("YYYY-MM-DD");
+	inq[0].QUO_VALIDITY =
+		inq[0].quotation == null
+			? dayjs().add(180, "day").format("YYYY-MM-DD")
+			: dayjs(inq[0].quotation.QUO_VALIDITY).format("YYYY-MM-DD");
 	const card = await setupCard(inq[0]);
 	const optDetail = await tableViewFactOption(inq[0].details);
 	//const tableDetail =
 	table = await createTable(optDetail);
+	$("#viewquo_out").addClass("hidden");
 	await setupButton(3);
 }
 
