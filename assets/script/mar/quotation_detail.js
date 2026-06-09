@@ -331,8 +331,6 @@ async function updatePath(opt) {
 		// console.log(details);
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow($(this));
-		return null;
-
 		let deleteLine = [];
 		let deleteFile = [];
 		const timelinedata = await setTimelineData();
