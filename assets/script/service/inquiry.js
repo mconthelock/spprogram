@@ -345,7 +345,7 @@ export const dataExports = async (data) => {
 				el.timeline.length == 0 || el.timeline.FINUSER == null
 					? null
 					: el.timeline.finusers[0].SNAME || "",
-			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+			//QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 			exchangeRate: exchangeRate,
 		};
 

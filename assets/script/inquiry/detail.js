@@ -704,7 +704,6 @@ export async function verifyDetail(data, savelevel = 0) {
 	table.rows().every(function () {
 		const item = this.data();
 		const row = this.node() ? $(this.node()) : $();
-
 		if (seenKeys.has(item.INQD_SEQ)) {
 			check = false;
 			message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
@@ -731,7 +730,7 @@ export async function verifyDetail(data, savelevel = 0) {
 		}
 
 		if (
-			(item.INQD_MFGORDER != "STOCK" || item.INQD_MFGORDER != "-") &&
+			!(item.INQD_MFGORDER == "STOCK" || item.INQD_MFGORDER == "-") &&
 			item.INQD_MFGORDER.length != 9
 		) {
 			check = false;

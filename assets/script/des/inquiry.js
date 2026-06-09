@@ -56,7 +56,6 @@ async function query() {
 						// 	g.INQG_STATUS,
 						// 	g.INQG_ASG_DATE,
 						// );
-
 						return (
 							g.INQG_GROUP == desgroup &&
 							g.INQG_STATUS < 20 &&

@@ -81,8 +81,6 @@ async function quotationPart(inq) {
 			inq[0].timeline.PKC_CONFIRM == null &&
 			inq[0].INQ_STATUS != 50
 		) {
-			console.log("xxx");
-
 			mode = 3;
 		}
 	}
@@ -145,21 +143,21 @@ async function quotationFactory(inq) {
 }
 
 async function quotationOut(inq) {
-	$("#with-tab").remove();
-	$("#additional-info").remove();
 	const vlist = $("#form-container").attr("data");
 	const vstr = vlist.replace(/quotation/g, "viewquo_out");
 	$("#form-container").attr("data", vstr);
 
 	const card = await setupCard(inq[0]);
+	$("#with-tab").remove();
+	$("#additional-info").remove();
+	$("#viewquo").addClass("hidden");
+	// console.log(inq[0]);
 	const optDetail = await tableViewOutOption(inq[0].details);
 	table = await createTable(optDetail);
 	await setupButton(3);
 }
 
 async function setupButton(group) {
-	console.log(group);
-
 	const detail = table.rows().data().toArray();
 	const isAmec = detail.filter((dt) => {
 		return dt.INQD_SUPPLIER == "AMEC";
@@ -281,12 +279,22 @@ async function freightData(data) {
 
 $(document).on("click", "#issue-quotation", async function (e) {
 	e.preventDefault();
-	await updatePath({ level: 2, status: 99, obj: $(this) });
+	try {
+		await updatePath({ level: 2, status: 99, obj: $(this) });
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.: ${error.message}`);
+	}
 });
 
 $(document).on("click", "#reject-quotation", async function (e) {
 	e.preventDefault();
-	await updatePath({ level: 0, status: 98, obj: $(this) });
+	try {
+		await updatePath({ level: 0, status: 98, obj: $(this) });
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.: ${error.message}`);
+	}
 });
 
 $(document).on("click", "#returnfin", async function (e) {
@@ -323,6 +331,7 @@ async function updatePath(opt) {
 		// console.log(details);
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow($(this));
+		return null;
 
 		let deleteLine = [];
 		let deleteFile = [];
