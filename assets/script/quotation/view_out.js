@@ -13,45 +13,48 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_CAR",
 			title: "Ele No.",
-			className: "sticky-column text-center!",
+			className: `sticky-column w-8 min-w-8 cell-display border-r! `,
 		},
 		{
 			data: "INQD_ITEM",
 			title: "Item",
-			className: "sticky-column text-center!",
-		},
-		{
-			data: "INQD_DRAWING",
-			title: "Drawing No.",
-			className: "sticky-column min-w-[225px] ",
+			className: `sticky-column w-8 min-w-8 cell-display border-r! `,
 		},
 		{
 			data: "INQD_PARTNAME",
 			title: "Part Name",
-			className: "min-w-[225px]",
+			className: `sticky-column w-[225px] min-w-[225px] cell-display border-r! `,
+		},
+		{
+			data: "INQD_DRAWING",
+			title: "Drawing No.",
+			className: `w-[225px] min-w-[225px] cell-display border-r! `,
 		},
 		{
 			data: "INQD_VARIABLE",
 			title: "Specification",
-			className: "text-start! min-w-[225px]",
+			className: `w-[225px] min-w-[225px] cell-display border-r! `,
 		},
 		{
 			data: "INQD_SUPPLIER",
 			title: "Supplier",
-			className: "min-w-[120px]",
+			className: `w-12 min-w-12 cell-display border-r! `,
 		},
 		{
 			data: "INQD_QTY",
 			title: "Qty",
+			className: `w-12 min-w-12 cell-display border-r! `,
 			footer: "Total",
 		},
 		{
 			data: "INQD_UM",
 			title: "UM",
+			className: `w-8 min-w-8 cell-display border-r! `,
 		},
 		{
 			data: "INQD_FC_COST",
 			title: `<div>SPU Price</div><div>[1]</div>`,
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type) {
 				if (type === "display")
 					return `<div class="py-2">${showDigits(data, 0)}</div>`;
@@ -61,6 +64,7 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_FC_BASE",
 			title: `<div>Exchange</div><div>[2]</div>`,
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type) {
 				if (type === "display") return showDigits(data, 2);
 				return data;
@@ -69,6 +73,7 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_TC_COST",
 			title: `<div>SPU Price (THB)</div><div>[1*2]</div>`,
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type) {
 				if (type === "display") return showDigits(data, 0);
 				return data;
@@ -77,6 +82,7 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_TC_BASE",
 			title: `<div>Profit</div><div>[3]</div>`,
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type) {
 				if (type === "display") return showDigits(data, 3);
 				return data;
@@ -85,6 +91,7 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_EXRATE",
 			title: `<div>Exchange</div><div>[4]</div>`,
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type) {
 				if (type === "display") return showDigits(data, 2);
 				return data;
@@ -93,6 +100,7 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: `<div>Unit Price</div><div>[(1*2*3)/4]</div>`,
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type) {
 				if (type === "display") return showDigits(data, 0);
 				return data;
@@ -101,7 +109,7 @@ export async function tableViewOutOption(data = []) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Amount",
-			className: "min-w-[100px]",
+			className: `w-15 min-w-15 cell-display border-r! `,
 			render: function (data, type, row) {
 				if (type === "display") {
 					const amount = intVal(data) * intVal(row.INQD_QTY);

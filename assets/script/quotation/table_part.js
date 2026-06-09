@@ -3,7 +3,6 @@ import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
 export async function tablePartOption(data = [], ratio = {}) {
-	console.log("VX--");
 	data = await findCostBase(data, ratio);
 	const opt = { ...tableOpt };
 	opt.data = data;
