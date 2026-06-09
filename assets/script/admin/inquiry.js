@@ -1,4 +1,5 @@
 import "@amec/webasset/css/dataTable.min.css";
+import * as dayjs from "dayjs";
 import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showConfirm } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
@@ -20,22 +21,15 @@ $(async function () {
 		await showLoader();
 		const app = await initApp({ submenu: ".navmenu-newinq" });
 		if (!app) return;
+		let data = await getInquiry({
+			INQ_DATE: `>= ${dayjs().add(-60, "day").format("YYYY-MM-DD")}`,
+			IS_GROUP: 1,
+			// IS_QUOTATION: 1,
+			// quotation: {
+			// 	QUO_VALIDITY: ">= 2026-01-13",
+			// },
+		});
 
-		let data;
-		if ($("#pageid").val() == "2") {
-			data = await getInquiry({
-				INQ_STATUS: "< 80",
-				IS_GROUP: 1,
-				IS_DETAILS: 1,
-				IS_TIMELINE: 1,
-			});
-			data = await prebmdata(data);
-		} else {
-			data = await getInquiry({
-				INQ_STATUS: "< 80",
-				IS_GROUP: 1,
-			});
-		}
 		data = data.map((el) => {
 			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
 			return el;
