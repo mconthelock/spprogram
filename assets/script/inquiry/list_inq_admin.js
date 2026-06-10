@@ -171,14 +171,14 @@ export async function tableInquiryAdminOption(data, extopt = {}) {
 	};
 
 	opt.initComplete = async function () {
-		const newinq = await createBtn({
-			id: "add-new-inquiry",
-			type: "link",
-			href: `${process.env.APP_ENV}/mar/inquiry/create`,
-			title: "New Inquiry",
-			icon: "fi fi-tr-file-excel text-xl ",
-			className: `btn-outline btn-primary text-primary hover:shadow-lg  hover:text-white`,
-		});
+		const newinq = `<details class="dropdown dropdown-end" open>
+            <summary class="btn btn-primary m-1 text-white">Create</summary>
+            <ul class="menu dropdown-content bg-base-100 rounded-box z-99 w-52 p-2 shadow-sm">
+                <li><a class="create-simulate" data-id="1" href="#">Price List</a></li>
+                <li><a class="create-simulate" data-id="2" href="#">Cost List</a></li>
+            </ul>
+        </details>`;
+
 		const export1 = await createBtn({
 			id: "export1",
 			title: "Export Inquiry",

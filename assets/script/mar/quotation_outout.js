@@ -83,6 +83,8 @@ $(document).on("change", "#importouttooutfile", async function (e) {
 		//showLoader({ show: true });
 		const fl = e.target.files;
 		const data = await readInput(fl[0]);
+		console.log(data);
+
 		const header = await getDataHeader(data);
 		const { detail, currency1, currency2 } = await getDataDetails(data);
 		header.INQ_CUR = currency1;

@@ -61,13 +61,13 @@ export async function setupTableAttachment(data = [], view = false) {
 			className: `text-center px-1 py-[8px] ${view ? "hidden" : ""}`,
 			sortable: false,
 			render: (data, type, row) => {
-				if (usrgroup == "MAR" && row.FILE_OWNER == "MAR") {
-					return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att"><i class="fi fi-rr-trash text-2xl text-red-500"></i></a>`;
-				} else if (usrgroup != "MAR" && row.FILE_OWNER != "MAR") {
-					return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att"><i class="fi fi-rr-trash text-2xl text-red-500"></i></a>`;
-				} else {
-					return `<a href="#" class="btn btn-ghost btn-sm btn-circle btn-disabled"><i class="fi fi-tr-trash-slash text-2xl text-gray-300"></i></a>`;
-				}
+				return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att"><i class="fi fi-rr-trash text-2xl text-red-500"></i></a>`;
+				// if (usrgroup == "MAR" && row.FILE_OWNER == "MAR") {
+				// } else if (usrgroup != "MAR" && row.FILE_OWNER != "MAR") {
+				// 	return `<a href="#" class="btn btn-ghost btn-sm btn-circle delete-att"><i class="fi fi-rr-trash text-2xl text-red-500"></i></a>`;
+				// } else {
+				// 	return `<a href="#" class="btn btn-ghost btn-sm btn-circle btn-disabled"><i class="fi fi-tr-trash-slash text-2xl text-gray-300"></i></a>`;
+				// }
 			},
 		},
 	];

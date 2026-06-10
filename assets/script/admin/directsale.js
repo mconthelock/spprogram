@@ -1,0 +1,156 @@
+import "@amec/webasset/css/dataTable.min.css";
+import * as dayjs from "dayjs";
+import { showLoader } from "@amec/webasset/preloader";
+import { showMessage, showConfirm } from "@amec/webasset/utils";
+import { createTable } from "@amec/webasset/dataTable";
+import { activatedBtn } from "@amec/webasset/components/buttons";
+import { tableInquiryAdminOption, setAS400Data } from "../inquiry/index.js";
+import {
+	getTemplate,
+	exportExcel,
+	getInquiry,
+	dataExports,
+	dataDetails,
+	deleteInquiry,
+	getItems,
+	currentPeriod,
+	createInquiry,
+} from "../service/index.js";
+import { initApp } from "../utils.js";
+
+var table;
+$(async function () {
+	try {
+		await showLoader();
+		const app = await initApp({ submenu: ".navmenu-newinq" });
+		if (!app) return;
+		let data = await getInquiry({
+			INQ_DATE: `>= ${dayjs().add(-250, "day").format("YYYY-MM-DD")}`,
+			IS_GROUP: 1,
+			// IS_QUOTATION: 1,
+			// quotation: {
+			// 	QUO_VALIDITY: ">= 2026-01-13",
+			// },
+		});
+
+		data = data.filter(
+			(el) => el.INQ_TYPE == "Price" || el.INQ_TYPE == "Cost",
+		);
+		data = data.map((el) => {
+			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
+			return el;
+		});
+		const opt = await tableInquiryAdminOption(data, { new: true });
+		table = await createTable(opt);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	} finally {
+		await showLoader({ show: false });
+	}
+});
+
+$(document).on("click", ".create-simulate", async function (e) {
+	e.preventDefault();
+	try {
+		const period = await currentPeriod();
+		const type = $(this).data("id");
+		let data = await getItems();
+		data = data.filter((item) => item.ITEM_STATUS == 1);
+		let timelinedata = {
+			INQ_REV: "*",
+			MAR_USER: "16077",
+			MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+		};
+
+		if (type == 1) {
+			const dept = [
+				{ id: "EME", code: [1] },
+				{ id: "EEL", code: [2, 5] },
+				{ id: "EAP", code: [3] },
+				{ id: "ESO", code: [6, 7, 8, 9] },
+			];
+			data = data.filter((item) => item.CATEGORY != 99);
+		} else {
+			data = data
+				.filter((item) => item.CATEGORY == 99)
+				.sort((a, b) => a.ITEM_NO.localeCompare(b.ITEM_NO));
+
+			const header = await setHeader();
+			const details = await setDetails(data);
+			console.log(details);
+			timelinedata = { ...timelinedata };
+			const fomdata = {
+				header,
+				details,
+				timelinedata: { ...timelinedata, INQ_NO: header.INQ_NO },
+			};
+
+			// const inquiry = await createInquiry(fomdata);
+			// await setAS400Data(inquiry);
+		}
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	}
+});
+
+async function setHeader() {
+	return {
+		//INQ_NO: `${type == 1 ? "Price" : "Cost"}-${period.current.year}-${period.current.period}H`,
+		INQ_REV: `*`,
+		INQ_STATUS: 30,
+		INQ_DATE: dayjs().format("YYYY-MM-DD"),
+		INQ_TRADER: "Direct",
+		INQ_TYPE: "Price",
+		INQ_SERIES: "JSWZ", //$item == "6" ? "JSWZ" : "GPSXL",
+		INQ_SPEC: "P1050-CO-120-10S/O",
+		INQ_PRDSCH: "201501Z",
+		INQ_QUOTATION_TYPE: 5,
+		INQ_DELIVERY_TERM: 1,
+		INQ_DELIVERY_METHOD: 1,
+		INQ_SHIPMENT: "1",
+		INQ_MAR_PIC: "16077",
+		INQ_MAR_SENT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+		CREATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+		CREATE_BY: $("#user-login").attr("empno"),
+		INQ_CUR: "THB",
+		INQ_TCCUR: "THB",
+		INQ_LATEST: 1,
+	};
+}
+
+async function setDetails(data) {
+	const rows = [];
+	let detail = [];
+	data.map((item, index) => {
+		if (index > 0 && index % 250 == 0) {
+			rows.push(detail);
+			detail = [];
+		}
+		const val = {
+			INQD_SEQ: index + 1,
+			INQD_RUNNO: index + 1,
+			INQD_ITEM: item.ITEM_NO,
+			INQD_PARTNAME: item.ITEM_NAME,
+			INQD_DRAWING: item.ITEM_DWG,
+			INQD_VARIABLE: item.ITEM_VARIABLE,
+			INQD_QTY: 1,
+			INQD_UM: item.ITEM_UNIT,
+			INQD_SUPPLIER: item.ITEM_SUPPLIER,
+			INQD_FC_COST: 0,
+			INQD_TC_COST: 0,
+			INQD_UNIT_PRICE: 0,
+			INQD_FC_BASE: 1.3,
+			INQD_TC_BASE: 0,
+			INQD_LATEST: 1,
+			INQD_OWNER: "MAR",
+			CREATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			INQD_OWNER_GROUP: "MAR",
+			ITEMID: item.ITEM_ID,
+		};
+		detail.push(val);
+	});
+	rows.push(detail);
+	return rows;
+}

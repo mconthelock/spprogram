@@ -29,6 +29,9 @@ import { cloneRows } from "../service/excel.js";
 import { setupElmesTable } from "./table_elmes.js";
 import { setDeletedLineMap } from "./store.js";
 
+let selectedFilesMap = new Map();
+let deletedFilesMap = new Map();
+
 export function initRow(id, seq) {
 	const userGroup = $("#user-login").attr("groupcode");
 	return {
@@ -163,6 +166,7 @@ $(document).on("mouseenter", ".detail-log", function () {
 	const content = $("#tip1");
 	content.find(".tooltip-content").html("");
 	content.find(".tooltip-content").append(`<ul>${data.html()}</ul>`);
+
 	const rect = $(this)[0].getBoundingClientRect();
 	content.css("top", rect.bottom + window.scrollY + "px");
 	content.css("left", rect.left + window.scrollX + "px");
@@ -661,6 +665,7 @@ $(document).on("change", "#attachment-file", async function (e) {
 //010: Download attached file
 $(document).on("click", ".download-att-client", async function (e) {
 	e.preventDefault();
+	const tableAttach = $("#attachment").DataTable();
 	const row = tableAttach.row($(this).closest("tr"));
 	const data = row.data();
 	const fileName = data.FILE_ORIGINAL_NAME;
@@ -670,6 +675,7 @@ $(document).on("click", ".download-att-client", async function (e) {
 //011: Delete attached file
 $(document).on("click", ".delete-att", function (e) {
 	e.preventDefault();
+	const tableAttach = $("#attachment").DataTable();
 	const row = tableAttach.row($(this).closest("tr"));
 	const data = row.data();
 	if (data.FILE_ID !== undefined) {
