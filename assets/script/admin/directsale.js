@@ -53,45 +53,53 @@ $(async function () {
 $(document).on("click", ".create-simulate", async function (e) {
 	e.preventDefault();
 	try {
+		await showLoader({ show: true });
 		const period = await currentPeriod();
 		const type = $(this).data("id");
-		let data = await getItems();
-		data = data.filter((item) => item.ITEM_STATUS == 1);
+		const dept = [
+			{ id: "EME", code: [1] },
+			{ id: "EEL", code: [2, 5] },
+			{ id: "EAP", code: [3] },
+			{ id: "ESO", code: [6, 7, 8, 9] },
+		];
 		let timelinedata = {
 			INQ_REV: "*",
 			MAR_USER: "16077",
 			MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		};
-
-		if (type == 1) {
-			const dept = [
-				{ id: "EME", code: [1] },
-				{ id: "EEL", code: [2, 5] },
-				{ id: "EAP", code: [3] },
-				{ id: "ESO", code: [6, 7, 8, 9] },
-			];
-			data = data.filter((item) => item.CATEGORY != 99);
-		} else {
-			data = data
-				.filter((item) => item.CATEGORY == 99)
+		let data = await getItems();
+		data = data.filter((item) => item.ITEM_STATUS == 1);
+		for (const d of dept) {
+			const result = data
+				.filter((item) =>
+					d.code.includes(Math.floor(item.ITEM_NO / 100)),
+				)
 				.sort((a, b) => a.ITEM_NO.localeCompare(b.ITEM_NO));
-
 			const header = await setHeader();
-			const details = await setDetails(data);
-			console.log(details);
-			timelinedata = { ...timelinedata };
-			const fomdata = {
-				header,
-				details,
-				timelinedata: { ...timelinedata, INQ_NO: header.INQ_NO },
-			};
-
-			// const inquiry = await createInquiry(fomdata);
-			// await setAS400Data(inquiry);
+			const details = await setDetails(result);
+			let inqid = 1;
+			for (const row of details) {
+				const inqno = `${type == 1 ? "" : "COST-"}${d.id}-${period.current.year}-${period.current.period}H-${inqid}`;
+				const fomdata = {
+					header: {
+						...header,
+						INQ_NO: inqno,
+						INQ_TYPE: type == 1 ? "Price" : "Cost",
+						INQ_SERIES: d.id == "ESO" ? "JSWZ" : "GPSXL",
+					},
+					details: row,
+					timelinedata: { ...timelinedata, INQ_NO: inqno },
+				};
+				const inquiry = await createInquiry(fomdata);
+				await setAS400Data(inquiry);
+				table.row.add(inquiry).draw(false);
+				inqid++;
+			}
 		}
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
+		await showLoader({ show: false });
 	}
 });
 
@@ -102,10 +110,9 @@ async function setHeader() {
 		INQ_STATUS: 30,
 		INQ_DATE: dayjs().format("YYYY-MM-DD"),
 		INQ_TRADER: "Direct",
-		INQ_TYPE: "Price",
-		INQ_SERIES: "JSWZ", //$item == "6" ? "JSWZ" : "GPSXL",
-		INQ_SPEC: "P1050-CO-120-10S/O",
-		INQ_PRDSCH: "201501Z",
+		INQ_PRJNO: `Price list simulation`,
+		INQ_PRDSCH: `201501Z`,
+		INQ_SPEC: `P1050-CO-120-10S/O`,
 		INQ_QUOTATION_TYPE: 5,
 		INQ_DELIVERY_TERM: 1,
 		INQ_DELIVERY_METHOD: 1,
@@ -113,6 +120,7 @@ async function setHeader() {
 		INQ_MAR_PIC: "16077",
 		INQ_MAR_SENT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		CREATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+		UPDATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		CREATE_BY: $("#user-login").attr("empno"),
 		INQ_CUR: "THB",
 		INQ_TCCUR: "THB",
@@ -123,14 +131,18 @@ async function setHeader() {
 async function setDetails(data) {
 	const rows = [];
 	let detail = [];
+	let runno = 0;
 	data.map((item, index) => {
-		if (index > 0 && index % 250 == 0) {
+		if (index > 0 && index % 500 == 0) {
 			rows.push(detail);
 			detail = [];
+			runno = 0;
 		}
 		const val = {
-			INQD_SEQ: index + 1,
-			INQD_RUNNO: index + 1,
+			INQD_SEQ: runno + 1,
+			INQD_RUNNO: runno + 1,
+			INQD_MFGORDER: `STOCK`,
+			INQD_CAR: "99",
 			INQD_ITEM: item.ITEM_NO,
 			INQD_PARTNAME: item.ITEM_NAME,
 			INQD_DRAWING: item.ITEM_DWG,
@@ -150,6 +162,7 @@ async function setDetails(data) {
 			ITEMID: item.ITEM_ID,
 		};
 		detail.push(val);
+		runno++;
 	});
 	rows.push(detail);
 	return rows;
