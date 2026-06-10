@@ -292,6 +292,7 @@ $(document).on("click", "#issue-quotation", async function (e) {
 	e.preventDefault();
 	try {
 		await updatePath({ level: 2, status: 99, obj: $(this) });
+		$(".export-excel-quotation").trigger("click");
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.: ${error.message}`);
