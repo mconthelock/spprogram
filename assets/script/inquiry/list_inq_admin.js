@@ -28,10 +28,10 @@ export async function tableInquiryAdminOption(data, extopt = {}) {
 	// opt.orderFixed = [0, "desc"];
 	opt.order = [
 		[0, "desc"],
-		[1, "desc"],
+		// [1, "desc"],
 	];
 	opt.columns = [
-		{ data: "priority", className: "hidden" },
+		// { data: "priority", className: "hidden" },
 		{ data: "UPDATE_AT", className: "hidden" },
 		{
 			data: "INQ_DATE",
@@ -171,7 +171,7 @@ export async function tableInquiryAdminOption(data, extopt = {}) {
 	};
 
 	opt.initComplete = async function () {
-		const newinq = `<details class="dropdown dropdown-end" open>
+		const newinq = `<details class="dropdown dropdown-end">
             <summary class="btn btn-primary m-1 text-white">Create</summary>
             <ul class="menu dropdown-content bg-base-100 rounded-box z-99 w-52 p-2 shadow-sm">
                 <li><a class="create-simulate" data-id="1" href="#">Price List</a></li>

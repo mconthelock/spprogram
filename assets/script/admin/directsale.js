@@ -27,19 +27,11 @@ $(async function () {
 		let data = await getInquiry({
 			INQ_DATE: `>= ${dayjs().add(-250, "day").format("YYYY-MM-DD")}`,
 			IS_GROUP: 1,
-			// IS_QUOTATION: 1,
-			// quotation: {
-			// 	QUO_VALIDITY: ">= 2026-01-13",
-			// },
 		});
 
 		data = data.filter(
 			(el) => el.INQ_TYPE == "Price" || el.INQ_TYPE == "Cost",
 		);
-		data = data.map((el) => {
-			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
-			return el;
-		});
 		const opt = await tableInquiryAdminOption(data, { new: true });
 		table = await createTable(opt);
 	} catch (error) {
@@ -54,48 +46,15 @@ $(document).on("click", ".create-simulate", async function (e) {
 	e.preventDefault();
 	try {
 		await showLoader({ show: true });
-		const period = await currentPeriod();
 		const type = $(this).data("id");
-		const dept = [
-			{ id: "EME", code: [1] },
-			{ id: "EEL", code: [2, 5] },
-			{ id: "EAP", code: [3] },
-			{ id: "ESO", code: [6, 7, 8, 9] },
-		];
-		let timelinedata = {
-			INQ_REV: "*",
-			MAR_USER: "16077",
-			MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-		};
+
 		let data = await getItems();
 		data = data.filter((item) => item.ITEM_STATUS == 1);
-		for (const d of dept) {
-			const result = data
-				.filter((item) =>
-					d.code.includes(Math.floor(item.ITEM_NO / 100)),
-				)
-				.sort((a, b) => a.ITEM_NO.localeCompare(b.ITEM_NO));
-			const header = await setHeader();
-			const details = await setDetails(result);
-			let inqid = 1;
-			for (const row of details) {
-				const inqno = `${type == 1 ? "" : "COST-"}${d.id}-${period.current.year}-${period.current.period}H-${inqid}`;
-				const fomdata = {
-					header: {
-						...header,
-						INQ_NO: inqno,
-						INQ_TYPE: type == 1 ? "Price" : "Cost",
-						INQ_SERIES: d.id == "ESO" ? "JSWZ" : "GPSXL",
-					},
-					details: row,
-					timelinedata: { ...timelinedata, INQ_NO: inqno },
-				};
-				const inquiry = await createInquiry(fomdata);
-				await setAS400Data(inquiry);
-				table.row.add(inquiry).draw(false);
-				inqid++;
-			}
-		}
+		if (type == 1) data = data.filter((item) => item.CATEGORY != 99);
+		else data = data.filter((item) => item.CATEGORY == 99);
+		if (type == 1) await setPriceDetails(data);
+		else await setCostDetails(data);
+		window.location.reload();
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
@@ -105,12 +64,12 @@ $(document).on("click", ".create-simulate", async function (e) {
 
 async function setHeader() {
 	return {
-		//INQ_NO: `${type == 1 ? "Price" : "Cost"}-${period.current.year}-${period.current.period}H`,
 		INQ_REV: `*`,
 		INQ_STATUS: 30,
 		INQ_DATE: dayjs().format("YYYY-MM-DD"),
 		INQ_TRADER: "Direct",
-		INQ_PRJNO: `Price list simulation`,
+		INQ_PRJNO: `PL-SIMULATE`,
+		INQ_PRJNAME: `Price list simulation`,
 		INQ_PRDSCH: `201501Z`,
 		INQ_SPEC: `P1050-CO-120-10S/O`,
 		INQ_QUOTATION_TYPE: 5,
@@ -166,4 +125,76 @@ async function setDetails(data) {
 	});
 	rows.push(detail);
 	return rows;
+}
+
+async function setCostDetails(data) {
+	let timelinedata = {
+		INQ_REV: "*",
+		MAR_USER: "16077",
+		MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+	};
+	data = data.sort((a, b) => a.ITEM_NO.localeCompare(b.ITEM_NO));
+	const header = await setHeader();
+	const details = await setDetails(data);
+	let inqid = 1;
+	for (const row of details) {
+		if (row.length == 0) continue;
+
+		const inqno = `COST-${dayjs().format("YYYY-MM-DD")}`;
+		const fomdata = {
+			header: {
+				...header,
+				INQ_NO: inqno,
+				INQ_TYPE: "Cost",
+				INQ_SERIES: "GPSXL",
+			},
+			details: row,
+			timelinedata: { ...timelinedata, INQ_NO: inqno },
+		};
+		const inquiry = await createInquiry(fomdata);
+		await setAS400Data(inquiry);
+		inqid++;
+	}
+}
+
+async function setPriceDetails(data) {
+	let timelinedata = {
+		INQ_REV: "*",
+		MAR_USER: "16077",
+		MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+	};
+	const period = await currentPeriod();
+	const dept = [
+		{ id: "EME", code: [1] },
+		{ id: "EEL", code: [2, 5] },
+		{ id: "EAP", code: [3] },
+		{ id: "ESO", code: [6, 7, 8, 9] },
+	];
+
+	for (const d of dept) {
+		const result = data
+			.filter((item) => d.code.includes(Math.floor(item.ITEM_NO / 100)))
+			.sort((a, b) => a.ITEM_NO.localeCompare(b.ITEM_NO));
+		const header = await setHeader();
+		const details = await setDetails(result);
+		let inqid = 1;
+		for (const row of details) {
+			if (row.length == 0) continue;
+
+			const inqno = `${d.id}-${period.current.year}-${period.current.period}H-${inqid}`;
+			const fomdata = {
+				header: {
+					...header,
+					INQ_NO: inqno,
+					INQ_TYPE: type == 1 ? "Price" : "Cost",
+					INQ_SERIES: d.id == "ESO" ? "JSWZ" : "GPSXL",
+				},
+				details: row,
+				timelinedata: { ...timelinedata, INQ_NO: inqno },
+			};
+			const inquiry = await createInquiry(fomdata);
+			await setAS400Data(inquiry);
+			inqid++;
+		}
+	}
 }

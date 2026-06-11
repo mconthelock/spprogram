@@ -43,7 +43,7 @@ export function validateDrawingNo(input) {
 }
 
 export function formatDrawingNo(input) {
-	const basePattern = /^([A-Z0-9\-]{8,9})\s*([G\-][0-9]{2})(.*)$/;
+	const basePattern = /^([A-Z0-9\-]{5,9})\s*([G\-][0-9]{2})(.*)$/;
 	const match = input.match(basePattern);
 	if (!match) return input;
 

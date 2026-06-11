@@ -1057,6 +1057,7 @@ export async function setAS400Data(inq) {
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
 	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
+	//console.log(q601kp2);
 	await addAS400Data({
 		header: q601kp1,
 		detail: q601kp2,
