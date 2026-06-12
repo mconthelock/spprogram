@@ -6,10 +6,13 @@ import { statusColors } from "../inquiry/index.js";
 import { tableOpt } from "../utils.js";
 
 export async function tableInquirySaleOption(data, extopt = {}) {
-	const renderMark = (data) => {
-		let color = data >= 11 ? "text-green-400" : "text-secondary";
+	const renderMark = (status, data) => {
+		if (status >= 30)
+			return `<i class="fi fi-rr-check-circle text-xl justify-center text-green-400"></i>`;
+		let color = data >= 26 ? "text-green-400" : "text-secondary";
 		return `<i class="fi fi-rr-check-circle text-xl justify-center ${color}"></i>`;
 	};
+
 	const pageid = $("#pageid").val();
 	const colors = await statusColors();
 	const opt = { ...tableOpt };
@@ -74,13 +77,12 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			title: "EME",
 			className: "text-center px-[5px] w-[45px] max-w-[45px]",
 			sortable: false,
-			render: (data, type, row) => {
+			render: (data, e, row) => {
 				const des = data.filter(
 					(item) => item.INQG_GROUP === 1 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-				// return renderMark(des[0].INQG_STATUS);
-				return renderMark(row.INQ_STATUS);
+				return renderMark(row.INQ_STATUS, des[0].INQG_STATUS);
 			},
 		},
 		{
@@ -88,13 +90,12 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			title: "EEL",
 			className: "text-center px-[5px] w-[45px] max-w-[45px]",
 			sortable: false,
-			render: (data, type, row) => {
+			render: (data, e, row) => {
 				const des = data.filter(
 					(item) => item.INQG_GROUP === 2 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-				// return renderMark(des[0].INQG_STATUS);
-				return renderMark(row.INQ_STATUS);
+				return renderMark(row.INQ_STATUS, des[0].INQG_STATUS);
 			},
 		},
 		{
@@ -102,13 +103,12 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			title: "EAP",
 			className: "text-center px-[5px] w-[45px] max-w-[45px]",
 			sortable: false,
-			render: (data, type, row) => {
+			render: (data, e, row) => {
 				const des = data.filter(
 					(item) => item.INQG_GROUP === 3 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-				// return renderMark(des[0].INQG_STATUS);
-				return renderMark(row.INQ_STATUS);
+				return renderMark(row.INQ_STATUS, des[0].INQG_STATUS);
 			},
 		},
 		{
@@ -116,13 +116,12 @@ export async function tableInquirySaleOption(data, extopt = {}) {
 			title: "ESO",
 			className: "text-center px-[5px] w-[45px] max-w-[45px]",
 			sortable: false,
-			render: (data, type, row) => {
+			render: (data, e, row) => {
 				const des = data.filter(
 					(item) => item.INQG_GROUP === 6 && item.INQG_LATEST === 1,
 				);
 				if (des.length == 0) return "";
-				// return renderMark(des[0].INQG_STATUS);
-				return renderMark(row.INQ_STATUS);
+				return renderMark(row.INQ_STATUS, des[0].INQG_STATUS);
 			},
 		},
 		{
