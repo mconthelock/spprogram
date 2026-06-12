@@ -292,7 +292,6 @@ $(document).on("click", "#issue-quotation", async function (e) {
 	e.preventDefault();
 	try {
 		await updatePath({ level: 2, status: 99, obj: $(this) });
-		$(".export-excel-quotation").trigger("click");
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.: ${error.message}`);
@@ -343,6 +342,7 @@ async function updatePath(opt) {
 		// console.log(details);
 		await verifyDetail(table, details, opt.level);
 		await activatedBtnRow($(this));
+		await showLoader();
 		let deleteLine = [];
 		let deleteFile = [];
 		const timelinedata = await setTimelineData();
@@ -358,6 +358,7 @@ async function updatePath(opt) {
 		};
 		const inquiry = await updateInquiry(fomdata);
 		const quo = await createQuotation(await setQuotationData(inquiry));
+		await exportquo.exportQuotationExcelByInquiryId(inquiry.INQ_ID);
 		window.location.replace(
 			`${process.env.APP_ENV}/mar/quotation/detail/${inquiry.INQ_ID}/3/`,
 		);
@@ -365,6 +366,7 @@ async function updatePath(opt) {
 		console.log(error);
 		//await activatedBtnRow(opt.obj, false);
 		await showMessage(`Something went wrong.`);
+		await showLoader({ show: false });
 	}
 }
 
