@@ -24,15 +24,6 @@ $(async function () {
 		let data = await getInquiry({
 			INQ_DATE: `>= ${dayjs().add(-60, "day").format("YYYY-MM-DD")}`,
 			IS_GROUP: 1,
-			// IS_QUOTATION: 1,
-			// quotation: {
-			// 	QUO_VALIDITY: ">= 2026-01-13",
-			// },
-		});
-
-		data = data.map((el) => {
-			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
-			return el;
 		});
 		const opt = await tableInquiryAdminOption(data);
 		table = await createTable(opt);
