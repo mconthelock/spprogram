@@ -14,7 +14,7 @@ import {
 	getTemplate,
 	exportExcel,
 } from "../service/index.js";
-import { dataFilter, dataExports } from "./data.js";
+import { dataFilter, dataExports, finApproveStatus } from "./data.js";
 import { initApp } from "../utils.js";
 
 var table;
@@ -29,6 +29,7 @@ $(async function () {
 			INQ_STATUS: ">= 30 && < 46",
 			IS_TIMELINE: 1,
 		};
+		if (pageid == "3") q = { ...q, IS_DETAILS: 1 };
 		let data = await getInquiry(q);
 		data = await dataFilter(data, pageid);
 		const opt = await tableInquiryFinOption(data);
@@ -110,7 +111,7 @@ $(document).on("click", ".process-btn", async function (e) {
 			};
 		}
 		await updateInquiryTimeline(datatimeline);
-		window.location.replace(
+		window.location.href(
 			`${process.env.APP_ENV}/fin/inquiry/detail/${row.INQ_ID}/${pageid}/`,
 		);
 	} catch (error) {
@@ -145,9 +146,9 @@ $(document).on("click", "#export1", async function (e) {
 	}
 });
 
-$(document).on("click", "#approveAll", async function (e) {
+$(document).on("click", ".approval", async function (e) {
 	e.preventDefault();
-	const action = $(this).attr("data-action");
+	let action = $(this).attr("data-action");
 	try {
 		const data = table
 			.rows()
@@ -160,6 +161,7 @@ $(document).on("click", "#approveAll", async function (e) {
 		}
 		await activatedBtnRow($(this));
 		for (const row of data) {
+			if (action == "45") action = await finApproveStatus(row.details);
 			await updateInquiryHeader(
 				{ INQ_STATUS: action, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
 				row.INQ_ID,
@@ -186,9 +188,4 @@ $(document).on("click", "#approveAll", async function (e) {
 		await showMessage(`Something went wrong.`);
 		await activatedBtnRow($(this), false);
 	}
-});
-
-$(document).on("click", "#rejectAll", function () {
-	const checked = $(this).is(":checked");
-	$(".select-row").prop("checked", checked).trigger("change");
 });

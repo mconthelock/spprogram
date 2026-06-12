@@ -1152,9 +1152,10 @@ export async function finalStatus(details) {
 	let isUnreply = false;
 	let status = 30;
 	details.map((detail) => {
-		if (detail.INQD_SUPPLIER == "AMEC") isAmec = true;
-		if (detail.INQD_SUPPLIER == "MELINA") isMelina = true;
-		if (detail.INQD_UNREPLY) isUnreply = true;
+		if (detail.INQD_SUPPLIER == "AMEC" && detail.INQD_UNREPLY == null)
+			isAmec = true;
+		if (detail.INQD_SUPPLIER == "MELINA" && detail.INQD_UNREPLY == null)
+			isMelina = true;
 		return detail;
 	});
 	if (!isAmec && !isMelina) status = 50;
