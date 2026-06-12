@@ -360,6 +360,8 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 
 async function updatePath(opt) {
 	try {
+		const details = table.rows().data().toArray();
+		if (opt.status == 45) opt.status = await finApproveStatus(row.details);
 		const header = {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),
@@ -367,11 +369,9 @@ async function updatePath(opt) {
 			INQ_FIN_REMARK: $("#fin-remark").val(),
 			INQ_STATUS: opt.status,
 		};
-		const details = table.rows().data().toArray();
 		const filteredDetails = details.filter(
 			(dt) => dt.INQD_SUPPLIER == "AMEC",
 		);
-
 		const timelinedata = {
 			...opt.timeline,
 			INQ_NO: $("#inquiry-no").val(),

@@ -195,7 +195,7 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 			id: "approveAll",
 			title: "Approve All",
 			icon: "fi fi-br-check text-xl",
-			className: `btn-primary text-white hover:shadow-lg`,
+			className: `btn-primary text-white hover:shadow-lg approval`,
 			other: "data-action='45'",
 		});
 
@@ -203,7 +203,7 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 			id: "rejectAll",
 			title: "Reject All",
 			icon: "fi fi-ts-circle-xmark text-xl",
-			className: `btn-error text-white hover:shadow-lg`,
+			className: `btn-error text-white hover:shadow-lg approval`,
 			other: "data-action='42'",
 		});
 

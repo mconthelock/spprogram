@@ -3,7 +3,7 @@
 @section('contents')
     <input type="text" id="inquiry-id" value="{{ $id }}" class="hidden">
     <input type="text" id="inquiry-mode" value="{{ $mode }}" class="hidden">
-    <button type="button" data-id="{{ $id }}" class="export-excel-quotation hiddenx">Yo</button>
+    <button type="button" data-id="{{ $id }}" class="export-excel-quotation hidden">Yo</button>
     <h2 class="card-title text-2xl" id="inquiry-title"></h2>
     <div class="divider m-0"></div>
     <main id="form-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6 font-xs" data="{{ $list }}">
