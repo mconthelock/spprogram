@@ -23,7 +23,8 @@ export function validateDrawingNo(input) {
 	}
 
 	dwg = formatDrawingNo(input);
-	const fullPattern = /^([A-Z0-9]{8,9}) ([G\-][0-9]{2})((?: L[0-9]{2,3})*)$/;
+	const fullPattern =
+		/^([A-Z0-9]{8,9}) ((?:G[0-9]{2}|\-[0-9]{3}))((?: L[0-9]{2,3})*)$/;
 	if (fullPattern.test(dwg)) {
 		const spaceMatch = dwg.match(/ /g);
 		const firstSpaceIndex = dwg.indexOf(" ");
@@ -43,7 +44,7 @@ export function validateDrawingNo(input) {
 }
 
 export function formatDrawingNo(input) {
-	const basePattern = /^([A-Z0-9\-]{5,9})\s*([G\-][0-9]{2})(.*)$/;
+	const basePattern = /^([A-Z0-9\-]{5,9})\s*((?:G[0-9]{2}|\-[0-9]{3}))(.*)$/;
 	const match = input.match(basePattern);
 	if (!match) return input;
 

@@ -240,7 +240,7 @@ export async function createFieldInput(field) {
 			const textarea = `<textarea name="${field.name}"
         id="${field.id}" class="textarea w-full ${
 			field.class !== undefined ? field.class : ""
-		}" data-mapping="${field.mapping}"></textarea>`;
+		}" data-mapping="${field.mapping}">${field.value && field.value != null ? field.value : ""}</textarea>`;
 			inputContainer.innerHTML = textarea;
 			break;
 
@@ -320,7 +320,7 @@ export async function createFieldInput(field) {
 				field.class ? field.class : ""
 			}" id="${field.id ? field.id : ""}" name="${
 				field.name ? field.name : ""
-			}" value="${field.value ? field.value : ""}"/>`;
+			}" value="${field.value && field.value != null ? field.value : ""}"/>`;
 			inputContainer.innerHTML = hidden;
 			break;
 
@@ -332,7 +332,7 @@ export async function createFieldInput(field) {
 				field.class !== undefined ? field.class : ""
 			}" data-id="${field.id}">${text}</p>`;
 			//if (field.input)
-			staticText += `<input type="text" class="hidden" name="${field.name}" value="${field.value}" id="${field.id}" autocomplete="off"/>`;
+			staticText += `<input type="text" class="hidden" name="${field.name}" value="${field.value && field.value != null ? field.value : ""}" id="${field.id}" autocomplete="off"/>`;
 			inputContainer.innerHTML = staticText;
 			break;
 
@@ -341,11 +341,7 @@ export async function createFieldInput(field) {
             <input type="${field.type}" id="${field.id}"
                 name="${field.name !== undefined ? field.name : field.id}"
                 class="w-full ${field.class !== undefined ? field.class : ""}"
-                value="${
-					field.value === undefined || field.value == null
-						? ""
-						: field.value
-				}"
+                value="${field.value && field.value != null ? field.value : ""}" autocomplete="off"
                 maxlength="${
 					field.maxlength !== undefined ? field.maxlength : ""
 				}"
@@ -1057,7 +1053,7 @@ export async function setAS400Data(inq) {
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
 	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
-	//console.log(q601kp2);
+	// console.log(q601kp2);
 	await addAS400Data({
 		header: q601kp1,
 		detail: q601kp2,
