@@ -79,7 +79,7 @@ async function quotationPart(inq) {
 		if (
 			mode < 3 &&
 			inq[0].timeline.PKC_CONFIRM == null &&
-			inq[0].INQ_STATUS != 50
+			(inq[0].INQ_STATUS == 45 || inq[0].INQ_STATUS == 51)
 		) {
 			mode = 3;
 		}
