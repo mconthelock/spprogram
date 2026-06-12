@@ -92,6 +92,8 @@ export async function setAS400Detail(INQ_NO, details) {
 			drawingFields[key] = part;
 		});
 
+		drawingFields["Q6K206"] =
+			drawingFields["Q6K206"].length > 9 ? "" : drawingFields["Q6K206"];
 		const targetData = {
 			Q6K201: INQ_NO,
 			Q6K202: el.INQD_RUNNO,

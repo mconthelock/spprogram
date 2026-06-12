@@ -200,26 +200,30 @@ async function sheet1(workbook, data) {
 
 	let i = 17;
 	let j = 1;
-	const sheets = data.sheet;
+	const sheets = data.orders;
 	sheets.forEach((val) => {
-		const item = data.details.find((el) => el.INQD_SEQ === val.LINENO);
-		const ordpart = data.orders.find((el) => el.ELV_NO === val.ELVNO);
+		const item = data.details.find(
+			(el) =>
+				el.INQD_DRAWING.replace(/\s/g, "") ===
+				val.DWGNO_MELTEC.replace(/\s/g, ""),
+		);
+		//const ordpart = data.orders.find((el) => el.ELV_NO === val.ELVNO);
 		if (j > 14) {
 			cloneRows(sheet, 17, i);
 			mergedCells(sheet, i);
 		}
-		sheet.getCell(i, 1).value = val.LINENO;
+		sheet.getCell(i, 1).value = item.INQD_SEQ;
 		sheet.getCell(i, 2).value = val.ELVNO;
 		sheet.getCell(i, 3).value = item.INQD_ITEM;
 		sheet.getCell(i, 5).value = item.INQD_PARTNAME;
 		sheet.getCell(i, 8).value = item.INQD_DRAWING;
 		sheet.getCell(i, 11).value = item.INQD_VARIABLE;
-		sheet.getCell(i, 14).value = val.CSQTY;
+		sheet.getCell(i, 14).value = val.QTY;
 		sheet.getCell(i, 15).value = item.INQD_UM;
 		sheet.getCell(i, 16).value = "";
-		sheet.getCell(i, 18).value = ordpart.MFGNO;
+		sheet.getCell(i, 18).value = val.MFGNO;
 		sheet.getCell(i, 21).value = getSchedule(val.MARREQPRDN);
-		sheet.getCell(i, 23).value = getSchedule(ordpart.AMEC_SCHDL);
+		sheet.getCell(i, 23).value = getSchedule(val.AMEC_SCHDL);
 		i++;
 		j++;
 	});

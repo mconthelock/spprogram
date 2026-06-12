@@ -34,7 +34,7 @@ $(async function () {
 			el.priority = [4, 27].includes(el.INQ_STATUS) ? 100 : 0;
 			return el;
 		});
-		const opt = await tableInquiryAdminOption(data, { new: true });
+		const opt = await tableInquiryAdminOption(data);
 		table = await createTable(opt);
 	} catch (error) {
 		console.log(error);

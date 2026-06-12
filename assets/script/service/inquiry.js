@@ -323,6 +323,7 @@ export const updateInquiryTimeline = async (data) => {
 
 //Align data for export excel
 export const dataExports = async (data) => {
+	console.log(data);
 	const details = [];
 	data.forEach(async (el) => {
 		const exchangeRate =
