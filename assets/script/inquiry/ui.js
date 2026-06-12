@@ -90,9 +90,9 @@ export async function createReasonModal() {
         </div>
         <div>
             <fieldset class="fieldset">
-                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other" maxlength="100"></textarea>
+                <textarea class="textarea w-full text-comment" placeholder="Explain why can't reply this line" id="text-comment-other" maxlength="1000"></textarea>
                 <div class="label text-xs justify-start text-red-500 text-comment-err"></div>
-                <div class="label text-xs justify-end"><span id="text-count">0</span>/100</div>
+                <div class="label text-xs justify-end"><span id="text-count">0</span>/1000</div>
             </fieldset>
         </div>
       </li>`;
@@ -568,14 +568,14 @@ $(document).on("keyup", ".text-comment", async function () {
 	$("#text-count").removeClass("text-red-500");
 	const txt = $(this).val();
 	let cnt = $(this).val().length;
-	if (cnt > 100) {
+	if (cnt > 1000) {
 		$("#text-count").addClass("text-red-500");
-		$(this).val(txt.substring(0, 100));
+		$(this).val(txt.substring(1000));
 		$(this).addClass("border-red-500");
 		$(this)
 			.closest("li")
 			.find(".text-comment-err")
-			.html(`Maximun is 100 charactors.`);
+			.html(`Maximun is 1000 charactors.`);
 		return;
 	}
 	$("#text-count").html(cnt);
