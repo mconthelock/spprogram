@@ -111,9 +111,7 @@ $(document).on("click", ".process-btn", async function (e) {
 			};
 		}
 		await updateInquiryTimeline(datatimeline);
-		window.location.href(
-			`${process.env.APP_ENV}/fin/inquiry/detail/${row.INQ_ID}/${pageid}/`,
-		);
+		window.location.href = `${process.env.APP_ENV}/fin/inquiry/detail/${row.INQ_ID}/${pageid}/`;
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
