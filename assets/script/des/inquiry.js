@@ -58,7 +58,7 @@ async function query() {
 						// );
 						return (
 							g.INQG_GROUP == desgroup &&
-							g.INQG_STATUS < 20 &&
+							g.INQG_STATUS <= 20 &&
 							g.INQG_ASG_DATE == null
 						);
 					});

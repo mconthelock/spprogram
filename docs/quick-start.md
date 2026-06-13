@@ -2,46 +2,78 @@
 outline: deep
 ---
 
-# Overview
+# Get Started
 
-::: info 🎯 ภาพรวมระบบ
-SP PROGRAM เป็นระบบบริหารกระบวนการตั้งแต่รับความต้องการจากลูกค้า ไปจนถึงการเตรียมราคาและออกใบเสนอราคา โดยเชื่อมการทำงานของหลายฝ่ายเข้าด้วยกันใน workflow เดียว ทำให้แต่ละทีมเห็นสถานะงานของตนเองชัดเจน ลดการส่งต่อข้อมูลแบบกระจัดกระจาย และช่วยให้การคำนวณราคาเป็นมาตรฐานมากขึ้น
-:::
+## กระบวนการทำงานของระบบ SP Program ถูกแบ่งออกเป็น 5 ระยะหลัก ดังนี้:
 
-<ImagePopup src="./images/home.png" alt="Home Page" caption="SP Program" />
+### ระยะที่ 1: การรับเรื่องและบันทึกข้อมูลเบื้องต้น (Initiation by MAR)
 
-## วัตถุประสงค์ของระบบ
+แผนก MAR ได้รับความต้องการทางเทคนิค (Technical Inquiry - T/I) จากลูกค้า บันทึกข้อมูล T/I เข้าสู่ระบบ SP Program และระบบจะส่งข้อมูลไปยังแผนก Sale โดยอัตโนมัติ
 
-ระบบนี้ถูกออกแบบมาเพื่อเป็นศูนย์กลางของงานเชิงพาณิชย์ของโครงการ ช่วยให้ทีม Sale, Design, Finance และ MAR ทำงานต่อเนื่องกันตั้งแต่การสร้าง Inquiry การตรวจสอบข้อมูลทางเทคนิค การคำนวณต้นทุน การอนุมัติราคา ไปจนถึงการออก Quotation ให้ลูกค้า
+### ระยะที่ 2: การตรวจสอบและยืนยันแบบ (Drawing Declaration)
 
-## กระบวนการหลักของธุรกิจ
+ระยะนี้จะมีการประเมินแบบ (Drawing) เพื่อยืนยันความสามารถในการผลิต โดยแบ่งเงื่อนไขการทำงานดังนี้:
 
-1. รับความต้องการของลูกค้าเข้าระบบเป็น Inquiry
-2. ส่งต่อให้ทีมที่เกี่ยวข้องตรวจสอบแบบ รายการสินค้า และข้อมูลประกอบ
-3. ให้ฝ่ายการเงินคำนวณต้นทุนและกำหนดราคาขาย
-4. ตรวจสอบและอนุมัติราคาให้พร้อมใช้งานเชิงพาณิชย์
-5. ส่งต่อให้ทีมการตลาดหรือฝ่ายขายนำไปออกใบเสนอราคาและติดตามงานต่อ
+- **ส่วนของแผนก Sale:**
+    - Sale Leader ทำการพิจารณารายการ Drawing ใน T/I เบื้องต้น
 
-## บทบาทของผู้ใช้งาน
+    **กรณีที่ 1:** หากพิจารณาแล้วว่าแผนก Sale สามารถตรวจสอบได้ จะทำการมอบหมายงาน (Assign) ให้ Sale Engineer เป็นผู้ดำเนินการ Declare Drawing เพื่อยืนยันว่าสามารถสั่งผลิตได้และข้อมูลถูกต้องตามโปรเจกต์ต้นฉบับ
 
-- MAR เป็นผู้เริ่มต้นข้อมูลและรวบรวมความต้องการจากลูกค้า
-- SE/SALE รับผิดชอบในการตรวจสอบรายการ Drawing ที่ลูกค้าต้องการ โดยอ้างอิงจาก Original Order เป็นหลัก
-- D/E หรือทีมเทคนิคช่วยยืนยันข้อมูลด้านแบบ รายการ และความถูกต้องของข้อมูลผลิตภัณฑ์ต่อจากแผนก SE ในกรณีที่แผนก SE ไม่สามารถยืนยันรายการเหล่านั้นได้
-- Finance คำนวณต้นทุน กำไร และราคาต่อหน่วยก่อนส่งต่อ
-- MAR รับช่วงงานเพื่อจัดการใบเสนอราคา ติดตามสถานะ และสื่อสารกับลูกค้า
+    **กรณีที่ 2:** หากพิจารณาแล้วว่าเกินขอบเขตที่ Sale Engineer จะตรวจสอบได้ ระบบจะให้สิทธิ์ Sale Leader ในการส่งรายการ T/I นั้นข้ามไปยัง แผนก Design ทันที
 
-## Change log
+    ในระหว่างที่ Sale Engineer ดำเนินการ หากพบว่ามีบางรายการ Drawing ที่ไม่สามารถ Declare ได้ด้วยตนเอง สามารถทำการส่งต่อ (Escalate) เฉพาะรายการนั้นไปยัง แผนก Design ได้
 
-### Update 2026-06-03
+- **ส่วนของแผนก Design (กรณีได้รับมอบหมายงานจาก Sale):**
+    - Design Leader ได้รับรายการ T/I จากนั้นจะทำการมอบหมายงานให้ Designer (ผู้รับผิดชอบหลัก) และ Checker (ผู้ตรวจสอบ)
 
-- ปรับโครงสร้าง Front end มาใช้ Tailwind
-- เปลี่ยนระบบ Authentication มาเป็น New Webflow base
-- เพิ่ม SE เป็นผู้ใช้กลุ่มหลักที่มาทำงานแทน D/E
-- เปลี่ยนให้ DE ทำงานเฉพาะรายการที่ Sale Foreward ไป
-- ดึงรายการ Secoundary Part List จาก Elmes มาใส่ใน Inquiry List ในกรณีที SE หรือ DE ระบุว่า Drawing นั้นมี Secound
-- ทุกรายการที่ส่งไป Fin จะมีการ Matching ราคาก่อน
-- เปลี่ยน Template **Out to out** ([IS-DEV26-000143](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=143))
-- เปลี่ยน Template import tsv file จาก Sparq เพือนำข้อมูลเข้ารบบ SP Program ([IS-DEV26-000114](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=114&empno=12069&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp&menu=2))
-- ระบบจะแจ้งเตือน FIN User ในกรณ๊ที่ Confirm ราคาเป็น 0 หรือ "" แล้วไม่มี Remark ([IS-DEV26-000088](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/index.asp?no=5&orgNo=050601&y=14&y2=2026&runNo=88&empno=12069&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp&menu=2))
-- Inquiry Report สำหรับ MAR User เพิ่ม Currency, Exchange Rate และ Column ที่เป็นวันที่ Format Excel จะเป็น "Date" ([IS-DEV25-000497](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/view-form.asp?no=5&orgNo=050601&y=14&empNo=12069&y2=2025&runNo=497&m=&menu=2&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp))
-- Auto Export excel เพื่อให้ User นำไปใช้ทำ Power BI ทุกวันศุกร์ ([IS-DEV25-000407](http://webflow.mitsubishielevatorasia.co.th/form/is/swDev/view-form.asp?no=5&orgNo=050601&y=14&empNo=12069&y2=2025&runNo=407&m=&menu=2&bp=%2Fform%2Fworkflow%2FwaitApv%2Easp))
+    - Designer ทำการตรวจสอบและ Declare Drawing ในรายการที่ถูกส่งมา จากนั้นส่งข้อมูลต่อให้ Checker
+
+    - Checker ทำการตรวจสอบความถูกต้องขั้นสุดท้ายและยืนยัน (Confirm) ข้อมูลในระบบ
+
+### ระยะที่ 3: การประมวลผลข้อมูล Material (Pre-B/M Integration)
+
+- เมื่อรายการ T/I ทั้งหมดได้รับการยืนยัน (Confirm) สำเร็จแล้ว (ไม่ว่าจะจบที่แผนก Sale หรือแผนก Design)
+
+- ระบบ SP Program จะส่งข้อมูลไปเชื่อมต่อกับ ระบบ AS400 เพื่อทำกระบวนการ Pre-B/M (Pre-Bill of Materials) เป็นการยืนยันข้อมูลรายการวัสดุ
+
+- หลังจาก AS400 ประมวลผลเสร็จสิ้น ข้อมูลจะถูกส่งต่อไปยังส่วนงาน Finance โดยอัตโนมัติ
+
+### ระยะที่ 4: การจัดทำและอนุมัติราคา (Costing & Pricing by Finance)
+
+- Finance (ผู้จัดทำ) ได้รับข้อมูลจากระบบ AS400 ทำการตรวจสอบต้นทุนและประเมินราคางาน จากนั้นบันทึกยืนยันราคาในระบบเพื่อส่งต่อให้ผู้ตรวจสอบ
+
+- Finance Checker ทำการตรวจสอบความถูกต้องของราคาที่คำนวณไว้ และกดส่งเรื่องเพื่อขออนุมัติ
+
+- Finance Manager ทำการพิจารณาอนุมัติ (Approve) ราคา เมื่ออนุมัติแล้ว ระบบจะส่งข้อมูลผลลัพธ์กลับไปยังแผนก MAR
+
+### ระยะที่ 5: การออกใบเสนอราคาและปิดกระบวนการ (Quotation & Closure)
+
+แผนก MAR ได้รับข้อมูลราคาที่ผ่านการอนุมัติเรียบร้อยแล้ว ดำเนินการออกใบเสนอราคา (Quotation) และบันทึกข้อมูลในระบบเพื่อเป็นหลักฐานว่าสถานะของ T/I ฉบับนี้เสร็จสมบูรณ์ (Completed)
+
+<ImagePopup src="./images/Flow.png" alt="Work flow" caption="SP Program workflow" />
+
+## User Interface
+
+### Inquiry List
+
+## Inquiry Status
+
+| Status                           | Detail                                                      |
+| -------------------------------- | ----------------------------------------------------------- |
+| New                              | MAR สร้างและกด Send to D/E                                  |
+| Revised                          | MAR แก้ไขข้อมูลหลังจาก Declare แล้ว                         |
+| FIN Return                       | Finance reject/return กลับมาให้ MAR แก้ไน                   |
+| Sale Processing (Assign)         | อยู่ระหว่างแผนก Sale กำลังทำงาน                             |
+| Sale Confirmed                   | Sale Confirm บางส่วน และส่งต่อไปยัง D/E                     |
+| Skipped sale's process           | Sale ส่งต่อไปยัง D/E ทุกรายการ                              |
+| Design Processing                | Design กำลังทำงาน                                           |
+| Pending Pre-BM                   | ถูกส่งให้ AS400 แล้ว แต่ยังไม่รัน Pre-B/M                   |
+| BM Complete                      | รัน Pre-B/M แล้ว                                            |
+| MAR Return                       | MAR Reject/Return ราคากลับไปที่ Finance                     |
+| Finance Processing               | Finance กำลังทำงาน                                          |
+| Price Approved                   | Finance ยืนยันราคาแล้ว และทุกรายการ Supply โดย AMEC         |
+| Price Approved/Unable to process | Finance ยืนยันราคาแล้ว มีบางรายการที่ไม่ได้ Supply โดย AMEC |
+| Other Supplier                   | รายการที่ไม่ได้ Supply โดย AMEC                             |
+| Old series                       | ทุกรายการ Supply โดย MELINA                                 |
+| Unable Issue Quotation           | ยกเลิก/ไม่เสนอราคา                                          |
+| Issue Quotation                  | Issue Quotation แล้ว                                        |

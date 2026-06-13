@@ -25,11 +25,12 @@ export default defineConfig({
 		},
 		nav: [
 			{ text: "Home", link: "/" },
-			{ text: "Guide", link: "/quick-start" },
+			{ text: "Guide", link: "/overview" },
 		],
 		sidebar: {
 			"/": [
-				{ text: "Overview", link: "/quick-start" },
+				{ text: "Overview", link: "/overview" },
+				{ text: "Get Started", link: "/quick-start" },
 				{
 					text: "MAR User Guide",
 					link: "/mar/inquiry-new",
