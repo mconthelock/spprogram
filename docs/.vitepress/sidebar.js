@@ -52,7 +52,20 @@ const mar = [
 		],
 	},
 ];
-const sale = [];
+const sale = [
+	{
+		text: "Assign Sale Engineer",
+		link: "/sale/assign",
+	},
+	{
+		text: "Declare Inquiry",
+		link: "/sale/declare",
+	},
+	{
+		text: "Report",
+		link: "/sale/report",
+	},
+];
 const de = [
 	{
 		text: "Assign Designer",
