@@ -112,7 +112,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_TC_BASE",
 			title: "%TC",
-			className: `w-12 min-w-12 cell-display border-r!`,
+			className: `w-12 min-w-12 cell-display border-r! bg-primary/20`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -123,7 +123,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-32 min-w-32 cell-display border-r! bg-primary/20`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -132,10 +132,10 @@ export async function tablePartOption(data = [], ratio = {}) {
 			},
 		},
 		//VPC COST
-		/*{
+		{
 			data: "INQD_TC_COST",
 			title: `VPC Cost`,
-			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
+			className: `w-24 min-w-24 border-r! bg-pink-200/30! text-end cell-display vpc`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -146,7 +146,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_TC_BASE",
 			title: "%VPC",
-			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
+			className: `w-24 min-w-24 border-r! bg-pink-200/30! text-end cell-display vpc`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -157,18 +157,18 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "VPC Price",
-			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end cell-display vpc`,
+			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/30! text-end cell-display vpc`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
 				}
 				return data;
 			},
-		},*/
+		},
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/30!`,
 			render: function (data, type, row) {
 				const price = intVal(data) * intVal(row.INQD_QTY);
 				if (type === "display") {
@@ -237,6 +237,11 @@ export async function tablePartOption(data = [], ratio = {}) {
 		let totalfccost = 0;
 		let totaltccost = 0;
 		let totalunit = 0;
+
+		let totalvpcfccost = 0;
+		let totalvpctccost = 0;
+		let totalvpcunit = 0;
+
 		let total = 0;
 		data.map((el) => {
 			const type = el.INQD_SUPPLIER === "MELINA" ? 1 : 0;
@@ -245,6 +250,11 @@ export async function tablePartOption(data = [], ratio = {}) {
 			totalfccost += intVal(el.INQD_FC_COST);
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
+
+			totalvpcfccost += intVal(el.INQD_FC_COST);
+			totalvpctccost += intVal(price.tccost);
+			totalvpcunit += intVal(price.unitprice);
+
 			total += intVal(price.amount);
 			// console.log(price, total);
 		});
@@ -252,7 +262,10 @@ export async function tablePartOption(data = [], ratio = {}) {
 		api.column(11).footer().innerHTML = "";
 		api.column(13).footer().innerHTML = showDigits(totaltccost, 0);
 		api.column(15).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(16).footer().innerHTML = showDigits(total, 0);
+
+		api.column(16).footer().innerHTML = showDigits(totalvpctccost, 0);
+		api.column(18).footer().innerHTML = showDigits(totalvpcunit, 0);
+		api.column(19).footer().innerHTML = showDigits(total, 0);
 	};
 	return opt;
 }

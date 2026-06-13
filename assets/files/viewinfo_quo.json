@@ -1,5 +1,5 @@
 {
-    "id": "viewinfo",
+    "id": "viewinfo_quo",
     "title": "Inquiry Information",
     "fields": [
         {
@@ -31,11 +31,10 @@
         {
             "label": "Trader",
             "id": "trader",
-            "type": "staticText",
-            "class": "view-data",
-            "mapping": "INQ_TRADER",
+            "type": "select",
             "name": "INQ_TRADER",
-            "input": true
+            "class": "req-2 s2",
+            "source": "getTraders"
         },
         {
             "label": "Agent",
