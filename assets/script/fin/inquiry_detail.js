@@ -22,6 +22,7 @@ import {
 	getItems,
 	currentPeriod,
 } from "../service/index.js";
+import { finApproveStatus } from "./data.js";
 
 var table;
 $(async function () {
@@ -296,12 +297,11 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 		const pageid = $("#page-id").val() || "4";
 		const action = intVal($(this).attr("data-action"));
 		const isDraft = $(this).hasClass("btn-draft");
+		const details = table.rows().data().toArray();
 		if (action == 43) {
-			const details = table.rows().data().toArray();
 			const filteredDetails = details.filter(
 				(dt) => dt.INQD_SUPPLIER == "AMEC",
 			);
-			// console.log(filteredDetails);
 			const totalPrice = filteredDetails.reduce(
 				(acc, cur) =>
 					acc + intVal(cur.INQD_TC_COST) * intVal(cur.INQD_QTY),
@@ -335,12 +335,18 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 				action == 45 ? new Date() : $("#fmn-confirm-date").val(),
 		};
 
+		let status = action;
+		if (action == 45) {
+			const inq = await getInquiry({
+				INQ_ID: $("#inquiry-id").val(),
+				IS_DETAILS: true,
+			});
+			status = await finApproveStatus(inq[0].details);
+		}
+
 		await showLoader({ show: true });
 		await activatedBtnRow($(this));
-		const inquiry = await updatePath({
-			status: action,
-			timeline: timeline,
-		});
+		const inquiry = await updatePath({ status, timeline });
 		if (!inquiry) throw new Error("Failed to update inquiry");
 		if (!isDraft)
 			window.location.replace(
@@ -361,7 +367,6 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 async function updatePath(opt) {
 	try {
 		const details = table.rows().data().toArray();
-		if (opt.status == 45) opt.status = await finApproveStatus(row.details);
 		const header = {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),
