@@ -79,7 +79,7 @@ export default defineConfig({
 					{
 						theme: "alt",
 						text: "User Guide",
-						link: "/quick-start",
+						link: "/overview",
 					},
 				],
 			};

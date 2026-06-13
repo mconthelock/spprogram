@@ -56,6 +56,23 @@ outline: deep
 
 ### Inquiry List
 
+User แต่ละกลุ่มจะมีหน้าจอหลักหลักสำหรับทำงานเป็นหน้าจอแสดงรายการ Inquiry ซึ่งจำหน้าที่ List รายการ Inquiry ที่ผู้ใช้กลุ่มนั้น หรือคนนั้นจะต้อง Action ด้วย และ Function ที่ปรากฏก็จะขึ้นอยู่กับ User นั้นด้วย
+
+ส่วนประกอบหลักของ Inquiry List จะแบ่งออกเป็น 4 ส่นดังนี้
+
+**1. Inquiry Info** จะแสดงข้อมูลเบื้องต้นของ Inquiry นั้น
+
+**2. Status** แสดงสถานะของ Inquiry
+
+**3. Concern Designer** บ่งบอกว่า Inquiry นั้น เกียวกับ Item กลุ่มใดบ้าง และแต่ละกลุ่ม Confirm แล้วหรือยัง
+
+- **สีส้ม** หมายถึง กำลังทำงานอยู่ 🔃
+- **สีเขียว** หมายถึง Declare แล้ว ✅
+
+**4.Action** Action ที่ User คนนั้นสามารถดำเนินการได้
+
+<ImagePopup src="./images/iqlist.png" alt="Work flow" caption="SP Program interface" />
+
 ## Inquiry Status
 
 | Status                           | Detail                                                      |
