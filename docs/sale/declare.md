@@ -1,0 +1,17 @@
+---
+outline: deep
+---
+
+# Declare inquiry
+
+::: info 🎯
+ขั้นตอนการ Assign sale enginner เป็นการแบ่งงานไปยัง Sale แต่ละคน
+:::
+
+## Inquiry List
+
+<ImagePopup src="../images/sale/list-2.png" alt="" caption="SP Program" />
+
+## Inquiry Detail
+
+<ImagePopup src="../images/sale/detail-2.png" alt="" caption="SP Program" />

@@ -37,7 +37,7 @@ export default defineConfig({
 				},
 				{
 					text: "Sale User Guide",
-					link: "/sale/inquiry",
+					link: "/sale/assign",
 				},
 				{
 					text: "D/E User Guide",
