@@ -26,7 +26,7 @@ $(async function () {
 
 		const pageid = $("#pageid").val() || "1";
 		let q = {
-			INQ_STATUS: ">= 30 && < 46",
+			INQ_STATUS: ">= 30 && < 45",
 			IS_TIMELINE: 1,
 		};
 		if (pageid == "3") q = { ...q, IS_DETAILS: 1 };
@@ -146,7 +146,8 @@ $(document).on("click", "#export1", async function (e) {
 
 $(document).on("click", ".approval", async function (e) {
 	e.preventDefault();
-	let action = $(this).attr("data-action");
+	const action = $(this).attr("data-action");
+	let status = action;
 	try {
 		const data = table
 			.rows()
@@ -159,7 +160,7 @@ $(document).on("click", ".approval", async function (e) {
 		}
 		await activatedBtnRow($(this));
 		for (const row of data) {
-			if (action == "45") action = await finApproveStatus(row.details);
+			if (action == "45") status = await finApproveStatus(row.details);
 			await updateInquiryHeader(
 				{ INQ_STATUS: action, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
 				row.INQ_ID,

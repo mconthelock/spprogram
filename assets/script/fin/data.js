@@ -99,11 +99,12 @@ export const dataFilter = async (data, page) => {
 export async function finApproveStatus(details) {
 	let isAmec = true;
 	let status = 45;
-	details.map((detail) => {
-		if (!(detail.INQD_SUPPLIER == "AMEC" && detail.INQD_UNREPLY == null))
+	for (const detail of details) {
+		if (!(detail.INQD_SUPPLIER == "AMEC" && detail.INQD_UNREPLY == null)) {
 			isAmec = false;
-		return;
-	});
+			break;
+		}
+	}
 	if (!isAmec) status = 51;
 	return status;
 }
