@@ -1,55 +1,43 @@
 {
-  "hash": "193835c5",
+  "hash": "067c0373",
   "configHash": "36794335",
-  "lockfileHash": "89372f9e",
-  "browserHash": "4f6a04e0",
+  "lockfileHash": "bbaac163",
+  "browserHash": "9a3edfb2",
   "optimized": {
     "vue": {
       "src": "../../../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "fff32a97",
+      "fileHash": "752edbfe",
       "needsInterop": false
     },
     "vitepress > @vue/devtools-api": {
       "src": "../../../../node_modules/@vue/devtools-api/dist/index.js",
       "file": "vitepress___@vue_devtools-api.js",
-      "fileHash": "3d431079",
+      "fileHash": "4b751fa1",
       "needsInterop": false
     },
     "vitepress > @vueuse/core": {
       "src": "../../../../node_modules/@vueuse/core/dist/index.js",
       "file": "vitepress___@vueuse_core.js",
-      "fileHash": "422c554a",
+      "fileHash": "bd218b8d",
       "needsInterop": false
     },
     "vitepress > @vueuse/integrations/useFocusTrap": {
       "src": "../../../../node_modules/@vueuse/integrations/dist/useFocusTrap.js",
       "file": "vitepress___@vueuse_integrations_useFocusTrap.js",
-      "fileHash": "03409991",
+      "fileHash": "1dea795a",
       "needsInterop": false
     },
     "vitepress > mark.js/src/vanilla.js": {
       "src": "../../../../node_modules/mark.js/src/vanilla.js",
       "file": "vitepress___mark__js_src_vanilla__js.js",
-      "fileHash": "d74d260a",
+      "fileHash": "f2aeed2f",
       "needsInterop": false
     },
     "vitepress > minisearch": {
       "src": "../../../../node_modules/minisearch/dist/es/index.js",
       "file": "vitepress___minisearch.js",
-      "fileHash": "52b6c4aa",
-      "needsInterop": false
-    },
-    "three": {
-      "src": "../../../../node_modules/three/build/three.module.js",
-      "file": "three.js",
-      "fileHash": "afd28f1f",
-      "needsInterop": false
-    },
-    "@fancyapps/ui": {
-      "src": "../../../../node_modules/@fancyapps/ui/dist/index.esm.js",
-      "file": "@fancyapps_ui.js",
-      "fileHash": "29ae54b1",
+      "fileHash": "6e801a6a",
       "needsInterop": false
     }
   },
