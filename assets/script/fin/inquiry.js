@@ -26,7 +26,7 @@ $(async function () {
 
 		const pageid = $("#pageid").val() || "1";
 		let q = {
-			INQ_STATUS: ">= 30 && < 60",
+			INQ_STATUS: ">= 30 && < 45",
 			IS_TIMELINE: 1,
 		};
 		if (pageid == "3") q = { ...q, IS_DETAILS: 1 };

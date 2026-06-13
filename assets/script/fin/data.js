@@ -82,8 +82,7 @@ export const dataFilter = async (data, page) => {
 			case "3":
 				if (
 					(el.INQ_TYPE == "SP" || el.INQ_TYPE == "Price") &&
-					// el.INQ_STATUS == 44
-					el.INQ_STATUS < 60
+					el.INQ_STATUS == 44
 				) {
 					return el;
 				}
