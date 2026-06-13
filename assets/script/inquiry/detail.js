@@ -34,6 +34,7 @@ import {
 	getItems,
 	updateInquiryDetail,
 	findPriceRatio,
+	getVPCPrice,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -1135,6 +1136,58 @@ export async function setCostTatble(inq) {
 							};
 							updateInquiryDetail(values);
 						}
+					}
+				}
+			}
+		});
+	});
+}
+
+export async function setVPCCostTatble(inq) {
+	const q700 = await getVPCPrice();
+	// console.log(q700);
+	const updatedDetails = inq.details.map(async (detail) => {
+		const item = q700.find((i) => {
+			if (
+				i.Q700ITEM == detail.INQD_ITEM &&
+				i.Q700DRAW.replace(/ /g, "") ==
+					detail.INQD_DRAWING.replace(/ /g, "")
+			) {
+				if (i.Q700VAR == null && detail.INQD_VARIABLE == null) {
+					//Update VPC price to detail
+					console.table([
+						[i.Q700ITEM, detail.INQD_ITEM],
+						[i.Q700DRAW, detail.INQD_DRAWING],
+						[i.Q700VAR, detail.INQD_VARIABLE],
+					]);
+				} else if (
+					i.Q700VAR !== null &&
+					detail.INQD_VARIABLE !== null
+				) {
+					const inqvar = validateVariable(detail.INQD_VARIABLE);
+					const itemvar = validateVariable(i.Q700VAR);
+					const keysMatch =
+						Object.keys(inqvar.parsedData).length ===
+							Object.keys(itemvar.parsedData).length &&
+						Object.keys(inqvar.parsedData).every(
+							(key) =>
+								itemvar.parsedData.hasOwnProperty(key) &&
+								inqvar.parsedData[key] ===
+									itemvar.parsedData[key],
+						);
+					if (keysMatch) {
+						const values = {
+							INQD_ID: detail.INQD_ID,
+							INQD_FC_COST: i.FCCOST,
+							INQD_FC_BASE: i.FCBASE,
+							INQD_TC_COST: i.TCCOST,
+							INQD_TC_BASE: ratio[0].FORMULA,
+							INQD_UNIT_PRICE: Math.ceil(
+								i.TCCOST * ratio[0].FORMULA,
+							),
+							ITEMID: i.ITEM_ID,
+						};
+						//updateInquiryDetail(values);
 					}
 				}
 			}

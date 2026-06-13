@@ -4,7 +4,11 @@ import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showConfirm } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtn } from "@amec/webasset/components/buttons";
-import { tableInquiryAdminOption, setAS400Data } from "../inquiry/index.js";
+import {
+	tableInquiryAdminOption,
+	setAS400Data,
+	setVPCCostTatble,
+} from "../inquiry/index.js";
 import {
 	getTemplate,
 	exportExcel,
@@ -46,6 +50,25 @@ $(document).on("click", ".process-btn", async function (e) {
 			IS_DETAILS: true,
 		});
 		await setAS400Data(data[0]);
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.`);
+	} finally {
+		await showLoader({ show: false });
+	}
+});
+
+$(document).on("click", ".process-vpc-btn", async function (e) {
+	e.preventDefault();
+	try {
+		await showLoader();
+		const row = table.row($(this).closest("tr")).data();
+		const id = row.INQ_ID;
+		const data = await getInquiry({
+			INQ_ID: id,
+			IS_DETAILS: true,
+		});
+		await setVPCCostTatble(data[0]);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

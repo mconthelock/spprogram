@@ -1,4 +1,5 @@
 import { showDigits, intVal } from "@amec/webasset/utils";
+
 export const calPrice = (data, type) => {
 	const fccost = intVal(data.INQD_FC_COST);
 	const fcbase = intVal(data.INQD_FC_BASE);

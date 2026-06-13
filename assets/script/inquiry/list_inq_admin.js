@@ -155,7 +155,15 @@ export async function tableInquiryAdminOption(data, extopt = {}) {
 					icon: "fi fi-sr-location-arrow text-lg",
 					className: `btn-xs btn-accent text-white text-nowrap ms-1 hover:shadow-lg process-btn`,
 				});
-				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}</div>`;
+
+				const edit2 = createBtn({
+					id: `edit-${data}`,
+					title: "VPC Cost & TAT",
+					type: "link",
+					icon: "fi fi-sr-location-arrow text-lg",
+					className: `btn-xs btn-accent text-white text-nowrap ms-1 hover:shadow-lg process-vpc-btn`,
+				});
+				return `<div class="flex gap-1 justify-center items-center w-fit">${view}${edit}${edit2}</div>`;
 			},
 		},
 	];

@@ -178,6 +178,17 @@ export async function tablePartOption(data = [], ratio = {}) {
 			},
 		},
 		{
+			data: null,
+			title: "VPC REGISTRATION",
+			className: `cell-display border-r!`,
+			render: function (data, type, row) {
+				if (type === "display") {
+					return "Duplicate VPC DWG";
+				}
+				return "";
+			},
+		},
+		{
 			data: "INQD_MAR_REMARK",
 			title: "MAR Remark",
 			className: `w-62 min-w-62 cell-display border-r!`,
