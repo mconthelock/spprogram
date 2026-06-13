@@ -196,12 +196,19 @@
 		@apply shadow-sm!;
 	}
 
-	.table thead tr {
+	/* .table thead tr {
 		@apply bg-slate-500!;
-	}
+	} */
 
 	.table thead th {
-		@apply text-center! bg-slate-500! text-gray-300! text-xs! border-none!;
+		@apply text-center!  text-gray-300! text-xs! border-none!;
+	}
+
+	.table thead th:not(.vpc) {
+		@apply bg-slate-500!;
+	}
+	.table thead th.vpc {
+		@apply bg-pink-200! text-slate-700!;
 	}
 
 	.table tfoot th {

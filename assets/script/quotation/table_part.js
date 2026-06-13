@@ -3,6 +3,7 @@ import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
 export async function tablePartOption(data = [], ratio = {}) {
+	const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
 	data = await findCostBase(data, ratio);
 	const opt = { ...tableOpt };
 	opt.data = data;
@@ -92,9 +93,10 @@ export async function tablePartOption(data = [], ratio = {}) {
 			title: "U/M",
 			className: `w-12 min-w-12 cell-display border-r!`,
 		},
+		//FIN COST
 		{
 			data: "INQD_TC_COST",
-			title: "TC Cost",
+			title: `${isMTPE == 1 ? "FIN Cost" : "TC Cost"}`,
 			className: `w-24 min-w-24 border-r! bg-primary/20 INQD_TC_COST`,
 			render: function (data, type, row) {
 				if (type === "display") {
@@ -129,6 +131,40 @@ export async function tablePartOption(data = [], ratio = {}) {
 				return data;
 			},
 		},
+		//VPC COST
+		/*{
+			data: "INQD_TC_COST",
+			title: `VPC Cost`,
+			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
+			render: function (data, type, row) {
+				if (type === "display") {
+					return showDigits(data, 0);
+				}
+				return data;
+			},
+		},
+		{
+			data: "INQD_TC_BASE",
+			title: "%VPC",
+			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
+			render: function (data, type, row) {
+				if (type === "display") {
+					return showDigits(data, 3);
+				}
+				return data;
+			},
+		},
+		{
+			data: "INQD_UNIT_PRICE",
+			title: "VPC Price",
+			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end cell-display vpc`,
+			render: function (data, type) {
+				if (type === "display") {
+					return showDigits(data, 0);
+				}
+				return data;
+			},
+		},*/
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",

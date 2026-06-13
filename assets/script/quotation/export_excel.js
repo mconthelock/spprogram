@@ -6,12 +6,10 @@ import { activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, cloneRows } from "../service/excel";
 import { getInquiry } from "../service/inquiry.js";
 
-$(document).on("click", ".export-excel-quotation", async function (e) {
-	e.preventDefault();
+export async function exportQuotationExcelByInquiryId(id, btn = null) {
+	if (!id) throw new Error("Missing inquiry id for export");
 	try {
-		//const row = table.row($(this).closest("tr")).data();
-		const id = $(this).attr("data-id");
-		await activatedBtn($(this));
+		if (btn) await activatedBtn(btn);
 		const template = await getTemplate("export_quotation_detail.xlsx");
 		const data = await getInquiry({
 			INQ_ID: id,
@@ -20,11 +18,19 @@ $(document).on("click", ".export-excel-quotation", async function (e) {
 			IS_WEIGHT: true,
 		});
 		await exportDocument(template, data[0]);
+	} finally {
+		if (btn) await activatedBtn(btn, false);
+	}
+}
+
+$(document).on("click", ".export-excel-quotation", async function (e) {
+	e.preventDefault();
+	try {
+		const id = $(this).attr("data-id");
+		await exportQuotationExcelByInquiryId(id, $(this));
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
-	} finally {
-		await activatedBtn($(this), false);
 	}
 });
 
@@ -41,15 +47,17 @@ async function exportDocument(template, data) {
 
 		const weights = data.weight.sort((a, b) => a.SEQ_WEIGHT - b.SEQ_WEIGHT);
 		weights.forEach((wg, w) => {
-			sheet2.getCell(`A${w}`).value = wg.NO_WEIGHT;
-			sheet2.getCell(`D${w}`).value = wg.PACKAGE_TYPE;
-			sheet2.getCell(`J${w}`).value = wg.NET_WEIGHT;
-			sheet2.getCell(`L${w}`).value = wg.GROSS_WEIGHT;
-			sheet2.getCell(`O${w}`).value = wg.WIDTH_WEIGHT;
-			sheet2.getCell(`Q${w}`).value = wg.LENGTH_WEIGHT;
-			sheet2.getCell(`S${w}`).value = wg.HEIGHT_WEIGHT;
-			sheet2.getCell(`U${w}`).value = wg.VOLUMN_WEIGHT;
-			sheet2.getCell(`W${w}`).value = wg.ROUND_WEIGHT;
+			console.log(w);
+
+			sheet2.getCell(`A${w + 10}`).value = wg.NO_WEIGHT;
+			sheet2.getCell(`D${w + 10}`).value = wg.PACKAGE_TYPE;
+			sheet2.getCell(`J${w + 10}`).value = wg.NET_WEIGHT;
+			sheet2.getCell(`L${w + 10}`).value = wg.GROSS_WEIGHT;
+			sheet2.getCell(`O${w + 10}`).value = wg.WIDTH_WEIGHT;
+			sheet2.getCell(`Q${w + 10}`).value = wg.LENGTH_WEIGHT;
+			sheet2.getCell(`S${w + 10}`).value = wg.HEIGHT_WEIGHT;
+			sheet2.getCell(`U${w + 10}`).value = wg.VOLUMN_WEIGHT;
+			sheet2.getCell(`W${w + 10}`).value = wg.ROUND_WEIGHT;
 		});
 
 		//Data Sheet

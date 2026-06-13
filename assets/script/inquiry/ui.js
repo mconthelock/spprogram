@@ -70,8 +70,17 @@ export async function addRow({ id, seq }, table, data = {}) {
 	const newRow = await initRow(id, seq);
 	data = { ...newRow, ...data };
 	const row = table.row.add(data).draw(false);
-	if ($(row.node()).find("td:eq(3) input").length > 0)
-		$(row.node()).find("td:eq(3) input").focus();
+	const carinput = $(row.node()).find("td:eq(3) input");
+	const mfginput = $(row.node()).find("td:eq(4) input");
+	const iteminput = $(row.node()).find("td:eq(5) textarea");
+
+	if (carinput.length > 0 && data.INQD_CAR == "") {
+		carinput.focus();
+	} else if (mfginput.length > 0 && data.INQD_MFGORDER == "") {
+		mfginput.focus();
+	} else if (iteminput.length > 0) {
+		iteminput.focus();
+	}
 }
 
 //003: Unreply checkbox
@@ -195,8 +204,8 @@ $(document).on("click", "#addRowBtn", async function (e) {
 	let id = lastRow === undefined ? 1 : parseInt(lastRow.INQD_RUNNO) + 1;
 	let seq = lastRow === undefined ? 1 : parseInt(lastRow.INQD_SEQ) + 1;
 	await addRow({ id, seq }, table);
-	await setSelect2({ allowClear: false });
-	table.page("last").draw(false);
+	// await setSelect2({ allowClear: false });
+	// table.page("last").draw(false);
 });
 
 $(document).on("click", ".add-sub-line", async function (e) {
@@ -217,11 +226,18 @@ $(document).on("click", ".add-sub-line", async function (e) {
 				...rowData,
 				INQD_SEQ: intVal(showDigits(rowData.INQD_SEQ + 0.01, 2)),
 				INQD_RUNNO: rowData.INQD_RUNNO + 0.1,
+				INQD_CAR: data.INQD_CAR,
+				INQD_MFGORDER: data.INQD_MFGORDER,
 			};
 			table.row(index).data(updatedData);
 		}
 	});
-	await addRow({ id, seq }, table);
+	await addRow({ id, seq }, table, {
+		INQD_CAR: data.INQD_CAR,
+		INQD_MFGORDER: data.INQD_MFGORDER,
+	});
+	//await setSelect2({ allowClear: false });
+	//table.page("last").draw(false);
 	let dataRow = table.rows().data().toArray();
 	dataRow.sort((a, b) => intVal(a.INQD_RUNNO) - intVal(b.INQD_RUNNO));
 	let rowIndex = 0;
