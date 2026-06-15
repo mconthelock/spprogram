@@ -151,7 +151,7 @@ async function getDataHeader(data) {
 		typeof data[6][3] == "object" ? data[6][3].result : data[6][3];
 	const agn = agents.find((x) => x.country.CTNAME == country.toUpperCase());
 	return {
-		INQ_NO: data[11][3],
+		INQ_NO: data[11][4],
 		INQ_REV: "*",
 		INQ_TRADER: data[1][3],
 		INQ_AGENT: agn.AGENT,
