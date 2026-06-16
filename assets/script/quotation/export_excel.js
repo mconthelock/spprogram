@@ -47,8 +47,7 @@ async function exportDocument(template, data) {
 
 		const weights = data.weight.sort((a, b) => a.SEQ_WEIGHT - b.SEQ_WEIGHT);
 		weights.forEach((wg, w) => {
-			console.log(w);
-
+			// console.log(w);
 			sheet2.getCell(`A${w + 10}`).value = wg.NO_WEIGHT;
 			sheet2.getCell(`D${w + 10}`).value = wg.PACKAGE_TYPE;
 			sheet2.getCell(`J${w + 10}`).value = wg.NET_WEIGHT;
@@ -118,19 +117,21 @@ async function exportDocument(template, data) {
 			i++;
 			rowEnd = rowStart + i;
 		});
-
+		//console.log(sheet1.model.merges);
 		//sheet1.spliceRows(rowEnd + 1, 120 - rowEnd);
-		// if (rowEnd > 45) {
-		// 	sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
-		// 	sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
+		if (rowEnd < 45) {
+			rowEnd = 45;
+		}
+		sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
+		sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
 
-		// 	sheet1.mergeCells(`A${rowEnd + 4}:G${rowEnd + 6}`);
-		// 	sheet1.mergeCells(`H${rowEnd + 4}:I${rowEnd + 6}`);
+		sheet1.mergeCells(`A${rowEnd + 4}:G${rowEnd + 6}`);
+		sheet1.mergeCells(`H${rowEnd + 4}:I${rowEnd + 6}`);
 
-		// 	sheet1.mergeCells(`J${rowEnd + 4}:K${rowEnd + 4}`);
-		// 	sheet1.mergeCells(`J${rowEnd + 5}:K${rowEnd + 5}`);
-		// 	sheet1.mergeCells(`J${rowEnd + 6}:K${rowEnd + 6}`);
-		// }
+		sheet1.mergeCells(`J${rowEnd + 4}:K${rowEnd + 4}`);
+		sheet1.mergeCells(`J${rowEnd + 5}:K${rowEnd + 5}`);
+		sheet1.mergeCells(`J${rowEnd + 6}:K${rowEnd + 6}`);
+
 		sheet1.getCell(`A${rowEnd + 4}`).value = data.quotation.QUO_NOTE;
 		sheet1.getCell(`L${rowEnd + 4}`).value = data.quotation.QUO_SEA_TOTAL;
 		sheet1.getCell(`L${rowEnd + 5}`).value = data.quotation.QUO_AIR_TOTAL;
