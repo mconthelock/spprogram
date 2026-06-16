@@ -17,7 +17,7 @@ export async function tableViewCostOption(data = []) {
 			className: "hidden",
 		},
 		{
-			data: "INQD_SEQ",
+			data: "INQD_RUNNO",
 			title: "No",
 			className: `sticky-column w-12 min-w-12 cell-display border-r! `,
 		},

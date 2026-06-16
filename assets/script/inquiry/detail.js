@@ -1053,14 +1053,13 @@ export async function setAS400Data(inq) {
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
 	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
-	// console.log(q601kp2);
+	await setCostTatble(inq);
 	await addAS400Data({
 		header: q601kp1,
 		detail: q601kp2,
 		variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
 		inquiryNo: inq.INQ_NO,
 	});
-	await setCostTatble(inq);
 	return;
 }
 
@@ -1087,59 +1086,111 @@ export async function setCostTatble(inq) {
 			TCCOST: current.length > 0 ? current[0].TCCOST : 0,
 		};
 	});
+
 	items = items.filter((item) => item.FCCOST > 0);
-	const updatedDetails = inq.details.map(async (detail) => {
+	for (const detail of inq.details) {
 		if (detail.INQD_SUPPLIER != "AMEC") return;
-		const item = items.find((i) => {
-			if (
+
+		const prices = items.filter(
+			(i) =>
 				i.ITEM_NO == detail.INQD_ITEM &&
 				i.ITEM_DWG.replace(/ /g, "") ==
-					detail.INQD_DRAWING.replace(/ /g, "")
-			) {
-				if (i.ITEM_VARIABLE == null) {
-					const values = {
-						INQD_ID: detail.INQD_ID,
-						INQD_FC_COST: i.FCCOST,
-						INQD_FC_BASE: i.FCBASE,
-						INQD_TC_COST: i.TCCOST,
-						INQD_TC_BASE: ratio[0].FORMULA,
-						INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
-						ITEMID: i.ITEM_ID,
-					};
-					updateInquiryDetail(values);
-				} else {
-					//Compare variable if exist
-					if (detail.INQD_VARIABLE != null) {
-						const inqvar = validateVariable(detail.INQD_VARIABLE);
-						const itemvar = validateVariable(i.ITEM_VARIABLE);
-						const keysMatch =
-							Object.keys(inqvar.parsedData).length ===
-								Object.keys(itemvar.parsedData).length &&
-							Object.keys(inqvar.parsedData).every(
-								(key) =>
-									itemvar.parsedData.hasOwnProperty(key) &&
-									inqvar.parsedData[key] ===
-										itemvar.parsedData[key],
-							);
-						if (keysMatch) {
-							const values = {
-								INQD_ID: detail.INQD_ID,
-								INQD_FC_COST: i.FCCOST,
-								INQD_FC_BASE: i.FCBASE,
-								INQD_TC_COST: i.TCCOST,
-								INQD_TC_BASE: ratio[0].FORMULA,
-								INQD_UNIT_PRICE: Math.ceil(
-									i.TCCOST * ratio[0].FORMULA,
-								),
-								ITEMID: i.ITEM_ID,
-							};
-							updateInquiryDetail(values);
-						}
-					}
-				}
+					detail.INQD_DRAWING.replace(/ /g, ""),
+		);
+
+		if (prices.length == 0) continue;
+		if (prices[0].ITEM_VARIABLE == null && detail.INQD_VARIABLE == null) {
+			const values = {
+				INQD_ID: detail.INQD_ID,
+				INQD_FC_COST: prices[0].FCCOST,
+				INQD_FC_BASE: prices[0].FCBASE,
+				INQD_TC_COST: prices[0].TCCOST,
+				INQD_TC_BASE: ratio[0].FORMULA,
+				INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
+				ITEMID: prices[0].ITEM_ID,
+			};
+			await updateInquiryDetail(values);
+		} else if (
+			prices[0].ITEM_VARIABLE != null &&
+			detail.INQD_VARIABLE != null
+		) {
+			const inqvar = validateVariable(detail.INQD_VARIABLE);
+			const itemvar = validateVariable(prices[0].ITEM_VARIABLE);
+			const keysMatch =
+				Object.keys(inqvar.parsedData).length ===
+					Object.keys(itemvar.parsedData).length &&
+				Object.keys(inqvar.parsedData).every(
+					(key) =>
+						itemvar.parsedData.hasOwnProperty(key) &&
+						inqvar.parsedData[key] === itemvar.parsedData[key],
+				);
+			if (keysMatch) {
+				const values = {
+					INQD_ID: detail.INQD_ID,
+					INQD_FC_COST: prices[0].FCCOST,
+					INQD_FC_BASE: prices[0].FCBASE,
+					INQD_TC_COST: prices[0].TCCOST,
+					INQD_TC_BASE: ratio[0].FORMULA,
+					INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
+					ITEMID: prices[0].ITEM_ID,
+				};
+				console.log(values);
+				await updateInquiryDetail(values);
 			}
-		});
-	});
+		}
+	}
+	// const updatedDetails = inq.details.map(async (detail) => {
+	// 	if (detail.INQD_SUPPLIER != "AMEC") return;
+	// 	const item = items.find((i) => {
+	// 		if (
+	// 			i.ITEM_NO == detail.INQD_ITEM &&
+	// 			i.ITEM_DWG.replace(/ /g, "") ==
+	// 				detail.INQD_DRAWING.replace(/ /g, "")
+	// 		) {
+	// 			if (i.ITEM_VARIABLE == null) {
+	// 				const values = {
+	// 					INQD_ID: detail.INQD_ID,
+	// 					INQD_FC_COST: i.FCCOST,
+	// 					INQD_FC_BASE: i.FCBASE,
+	// 					INQD_TC_COST: i.TCCOST,
+	// 					INQD_TC_BASE: ratio[0].FORMULA,
+	// 					INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
+	// 					ITEMID: i.ITEM_ID,
+	// 				};
+	// 				updateInquiryDetail(values);
+	// 			} else {
+	// 				//Compare variable if exist
+	// 				if (detail.INQD_VARIABLE != null) {
+	// 					const inqvar = validateVariable(detail.INQD_VARIABLE);
+	// 					const itemvar = validateVariable(i.ITEM_VARIABLE);
+	// 					const keysMatch =
+	// 						Object.keys(inqvar.parsedData).length ===
+	// 							Object.keys(itemvar.parsedData).length &&
+	// 						Object.keys(inqvar.parsedData).every(
+	// 							(key) =>
+	// 								itemvar.parsedData.hasOwnProperty(key) &&
+	// 								inqvar.parsedData[key] ===
+	// 									itemvar.parsedData[key],
+	// 						);
+	// 					if (keysMatch) {
+	// 						const values = {
+	// 							INQD_ID: detail.INQD_ID,
+	// 							INQD_FC_COST: i.FCCOST,
+	// 							INQD_FC_BASE: i.FCBASE,
+	// 							INQD_TC_COST: i.TCCOST,
+	// 							INQD_TC_BASE: ratio[0].FORMULA,
+	// 							INQD_UNIT_PRICE: Math.ceil(
+	// 								i.TCCOST * ratio[0].FORMULA,
+	// 							),
+	// 							ITEMID: i.ITEM_ID,
+	// 						};
+	// 						updateInquiryDetail(values);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	});
+	// });
 }
 
 export async function finalStatus(details) {
