@@ -119,17 +119,18 @@ async function exportDocument(template, data) {
 			rowEnd = rowStart + i;
 		});
 
-		if (rowEnd > 45) {
-			sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
-			sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
+		//sheet1.spliceRows(rowEnd + 1, 120 - rowEnd);
+		// if (rowEnd > 45) {
+		// 	sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
+		// 	sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
 
-			sheet1.mergeCells(`A${rowEnd + 4}:G${rowEnd + 6}`);
-			sheet1.mergeCells(`H${rowEnd + 4}:I${rowEnd + 6}`);
+		// 	sheet1.mergeCells(`A${rowEnd + 4}:G${rowEnd + 6}`);
+		// 	sheet1.mergeCells(`H${rowEnd + 4}:I${rowEnd + 6}`);
 
-			sheet1.mergeCells(`J${rowEnd + 4}:K${rowEnd + 4}`);
-			sheet1.mergeCells(`J${rowEnd + 5}:K${rowEnd + 5}`);
-			sheet1.mergeCells(`J${rowEnd + 6}:K${rowEnd + 6}`);
-		}
+		// 	sheet1.mergeCells(`J${rowEnd + 4}:K${rowEnd + 4}`);
+		// 	sheet1.mergeCells(`J${rowEnd + 5}:K${rowEnd + 5}`);
+		// 	sheet1.mergeCells(`J${rowEnd + 6}:K${rowEnd + 6}`);
+		// }
 		sheet1.getCell(`A${rowEnd + 4}`).value = data.quotation.QUO_NOTE;
 		sheet1.getCell(`L${rowEnd + 4}`).value = data.quotation.QUO_SEA_TOTAL;
 		sheet1.getCell(`L${rowEnd + 5}`).value = data.quotation.QUO_AIR_TOTAL;

@@ -1106,7 +1106,7 @@ export async function setCostTatble(inq) {
 				INQD_FC_BASE: prices[0].FCBASE,
 				INQD_TC_COST: prices[0].TCCOST,
 				INQD_TC_BASE: ratio[0].FORMULA,
-				INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
+				INQD_UNIT_PRICE: Math.ceil(prices[0].TCCOST * ratio[0].FORMULA),
 				ITEMID: prices[0].ITEM_ID,
 			};
 			await updateInquiryDetail(values);
@@ -1131,7 +1131,9 @@ export async function setCostTatble(inq) {
 					INQD_FC_BASE: prices[0].FCBASE,
 					INQD_TC_COST: prices[0].TCCOST,
 					INQD_TC_BASE: ratio[0].FORMULA,
-					INQD_UNIT_PRICE: Math.ceil(i.TCCOST * ratio[0].FORMULA),
+					INQD_UNIT_PRICE: Math.ceil(
+						prices[0].TCCOST * ratio[0].FORMULA,
+					),
 					ITEMID: prices[0].ITEM_ID,
 				};
 				console.log(values);
