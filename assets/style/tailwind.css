@@ -117,7 +117,7 @@
 		--color-border: 216, 218, 223;
 		--color-body: 229, 231, 235;
 
-		--bgcolor-dataTable-thead: var(--color-primary);
+		--bgcolor-dataTable-thead: slate-500;
 		--bgcolor-dataTable-tbody: #fff;
 		--color-dataTable-thead: #fff;
 	}
@@ -196,19 +196,9 @@
 		@apply shadow-sm!;
 	}
 
-	.table thead {
-		@apply bg-slate-500!;
-	}
-
+	div.dt-container thead,
 	.table thead th {
-		@apply text-center!  text-gray-300! text-xs! border-none!;
-	}
-
-	.table thead th:not(.vpc) {
-		@apply bg-slate-500!;
-	}
-	.table thead th.vpc {
-		@apply bg-pink-200! text-slate-700!;
+		@apply text-center!  text-gray-300! text-xs! bg-slate-500!;
 	}
 
 	.table tfoot th {
