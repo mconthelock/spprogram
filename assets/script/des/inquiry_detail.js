@@ -78,11 +78,12 @@ $(document).ready(async () => {
 		const cardsDecorage = await setupPage(pageid);
 
 		//Setup Table Detail
-		const details = inqs[0].details.filter(
-			(dt) =>
-				dt.INQD_LATEST == "1" &&
-				Math.floor(dt.INQD_ITEM / 100) == desgroup,
-		);
+		const details = inqs[0].details.filter((dt) => {
+			let litem = Math.floor(dt.INQD_ITEM / 100);
+			if (litem >= 6) litem = 6;
+			else if (litem == 5) litem = 2;
+			return dt.INQD_LATEST == "1" && litem == desgroup;
+		});
 		const detailsOption = await setupDETableDetail(details);
 		table = await createTable(detailsOption);
 
