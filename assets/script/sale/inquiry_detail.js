@@ -183,7 +183,7 @@ $(document).on("click", "#assign-pic", async function (e) {
 				// INQG_ASG_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 				// INQG_DES_DATE: null,
 				// INQG_CHK_DATE: null,
-				INQG_STATUS: 29,
+				INQG_STATUS: 10,
 			},
 			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
 		};

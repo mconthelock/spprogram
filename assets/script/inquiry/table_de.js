@@ -239,9 +239,9 @@ export async function setupDETableDetail(data = []) {
 			render: function (data, type, row) {
 				if (type === "display") {
 					if (row.INQD_DE != "1") return renderText(data);
-					if (data == null || data == "")
+					if (data === null || data === "") {
 						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black ndpartlist" name="ndpartlist[]" value="" />`;
-					else if (data == "1")
+					} else if (data == "1")
 						return `<input type="checkbox" class="checkbox checkbox-sm checkbox-primary text-black revokepartlist" name="revokepartlist[]" value="1" checked/>`;
 					else
 						return `<div class="tooltip tooltip-left" data-tip="Click to revoke 2nd part">

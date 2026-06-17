@@ -18,23 +18,29 @@ export async function setupTableAttachment(data = [], view = false) {
 			data: "FILE_ORIGINAL_NAME",
 			title: "File Name",
 			className: "text-xs py-[5px] max-w-[220px]",
-			render: (data, type, row) => {
-				const ext = fileExtension(data);
-				const icon = icons.find((x) => x.ext == ext);
-				const img = icon
-					? icon.icon
-					: `${process.env.APP_IMG}/fileicon/photo-gallery.png`;
+			render: (data, type, row, meta) => {
+				if (type === "display") {
+					console.log(meta.row, data);
+					const ext = fileExtension(data);
+					const icon = icons.find((x) => x.ext == ext);
+					const img = icon
+						? icon.icon
+						: `${process.env.APP_IMG}/fileicon/photo-gallery.png`;
 
-				const link =
-					row.FILE_ID == undefined
-						? "#"
-						: `${process.env.APP_API}/sp/attachments/download/${row.FILE_ID}`;
-				return `<a href="${link}" class="flex items-center gap-1 download-att-${
-					row.FILE_NAME ? "server" : "client"
-				}">
-            <img src="${img}" class="w-6 h-6"/>
-            <div class="line-clamp-1">${data}</div>
-        </a>`;
+					const link =
+						row.FILE_ID == undefined
+							? "#"
+							: `${process.env.APP_API}/sp/attachments/download/${row.FILE_ID}`;
+					return `<a href="${link}" class="flex items-center gap-1 download-att-${
+						row.FILE_NAME ? "server" : "client"
+					}">
+                        <img src="${img}" class="w-6 h-6"/>
+                        <div class="tooltip tooltip-right" data-tip="${data}">
+                            <div class="line-clamp-1">${data}</div>
+                        </div>
+                    </a>`;
+				}
+				return data;
 			},
 		},
 		{
