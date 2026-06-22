@@ -100,7 +100,7 @@ export async function finApproveStatus(details) {
 	let isAmec = true;
 	let status = 45;
 	for (const detail of details) {
-		if (!(detail.INQD_SUPPLIER == "AMEC" && detail.INQD_UNREPLY == null)) {
+		if (!(detail.INQD_SUPPLIER == "AMEC" || detail.INQD_UNREPLY == null)) {
 			isAmec = false;
 			break;
 		}
