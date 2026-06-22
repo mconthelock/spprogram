@@ -181,7 +181,7 @@ $(document).on("click", ".approval", async function (e) {
 			};
 			await createInquiryHistory(history);
 		}
-		window.location.reload();
+		//window.location.reload();
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
