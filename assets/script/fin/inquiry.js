@@ -162,7 +162,7 @@ $(document).on("click", ".approval", async function (e) {
 		for (const row of data) {
 			if (action == "45") status = await finApproveStatus(row.details);
 			await updateInquiryHeader(
-				{ INQ_STATUS: action, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
+				{ INQ_STATUS: status, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
 				row.INQ_ID,
 			);
 			let datatimeline = {
