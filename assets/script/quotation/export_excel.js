@@ -112,8 +112,9 @@ async function exportDocument(template, data) {
 				formula: `M${rowStart + i}*K${rowStart + i}`,
 			}; //Amount
 			sheet1.getCell(rowStart + i, 15).value = item.INQD_MAR_REMARK;
-			sheet1.getCell(rowStart + i, 16).value = item.INQD_DES_REMARK;
-			sheet1.getCell(rowStart + i, 17).value = item.INQD_FIN_REMARK;
+			sheet1.getCell(rowStart + i, 16).value = item.INQD_SALE_REMARK;
+			sheet1.getCell(rowStart + i, 17).value = item.INQD_DES_REMARK;
+			sheet1.getCell(rowStart + i, 18).value = item.INQD_FIN_REMARK;
 			i++;
 			rowEnd = rowStart + i;
 		});
@@ -122,7 +123,6 @@ async function exportDocument(template, data) {
 		if (rowEnd < 45) {
 			rowEnd = 45;
 		}
-		console.log(rowEnd);
 
 		sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
 		sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
