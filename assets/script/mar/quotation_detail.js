@@ -340,7 +340,7 @@ async function updatePath(opt) {
 			}));
 
 		// console.log(details);
-		await verifyDetail(table, details, opt.level);
+		await verifyDetail(details, opt.level);
 		await activatedBtnRow($(this));
 		await showLoader();
 		let deleteLine = [];

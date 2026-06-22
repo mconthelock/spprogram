@@ -342,7 +342,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 				rowIndex: index,
 			}));
 		const filteredDetails = details.filter((dt) => dt.INQD_DE != "1");
-		await verifyDetail(table, filteredDetails, 3);
+		await verifyDetail(filteredDetails, 3);
 
 		await activatedBtnRow($(this));
 		await showLoader();
@@ -451,7 +451,7 @@ async function updatePath(option) {
 			}));
 		const isforward = details.some((dt) => dt.INQD_DE == "1") ? 1 : 0;
 		const filteredDetails = details.filter((dt) => dt.INQD_DE != "1");
-		await verifyDetail(table, filteredDetails, option.level);
+		await verifyDetail(filteredDetails, option.level);
 
 		const header = {
 			INQ_ID: $("#inquiry-id").val(),

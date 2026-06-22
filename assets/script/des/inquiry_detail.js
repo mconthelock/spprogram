@@ -414,7 +414,7 @@ async function updatePath(option) {
 				...detail,
 				rowIndex: index,
 			}));
-		await verifyDetail(table, details, option.level);
+		await verifyDetail(details, option.level);
 		const header = {
 			INQ_ID: $("#inquiry-id").val(),
 			INQ_NO: $("#inquiry-no").val(),

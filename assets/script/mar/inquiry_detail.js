@@ -515,7 +515,7 @@ async function updatePath(opt) {
 				rowIndex: index,
 				INQD_DE: null,
 			}));
-		await verifyDetail(table, details, opt.level);
+		await verifyDetail(details, opt.level);
 		await activatedBtnRow(opt.obj);
 		await showLoader();
 
