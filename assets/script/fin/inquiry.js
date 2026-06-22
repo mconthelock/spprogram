@@ -162,7 +162,7 @@ $(document).on("click", ".approval", async function (e) {
 		for (const row of data) {
 			if (action == "45") status = await finApproveStatus(row.details);
 			await updateInquiryHeader(
-				{ INQ_STATUS: action, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
+				{ INQ_STATUS: status, INQ_LATEST: 1, INQ_NO: row.INQ_NO },
 				row.INQ_ID,
 			);
 			let datatimeline = {
@@ -181,7 +181,7 @@ $(document).on("click", ".approval", async function (e) {
 			};
 			await createInquiryHistory(history);
 		}
-		//window.location.reload();
+		window.location.reload();
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
