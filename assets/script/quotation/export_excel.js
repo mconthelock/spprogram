@@ -122,6 +122,8 @@ async function exportDocument(template, data) {
 		if (rowEnd < 45) {
 			rowEnd = 45;
 		}
+		console.log(rowEnd);
+
 		sheet1.mergeCells(`H${rowEnd + 2}:K${rowEnd + 2}`);
 		sheet1.mergeCells(`L${rowEnd + 2}:N${rowEnd + 2}`);
 
@@ -137,6 +139,10 @@ async function exportDocument(template, data) {
 		sheet1.getCell(`L${rowEnd + 5}`).value = data.quotation.QUO_AIR_TOTAL;
 		sheet1.getCell(`L${rowEnd + 6}`).value =
 			data.quotation.QUO_COURIER_TOTAL;
+
+		sheet1.getCell(`L${rowEnd + 2}`).value = {
+			formula: `SUM(N20:N${rowEnd})`,
+		};
 
 		//Save to file
 		await sheet1.protect($("#user-login").attr("empno"));

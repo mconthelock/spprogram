@@ -104,6 +104,7 @@ export async function setAS400Detail(INQ_NO, details) {
 				.replace(/'/g, "''"),
 			Q6K217: el.INQD_QTY,
 			Q6K219: "N",
+			Q6K220: "C", // Common
 			Q6K223: user.empno,
 			Q6K226: "A",
 			...drawingFields, // ใส่ Q6K206, Q6K207 ต่อท้ายตรงนี้เลย
