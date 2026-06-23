@@ -300,7 +300,10 @@ $(document).on("change", ".edit-input", async function (e) {
 	e.preventDefault();
 	const table = $("#table").DataTable();
 	const cell = table.cell($(this).closest("td"));
-	let newValue = $(this).val();
+	let newValue = $(this)
+		.val()
+		.trim()
+		.replace(/\r?\n|\r/g, " ");
 	if ($(this).attr("type") === "checkbox" && !$(this).is(":checked"))
 		newValue = null;
 	if ($(this).attr("type") === "date") newValue = newValue.replace(/-/g, "/");
