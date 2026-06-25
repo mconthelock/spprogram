@@ -4,7 +4,7 @@ import { calPrice } from "./data";
 
 export async function tableViewPartOption(data = [], ratio = {}) {
 	const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
-	data = await findCostBase(data, ratio);
+	// data = await findCostBase(data, ratio);
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.lengthChange = false;
@@ -276,7 +276,6 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 }
 
 export async function findCostBase(data, ratio) {
-	// console.log(ratio);
 	const rows = data.map((el) => {
 		if (intVal(el.INQD_TC_BASE) == 0) {
 			const tcbase =
