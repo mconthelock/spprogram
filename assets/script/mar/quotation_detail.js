@@ -19,6 +19,7 @@ import {
 } from "../inquiry/index.js";
 import {
 	tablePartOption,
+	tableViewPartOption,
 	tableViewFactOption,
 	tableViewOutOption,
 	tableViewWeightOption,
@@ -106,7 +107,7 @@ async function quotationPart(inq) {
 		QUOTATION: inq[0].INQ_QUOTATION_TYPE,
 	});
 	let optDetail;
-	if (mode == 3) optDetail = await tableViewFactOption(inq[0].details);
+	if (mode == 3) optDetail = await tableViewPartOption(inq[0].details);
 	else optDetail = await tablePartOption(inq[0].details, ratio);
 	table = await createTable(optDetail);
 
@@ -189,13 +190,14 @@ async function setupButton(group) {
 		icon: "fi fi-tr-circle-xmark text-xl",
 	});
 
-	const returnFnc = `<div class="dropdown dropdown-right dropdown-center">
-        <div tabindex="0" role="button" class="btn btn-accent text-white shadow-lg hover:bg-transparent hover:text-accent">
-            <i class="fi fi-rr-edit text-xl"></i> Edit
+	const returnFnc = `<div class="dropdown dropdown-top dropdown-center">
+        <div tabindex="0" role="button" class="btn btn-outline btn-accent text-neutral hover:text-white hover:bg-accent shadow-lg">
+            <i class="fi fi-sr-circle-ellipsis-vertical text-xl"></i> More Option
         </div>
-        <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-            <li class="${isAmec.length == 0 ? "text-gray-500 menu-disabled" : ""}"><a id="${isAmec.length > 0 ? "returnfin" : ""}" >Return to Finance</a></li>
-            <li><a href="${process.env.APP_ENV}/mar/inquiry/detail/${$("#inquiry-id").val()}">Revise Inquiry</a></li>
+        <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm mb-3">
+            <li class="${group != 3 ? "hidden" : ""}"><a href="${process.env.APP_ENV}/mar/quotation/detail/${$("#inquiry-id").val()}/1/"><i class="fi fi-rr-edit text-xl"></i> Edit Quotation</a></li>
+            <li class="${isAmec.length == 0 ? "text-gray-500 menu-disabled" : ""}"><a id="${isAmec.length > 0 ? "returnfin" : ""}" ><i class="fi fi-sr-undo text-xl"></i>Return to Finance</a></li>
+            <li><a href="${process.env.APP_ENV}/mar/inquiry/detail/${$("#inquiry-id").val()}"><i class="fi fi-rr-file-edit text-xl"></i> Revise Inquiry</a></li>
         </ul>
     </div>`;
 
@@ -206,7 +208,7 @@ async function setupButton(group) {
 		href: `${process.env.APP_ENV}/mar/quotation`,
 		icon: "fi fi-rr-arrow-circle-left text-xl",
 		className:
-			"btn-outline btn-accent text-neutral hover:text-white hover:bg-accent",
+			"btn-outline btn-accent text-neutral hover:text-white hover:bg-accent shadow-lg",
 	});
 
 	const exportBtn = await createBtn({
@@ -219,7 +221,7 @@ async function setupButton(group) {
 
 	switch (group) {
 		case 3:
-			$(".btn-container").append(exportBtn, back);
+			$(".btn-container").append(exportBtn, returnFnc, back);
 			break;
 		case 2:
 			$(".btn-container").append(issue, reject, returnFnc, back);
@@ -397,7 +399,7 @@ async function setQuotationData(data) {
 		QUO_DATE: new Date(),
 		QUO_VALIDITY: $("#expiredate").val(),
 		QUO_PIC: $("#user-login").attr("empno"),
-		QUO_NOTE: $("#remark").val(),
+		QUO_NOTE: $("#quonote").val(),
 		QUO_LATEST: 1,
 	};
 }

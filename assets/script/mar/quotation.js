@@ -205,14 +205,15 @@ async function tableInquiryOption(data) {
 					type: "link",
 					icon: "fi fi-rr-edit text-lg",
 					className: `btn-xs btn-accent text-white hover:shadow-lg ${row.INQ_TYPE == "SP" ? "" : "hidden!"}`,
-					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/2/`,
+					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/1/`,
 				});
 				const view = createBtn({
 					id: `view-${data}`,
 					title: "View",
 					type: "link",
 					icon: "fi fi fi-rs-search text-lg",
-					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
+					// className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white ${row.INQ_TYPE == "SP" ? "hidden!" : ""}`,
+					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
 					href: `${process.env.APP_ENV}/mar/quotation/detail/${data}/3/`,
 				});
 				const excel = createBtn({
@@ -235,7 +236,7 @@ async function tableInquiryOption(data) {
                         <li>${sendtoAs400}</li>
                     </ul>
                 </div>`;
-				return `<div class="flex justify-end gap-2">${edit}${view}${excel}${dropdown}</div>`;
+				return `<div class="flex justify-end gap-2">${view}${excel}${dropdown}</div>`;
 			},
 		},
 	];

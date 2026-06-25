@@ -5,4 +5,5 @@ export * from "./table_out.js";
 export * from "./view_cost.js";
 export * from "./view_fact.js";
 export * from "./view_out.js";
+export * from "./view_part.js";
 export * from "./view_weight.js";

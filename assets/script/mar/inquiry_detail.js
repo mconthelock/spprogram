@@ -50,6 +50,8 @@ import {
 	updateInquiry,
 	updateInquiryGroup,
 	findPriceRatio,
+	mar2sale,
+	de2pkc,
 } from "../service/index.js";
 import { initApp, fileExtension } from "../utils.js";
 
@@ -250,6 +252,7 @@ $(document).on("click", "#send-de", async function (e) {
 			table.row(index).data(updatedData);
 		});
 		const inquiry = await createPath({ level: 1, status: 2, obj: $(this) });
+		await mar2sale(inquiry);
 		window.location.replace(
 			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
 		);
@@ -303,6 +306,7 @@ $(document).on("click", "#send-bm", async function (e) {
 			// window.location.replace(
 			// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
 			// );
+			await de2pkc(inquiry);
 			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 		} else {
 			await showMessage(`Something went wrong while creating inquiry.`);
@@ -402,6 +406,7 @@ $(document).on("click", "#update-de", async function (e) {
 		const inquiry = await updatePath({ level: 1, status: 2, obj: $(this) });
 		if (inquiry) {
 			await updateGroups(inquiry);
+			await mar2sale(inquiry);
 			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 		}
 	} catch (error) {
@@ -459,6 +464,7 @@ $(document).on("click", "#update-bm", async function (e) {
 		// window.location.replace(
 		// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
 		// );
+		await de2pkc(inquiry);
 		window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 	} catch (error) {
 		console.log(error);

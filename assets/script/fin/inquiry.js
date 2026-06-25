@@ -66,6 +66,16 @@ $(document).on("change", ".quick-remark", async function (e) {
 			data.INQ_ID,
 		);
 		table.row($(this).closest("tr")).data(inq).draw(false);
+		const logs = {
+			INQ_NO: data.INQ_NO,
+			INQ_REV: data.INQ_REV,
+			INQH_USER: $("#user-login").attr("empno"),
+			INQH_ACTION: 40,
+			INQH_LATEST: 1,
+			INQH_DATE: new Date(),
+			INQH_REMARK: remark,
+		};
+		await createInquiryHistory(logs);
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);

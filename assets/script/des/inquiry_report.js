@@ -58,17 +58,24 @@ $(async function () {
 
 async function createReportTable(formdata) {
 	try {
+		let result = [];
 		const user = await currentUser();
 		const usrgroup = user.group;
-		const des = await getDesigner();
-		const desgroup = des.find((d) => d.DES_USER == user.empno).DES_GROUP;
+		if (usrgroup != "DSV") {
+			const des = await getDesigner();
+			const desgroup = des.find(
+				(d) => d.DES_USER == user.empno,
+			).DES_GROUP;
 
-		const data = await getInquiry({ ...formdata, INQ_TYPE: "SP" });
-		const result = data.filter((d) => {
-			return d.inqgroup.some(
-				(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
-			);
-		});
+			const data = await getInquiry({ ...formdata, INQ_TYPE: "SP" });
+			result = data.filter((d) => {
+				return d.inqgroup.some(
+					(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
+				);
+			});
+		} else {
+			result = await getInquiry({ ...formdata, INQ_TYPE: "SP" });
+		}
 
 		const opt = await tableInquiryDEOption(result, { back: true });
 		table = await createTable(opt);
@@ -83,9 +90,12 @@ $(document).on("click", "#export1", async function (e) {
 	try {
 		await activatedBtnRow($(this));
 		const template = await getTemplate(
-			"export_inquiry_list_template_for_sale.xlsx",
+			"export_inquiry_list_template_for_de.xlsx",
 		);
 		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
+
+		const user = await currentUser();
+		const usrgroup = user.group;
 		const query = {
 			...q,
 			INQ_TYPE: "SP",
@@ -93,10 +103,23 @@ $(document).on("click", "#export1", async function (e) {
 			IS_DETAILS: true,
 		};
 		let data = await getInquiry(query);
+		if (usrgroup != "DSV") {
+			const des = await getDesigner();
+			const desgroup = des.find(
+				(d) => d.DES_USER == user.empno,
+			).DES_GROUP;
+			data = data.filter((d) => {
+				return d.inqgroup.some(
+					(g) => g.INQG_GROUP == desgroup && g.INQG_LATEST == 1,
+				);
+			});
+		}
+
 		const sortData = data.sort((a, b) => a.INQ_DATE - b.INQ_DATE);
 		let result = await dataExports(sortData);
 		await exportExcel(result, template, {
-			filename: "Inquiry List.xlsx",
+			filename: "Inquiry List (for DE users).xlsx",
+			rowstart: 3,
 		});
 	} catch (error) {
 		console.log(error);
