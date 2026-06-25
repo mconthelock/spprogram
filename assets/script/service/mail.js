@@ -6,6 +6,10 @@ import { getDesigner } from "../des/data.js";
 
 export const mar2sale = async (data) => {
 	try {
+		if (data.INQ_STATUS > 10) return;
+		// 	await sale2de(data);
+		// 	return;
+		// }
 		const users = await getAppUsers();
 		const userfilter = users.filter((u) =>
 			["SLG"].includes(u.appsgroups?.GROUP_CODE),
@@ -73,7 +77,7 @@ export const sale2de = async (data) => {
 		const mailData = {
 			template: "spprogram/inquiry",
 			//to: userfilter.map((u) => u.data.SRECMAIL),
-			to: `chalorms@MitsubishiElevatorAsia.co.th`,
+			to: `chalorms@MitsubishiElevatorAsia.co.th,  supamid@MitsubishiElevatorAsia.co.th`,
 			subject: `Sale had forwarded Inquiry No. ${data.INQ_NO}`,
 			context: {
 				message: `Please accesss to SP Program to process data.`,
