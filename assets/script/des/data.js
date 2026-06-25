@@ -67,6 +67,8 @@ export const dataExports = async (data) => {
 			IS_ELEVATOR: el.inqgroup.some((g) => g.INQG_GROUP == 6) ? "" : "P",
 			DES_FINISH: des_finish,
 			DES_TIME: await countWorkingDay(el.timeline.DE_READ, des_finish),
+			SALE_LEADER: await deName(el.timeline.SG_USER),
+			SALE_USER: await deName(el.timeline.SE_USER),
 		};
 		const eme = el.inqgroup.filter((g) => g.INQG_GROUP == 1);
 		if (eme.length > 0) {
