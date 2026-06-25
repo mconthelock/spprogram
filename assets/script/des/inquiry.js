@@ -143,7 +143,7 @@ $(document).on("click", "#export1", async function (e) {
 		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
 		let result = await dataExports(sortData);
 		await exportExcel(result, template, {
-			filename: "Inquiry List.xlsx",
+			filename: "Inquiry List (for DE users).xlsx",
 			rowstart: 3,
 		});
 	} catch (error) {

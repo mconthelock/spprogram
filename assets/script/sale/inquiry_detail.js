@@ -33,6 +33,8 @@ import {
 	setAS400Detail,
 	setAS400Variable,
 	addAS400Data,
+	de2pkc,
+	sale2de,
 } from "../service/index.js";
 import { bindDeleteLine } from "../inquiry/ui.js";
 import { state } from "../inquiry/store.js";
@@ -249,11 +251,8 @@ $(document).on("click", "#forward-de", async function (e) {
 		await updateInquiryGroup(group);
 		const logs = await setLogsData(12);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
-		await mailToDEGroupLeader(inquiry);
+		await sale2de(inquiry);
 		window.location.replace(`${process.env.APP_ENV}/se/inquiry/`);
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		// );
 	} catch (error) {
 		console.log(error);
 		await activatedBtnRow($(this), false);
@@ -301,7 +300,7 @@ $(document).on("click", "#send-bm", async function (e) {
 			};
 			await updateInquiryGroup(group);
 			await setAS400Data(inquiry);
-			await mailToPKC(inquiry);
+			await de2pkc(inquiry);
 			// window.location.replace(
 			// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}/`,
 			// );
@@ -377,7 +376,7 @@ $(document).on("click", "#send-confirm", async function (e) {
 				obj: $(this),
 			});
 			await forwardInquiry(designForward);
-			await mailToDEGroupLeader(inquiry);
+			await sale2de(inquiry);
 		} else {
 			if (!isAmec) {
 				inquiry = await updatePath({
@@ -392,16 +391,13 @@ $(document).on("click", "#send-confirm", async function (e) {
 					obj: $(this),
 				});
 				await setAS400Data(inquiry);
-				await mailToPKC(inquiry);
 				const logs = await setLogsData(30, true);
 				await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
+				await de2pkc(inquiry);
 			}
 		}
 		const logs = await setLogsData(11);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		// );
 		window.location.replace(`${process.env.APP_ENV}/se/inquiry/index/2/`);
 	} catch (error) {
 		console.log(error);

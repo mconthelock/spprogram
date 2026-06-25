@@ -799,10 +799,12 @@ export async function verifyDetail(data, savelevel = 0) {
 				(item.INQD_UNREPLY == "" || item.INQD_UNREPLY == null) &&
 				(item.INQD_SUPPLIER == "" || item.INQD_SUPPLIER == null)
 			) {
-				check = false;
-				message.push(`Please select supplier.`);
-				errorEl(row.find(".supplier-line"));
-				return false;
+				if (!(savelevel == 3 && item.INQD_DE == "1")) {
+					check = false;
+					message.push(`Please select supplier.`);
+					errorEl(row.find(".supplier-line"));
+					return false;
+				}
 			}
 
 			//Drawing can not null
