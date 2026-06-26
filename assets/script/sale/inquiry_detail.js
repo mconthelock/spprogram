@@ -30,8 +30,9 @@ import {
 	setAS400Detail,
 	setAS400Variable,
 	addAS400Data,
-	de2pkc,
+	sale2se,
 	sale2de,
+	de2pkc,
 } from "../service/index.js";
 import { bindDeleteLine } from "../inquiry/ui.js";
 import { state } from "../inquiry/store.js";
@@ -190,9 +191,6 @@ $(document).on("click", "#assign-pic", async function (e) {
 		const logs = await setLogsData(10);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		window.location.replace(`${process.env.APP_ENV}/se/inquiry/`);
-		// window.location.replace(
-		// 	`${process.env.APP_ENV}/se/inquiry/show/${inquiry.INQ_ID}`,
-		// );
 	} catch (error) {
 		// await activatedBtnRow($(this), false);
 		await showMessage(error.message || `Something went wrong.`);
