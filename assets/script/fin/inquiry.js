@@ -13,6 +13,7 @@ import {
 	createInquiryHistory,
 	getTemplate,
 	exportExcel,
+	fin2mar,
 } from "../service/index.js";
 import { dataFilter, dataExports, finApproveStatus } from "./data.js";
 import { initApp } from "../utils.js";
@@ -190,6 +191,7 @@ $(document).on("click", ".approval", async function (e) {
 				INQH_LATEST: 1,
 			};
 			await createInquiryHistory(history);
+			await fin2mar(row);
 		}
 		window.location.reload();
 	} catch (error) {
