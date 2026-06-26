@@ -49,7 +49,7 @@ export const mar2sale = async (data) => {
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to Sale:", error);
-		throw error;
+		//throw error;
 	}
 };
 
@@ -58,7 +58,7 @@ export const sale2se = async (data) => {
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to SE", error);
-		throw error;
+		//throw error;
 	}
 };
 
@@ -82,7 +82,7 @@ export const sale2de = async (data, subject = "") => {
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: userfilter.map((u) => u.data.SRECMAIL),
+			to: emailto,
 			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject:
 				subject ||
@@ -113,7 +113,7 @@ export const sale2de = async (data, subject = "") => {
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);
-		throw error;
+		//throw error;
 	}
 };
 
@@ -157,7 +157,7 @@ export const de2pkc = async (data) => {
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);
-		throw error;
+		//throw error;
 	}
 };
 
@@ -166,7 +166,7 @@ export const fin2mar = async (data) => {
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);
-		throw error;
+		//throw error;
 	}
 };
 
@@ -175,7 +175,7 @@ export const mar2fin = async (data) => {
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);
-		throw error;
+		//throw error;
 	}
 };
 
@@ -188,14 +188,14 @@ export const error2admin = async (error) => {
 			subject: `[SP Notification] Error occurred in SP Program`,
 			context: {
 				recipientName: `Admin`,
-				message: `${JSON.stringify(error)} ${user ? `User: ${user.data.SNAME} ${user.data.SEMPNO}` : ""}`,
+				message: `${error?.message || error?.toString() || JSON.stringify(error)} / ${user ? `User: ${user.empno} - ${user.username}` : ""}`,
 				showTable: false,
 			},
 		};
 		await sendMail(mailData);
 	} catch (error) {
 		console.error("Error sending email to Admin:", error);
-		throw error;
+		//throw error;
 	}
 };
 
