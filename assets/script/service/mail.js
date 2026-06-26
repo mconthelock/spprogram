@@ -181,13 +181,14 @@ export const mar2fin = async (data) => {
 
 export const error2admin = async (error) => {
 	try {
+		const user = await currentUser();
 		const mailData = {
 			template: "spprogram/inquiry",
 			to: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Error occurred in SP Program`,
 			context: {
 				recipientName: `Admin`,
-				message: error,
+				message: `${JSON.stringify(error)} ${user ? `User: ${user.data.SNAME} ${user.data.SEMPNO}` : ""}`,
 				showTable: false,
 			},
 		};
