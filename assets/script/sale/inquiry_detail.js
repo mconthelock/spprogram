@@ -26,9 +26,6 @@ import {
 	updateInquiryHeader,
 	createInquiryFile,
 	createInquiryHistory,
-	mailToSaleEngineer,
-	mailToDEGroupLeader,
-	mailToPKC,
 	setAS400Header,
 	setAS400Detail,
 	setAS400Variable,
@@ -190,7 +187,6 @@ $(document).on("click", "#assign-pic", async function (e) {
 			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
 		};
 		await updateInquiryGroup(group);
-		await mailToSaleEngineer(inquiry);
 		const logs = await setLogsData(10);
 		await createInquiryHistory({ ...logs, INQH_LATEST: 1 });
 		window.location.replace(`${process.env.APP_ENV}/se/inquiry/`);

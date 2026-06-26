@@ -303,9 +303,6 @@ $(document).on("click", "#send-bm", async function (e) {
 			await setAS400Data(inquiry);
 		}
 		if (inquiry) {
-			// window.location.replace(
-			// 	`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-			// );
 			await de2pkc(inquiry);
 			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 		} else {
@@ -368,9 +365,21 @@ async function createPath(opt) {
 		// console.log(details, opt.level);
 		// return;
 		await verifyDetail(details, opt.level);
+
+		//Check ESO
+		const isESO = details.some(
+			(detail) => Math.floor(detail.INQD_ITEM) / 100 >= 6,
+		);
+		if (isESO && opt.status == 2) {
+			console.log(
+				"Inquiry cannot be sent to design or AS400 because it contains ESO order.",
+			);
+			header.INQ_STATUS = 12;
+		}
+
 		await showLoader();
 		await activatedBtnRow(opt.obj);
-		const timelinedata = await setTimelineData(opt.status);
+		const timelinedata = await setTimelineData(header.INQ_STATUS);
 		const history = await setLogsData(2);
 		const fomdata = { header, details, timelinedata, history };
 		const inquiry = await createInquiry(fomdata);
@@ -522,6 +531,17 @@ async function updatePath(opt) {
 				INQD_DE: null,
 			}));
 		await verifyDetail(details, opt.level);
+
+		//Check ESO
+		const isESO = details.some(
+			(detail) => Math.floor(detail.INQD_ITEM) / 100 >= 6,
+		);
+		if (isESO && opt.status == 2) {
+			console.log(
+				"Inquiry cannot be sent to design or AS400 because it contains ESO order.",
+			);
+			header.INQ_STATUS = 12;
+		}
 		await activatedBtnRow(opt.obj);
 		await showLoader();
 
