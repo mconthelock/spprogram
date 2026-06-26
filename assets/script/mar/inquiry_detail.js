@@ -531,6 +531,17 @@ async function updatePath(opt) {
 				INQD_DE: null,
 			}));
 		await verifyDetail(details, opt.level);
+
+		//Check ESO
+		const isESO = details.some(
+			(detail) => Math.floor(detail.INQD_ITEM) / 100 >= 6,
+		);
+		if (isESO && opt.status == 2) {
+			console.log(
+				"Inquiry cannot be sent to design or AS400 because it contains ESO order.",
+			);
+			header.INQ_STATUS = 12;
+		}
 		await activatedBtnRow(opt.obj);
 		await showLoader();
 
