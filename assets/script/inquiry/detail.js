@@ -1065,6 +1065,58 @@ export async function setAS400Data(inq) {
 	return;
 }
 
+export async function setVPCCostTatble(inq) {
+	const q700 = await getVPCPrice();
+	for (const detail of inq.details) {
+		const items = q700.filter(
+			(i) =>
+				i.Q700ITEM == detail.INQD_ITEM &&
+				i.Q700DRAW.replace(/ /g, "") ==
+					detail.INQD_DRAWING.replace(/ /g, ""),
+		);
+		if (items.length == 0) continue;
+		if (items[0].Q700VAR == null && detail.INQD_VARIABLE == null) {
+			const values = {
+				INQD_ID: detail.INQD_ID,
+				INQD_VPC_COST: items[0].Q700PRICE,
+				INQD_VPC_BASE: detail.INQD_FC_BASE,
+				INQD_VPC_UNITPRICE: Math.ceil(
+					items[0].Q700PRICE * detail.INQD_FC_BASE,
+				),
+				INQD_VPC_PURCODE: items[0].Q700PURCODE,
+				INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			};
+			console.log(values);
+			await updateInquiryDetail(values);
+		} else if (items[0].Q700VAR !== null && detail.INQD_VARIABLE !== null) {
+			const inqvar = validateVariable(detail.INQD_VARIABLE);
+			const itemvar = validateVariable(i.Q700VAR);
+			const keysMatch =
+				Object.keys(inqvar.parsedData).length ===
+					Object.keys(itemvar.parsedData).length &&
+				Object.keys(inqvar.parsedData).every(
+					(key) =>
+						itemvar.parsedData.hasOwnProperty(key) &&
+						inqvar.parsedData[key] === itemvar.parsedData[key],
+				);
+			if (keysMatch) {
+				const values = {
+					INQD_ID: detail.INQD_ID,
+					INQD_VPC_COST: items[0].Q700PRICE,
+					INQD_VPC_BASE: detail.INQD_FC_BASE,
+					INQD_VPC_UNITPRICE: Math.ceil(
+						items[0].Q700PRICE * detail.INQD_FC_BASE,
+					),
+					INQD_VPC_PURCODE: items[0].Q700PURCODE,
+					INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				};
+				console.log(values);
+				await updateInquiryDetail(values);
+			}
+		}
+	}
+}
+
 export async function setCostTatble(inq) {
 	const period = await currentPeriod();
 	const ratio = await findPriceRatio({

@@ -191,7 +191,7 @@ $(document).on("click", ".approval", async function (e) {
 				INQH_LATEST: 1,
 			};
 			await createInquiryHistory(history);
-			await fin2mar(row);
+			await fin2mar({ ...row, INQ_STATUS: status });
 		}
 		window.location.reload();
 	} catch (error) {
