@@ -193,7 +193,7 @@ $(document).on("click", ".approval", async function (e) {
 			await createInquiryHistory(history);
 			await fin2mar({ ...row, INQ_STATUS: status });
 		}
-		//window.location.reload();
+		window.location.reload();
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
