@@ -21,6 +21,7 @@ import {
 	updateInquiry,
 	getItems,
 	currentPeriod,
+	fin2mar,
 } from "../service/index.js";
 import { finApproveStatus } from "./data.js";
 
@@ -347,6 +348,7 @@ $(document).on("click", ".fin-confirm-btn", async function (e) {
 		await showLoader({ show: true });
 		await activatedBtnRow($(this));
 		const inquiry = await updatePath({ status, timeline });
+		await fin2mar(inquiry);
 		if (!inquiry) throw new Error("Failed to update inquiry");
 		if (!isDraft)
 			window.location.replace(

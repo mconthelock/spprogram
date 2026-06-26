@@ -163,6 +163,35 @@ export const de2pkc = async (data) => {
 
 export const fin2mar = async (data) => {
 	try {
+		if (data.INQ_STATUS < 45) return;
+		const mailData = {
+			template: "spprogram/inquiry",
+			//to: data.maruser.SRECMAIL,
+			to: `chalorms@MitsubishiElevatorAsia.co.th`,
+			subject: `[SP Notification] Inquiry No. ${data.INQ_NO} have been approved Price`,
+			context: {
+				message: `Finance has sent part supply inquiry to you since ${dayjs().format("YYYY-MM-DD HH:mm")}. Please accesss to system and processing data.`,
+				recipientName: `${data.maruser.SNAME}`,
+				showTable: true,
+				tableHeaders: [
+					"Inquiry No",
+					"Rev.",
+					"Inquiry Date",
+					"Approve Date",
+					"Link",
+				],
+				tableRows: [
+					[
+						data.INQ_NO,
+						data.INQ_REV,
+						dayjs(data.INQ_DATE).format("YYYY-MM-DD"),
+						dayjs().format("YYYY-MM-DD HH:mm"),
+						`<a href="${process.env.APP_ENV}/mar/quotation/detail/${data.INQ_ID}/1/">View Inquiry</a>`,
+					],
+				],
+			},
+		};
+		await sendMail(mailData);
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);
@@ -172,6 +201,7 @@ export const fin2mar = async (data) => {
 
 export const mar2fin = async (data) => {
 	try {
+		const users = data.maruser;
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);
