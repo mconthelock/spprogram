@@ -166,8 +166,8 @@ export const fin2mar = async (data) => {
 		if (data.INQ_STATUS < 45) return;
 		const mailData = {
 			template: "spprogram/inquiry",
-			//to: data.maruser.SRECMAIL,
-			to: `chalorms@MitsubishiElevatorAsia.co.th`,
+			to: data.maruser.SRECMAIL,
+			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Inquiry No. ${data.INQ_NO} have been approved Price`,
 			context: {
 				message: `Finance has sent part supply inquiry to you since ${dayjs().format("YYYY-MM-DD HH:mm")}. Please accesss to system and processing data.`,
