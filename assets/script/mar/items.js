@@ -6,7 +6,12 @@ import { showLoader } from "@amec/webasset/preloader";
 import { showMessage } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { createBtn, activatedBtnRow } from "@amec/webasset/components/buttons";
-import { getTemplate, exportExcel, getItems } from "../service/index";
+import {
+	getTemplate,
+	exportExcel,
+	getItems,
+	updateItems,
+} from "../service/index";
 import { initApp, tableOpt } from "../utils.js";
 var table;
 $(async function () {
@@ -59,38 +64,13 @@ async function tableOption(data) {
 			className: "text-center",
 			sortable: false,
 			render: (data, type, row) => {
-				const edit = `<a class="btn btn-sm btn-ghost btn-circle edit-row" href="${process.env.APP_ENV}/fin/items/detail/${data}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>`;
-				const add = ``;
-				const show = ``;
-				const save = `<button class="btn btn-sm btn-ghost btn-circle save-row" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>`;
-				const active = `<button class="btn btn-sm btn-ghost btn-circle toggle-status" data-id="${data}" data-value="0"><i class="fi fi-sr-trash text-2xl text-red-500"></i></button>`;
-				const inactive = `<a class="btn btn-sm btn-ghost btn-circle ignore-row" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>`;
-				const cancel = `<button class="btn btn-sm btn-ghost btn-circle toggle-status" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>`;
+				const edit = `<a class="btn btn-sm btn-ghost btn-circle edit-row" href="${process.env.APP_ENV}/mar/items/detail/${data}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>`;
+				const deleted = `<button class="btn btn-sm btn-ghost btn-circle toggle-status ${row.ITEM_STATUS === 1 ? "" : "hidden"}" data-id="${data}" data-value="0"><i class="fi fi-sr-trash text-2xl text-red-500"></i></button>`;
+				const reactive = `<button class="btn btn-sm btn-ghost btn-circle toggle-status ${row.ITEM_STATUS === 0 ? "" : "hidden"}" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>`;
 
 				return `<div class="flex items-center justify-center gap-2">
-                    ${edit}${add}${show}${save}${active}${inactive}${cancel}
+                    ${edit}${deleted}${reactive}
                 </div>`;
-				// 		return `<input type="hidden" value="${data}" class="input-dt" data-key="id"/>
-				// <div class="flex items-center justify-center gap-2">
-				//     <button class="btn btn-sm btn-ghost btn-circle save-row ${
-				// 		row.isNew === undefined ? "hidden" : ""
-				// 	}" data-id="${data}"><i class="fi fi-sr-disk text-2xl"></i></button>
-
-				//     <a class="btn btn-sm btn-ghost btn-circle ignore-row ${
-				// 		row.isNew === undefined ? "hidden" : ""
-				// 	}" data-id="${data}" href="#"><i class="fi fi-rs-circle-xmark text-red-500 text-2xl"></i></a>
-
-				//     <button class="btn btn-sm btn-ghost btn-circle toggle-status
-				//         ${row.ITEM_STATUS === 0 ? "hidden" : ""}
-				//         ${row.isNew !== undefined ? "hidden" : ""}"
-				//         data-id="${data}" data-value="0">
-				//         <i class="fi fi-sr-trash text-2xl text-red-500"></i>
-				//     </button>
-
-				//     <button class="btn btn-sm btn-ghost btn-circle toggle-status ${
-				// 		row.ITEM_STATUS === 1 ? "hidden" : ""
-				// 	}" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>
-				// </div>`;
 			},
 		},
 	];
@@ -130,5 +110,32 @@ $(document).on("click", "#export-btn", async function (e) {
 	} catch (error) {
 		console.log(error);
 		await showErrorMessage(`Something went wrong.`, "2036");
+	}
+});
+
+$(document).on("click", ".toggle-status", async function (e) {
+	e.preventDefault();
+	try {
+		await activatedBtn($(this));
+		const value = intVal($(this).attr("data-value"));
+		let data = table.row($(this).closest("tr")).data();
+		data = {
+			...data,
+			ITEM_STATUS: value,
+			CREATE_AT: data.CREATE_AT == null ? new Date() : data.CREATE_AT,
+			CREATE_BY:
+				data.CREATE_BY == null
+					? $("#user-login").attr("empname")
+					: data.CREATE_BY,
+			UPDATE_AT: new Date(),
+			UPDATE_BY: $("#user-login").attr("empname"),
+		};
+		await updateItems(data);
+		table.row($(this).closest("tr")).data(data).draw(false);
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	} finally {
+		await activatedBtn($(this), false);
 	}
 });
