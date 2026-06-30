@@ -255,7 +255,6 @@ export async function setAS400Variable(INQ_NO, details) {
 }
 
 export async function addAS400Data(data) {
-	console.log("Oh hi, Do you call me? I am here");
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: `${process.env.APP_API}/sp/prebm/create/`,
