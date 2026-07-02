@@ -34,6 +34,7 @@ import {
 	getItems,
 	updateInquiryDetail,
 	findPriceRatio,
+	getVPCPrice,
 } from "../service/index.js";
 import { initRow } from "./ui.js";
 import { init, events } from "./source";
@@ -1056,6 +1057,7 @@ export async function setAS400Data(inq) {
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
 	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
 	await setCostTatble(inq);
+	await setVPCCostTatble(inq);
 	await addAS400Data({
 		header: q601kp1,
 		detail: q601kp2,
@@ -1068,12 +1070,15 @@ export async function setAS400Data(inq) {
 export async function setVPCCostTatble(inq) {
 	const q700 = await getVPCPrice();
 	for (const detail of inq.details) {
+		console.log(detail);
 		const items = q700.filter(
 			(i) =>
 				i.Q700ITEM == detail.INQD_ITEM &&
 				i.Q700DRAW.replace(/ /g, "") ==
 					detail.INQD_DRAWING.replace(/ /g, ""),
 		);
+
+		console.log(items);
 		if (items.length == 0) continue;
 		if (items[0].Q700VAR == null && detail.INQD_VARIABLE == null) {
 			const values = {

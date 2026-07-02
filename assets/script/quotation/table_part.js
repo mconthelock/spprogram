@@ -3,12 +3,14 @@ import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
 export async function tablePartOption(data = [], ratio = {}) {
-	const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
+	//const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
+	const isMTPE = 0;
 	data = await findCostBase(data, ratio);
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.lengthChange = false;
 	opt.searching = false;
+	opt.paging = false;
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.orderFixed = [0, "asc"];
 	opt.pageLength = 20;
@@ -123,7 +125,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-28 min-w-28 cell-display border-r! bg-emerald-300/50!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -132,10 +134,10 @@ export async function tablePartOption(data = [], ratio = {}) {
 			},
 		},
 		//VPC COST
-		/*{
-			data: "INQD_TC_COST",
+		{
+			data: "INQD_VPC_COST",
 			title: `VPC Cost`,
-			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
+			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -144,9 +146,9 @@ export async function tablePartOption(data = [], ratio = {}) {
 			},
 		},
 		{
-			data: "INQD_TC_BASE",
+			data: "INQD_VPC_BASE",
 			title: "%VPC",
-			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
+			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -155,22 +157,26 @@ export async function tablePartOption(data = [], ratio = {}) {
 			},
 		},
 		{
-			data: "INQD_UNIT_PRICE",
+			data: "INQD_VPC_UNITPRICE",
 			title: "VPC Price",
-			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end cell-display vpc`,
+			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
 				}
 				return data;
 			},
-		},*/
+		},
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
 			className: `w-32 min-w-32 cell-display border-r!`,
 			render: function (data, type, row) {
-				const price = intVal(data) * intVal(row.INQD_QTY);
+				const vpcPrice =
+					intVal(row.INQD_VPC_UNITPRICE) * intVal(row.INQD_QTY);
+				const tccPrice =
+					intVal(row.INQD_UNIT_PRICE) * intVal(row.INQD_QTY);
+				const price = vpcPrice > tccPrice ? vpcPrice : tccPrice;
 				if (type === "display") {
 					return showDigits(price, 0);
 				}
@@ -241,7 +247,10 @@ export async function tablePartOption(data = [], ratio = {}) {
 
 	opt.createdRow = function (row, data, dataIndex) {
 		if (data.INQD_SUPPLIER != "MELINA")
-			$(row).find(".INQD_TC_COST").addClass("cell-display");
+			$(row)
+				.find(".INQD_TC_COST")
+				.addClass("cell-display")
+				.removeClass("bg-primary/20");
 		return;
 	};
 
