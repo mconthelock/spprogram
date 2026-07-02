@@ -20,8 +20,8 @@ export const mar2sale = async (data) => {
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: userfilter.map((u) => u.data.SRECMAIL),
-			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
+			//to: userfilter.map((u) => u.data.SRECMAIL),
+			to: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Inquiry No. ${data.INQ_NO} is sent to Sale for processing`,
 			context: {
 				message: `${data.maruser.SNAME} has sent part supply inquiry to you since ${dayjs().format("YYYY-MM-DD HH:mm")}. Please accesss to system and processing data.`,
@@ -74,11 +74,18 @@ export const sale2de = async (data, subject = "") => {
 
 		let emailto = [];
 		let group = data.inqgroup;
-		group = group.filter((g) => g.INQG_LATEST == "1" && g.INQG_STATUS == 0);
-		group.map((g) => {
-			const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
-			if (user) emailto.push(user.data.SRECMAIL);
-		});
+
+		group = group.filter((g) => g.INQG_LATEST == 1 && g.INQG_SKIP == "1");
+		// for (const g of group) {
+		// 	const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
+		// 	if (user) emailto.push(user.data.SRECMAIL);
+		// }
+
+		console.log(data.inqgroup);
+		// group.map((g) => {
+		// 	const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
+		// 	if (user) emailto.push(user.data.SRECMAIL);
+		// });
 
 		const mailData = {
 			template: "spprogram/inquiry",
@@ -109,7 +116,7 @@ export const sale2de = async (data, subject = "") => {
 				],
 			},
 		};
-		await sendMail(mailData);
+		//await sendMail(mailData);
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);

@@ -11,6 +11,7 @@ import {
 	dataExports,
 	dataDetails,
 	deleteInquiry,
+	sale2de,
 } from "../service/index.js";
 import { initApp } from "../utils.js";
 
@@ -145,5 +146,16 @@ $(document).on("click", ".delete-inquiry", async function (e) {
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
+	}
+});
+
+$(document).on("click", ".xview-inquiry", async function (e) {
+	e.preventDefault();
+	try {
+		const data = table.row($(this).closest("tr")).data();
+		await sale2de(data);
+	} catch (error) {
+		console.log(error);
+		await showMessage(`Something went wrong.: ${error}`);
 	}
 });

@@ -174,6 +174,7 @@ async function setupButton(mode) {
 			$(".btn-container").append(updateDE, updateIS, back);
 		}*/
 		$(".btn-container").append(updateDE, updateIS, back);
+		$("#inquiry-no").prop("readonly", true);
 	}
 }
 
@@ -303,8 +304,8 @@ $(document).on("click", "#send-bm", async function (e) {
 			await setAS400Data(inquiry);
 		}
 		if (inquiry) {
-			await de2pkc(inquiry);
-			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
+			//await de2pkc(inquiry);
+			//window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 		} else {
 			await showMessage(`Something went wrong while creating inquiry.`);
 		}
@@ -362,8 +363,6 @@ async function createPath(opt) {
 				...detail,
 				rowIndex: index,
 			}));
-		// console.log(details, opt.level);
-		// return;
 		await verifyDetail(details, opt.level);
 
 		//Check ESO
@@ -371,10 +370,11 @@ async function createPath(opt) {
 			(detail) => Math.floor(detail.INQD_ITEM) / 100 >= 6,
 		);
 		if (isESO && opt.status == 2) {
-			console.log(
-				"Inquiry cannot be sent to design or AS400 because it contains ESO order.",
-			);
 			header.INQ_STATUS = 12;
+			header.INQ_SALE_FORWARD = 1;
+			details.forEach((detail) => {
+				return (detail.INQD_DE = 1);
+			});
 		}
 
 		await showLoader();
@@ -501,6 +501,7 @@ async function updatePath(opt) {
 		}
 
 		header.INQ_STATUS = opt.status;
+		header.INQ_SALE_FORWARD = null;
 		header.UPDATE_BY = $("#user-login").attr("empname");
 		header.UPDATE_AT = new Date();
 
@@ -528,7 +529,6 @@ async function updatePath(opt) {
 			.map((detail, index) => ({
 				...detail,
 				rowIndex: index,
-				INQD_DE: null,
 			}));
 		await verifyDetail(details, opt.level);
 
@@ -537,10 +537,11 @@ async function updatePath(opt) {
 			(detail) => Math.floor(detail.INQD_ITEM) / 100 >= 6,
 		);
 		if (isESO && opt.status == 2) {
-			console.log(
-				"Inquiry cannot be sent to design or AS400 because it contains ESO order.",
-			);
 			header.INQ_STATUS = 12;
+			header.INQ_SALE_FORWARD = 1;
+			details.forEach((detail) => {
+				return (detail.INQD_DE = 1);
+			});
 		}
 		await activatedBtnRow(opt.obj);
 		await showLoader();
@@ -569,10 +570,8 @@ async function updatePath(opt) {
 			timelinedata,
 			history,
 		};
-
-		//console.log(fomdata);
-
 		const inquiry = await updateInquiry(fomdata);
+		await updateGroups(inquiry);
 		//Attachments
 		if (state.selectedFilesMap.size > 0) {
 			const attachment_form = new FormData();
@@ -612,19 +611,17 @@ async function setLogsData(action) {
 }
 
 async function updateGroups(data) {
-	// prettier-ignore
-	{
-        const groups_data = {
-            INQG_DES_DATE: null,
-            INQG_CHK_DATE: null,
-            INQG_STATUS: 3,
-        };
-        await updateInquiryGroup({
-            data: groups_data,
-            condition: {
-                INQ_ID: data.INQ_ID,
-                INQG_LATEST: 1
-            },
-        });
-    }
+	await updateInquiryGroup({
+		data: {
+			INQG_ASG_DATE: null,
+			INQG_DES_DATE: null,
+			INQG_CHK_DATE: null,
+			INQG_SKIP: data.INQ_SALE_FORWARD,
+			INQG_STATUS: 0,
+		},
+		condition: {
+			INQ_ID: data.INQ_ID,
+			INQG_LATEST: 1,
+		},
+	});
 }

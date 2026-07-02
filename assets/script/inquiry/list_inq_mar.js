@@ -139,13 +139,22 @@ export async function tableInquiryOption(data, extopt = {}) {
 			sortable: false,
 			title: `<div class="flex justify-center"><i class="fi fi-rr-settings-sliders text-lg"></i></div>`,
 			render: (data, type, row) => {
+				// const view = createBtn({
+				// 	id: `view-${data}`,
+				// 	title: "View",
+				// 	type: "link",
+				// 	icon: "fi fi-rr-search text-lg",
+				// 	className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
+				// 	href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
+				// });
+
 				const view = createBtn({
 					id: `view-${data}`,
 					title: "View",
-					type: "link",
+					// type: "link",
 					icon: "fi fi-rr-search text-lg",
-					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white`,
-					href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
+					className: `btn-xs btn-outline btn-accent text-accent hover:shadow-lg hover:text-white xview-inquiry`,
+					// href: `${process.env.APP_ENV}/mar/inquiry/show/${data}/`,
 				});
 
 				const edit = createBtn({

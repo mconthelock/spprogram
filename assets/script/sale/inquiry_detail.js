@@ -82,6 +82,9 @@ $(document).ready(async () => {
 		$("#viewmar").addClass("hidden");
 		$("#showremark").closest(".grid").addClass("hidden");
 		let details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
+		details = details.map((dt) => {
+			return { ...dt, INQD_SUPPLIER: null };
+		});
 		const detailsOption = await setupSaleTableDetail(details);
 		table = await createTable(detailsOption);
 		//Inquiry History and Attachment
@@ -202,8 +205,6 @@ $(document).on("click", "#assign-pic", async function (e) {
 $(document).on("click", "#forward-de", async function (e) {
 	e.preventDefault();
 	const user = await currentUser();
-	// const chkheader = await verifyHeader(".req-1");
-	// if (!chkheader) return;
 	const isRevise = $(this).hasClass("revised");
 	if (isRevise && $("#remark").val().trim() === "") {
 		await showMessage("Please provide a remark for the revision.");
@@ -222,13 +223,14 @@ $(document).on("click", "#forward-de", async function (e) {
 			.data()
 			.each((row, index) => {
 				row.INQD_DE = "1";
+				row.INQD_SUPPLIER = null;
 			});
+
 		const inquiry = await updatePath({
 			level: 0,
 			status: 12,
 			obj: $(this),
 		});
-		// return;
 		const group = {
 			data: {
 				INQG_ASG: null,
@@ -238,6 +240,7 @@ $(document).on("click", "#forward-de", async function (e) {
 				INQG_ASG_DATE: null,
 				INQG_DES_DATE: null,
 				INQG_CHK_DATE: null,
+				INQG_SKIP: 1,
 				INQG_STATUS: 12,
 			},
 			condition: { INQ_ID: inquiry.INQ_ID, INQG_LATEST: 1 },
