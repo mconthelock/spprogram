@@ -64,24 +64,33 @@ export const sale2se = async (data) => {
 
 export const sale2de = async (data, subject = "") => {
 	try {
-		let users = await getAppUsers();
-		users = users.filter((u) => ["LDR"].includes(u.appsgroups?.GROUP_CODE));
+		let emailto = [];
+		const users = await getAppUsers();
 		const designer = await getDesigner();
-		users.map((u) => {
-			const des = designer.find((d) => d.DES_USER === u.USERS_ID);
-			if (des) u.DES_GROUP = des.DES_GROUP;
+		const filteredUsers = users.filter((u) =>
+			["LDR"].includes(u.appsgroups?.GROUP_CODE),
+		);
+		const group = data.inqgroup;
+		const filteredGroup = group.filter(
+			(g) => g.INQG_LATEST == 1 && g.INQG_SKIP == "1",
+		);
+
+		filteredUsers.map((u) => {
+			for (const g of group) {
+				const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
+				console.log(user);
+				if (user) emailto.push(user.data.SRECMAIL);
+			}
+			// const des = designer.find((d) => d.DES_USER === u.USERS_ID);
+			// if (des) u.DES_GROUP = des.DES_GROUP;
 		});
 
-		let emailto = [];
-		let group = data.inqgroup;
+		for (const g of group) {
+			const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
+			console.log(user);
+			if (user) emailto.push(user.data.SRECMAIL);
+		}
 
-		group = group.filter((g) => g.INQG_LATEST == 1 && g.INQG_SKIP == "1");
-		// for (const g of group) {
-		// 	const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
-		// 	if (user) emailto.push(user.data.SRECMAIL);
-		// }
-
-		console.log(data.inqgroup);
 		// group.map((g) => {
 		// 	const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
 		// 	if (user) emailto.push(user.data.SRECMAIL);

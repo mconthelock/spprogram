@@ -253,10 +253,13 @@ $(document).on("click", "#send-de", async function (e) {
 			table.row(index).data(updatedData);
 		});
 		const inquiry = await createPath({ level: 1, status: 2, obj: $(this) });
-		await mar2sale(inquiry);
-		window.location.replace(
-			`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
-		);
+		if (inquiry) {
+			await mar2sale(inquiry);
+			window.location.replace(
+				`${process.env.APP_ENV}/mar/inquiry/show/${inquiry.INQ_ID}`,
+			);
+		}
+		await showLoader({ show: false });
 	} catch (error) {
 		console.log(error);
 		await showMessage(`Something went wrong.`);
