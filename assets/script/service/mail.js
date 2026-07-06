@@ -67,39 +67,34 @@ export const sale2de = async (data, subject = "") => {
 		let emailto = [];
 		const users = await getAppUsers();
 		const designer = await getDesigner();
-		const filteredUsers = users.filter((u) =>
-			["LDR"].includes(u.appsgroups?.GROUP_CODE),
-		);
+		const filteredUsers = users.filter((u) => {
+			if (u.appsgroups?.GROUP_CODE == "LDR") {
+				const des = designer.find((d) => d.DES_USER === u.USERS_ID);
+				if (des) {
+					u.des = des;
+					return true;
+				}
+			}
+			return false;
+		});
+
 		const group = data.inqgroup;
 		const filteredGroup = group.filter(
 			(g) => g.INQG_LATEST == 1 && g.INQG_SKIP == "1",
 		);
 
-		filteredUsers.map((u) => {
-			for (const g of group) {
-				const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
-				console.log(user);
-				if (user) emailto.push(user.data.SRECMAIL);
+		for (const grp of filteredGroup) {
+			for (const user of filteredUsers) {
+				if (user.des.DES_GROUP == grp.INQG_GROUP) {
+					emailto.push(user.data.SRECMAIL);
+				}
 			}
-			// const des = designer.find((d) => d.DES_USER === u.USERS_ID);
-			// if (des) u.DES_GROUP = des.DES_GROUP;
-		});
-
-		for (const g of group) {
-			const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
-			console.log(user);
-			if (user) emailto.push(user.data.SRECMAIL);
 		}
-
-		// group.map((g) => {
-		// 	const user = users.find((u) => u.DES_GROUP == g.INQG_GROUP);
-		// 	if (user) emailto.push(user.data.SRECMAIL);
-		// });
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: emailto,
-			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
+			//to: emailto,
+			to: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject:
 				subject ||
 				`[SP Notification] Sale had forwarded Inquiry No. ${data.INQ_NO}`,
@@ -125,7 +120,7 @@ export const sale2de = async (data, subject = "") => {
 				],
 			},
 		};
-		//await sendMail(mailData);
+		await sendMail(mailData);
 	} catch (error) {
 		await error2admin(error);
 		console.error("Error sending email to DE Group Leader:", error);

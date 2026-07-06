@@ -178,9 +178,9 @@ export async function tablePartOption(data = [], ratio = {}) {
 					intVal(row.INQD_UNIT_PRICE) * intVal(row.INQD_QTY);
 				const price = vpcPrice > tccPrice ? vpcPrice : tccPrice;
 				if (type === "display") {
-					return showDigits(price, 0);
+					return showDigits(tccPrice, 0);
 				}
-				return price;
+				return tccPrice;
 			},
 		},
 		{
