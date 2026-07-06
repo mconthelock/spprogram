@@ -20,8 +20,8 @@ export const mar2sale = async (data) => {
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			//to: userfilter.map((u) => u.data.SRECMAIL),
-			to: `chalorms@MitsubishiElevatorAsia.co.th`,
+			to: userfilter.map((u) => u.data.SRECMAIL),
+			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Inquiry No. ${data.INQ_NO} is sent to Sale for processing`,
 			context: {
 				message: `${data.maruser.SNAME} has sent part supply inquiry to you since ${dayjs().format("YYYY-MM-DD HH:mm")}. Please accesss to system and processing data.`,
@@ -93,8 +93,8 @@ export const sale2de = async (data, subject = "") => {
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			//to: emailto,
-			to: `chalorms@MitsubishiElevatorAsia.co.th`,
+			to: emailto,
+			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject:
 				subject ||
 				`[SP Notification] Sale had forwarded Inquiry No. ${data.INQ_NO}`,
