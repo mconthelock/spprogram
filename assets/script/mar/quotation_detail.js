@@ -233,7 +233,6 @@ async function setupButton(group) {
 }
 
 $(document).on("change", ".inqty", async function () {
-	console.log("sss");
 	const qty = $(this).val();
 	const row = table.row($(this).closest("tr")).data();
 	const tccost = intVal(row.INQD_TC_COST);

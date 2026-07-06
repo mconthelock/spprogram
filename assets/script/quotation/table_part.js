@@ -270,13 +270,12 @@ export async function tablePartOption(data = [], ratio = {}) {
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
 			total += intVal(price.amount);
-			// console.log(price, total);
 		});
 
 		api.column(11).footer().innerHTML = "";
 		api.column(13).footer().innerHTML = showDigits(totaltccost, 0);
 		api.column(15).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(16).footer().innerHTML = showDigits(total, 0);
+		api.column(19).footer().innerHTML = showDigits(total, 0);
 	};
 	return opt;
 }
