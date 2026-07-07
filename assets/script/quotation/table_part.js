@@ -137,7 +137,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_VPC_COST",
 			title: `VPC Cost`,
-			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
+			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end! cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -159,7 +159,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_VPC_UNITPRICE",
 			title: "VPC Price",
-			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
+			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end! cell-display vpc ${isMTPE == 0 ? "hidden" : ""}`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -273,9 +273,13 @@ export async function tablePartOption(data = [], ratio = {}) {
 		});
 
 		api.column(11).footer().innerHTML = "";
-		api.column(13).footer().innerHTML = showDigits(totaltccost, 0);
-		api.column(15).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(19).footer().innerHTML = showDigits(total, 0);
+		api.column(13).footer().innerHTML = showDigits(totaltccost, 0); //Fin cost
+		api.column(15).footer().innerHTML = showDigits(totalunit, 0); //Fin unit price
+
+		api.column(16).footer().innerHTML = showDigits(totaltccost, 0); //VPC cost
+		api.column(18).footer().innerHTML = showDigits(totalunit, 0); //VPC unit price
+
+		api.column(19).footer().innerHTML = showDigits(total, 0); //Total Price
 	};
 	return opt;
 }
