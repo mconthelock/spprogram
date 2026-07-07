@@ -7,7 +7,7 @@ export async function tableCostOption(data = []) {
 	//console.log(data);
 	const opt = { ...tableOpt };
 	opt.data = data;
-	opt.paging = false;
+	// opt.paging = false;
 	opt.searching = false;
 	opt.lengthChange = false;
 	opt.info = false;
