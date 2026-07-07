@@ -80,7 +80,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_QTY",
 			title: "Qty.",
-			className: `w-24 min-w-24 bg-primary/20`,
+			className: `w-24 min-w-24 bg-emerald-300/50`,
 			footer: "Total",
 			render: function (data, type) {
 				if (type === "display") {
@@ -99,7 +99,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_TC_COST",
 			title: `${isMTPE == 1 ? "FIN Cost" : "TC Cost"}`,
-			className: `w-24 min-w-24 border-r! bg-primary/20 text-end! INQD_TC_COST`,
+			className: `w-24 min-w-24 border-r! text-end! bg-primary/20! INQD_TC_COST`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					data = data == null ? "" : data;
@@ -114,7 +114,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_TC_BASE",
 			title: "%TC",
-			className: `w-12 min-w-12 cell-display border-r! text-end!`,
+			className: `w-12 min-w-12 cell-display border-r! text-end! bg-primary/20!`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -125,7 +125,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-28 min-w-28 cell-display border-r! text-end! bg-emerald-300/50!`,
+			className: `w-28 min-w-28 cell-display border-r! text-end! bg-primary/20!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);
@@ -170,7 +170,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-32 min-w-32 cell-display border-r! total-price text-end!`,
 			render: function (data, type, row) {
 				const vpcPrice =
 					intVal(row.INQD_VPC_UNITPRICE) * intVal(row.INQD_QTY);
@@ -178,9 +178,9 @@ export async function tablePartOption(data = [], ratio = {}) {
 					intVal(row.INQD_UNIT_PRICE) * intVal(row.INQD_QTY);
 				const price = vpcPrice > tccPrice ? vpcPrice : tccPrice;
 				if (type === "display") {
-					return showDigits(tccPrice, 0);
+					return showDigits(price, 0);
 				}
-				return tccPrice;
+				return price;
 			},
 		},
 		{
@@ -251,6 +251,15 @@ export async function tablePartOption(data = [], ratio = {}) {
 				.find(".INQD_TC_COST")
 				.addClass("cell-display")
 				.removeClass("bg-primary/20");
+
+		const vpcPrice =
+			intVal(data.INQD_VPC_UNITPRICE) * intVal(data.INQD_QTY);
+		const tccPrice = intVal(data.INQD_UNIT_PRICE) * intVal(data.INQD_QTY);
+		if (isMTPE == 1) {
+			if (vpcPrice > tccPrice)
+				$(row).find(".total-price").addClass("bg-pink-200/50");
+			else $(row).find(".total-price").addClass("bg-primary/20");
+		}
 		return;
 	};
 
@@ -262,6 +271,13 @@ export async function tablePartOption(data = [], ratio = {}) {
 		let totaltccost = 0;
 		let totalunit = 0;
 		let total = 0;
+
+		let totalvpc = 0;
+		let totalvpcunit = 0;
+		let totalvpcsum = 0;
+
+		let summary = 0;
+
 		data.map((el) => {
 			const type = el.INQD_SUPPLIER === "MELINA" ? 1 : 0;
 			const price = calPrice(el, type);
@@ -270,16 +286,25 @@ export async function tablePartOption(data = [], ratio = {}) {
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
 			total += intVal(price.amount);
+
+			totalvpc += intVal(el.INQD_VPC_COST);
+			totalvpcunit += intVal(el.INQD_VPC_UNITPRICE);
+			totalvpcsum += intVal(el.INQD_VPC_UNITPRICE) * intVal(el.INQD_QTY);
+
+			summary +=
+				price.unitprice > intVal(el.INQD_VPC_UNITPRICE)
+					? price.unitprice * intVal(el.INQD_QTY)
+					: intVal(el.INQD_VPC_UNITPRICE) * intVal(el.INQD_QTY);
 		});
 
 		api.column(11).footer().innerHTML = "";
 		api.column(13).footer().innerHTML = showDigits(totaltccost, 0); //Fin cost
 		api.column(15).footer().innerHTML = showDigits(totalunit, 0); //Fin unit price
 
-		api.column(16).footer().innerHTML = showDigits(totaltccost, 0); //VPC cost
-		api.column(18).footer().innerHTML = showDigits(totalunit, 0); //VPC unit price
+		api.column(16).footer().innerHTML = showDigits(totalvpc, 0); //VPC cost
+		api.column(18).footer().innerHTML = showDigits(totalvpcunit, 0); //VPC unit price
 
-		api.column(19).footer().innerHTML = showDigits(total, 0); //Total Price
+		api.column(19).footer().innerHTML = showDigits(summary, 0); //Total Price
 	};
 	return opt;
 }

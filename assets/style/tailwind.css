@@ -239,7 +239,7 @@
 	.table > tbody > tr > td > .cell-input:hover {
 		outline: none;
 		cursor: pointer;
-		@apply bg-primary/20!;
+		@apply bg-emerald-300/50!;
 	}
 
 	.table.table-edit > tbody > tr > td.dt-empty {

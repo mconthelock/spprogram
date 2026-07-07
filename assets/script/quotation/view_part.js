@@ -4,9 +4,11 @@ import { calPrice } from "./data";
 
 export async function tableViewPartOption(data = [], ratio = {}) {
 	const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
+	//const isMTPE = 0;
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.lengthChange = false;
+	opt.paging = false;
 	opt.searching = false;
 	opt.dom = `<"flex items-center mb-3"<"table-search flex flex-1 gap-5"f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto"t><"flex mt-5"<"table-info flex flex-col flex-1 gap-5"i><"table-page flex-none"p>>`;
 	opt.orderFixed = [0, "asc"];
@@ -134,8 +136,8 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 			},
 		},
 		//VPC COST
-		/*{
-			data: "INQD_TC_COST",
+		{
+			data: "INQD_VPC_COST",
 			title: `VPC Cost`,
 			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
 			render: function (data, type, row) {
@@ -146,7 +148,7 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 			},
 		},
 		{
-			data: "INQD_TC_BASE",
+			data: "INQD_VPC_BASE",
 			title: "%VPC",
 			className: `w-24 min-w-24 border-r! bg-pink-200/50! text-end cell-display vpc`,
 			render: function (data, type, row) {
@@ -157,7 +159,7 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 			},
 		},
 		{
-			data: "INQD_UNIT_PRICE",
+			data: "INQD_VPC_UNITPRICE",
 			title: "VPC Price",
 			className: `w-32 min-w-32 cell-display border-r! bg-pink-200/50! text-end cell-display vpc`,
 			render: function (data, type) {
@@ -166,13 +168,17 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 				}
 				return data;
 			},
-		},*/
+		},
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Total Price",
-			className: `w-32 min-w-32 cell-display border-r!`,
+			className: `w-32 min-w-32 cell-display border-r! total-price`,
 			render: function (data, type, row) {
-				const price = intVal(data) * intVal(row.INQD_QTY);
+				const vpcPrice =
+					intVal(row.INQD_VPC_UNITPRICE) * intVal(row.INQD_QTY);
+				const tccPrice =
+					intVal(row.INQD_UNIT_PRICE) * intVal(row.INQD_QTY);
+				const price = vpcPrice > tccPrice ? vpcPrice : tccPrice;
 				if (type === "display") {
 					return showDigits(price, 0);
 				}
@@ -244,6 +250,15 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 	opt.createdRow = function (row, data, dataIndex) {
 		if (data.INQD_SUPPLIER != "MELINA")
 			$(row).find(".INQD_TC_COST").addClass("cell-display");
+
+		const vpcPrice =
+			intVal(data.INQD_VPC_UNITPRICE) * intVal(data.INQD_QTY);
+		const tccPrice = intVal(data.INQD_UNIT_PRICE) * intVal(data.INQD_QTY);
+		if (isMTPE == 1) {
+			if (vpcPrice > tccPrice)
+				$(row).find(".total-price").addClass("bg-pink-200/50");
+			else $(row).find(".total-price").addClass("bg-primary/20");
+		}
 		return;
 	};
 
@@ -255,6 +270,13 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 		let totaltccost = 0;
 		let totalunit = 0;
 		let total = 0;
+
+		let totalvpc = 0;
+		let totalvpcunit = 0;
+		let totalvpcsum = 0;
+
+		let summary = 0;
+
 		data.map((el) => {
 			const type = el.INQD_SUPPLIER === "MELINA" ? 1 : 0;
 			const price = calPrice(el, type);
@@ -263,13 +285,25 @@ export async function tableViewPartOption(data = [], ratio = {}) {
 			totaltccost += intVal(price.tccost);
 			totalunit += intVal(price.unitprice);
 			total += intVal(price.amount);
-			// console.log(price, total);
+
+			totalvpc += intVal(el.INQD_VPC_COST);
+			totalvpcunit += intVal(el.INQD_VPC_UNITPRICE);
+			totalvpcsum += intVal(el.INQD_VPC_UNITPRICE) * intVal(el.INQD_QTY);
+
+			summary +=
+				price.unitprice > intVal(el.INQD_VPC_UNITPRICE)
+					? price.unitprice * intVal(el.INQD_QTY)
+					: intVal(el.INQD_VPC_UNITPRICE) * intVal(el.INQD_QTY);
 		});
 
 		api.column(11).footer().innerHTML = "";
-		api.column(13).footer().innerHTML = showDigits(totaltccost, 0);
-		api.column(15).footer().innerHTML = showDigits(totalunit, 0);
-		api.column(16).footer().innerHTML = showDigits(total, 0);
+		api.column(13).footer().innerHTML = showDigits(totaltccost, 0); //Fin cost
+		api.column(15).footer().innerHTML = showDigits(totalunit, 0); //Fin unit price
+
+		api.column(16).footer().innerHTML = showDigits(totalvpc, 0); //VPC cost
+		api.column(18).footer().innerHTML = showDigits(totalvpcunit, 0); //VPC unit price
+
+		api.column(19).footer().innerHTML = showDigits(summary, 0); //Total Price
 	};
 	return opt;
 }
