@@ -99,7 +99,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_TC_COST",
 			title: `${isMTPE == 1 ? "FIN Cost" : "TC Cost"}`,
-			className: `w-24 min-w-24 border-r! bg-primary/20 INQD_TC_COST`,
+			className: `w-24 min-w-24 border-r! bg-primary/20 text-end! INQD_TC_COST`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					data = data == null ? "" : data;
@@ -114,7 +114,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_TC_BASE",
 			title: "%TC",
-			className: `w-12 min-w-12 cell-display border-r!`,
+			className: `w-12 min-w-12 cell-display border-r! text-end!`,
 			render: function (data, type, row) {
 				if (type === "display") {
 					return showDigits(data, 3);
@@ -125,7 +125,7 @@ export async function tablePartOption(data = [], ratio = {}) {
 		{
 			data: "INQD_UNIT_PRICE",
 			title: "Unit Price",
-			className: `w-28 min-w-28 cell-display border-r! bg-emerald-300/50!`,
+			className: `w-28 min-w-28 cell-display border-r! text-end! bg-emerald-300/50!`,
 			render: function (data, type) {
 				if (type === "display") {
 					return showDigits(data, 0);

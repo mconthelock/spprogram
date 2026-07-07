@@ -1084,9 +1084,9 @@ export async function setVPCCostTatble(inq) {
 			const values = {
 				INQD_ID: detail.INQD_ID,
 				INQD_VPC_COST: items[0].Q700PRICE,
-				INQD_VPC_BASE: detail.INQD_FC_BASE,
+				INQD_VPC_BASE: detail.INQD_TC_BASE,
 				INQD_VPC_UNITPRICE: Math.ceil(
-					items[0].Q700PRICE * detail.INQD_FC_BASE,
+					items[0].Q700PRICE * detail.INQD_TC_BASE,
 				),
 				INQD_VPC_PURCODE: items[0].Q700PURCODE,
 				INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
@@ -1108,9 +1108,9 @@ export async function setVPCCostTatble(inq) {
 				const values = {
 					INQD_ID: detail.INQD_ID,
 					INQD_VPC_COST: items[0].Q700PRICE,
-					INQD_VPC_BASE: detail.INQD_FC_BASE,
+					INQD_VPC_BASE: detail.INQD_TC_BASE,
 					INQD_VPC_UNITPRICE: Math.ceil(
-						items[0].Q700PRICE * detail.INQD_FC_BASE,
+						items[0].Q700PRICE * detail.INQD_TC_BASE,
 					),
 					INQD_VPC_PURCODE: items[0].Q700PURCODE,
 					INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
