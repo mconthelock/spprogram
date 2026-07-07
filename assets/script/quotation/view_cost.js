@@ -5,12 +5,13 @@ import { calPrice } from "./data";
 export async function tableViewCostOption(data = []) {
 	const opt = { ...tableOpt };
 	opt.data = data;
-	// opt.paging = false;
+	opt.paging = false;
 	opt.searching = false;
 	opt.lengthChange = false;
 	opt.info = false;
+	// opt.pageLength = -1;
 	opt.orderFixed = [0, "asc"];
-	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"><"table-info flex  flex-none gap-5"i>>`;
+	opt.dom = `<"flex "<"table-search flex flex-1 gap-5 "f><"flex items-center table-option"l>><"bg-white border border-slate-300 rounded-2xl overflow-auto max-h-[92vh]"t><"flex mt-5"<"table-page flex-1"p><"table-info flex  flex-none gap-5"i>>`;
 	opt.columns = [
 		{
 			data: "INQD_RUNNO",

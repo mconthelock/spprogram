@@ -74,9 +74,10 @@ async function exportDocument(template, data) {
 		sheet1.getCell("C15").value = data.INQ_PRJNO;
 		sheet1.getCell("C16").value = data.details[0].INQD_CAR;
 
-		sheet1.getCell("H11").value = dayjs(data.quotation.QUO_DATE).format(
-			"YYYY-MM-DD",
-		);
+		sheet1.getCell("H11").value =
+			data.quotation.QUO_DATE == null
+				? ""
+				: dayjs(data.quotation.QUO_DATE).format("YYYY-MM-DD");
 		sheet1.getCell("H12").value = data.term.TERM_DESC;
 		sheet1.getCell("H13").value = data.method.METHOD_DESC;
 		sheet1.getCell("H14").value = data.shipment.SHIPMENT_DESC;
