@@ -3,8 +3,8 @@ import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
 export async function tablePartOption(data = [], ratio = {}) {
-	//const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
-	const isMTPE = 0;
+	const isMTPE = $("#trader").val() == "MTPE" ? 1 : 0;
+	//const isMTPE = 0;
 	data = await findCostBase(data, ratio);
 	const opt = { ...tableOpt };
 	opt.data = data;

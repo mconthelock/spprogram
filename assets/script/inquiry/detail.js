@@ -1070,7 +1070,6 @@ export async function setAS400Data(inq) {
 export async function setVPCCostTatble(inq) {
 	const q700 = await getVPCPrice();
 	for (const detail of inq.details) {
-		console.log(detail);
 		const items = q700.filter(
 			(i) =>
 				i.Q700ITEM == detail.INQD_ITEM &&
@@ -1078,7 +1077,6 @@ export async function setVPCCostTatble(inq) {
 					detail.INQD_DRAWING.replace(/ /g, ""),
 		);
 
-		console.log(items);
 		if (items.length == 0) continue;
 		if (items[0].Q700VAR == null && detail.INQD_VARIABLE == null) {
 			const values = {
@@ -1091,11 +1089,10 @@ export async function setVPCCostTatble(inq) {
 				INQD_VPC_PURCODE: items[0].Q700PURCODE,
 				INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			};
-			console.log(values);
 			await updateInquiryDetail(values);
 		} else if (items[0].Q700VAR !== null && detail.INQD_VARIABLE !== null) {
 			const inqvar = validateVariable(detail.INQD_VARIABLE);
-			const itemvar = validateVariable(i.Q700VAR);
+			const itemvar = validateVariable(items[0].Q700VAR);
 			const keysMatch =
 				Object.keys(inqvar.parsedData).length ===
 					Object.keys(itemvar.parsedData).length &&
