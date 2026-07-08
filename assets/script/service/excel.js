@@ -17,6 +17,8 @@ export const cloneRows = async (worksheet, sourceRowNum, targetRowNum) => {
 
 export const exportExcel = async (data, template, options = {}) => {
 	try {
+		console.log(data);
+
 		const opt = {
 			filename: `export.xlsx`,
 			rowstart: 2,

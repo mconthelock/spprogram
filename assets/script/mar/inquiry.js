@@ -74,6 +74,7 @@ $(document).on("click", "#export1", async function (e) {
 			IS_ORDERS: true,
 			IS_TIMELINE: true,
 			IS_FIN: true,
+			IS_QUOTATION: true,
 		};
 		const template = await getTemplate("export_inquiry_list.xlsx");
 		let data = await getInquiry(query);

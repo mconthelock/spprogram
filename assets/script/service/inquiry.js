@@ -1,3 +1,4 @@
+import { intVal } from "@amec/webasset/utils";
 export const getInquiry = async (data) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
@@ -323,7 +324,6 @@ export const updateInquiryTimeline = async (data) => {
 
 //Align data for export excel
 export const dataExports = async (data) => {
-	console.log(data);
 	const details = [];
 	data.forEach(async (el) => {
 		const exchangeRate =
@@ -346,7 +346,7 @@ export const dataExports = async (data) => {
 				el.timeline.length == 0 || el.timeline.FINUSER == null
 					? null
 					: el.timeline.finusers[0].SNAME || "",
-			//QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
+			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 			exchangeRate: exchangeRate,
 		};
 
@@ -355,7 +355,6 @@ export const dataExports = async (data) => {
 		delete row.status;
 		delete row.shipment;
 		delete row.orders;
-		delete row.quotation;
 		delete row.quotation;
 		details.push(row);
 	});
@@ -399,11 +398,10 @@ export async function inquiryValues(data) {
 	const dt = data.details;
 	let values = 0;
 	dt.forEach((item) => {
-		const qty = item.INQD_QTY !== null ? parseFloat(item.INQD_QTY) : 0;
-		const price =
-			item.INQD_UNIT_PRICE !== null
-				? parseFloat(item.INQD_UNIT_PRICE)
-				: 0;
+		const qty = intVal(item.INQD_QTY);
+		const tcunitprice = intVal(item.INQD_UNIT_PRICE);
+		const vpcunitprice = intVal(item.INQD_VPC_UNITPRICE);
+		const price = tcunitprice < vpcunitprice ? vpcunitprice : tcunitprice;
 		values += qty * price;
 	});
 	return values;

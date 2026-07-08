@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import ExcelJS from "exceljs";
-import { showMessage } from "@amec/webasset/utils";
+import { showMessage, intVal } from "@amec/webasset/utils";
 import { displayname } from "@amec/webasset/api/amec";
 import { activatedBtn } from "@amec/webasset/components/buttons";
 import { getTemplate, cloneRows } from "../service/excel";
@@ -96,6 +96,11 @@ async function exportDocument(template, data) {
 			if (i > 24) {
 				cloneRows(sheet1, 22, rowStart + i);
 			}
+
+			const tcunitprice = intVal(item.INQD_UNIT_PRICE);
+			const vpcunitprice = intVal(item.INQD_VPC_UNITPRICE);
+			const unitprice =
+				tcunitprice < vpcunitprice ? vpcunitprice : tcunitprice;
 			sheet1.getCell(rowStart + i, 1).value = item.INQD_SEQ;
 			sheet1.getCell(rowStart + i, 2).value = item.INQD_CAR;
 			sheet1.getCell(rowStart + i, 3).value = item.INQD_MFGORDER;
@@ -109,7 +114,7 @@ async function exportDocument(template, data) {
 				item.INQD_SENDPART == null ? "" : "P";
 			sheet1.getCell(rowStart + i, 11).value = item.INQD_QTY;
 			sheet1.getCell(rowStart + i, 12).value = item.INQD_UM;
-			sheet1.getCell(rowStart + i, 13).value = item.INQD_UNIT_PRICE;
+			sheet1.getCell(rowStart + i, 13).value = unitprice;
 			sheet1.getCell(rowStart + i, 14).value = {
 				formula: `M${rowStart + i}*K${rowStart + i}`,
 			}; //Amount
