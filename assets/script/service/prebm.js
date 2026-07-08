@@ -20,17 +20,30 @@ export async function setAS400Header(header, MFGNO) {
 		{ Q6K101: header.INQ_NO },
 		{ Q6K102: MFGNO == null ? "" : MFGNO.trim().substring(0, 8) },
 		{
-			Q6K103: header.INQ_PRJNO.trim()
-				.substring(0, 15)
-				.replace(/'/g, "''"),
+			Q6K103:
+				header.INQ_PRJNO == null
+					? ""
+					: header.INQ_PRJNO.trim()
+							.substring(0, 15)
+							.replace(/'/g, "''"),
 		},
 		{
-			Q6K104: header.INQ_PRDSCH.trim()
-				.substring(0, 7)
-				.replace(/'/g, "''"),
+			Q6K104:
+				header.INQ_PRDSCH == null
+					? ""
+					: header.INQ_PRDSCH.trim()
+							.substring(0, 7)
+							.replace(/'/g, "''"),
 		},
 		{ Q6K105: header.INQ_SERIES },
-		{ Q6K106: header.INQ_SPEC.trim().substring(0, 20).replace(/'/g, "''") },
+		{
+			Q6K106:
+				header.INQ_SPEC == null
+					? ""
+					: header.INQ_SPEC.trim()
+							.substring(0, 20)
+							.replace(/'/g, "''"),
+		},
 		{ Q6K108: user.empno },
 		{ Q6K109: header.INQ_REV },
 	];
