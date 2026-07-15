@@ -5,22 +5,6 @@ import { tableOpt } from "../utils.js";
 export async function setupDETableDetail(data = []) {
 	const renderText = (data) => {
 		return `<div class="text-xs px-2.5 py-2">${data == null ? "" : data}</div>`;
-		//if (logs == undefined) return str;
-		// 	let li = ``;
-		// 	const log = logs.sort(
-		// 		(a, b) => new Date(b.LOG_DATE) - new Date(a.LOG_DATE),
-		// 	);
-		// 	log.map((el) => {
-		// 		li += `<li class="flex gap-4 p-1 border-b">
-		//     <div>${el[key] == null ? "" : el[key]}</div>
-		//     <div class="text-xs">${moment(el.UPDATE_AT).format(
-		// 		"yyyy-MM-DD h:mm a",
-		// 	)}</div>
-		//     <div class="text-xs">${displayname(el.UPDATE_BY).fname}</div>
-		//   </li>`;
-		// 	});
-		// 	const element = `<ul class="hidden">${li}</ul>${str}`;
-		// 	return element;
 	};
 
 	const renderLog = (data, logs, key) => {

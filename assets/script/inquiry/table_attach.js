@@ -20,7 +20,7 @@ export async function setupTableAttachment(data = [], view = false) {
 			className: "text-xs py-[5px] max-w-[220px]",
 			render: (data, type, row, meta) => {
 				if (type === "display") {
-					console.log(meta.row, data);
+					//console.log(meta.row, data);
 					const ext = fileExtension(data);
 					const icon = icons.find((x) => x.ext == ext);
 					const img = icon
