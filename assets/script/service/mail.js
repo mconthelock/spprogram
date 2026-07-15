@@ -20,7 +20,10 @@ export const mar2sale = async (data) => {
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: userfilter.map((u) => u.data.SRECMAIL),
+			to:
+				process.env.STATE === "production"
+					? userfilter.map((u) => u.data.SRECMAIL)
+					: `chalorms@MitsubishiElevatorAsia.co.th`,
 			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Inquiry No. ${data.INQ_NO} is sent to Sale for processing`,
 			context: {
@@ -93,7 +96,10 @@ export const sale2de = async (data, subject = "") => {
 
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: emailto,
+			to:
+				process.env.STATE === "production"
+					? emailto
+					: `chalorms@MitsubishiElevatorAsia.co.th`,
 			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject:
 				subject ||
@@ -137,7 +143,10 @@ export const de2pkc = async (data) => {
 		);
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: userfilter.map((u) => u.data.SRECMAIL),
+			to:
+				process.env.STATE === "production"
+					? userfilter.map((u) => u.data.SRECMAIL)
+					: `chalorms@MitsubishiElevatorAsia.co.th`,
 			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Please confirm packaging and weight of Inquiry No. ${data.INQ_NO} `,
 			context: {
@@ -167,7 +176,7 @@ export const de2pkc = async (data) => {
 		await sendMail(mailData);
 	} catch (error) {
 		await error2admin(error);
-		console.error("Error sending email to DE Group Leader:", error);
+		console.error("Error sending email to PKC users:", error);
 		//throw error;
 	}
 };
@@ -177,7 +186,10 @@ export const fin2mar = async (data) => {
 		if (data.INQ_STATUS < 45) return;
 		const mailData = {
 			template: "spprogram/inquiry",
-			to: data.maruser.SRECMAIL,
+			to:
+				process.env.STATE === "production"
+					? data.maruser.SRECMAIL
+					: `chalorms@MitsubishiElevatorAsia.co.th`,
 			bcc: `chalorms@MitsubishiElevatorAsia.co.th`,
 			subject: `[SP Notification] Inquiry No. ${data.INQ_NO} have been approved Price`,
 			context: {
@@ -205,7 +217,7 @@ export const fin2mar = async (data) => {
 		await sendMail(mailData);
 	} catch (error) {
 		await error2admin(error);
-		console.error("Error sending email to DE Group Leader:", error);
+		console.error("Error sending email to MAR Incharge:", error);
 		//throw error;
 	}
 };
@@ -215,7 +227,7 @@ export const mar2fin = async (data) => {
 		const users = data.maruser;
 	} catch (error) {
 		await error2admin(error);
-		console.error("Error sending email to DE Group Leader:", error);
+		console.error("Error sending email to MAR Incharge:", error);
 		//throw error;
 	}
 };

@@ -365,6 +365,8 @@ $(document).on("change", ".elmes-input", async function (e) {
 
 $(document).on("click", "#elmes-confirm", async function (e) {
 	e.preventDefault();
+	const user = await currentUser();
+	const usrgroup = user.group;
 	const table = $("#table").DataTable();
 	const tableElmes = $("#tableElmes").DataTable();
 	try {
@@ -401,6 +403,10 @@ $(document).on("click", "#elmes-confirm", async function (e) {
 					INQD_SUPPLIER: supplier,
 					INQD_SENDPART: second,
 					INQD_ID: i === 0 ? data.INQD_ID : null,
+					INQD_OWNER_GROUP:
+						id + i == data.INQD_SEQ
+							? data.INQD_OWNER_GROUP
+							: usrgroup,
 				};
 				table.row.add(newRow).draw(false);
 				i = increse + i;
