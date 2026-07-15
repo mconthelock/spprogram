@@ -3,6 +3,10 @@
 		{
 			"filePath": "assets\\script\\inquiry",
 			"group": "Default"
+		},
+		{
+			"filePath": "assets\\script\\mar",
+			"group": "Default"
 		}
 	]
 }
