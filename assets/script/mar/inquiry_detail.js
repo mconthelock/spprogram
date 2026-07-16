@@ -308,7 +308,7 @@ $(document).on("click", "#send-bm", async function (e) {
 		}
 		if (inquiry) {
 			await de2pkc(inquiry);
-			window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
+			//window.location.replace(`${process.env.APP_ENV}/mar/inquiry`);
 		} else {
 			await showMessage(`Something went wrong while creating inquiry.`);
 		}

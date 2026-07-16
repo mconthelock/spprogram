@@ -308,7 +308,7 @@ export async function setupPartTableDetail(data = []) {
 		{
 			data: "INQD_TC_BASE",
 			title: "TC Base",
-			className: "hidden",
+			className: "hiddenx",
 		},
 		{
 			data: "INQD_UNIT_PRICE",
