@@ -343,9 +343,9 @@ export const dataExports = async (data) => {
 			CUST_RQS: el.orders.length == 0 ? null : el.orders[0].CUST_RQS,
 			DSTN: el.orders.length == 0 ? null : el.orders[0].DSTN,
 			FINUSER:
-				el.timeline.length == 0 || el.timeline.FINUSER == null
-					? null
-					: el.timeline.finusers[0].SNAME || "",
+				el.timeline.finusers[0] != null
+					? el.timeline.finusers[0].SNAME || ""
+					: null,
 			QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 			exchangeRate: exchangeRate,
 		};

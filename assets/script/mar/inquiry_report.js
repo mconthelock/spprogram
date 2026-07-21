@@ -106,6 +106,7 @@ $(document).on("click", "#export2", async function (e) {
 			IS_ORDERS: true,
 			IS_TIMELINE: true,
 			IS_QUOTATION: true,
+			IS_QUOTATION: true,
 		};
 		let data = await getInquiry(query);
 		if ($("#pageid").val() == "2") data = await prebmdata(data);
