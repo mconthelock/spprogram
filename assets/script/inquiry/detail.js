@@ -1073,7 +1073,6 @@ export async function setVPCCostTatble(inq) {
 	});
 	const q700 = await getVPCPrice();
 	const detailFilter = await filterDetail(inq.details);
-
 	for (const detail of detailFilter) {
 		const items = q700.filter(
 			(i) =>
