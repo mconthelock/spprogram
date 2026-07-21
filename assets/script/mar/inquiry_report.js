@@ -78,6 +78,7 @@ $(document).on("click", "#export1", async function (e) {
 			IS_ORDERS: true,
 			IS_TIMELINE: true,
 			IS_FIN: true,
+			IS_QUOTATION: true,
 		};
 		let data = await getInquiry(query);
 		const template = await getTemplate("export_inquiry_list.xlsx");
@@ -104,6 +105,7 @@ $(document).on("click", "#export2", async function (e) {
 			IS_DETAILS: true,
 			IS_ORDERS: true,
 			IS_TIMELINE: true,
+			IS_QUOTATION: true,
 		};
 		let data = await getInquiry(query);
 		if ($("#pageid").val() == "2") data = await prebmdata(data);

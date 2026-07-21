@@ -1048,10 +1048,8 @@ export async function downloadClientFile(selectedFiles, fileName) {
 
 export async function setAS400Data(inq) {
 	let isAMEC = false;
-	inq.details.map((dt) => {
-		if (dt.INQD_SUPPLIER == "AMEC" && dt.INQD_LATEST == 1) isAMEC = true;
-	});
-	if (!isAMEC) return;
+	const dtDaata = await filterDetail(inq.details);
+	if (dtDaata.length == 0) return;
 
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
 	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
@@ -1068,8 +1066,15 @@ export async function setAS400Data(inq) {
 }
 
 export async function setVPCCostTatble(inq) {
+	const ratio = await findPriceRatio({
+		TRADER: inq.INQ_TRADER,
+		SUPPLIER: "AMEC",
+		QUOTATION: inq.INQ_QUOTATION_TYPE,
+	});
 	const q700 = await getVPCPrice();
-	for (const detail of inq.details) {
+	const detailFilter = await filterDetail(inq.details);
+
+	for (const detail of detailFilter) {
 		const items = q700.filter(
 			(i) =>
 				i.Q700ITEM == detail.INQD_ITEM &&
@@ -1082,9 +1087,9 @@ export async function setVPCCostTatble(inq) {
 			const values = {
 				INQD_ID: detail.INQD_ID,
 				INQD_VPC_COST: items[0].Q700PRICE,
-				INQD_VPC_BASE: detail.INQD_TC_BASE,
+				INQD_VPC_BASE: ratio[0].FORMULA,
 				INQD_VPC_UNITPRICE: Math.ceil(
-					items[0].Q700PRICE * detail.INQD_TC_BASE,
+					items[0].Q700PRICE * ratio[0].FORMULA,
 				),
 				INQD_VPC_PURCODE: items[0].Q700PURCODE,
 				INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
@@ -1105,9 +1110,9 @@ export async function setVPCCostTatble(inq) {
 				const values = {
 					INQD_ID: detail.INQD_ID,
 					INQD_VPC_COST: items[0].Q700PRICE,
-					INQD_VPC_BASE: detail.INQD_TC_BASE,
+					INQD_VPC_BASE: ratio[0].FORMULA,
 					INQD_VPC_UNITPRICE: Math.ceil(
-						items[0].Q700PRICE * detail.INQD_TC_BASE,
+						items[0].Q700PRICE * ratio[0].FORMULA,
 					),
 					INQD_VPC_PURCODE: items[0].Q700PURCODE,
 					INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
@@ -1144,7 +1149,8 @@ export async function setCostTatble(inq) {
 	});
 
 	items = items.filter((item) => item.FCCOST > 0);
-	for (const detail of inq.details) {
+	const detailFilter = await filterDetail(inq.details);
+	for (const detail of detailFilter) {
 		if (detail.INQD_SUPPLIER != "AMEC") return;
 
 		const prices = items.filter(
@@ -1267,4 +1273,26 @@ export async function finalStatus(details) {
 	else if (!isAmec && isMelina) status = 52;
 	else status = 30;
 	return status;
+}
+
+export async function filterDetail(inq) {
+	return inq.details.filter((dt) => {
+		if (
+			!(
+				dt.INQD_SUPPLIER == "AMEC" &&
+				dt.INQD_LATEST == 1 &&
+				dt.INQD_UNREPLY == null
+			)
+		) {
+			return false;
+		}
+
+		if (
+			!Number.isInteger(dt.INQD_SEQ) &&
+			(dt.INQD_SENDPART == "D" || dt.INQD_SENDPART == "V")
+		) {
+			return false;
+		}
+		return true;
+	});
 }

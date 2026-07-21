@@ -3,7 +3,7 @@ import { showLoader } from "@amec/webasset/preloader";
 import { showMessage, showConfirm } from "@amec/webasset/utils";
 import { createTable } from "@amec/webasset/dataTable";
 import { activatedBtn } from "@amec/webasset/components/buttons";
-import { tableInquiryOption } from "../inquiry/index.js";
+import { tableInquiryOption, filterDetail } from "../inquiry/index.js";
 import {
 	getTemplate,
 	exportExcel,
