@@ -376,7 +376,7 @@ async function setTimelineData() {
 		INQ_NO: $("#inquiry-no").val(),
 		INQ_REV: $("#revision").val(),
 		MAR_USER: $("#user-login").attr("empno"),
-		MAR_SEND: new Date(),
+		//MAR_SEND: new Date(),
 	};
 }
 
