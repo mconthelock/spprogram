@@ -559,7 +559,7 @@ async function checkComplete(inquiry) {
 			INQ_REV: inquiry.INQ_REV,
 			DE_CONFIRM: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		});
-		await setAS400Data(inquiry);
+		await setAS400Data(inqs);
 	}
 }
 
