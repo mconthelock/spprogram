@@ -410,13 +410,11 @@ export async function inquiryValues(data) {
 export async function dataDetails(data) {
 	const result = [];
 	data.forEach((el) => {
-		console.log(el);
 		const orders = el.orders || [];
 		const sheet = el.sheet || [];
 		const details = el.details || [];
 		const values = details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		values.map(async (dt) => {
-			console.log(dt);
 			const sh = sheet.filter((s) => s.LINENO === dt.INQD_SEQ);
 			const ord =
 				sh.length > 0

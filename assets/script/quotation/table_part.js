@@ -310,7 +310,6 @@ export async function tablePartOption(data = [], ratio = {}) {
 }
 
 export async function findCostBase(data, ratio) {
-	// console.log(ratio);
 	const rows = data.map((el) => {
 		if (intVal(el.INQD_TC_BASE) == 0) {
 			const tcbase =
