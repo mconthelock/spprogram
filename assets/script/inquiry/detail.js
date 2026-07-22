@@ -1048,7 +1048,7 @@ export async function downloadClientFile(selectedFiles, fileName) {
 
 export async function setAS400Data(inq) {
 	let isAMEC = false;
-	const dtDaata = await filterDetail(inq.details);
+	const dtDaata = await filterDetail(inq);
 	if (dtDaata.length == 0) return;
 
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);

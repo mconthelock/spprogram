@@ -539,7 +539,6 @@ async function checkComplete(inquiry) {
 		}
 	}
 
-	// console.log(complete);
 	if (complete) {
 		const details = inqs[0].details.filter((dt) => dt.INQD_LATEST == "1");
 		const status = await finalStatus(details);
@@ -559,7 +558,7 @@ async function checkComplete(inquiry) {
 			INQ_REV: inquiry.INQ_REV,
 			DE_CONFIRM: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		});
-		await setAS400Data(inqs);
+		await setAS400Data(inqs[0]);
 	}
 }
 
