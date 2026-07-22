@@ -4,7 +4,6 @@ import { tableOpt } from "../utils";
 import { calPrice } from "./data";
 
 export async function tableCostOption(data = []) {
-	//console.log(data);
 	const opt = { ...tableOpt };
 	opt.data = data;
 	opt.paging = false;

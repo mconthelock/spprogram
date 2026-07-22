@@ -1052,28 +1052,29 @@ export async function setAS400Data(inq) {
 	if (dtDaata.length == 0) return;
 
 	const q601kp1 = await setAS400Header(inq, inq.details[0].INQD_MFGORDER);
-	const q601kp2 = await setAS400Detail(inq.INQ_NO, inq.details);
-	const q601kp4 = await setAS400Variable(inq.INQ_NO, inq.details);
-	await setCostTatble(inq);
-	await setVPCCostTatble(inq);
+	const q601kp2 = await setAS400Detail(inq.INQ_NO, dtDaata);
+	const q601kp4 = await setAS400Variable(inq.INQ_NO, dtDaata);
 	await addAS400Data({
 		header: q601kp1,
 		detail: q601kp2,
 		variable: q601kp4.length > 0 ? q601kp4.flat(1) : [],
 		inquiryNo: inq.INQ_NO,
 	});
+	await setCostTatble(inq, dtDaata);
+	await setVPCCostTatble(inq, dtDaata);
 	return;
 }
 
-export async function setVPCCostTatble(inq) {
+export async function setVPCCostTatble(inq, details) {
+	if (inq.INQ_TRADER !== "MTPE") return;
 	const ratio = await findPriceRatio({
 		TRADER: inq.INQ_TRADER,
 		SUPPLIER: "AMEC",
 		QUOTATION: inq.INQ_QUOTATION_TYPE,
 	});
 	const q700 = await getVPCPrice();
-	const detailFilter = await filterDetail(inq.details);
-	for (const detail of detailFilter) {
+
+	for (const detail of details) {
 		const items = q700.filter(
 			(i) =>
 				i.Q700ITEM == detail.INQD_ITEM &&
@@ -1116,14 +1117,13 @@ export async function setVPCCostTatble(inq) {
 					INQD_VPC_PURCODE: items[0].Q700PURCODE,
 					INQD_VPC_DATE: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 				};
-				console.log(values);
 				await updateInquiryDetail(values);
 			}
 		}
 	}
 }
 
-export async function setCostTatble(inq) {
+export async function setCostTatble(inq, details) {
 	const period = await currentPeriod();
 	const ratio = await findPriceRatio({
 		TRADER: inq.INQ_TRADER,
@@ -1148,10 +1148,7 @@ export async function setCostTatble(inq) {
 	});
 
 	items = items.filter((item) => item.FCCOST > 0);
-	const detailFilter = await filterDetail(inq.details);
-	for (const detail of detailFilter) {
-		if (detail.INQD_SUPPLIER != "AMEC") return;
-
+	for (const detail of details) {
 		const prices = items.filter(
 			(i) =>
 				i.ITEM_NO == detail.INQD_ITEM &&
@@ -1197,7 +1194,6 @@ export async function setCostTatble(inq) {
 					),
 					ITEMID: prices[0].ITEM_ID,
 				};
-				console.log(values);
 				await updateInquiryDetail(values);
 			}
 		}
