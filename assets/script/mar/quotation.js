@@ -223,19 +223,11 @@ async function tableInquiryOption(data) {
 					className: `btn-xs btn-neutral text-white hover:shadow-lg export-excel-quotation`,
 					other: `data-id="${data}"`,
 				});
-				const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
-				const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
-				const revise = `<a class="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
-				const sendtoAs400 = `<a class="resend-prebm"><i class="fi fi-rr-user-robot text-lg"></i>Re-send to Pre-B/M</a>`;
-				const dropdown = `<div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-xs btn-circle btn-ghost"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>
-                    <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm border border-base-300">
-                        <li>${sparq}</li>
-                        <li>${order}</li>
-                        <li>${revise}</li>
-                        <li>${sendtoAs400}</li>
-                    </ul>
-                </div>`;
+				// const sparq = `<a class="export-sparq"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a>`;
+				// const order = `<a class="export-order"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a>`;
+				// const revise = `<a class="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a>`;
+				// const sendtoAs400 = `<a class="resend-prebm"><i class="fi fi-rr-user-robot text-lg"></i>Re-send to Pre-B/M</a>`;
+				const dropdown = `<div role="button" class="btn btn-xs btn-circle btn-ghost more-options-trigger" data-id="${data}" data-revise-url="${process.env.APP_ENV}/mar/inquiry/detail/${data}"><i class="fi fi-bs-menu-dots-vertical text-lg"></i></div>`;
 				return `<div class="flex justify-end gap-2">${view}${excel}${dropdown}</div>`;
 			},
 		},
@@ -272,6 +264,41 @@ async function tableInquiryOption(data) {
 	};
 	return opt;
 }
+
+$(document).on("click", ".more-options-trigger", function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const $trigger = $(this);
+	const triggerRect = this.getBoundingClientRect();
+	const top = triggerRect.bottom + window.scrollY + 4;
+	const left = triggerRect.left + window.scrollX - 140;
+	const reviseUrl = $trigger.data("revise-url");
+	const inquiryId = $trigger.data("id");
+
+	$("#quotation-more-options-menu").remove();
+
+	const menuHtml = `
+		<div id="quotation-more-options-menu" data-id="${inquiryId}" class="absolute bg-base-100 rounded-box z-1000 w-52 p-2 shadow-sm border border-base-300" style="top:${top}px;left:${left}px;">
+			<ul class="menu menu-compact text-nowrap">
+				<li><a class="export-sparq flex gap-2"><i class="fi fi-tr-file-excel text-lg"></i>File import to Sparq</a></li>
+				<li><a class="export-order flex gap-2"><i class="fi fi-tr-rectangle-list text-lg"></i>File import new order</a></li>
+				<li><a class="revise-inquiry flex gap-2" href="${reviseUrl}"><i class="fi fi-rs-interactive text-lg"></i>Revise Inquiry</a></li>
+				<li><a class="resend-prebm flex gap-2"><i class="fi fi-rr-user-robot text-lg"></i>Re-send to Pre-B/M</a></li>
+			</ul>
+		</div>
+	`;
+
+	$("body").append(menuHtml);
+});
+
+$(document).on("click", function () {
+	$("#quotation-more-options-menu").remove();
+});
+
+$(document).on("click", "#quotation-more-options-menu", function (e) {
+	e.stopPropagation();
+});
 
 $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
@@ -334,8 +361,10 @@ $(document).on("click", ".export-sparq", async function (e) {
 	e.preventDefault();
 	try {
 		await showLoader();
+		const menuId = $("#quotation-more-options-menu").data("id");
 		const row = table.row($(this).closest("tr")).data();
-		const id = row.INQ_ID;
+		const id = menuId || row?.INQ_ID;
+		if (!id) throw new Error("Unable to resolve INQ_ID");
 		const data = await getInquiry({
 			INQ_ID: id,
 			IS_DETAILS: true,
@@ -343,7 +372,6 @@ $(document).on("click", ".export-sparq", async function (e) {
 		});
 		const rows = [];
 		// console.log(data);
-
 		const details = data[0].details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		details.forEach((item, i) => {
 			let remark = item.INQD_DES_REMARK,
@@ -385,6 +413,15 @@ $(document).on("click", ".export-sparq", async function (e) {
 			if (dm == 5)
 				courierDay = data[0].shipment.SHIPMENT_VALUE.toString();
 			if (dm == 9) truckDay = data[0].shipment.SHIPMENT_VALUE.toString();
+
+			let price = item.INQD_UNIT_PRICE;
+			if (data[0].INQ_TRADER == "MTPE") {
+				price =
+					item.INQD_UNIT_PRICE > item.INQD_VPC_UNITPRICE
+						? item.INQD_UNIT_PRICE
+						: item.INQD_VPC_UNITPRICE;
+			}
+
 			const row = [
 				data[0].INQ_NO,
 				Math.floor(item.INQD_SEQ),
@@ -393,8 +430,8 @@ $(document).on("click", ".export-sparq", async function (e) {
 				item.INQD_QTY,
 				item.INQD_UM,
 				item.INQD_VARIABLE,
-				item.INQD_UNIT_PRICE, //Unit Price
-				item.INQD_UNIT_PRICE, //Unit Cost
+				price, //Unit Price
+				price, //Unit Cost
 				remark,
 				seaDay,
 				airDay,
@@ -469,8 +506,10 @@ $(document).on("click", ".export-order", async function (e) {
 	e.preventDefault();
 	try {
 		await showLoader();
+		const menuId = $("#quotation-more-options-menu").data("id");
 		const row = table.row($(this).closest("tr")).data();
-		const id = row.INQ_ID;
+		const id = menuId || row?.INQ_ID;
+		if (!id) throw new Error("Unable to resolve INQ_ID");
 		const template = await getTemplate("export_quotation_addorders.xlsx");
 		const data = await getInquiry({
 			INQ_ID: id,
@@ -493,8 +532,10 @@ $(document).on("click", ".resend-prebm", async function (e) {
 	e.preventDefault();
 	try {
 		await showLoader();
+		const menuId = $("#quotation-more-options-menu").data("id");
 		const row = table.row($(this).closest("tr")).data();
-		const id = row.INQ_ID;
+		const id = menuId || row?.INQ_ID;
+		if (!id) throw new Error("Unable to resolve INQ_ID");
 		const data = await getInquiry({
 			INQ_ID: id,
 			IS_DETAILS: true,
