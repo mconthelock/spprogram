@@ -80,18 +80,19 @@ $(document).on("click", "#export1", async function (e) {
 	e.preventDefault();
 	try {
 		await activatedBtnRow($(this));
-		const pageid = $("#pageid").val() || "5";
 		const template = await getTemplate(
-			"export_inquiry_list_template_for_sale.xlsx",
+			"export_inquiry_list_template_for_fin.xlsx",
 		);
-		let q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
-		q = { ...q, IS_TIMELINE: 1, IS_DETAILS: 1 };
-		let data = await getInquiry(q);
+		const pageid = $("#pageid").val() || "1";
+		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
+		let data = await getInquiry({ ...q, IS_DETAILS: true });
 		data = await dataFilter(data, pageid);
 		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
 		let result = await dataExports(sortData);
+		console.log(result);
 		await exportExcel(result, template, {
 			filename: "Inquiry List.xlsx",
+			rowstart: 3,
 		});
 	} catch (error) {
 		console.log(error);

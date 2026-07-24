@@ -82,6 +82,10 @@ export async function tableInquiryFinOption(data, extopt = {}) {
 			title: "D/E Date",
 			className: "text-nowrap text-left!",
 			render: (data, type, row) => {
+				console.log(data);
+
+				if (data.DE_CONFIRM == null && data.SE_CONFIRM == null)
+					return "";
 				if (data.DE_CONFIRM == null)
 					return dayjs(data.SE_CONFIRM).format("YYYY-MM-DD HH:mm");
 				return dayjs(data.DE_CONFIRM).format("YYYY-MM-DD HH:mm");

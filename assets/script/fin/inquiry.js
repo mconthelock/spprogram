@@ -139,10 +139,11 @@ $(document).on("click", "#export1", async function (e) {
 		);
 		const pageid = $("#pageid").val() || "1";
 		const q = JSON.parse(localStorage.getItem("spinquiryquery") || "{}");
-		let data = await getInquiry(q);
+		let data = await getInquiry({ ...q, IS_DETAILS: true });
 		data = await dataFilter(data, pageid);
 		const sortData = data.sort((a, b) => a.INQ_ID - b.INQ_ID);
 		let result = await dataExports(sortData);
+		console.log(result);
 		await exportExcel(result, template, {
 			filename: "Inquiry List.xlsx",
 			rowstart: 3,

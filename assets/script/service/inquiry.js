@@ -413,6 +413,7 @@ export async function dataDetails(data) {
 		const orders = el.orders || [];
 		const sheet = el.sheet || [];
 		const details = el.details || [];
+		const tl = el.timeline || {};
 		const values = details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		values.map(async (dt) => {
 			const sh = sheet.filter((s) => s.LINENO === dt.INQD_SEQ);
@@ -422,6 +423,7 @@ export async function dataDetails(data) {
 					: [];
 			let row = {
 				...dt,
+				...tl,
 				...(sh.length > 0 ? sh[0] : {}),
 				...(ord.length > 0 ? ord[0] : {}),
 				...(el.pcategory ? el.pcategory[0] : {}),
@@ -441,6 +443,8 @@ export async function dataDetails(data) {
 				SHIPMENT_VALUE: el.shipment.SHIPMENT_VALUE,
 				QUO_DATE: el.quotation ? el.quotation.QUO_DATE : null,
 				ORDER_LT: ord.length > 0 ? el.shipment.SHIPMENT_VALUE : null,
+				STATUS_DESC: el.status.STATUS_DESC,
+				INQ_FIN_REMARK: el.INQ_FIN_REMARK,
 			};
 			const temps = await addOrdersData(row);
 			row = { ...row, ...temps };
