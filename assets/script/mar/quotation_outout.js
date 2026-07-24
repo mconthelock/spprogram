@@ -168,7 +168,7 @@ async function getDataHeader(data) {
 		INQ_SHIPMENT: 1,
 		//INQ_CUR: priceRatio[0].CURRENCY,
 		//INQ_TCCUR: priceRatio[0].SUPPLIER_CUR,
-		INQ_PORT: data[11][3],
+		INQ_PORT: data[11][14].substring(0, 100),
 		INQ_MAR_PIC: $("#user-login").attr("empno"),
 		INQ_STATUS: 2,
 		status: { id: 2, STATUS_DESC: "New" },
