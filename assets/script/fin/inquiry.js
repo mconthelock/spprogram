@@ -180,6 +180,8 @@ $(document).on("click", ".approval", async function (e) {
 			let datatimeline = {
 				INQ_NO: row.INQ_NO,
 				INQ_REV: row.INQ_REV,
+				FMN_USER: $("#user-login").attr("empno"),
+				FMN_READ: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 				FMN_CONFIRM: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			};
 			await updateInquiryTimeline(datatimeline);
