@@ -923,9 +923,8 @@ export async function getSearchHeader(formdata) {
 	const date_key = ["START_INQ_DATE", "END_INQ_DATE"];
 	date_key.forEach((key) => {
 		if (formdata[key]) {
-			if (key.startsWith("START_")) formdata[key] = `>= ${formdata[key]}`;
-			else if (key.startsWith("END_"))
-				formdata[key] = `<= ${formdata[key]}`;
+			if (key.startsWith("START_")) formdata[key] = `${formdata[key]}`;
+			else if (key.startsWith("END_")) formdata[key] = `${formdata[key]}`;
 		}
 	});
 
@@ -972,9 +971,9 @@ export async function getSearchHeader(formdata) {
 		if (formdata[key]) {
 			const vkey = key.replace("timeline.", "");
 			if (vkey.startsWith("START_"))
-				timelimes = { ...timelimes, [vkey]: `>= ${formdata[key]}` };
+				timelimes = { ...timelimes, [vkey]: `${formdata[key]}` };
 			else if (vkey.startsWith("END_"))
-				timelimes = { ...timelimes, [vkey]: `<= ${formdata[key]}` };
+				timelimes = { ...timelimes, [vkey]: `${formdata[key]}` };
 			delete formdata[key];
 		}
 	});
@@ -993,9 +992,9 @@ export async function getSearchHeader(formdata) {
 		if (formdata[key]) {
 			const vkey = key.replace("inqgroup.", "");
 			if (vkey.startsWith("START_"))
-				groups = { ...groups, [vkey]: `>= ${formdata[key]}` };
+				groups = { ...groups, [vkey]: `${formdata[key]}` };
 			else if (vkey.startsWith("END_"))
-				groups = { ...groups, [vkey]: `<= ${formdata[key]}` };
+				groups = { ...groups, [vkey]: `${formdata[key]}` };
 			else groups = { ...groups, [vkey]: formdata[key] };
 			delete formdata[key];
 		}
@@ -1016,9 +1015,9 @@ export async function getSearchHeader(formdata) {
 		if (formdata[key]) {
 			const vkey = key.replace("quotation.", "");
 			if (vkey.startsWith("START_"))
-				quotations = { ...quotations, [vkey]: `>= ${formdata[key]}` };
+				quotations = { ...quotations, [vkey]: `${formdata[key]}` };
 			else if (vkey.startsWith("END_"))
-				quotations = { ...quotations, [vkey]: `<= ${formdata[key]}` };
+				quotations = { ...quotations, [vkey]: `${formdata[key]}` };
 			delete formdata[key];
 		}
 	});
