@@ -52,8 +52,8 @@ $(document).on("click", ".create-simulate", async function (e) {
 		data = data.filter((item) => item.ITEM_STATUS == 1);
 		if (type == 1) data = data.filter((item) => item.CATEGORY != 99);
 		else data = data.filter((item) => item.CATEGORY == 99);
-		if (type == 1) await setPriceDetails(data);
-		else await setCostDetails(data);
+		if (type == 1) await setPriceDetails(data, type);
+		else await setCostDetails(data, type);
 		window.location.reload();
 	} catch (error) {
 		console.log(error);
@@ -157,7 +157,7 @@ async function setCostDetails(data) {
 	}
 }
 
-async function setPriceDetails(data) {
+async function setPriceDetails(data, type = 1) {
 	let timelinedata = {
 		INQ_REV: "*",
 		MAR_USER: "16077",
