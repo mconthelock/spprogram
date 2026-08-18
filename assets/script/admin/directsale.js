@@ -47,14 +47,35 @@ $(document).on("click", ".create-simulate", async function (e) {
 	try {
 		await showLoader({ show: true });
 		const type = $(this).data("id");
-
 		let data = await getItems();
-		data = data.filter((item) => item.ITEM_STATUS == 1);
-		if (type == 1) data = data.filter((item) => item.CATEGORY != 99);
-		else data = data.filter((item) => item.CATEGORY == 99);
-		if (type == 1) await setPriceDetails(data, type);
-		else await setCostDetails(data, type);
-		window.location.reload();
+		if (type == 1) {
+			//data = data.filter((item) => item.ITEM_STATUS == 1);
+			// data = data.map((item) => ({
+			// 	...item,
+			// 	itemscustomer: Array.isArray(item.itemscustomer)
+			// 		? item.itemscustomer.filter(
+			// 				(customer) => customer.customer?.CUS_STATUS != "0",
+			// 			)
+			// 		: item.itemscustomer,
+			// }));
+			data = data.filter(
+				(item) =>
+					item.itemscustomer.some(
+						(customer) => customer.customer?.CUS_STATUS == "1",
+					) && item.ITEM_STATUS == 1,
+			);
+			console.log(data);
+		} else {
+			data = data.filter((item) => item.CATEGORY == 99);
+			console.log(data);
+		}
+
+		// data = data.filter((item) => item.ITEM_STATUS == 1);
+		// if (type == 1) data = data.filter((item) => item.CATEGORY != 99);
+		// else data = data.filter((item) => item.CATEGORY == 99);
+		// if (type == 1) await setPriceDetails(data, type);
+		// else await setCostDetails(data, type);
+		// window.location.reload();
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
