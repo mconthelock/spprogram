@@ -49,33 +49,20 @@ $(document).on("click", ".create-simulate", async function (e) {
 		const type = $(this).data("id");
 		let data = await getItems();
 		if (type == 1) {
-			//data = data.filter((item) => item.ITEM_STATUS == 1);
-			// data = data.map((item) => ({
-			// 	...item,
-			// 	itemscustomer: Array.isArray(item.itemscustomer)
-			// 		? item.itemscustomer.filter(
-			// 				(customer) => customer.customer?.CUS_STATUS != "0",
-			// 			)
-			// 		: item.itemscustomer,
-			// }));
 			data = data.filter(
 				(item) =>
 					item.itemscustomer.some(
 						(customer) => customer.customer?.CUS_STATUS == "1",
 					) && item.ITEM_STATUS == 1,
 			);
-			console.log(data);
+			await setPriceDetails(data, 1);
 		} else {
-			data = data.filter((item) => item.CATEGORY == 99);
-			console.log(data);
+			data = data.filter(
+				(item) => item.CATEGORY == 99 && item.ITEM_STATUS == 1,
+			);
+			await setCostDetails(data, 2);
 		}
-
-		// data = data.filter((item) => item.ITEM_STATUS == 1);
-		// if (type == 1) data = data.filter((item) => item.CATEGORY != 99);
-		// else data = data.filter((item) => item.CATEGORY == 99);
-		// if (type == 1) await setPriceDetails(data, type);
-		// else await setCostDetails(data, type);
-		// window.location.reload();
+		window.location.reload();
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);
@@ -97,7 +84,7 @@ async function setHeader() {
 		INQ_DELIVERY_TERM: 1,
 		INQ_DELIVERY_METHOD: 1,
 		INQ_SHIPMENT: "1",
-		INQ_MAR_PIC: "16077",
+		INQ_MAR_PIC: "12164",
 		INQ_MAR_SENT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		CREATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 		UPDATE_AT: dayjs().format("YYYY-MM-DD HH:mm:ss"),
@@ -151,7 +138,7 @@ async function setDetails(data) {
 async function setCostDetails(data) {
 	let timelinedata = {
 		INQ_REV: "*",
-		MAR_USER: "16077",
+		MAR_USER: "02049",
 		MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 	};
 	data = data.sort((a, b) => a.ITEM_NO.localeCompare(b.ITEM_NO));
@@ -161,7 +148,10 @@ async function setCostDetails(data) {
 	for (const row of details) {
 		if (row.length == 0) continue;
 
-		const inqno = `COST-${dayjs().format("YYYY-MM-DD")}`;
+		const inqno =
+			dayjs().format("M") == "4" || dayjs().format("M") == "9"
+				? `COST-${dayjs().format("YYYY-MM-DD")}`
+				: generateId();
 		const fomdata = {
 			header: {
 				...header,
@@ -181,7 +171,7 @@ async function setCostDetails(data) {
 async function setPriceDetails(data, type = 1) {
 	let timelinedata = {
 		INQ_REV: "*",
-		MAR_USER: "16077",
+		MAR_USER: "12164",
 		MAR_SEND: dayjs().format("YYYY-MM-DD HH:mm:ss"),
 	};
 	const period = await currentPeriod();
@@ -202,7 +192,10 @@ async function setPriceDetails(data, type = 1) {
 		for (const row of details) {
 			if (row.length == 0) continue;
 
-			const inqno = `${d.id}-${period.current.year}-${period.current.period}H-${inqid}`;
+			const inqno =
+				dayjs().format("M") == "4" || dayjs().format("M") == "9"
+					? `${d.id}-${period.current.year}-${period.current.period}H-${inqid}`
+					: generateId();
 			const fomdata = {
 				header: {
 					...header,
@@ -218,4 +211,14 @@ async function setPriceDetails(data, type = 1) {
 			inqid++;
 		}
 	}
+}
+
+function generateId() {
+	const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const autoId = crypto.getRandomValues(new Uint32Array(12));
+	let result = "";
+	for (let i = 0; i < 12; i++) {
+		result += chars[autoId[i] % chars.length];
+	}
+	return result;
 }

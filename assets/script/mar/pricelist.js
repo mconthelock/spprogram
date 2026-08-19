@@ -32,14 +32,11 @@ $(async function () {
 	}
 });
 
-async function setData() {
+async function setData(customerId = $("#selected-customer").val()) {
 	const items = await getItems();
-	const customers = await getCustomer();
 	const period = await currentPeriod();
-	const customer = customers.find(
-		(cus) => cus.CUS_ID == $("#selected-customer").val(),
-	);
-	const selected = $("#selected-customer").val();
+	const customers = await getCustomer();
+	const customer = customers.find((cus) => cus.CUS_ID == customerId);
 	const ratio = await findPriceRatio({
 		SUPPLIER: "AMEC",
 		TRADER: "Direct",
@@ -47,10 +44,18 @@ async function setData() {
 	});
 	const data = items
 		.filter((item) => {
-			return item.itemscustomer.some(
-				(cus) => cus.CUSTOMER_ID == selected,
+			return (
+				item.itemscustomer.some(
+					(cus) => cus.CUSTOMER_ID == customerId,
+				) && item.ITEM_STATUS == 1
 			);
 		})
+		// .filter(
+		// 	(item) =>
+		// 		item.itemscustomer.some(
+		// 			(customer) => customer.customer?.CUS_STATUS == "1",
+		// 		) && item.ITEM_STATUS == 1,
+		// )
 		.map((item) => {
 			const current = period.current;
 			const currentprices = item.prices.filter(
@@ -231,9 +236,12 @@ async function tableOption(data) {
 	opt.initComplete = async function () {
 		//Table Right Options
 		const customers = await getCustomer();
+		const customersFilter = customers.filter(
+			(cus) => cus.CUS_STATUS == "1",
+		);
 		const selected = $("#selected-customer").val();
 		let cusSelect = ``;
-		customers.map((cus) => {
+		customersFilter.map((cus) => {
 			return (cusSelect += `<option value="${cus.CUS_ID}" ${
 				cus.CUS_ID == selected ? "selected" : ""
 			}>${cus.CUS_DISPLAY}</option>`);
@@ -250,7 +258,13 @@ async function tableOption(data) {
 			id: "export-btn",
 			title: "Export",
 			icon: "fi fi-tr-file-excel text-xl",
-			className: `bg-accent text-white hover:shadow-lg`,
+			className: `btn-accent text-white hover:shadow-lg`,
+		});
+		const export2 = await createBtn({
+			id: "export-btn-all",
+			title: "Export All Customer",
+			icon: "fi fi-tr-file-excel text-xl",
+			className: `btn-accent btn-outline  hover:shadow-lg hover:text-white`,
 		});
 		const importprice = await createBtn({
 			id: "importprice",
@@ -259,7 +273,9 @@ async function tableOption(data) {
 			className: `bg-primary text-white hover:shadow-lg`,
 		});
 
-		$(".table-info").append(`<div class="flex gap-2">${export1}</div>`);
+		$(".table-info").append(
+			`<div class="flex gap-2">${export1}${export2}</div>`,
+		);
 	};
 	return opt;
 }
@@ -282,6 +298,30 @@ $(document).on("click", "#export-btn", async function (e) {
 				{ cols: "P1", text: $("#last-period").text() },
 			],
 		});
+	} catch (error) {
+		console.log(error);
+		await showMessage(error);
+	}
+});
+
+$(document).on("click", "#export-btn-all", async function (e) {
+	e.preventDefault();
+	try {
+		const template = await getTemplate("export_price_for_mar.xlsx");
+		const customers = await getCustomer();
+		for (const customer of customers) {
+			if (customer.CUS_STATUS == "1") {
+				const data = await setData(customer.CUS_ID);
+				await exportExcel(data, template, {
+					filename: `Price List - ${customer.CUS_DISPLAY}.xlsx`,
+					rowstart: 3,
+					static: [
+						{ cols: "K1", text: $("#current-period").text() },
+						{ cols: "P1", text: $("#last-period").text() },
+					],
+				});
+			}
+		}
 	} catch (error) {
 		console.log(error);
 		await showMessage(error);

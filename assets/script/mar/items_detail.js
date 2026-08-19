@@ -111,8 +111,11 @@ async function setItemDetail() {
 async function listCustomer() {
 	try {
 		const customer_list = await getCustomer();
+		const customerFilter = customer_list.filter(
+			(cus) => cus.CUS_STATUS == "1",
+		);
 		let customer_html = ``;
-		customer_list.map((customer) => {
+		customerFilter.map((customer) => {
 			customer_html += `<li class="w-full flex gap-3 flex-row mb-3">
         <input type="checkbox" class="checkbox checkbox-primary text-white" value="${customer.CUS_ID}" />${customer.CUS_NAME}
         </li>`;

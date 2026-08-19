@@ -65,11 +65,11 @@ async function tableOption(data) {
 			sortable: false,
 			render: (data, type, row) => {
 				const edit = `<a class="btn btn-sm btn-ghost btn-circle edit-row" href="${process.env.APP_ENV}/mar/items/detail/${data}" data-id="${data}"><i class="fi fi-tr-pen-circle text-2xl"></i></a>`;
-				const deleted = `<button class="btn btn-sm btn-ghost btn-circle toggle-status ${row.ITEM_STATUS === 1 ? "" : "hidden"}" data-id="${data}" data-value="0"><i class="fi fi-sr-trash text-2xl text-red-500"></i></button>`;
+				const deleted = `<button class="btn btn-sm btn-ghost btn-circle toggle-status ${row.ITEM_STATUS === 1 ? "" : "hidden"}" data-id="${data}" data-value="0"><i class="fi fi-rr-ban text-2xl text-red-500"></i></button>`;
 				const reactive = `<button class="btn btn-sm btn-ghost btn-circle toggle-status ${row.ITEM_STATUS === 0 ? "" : "hidden"}" data-id="${data}" data-value="1"><i class="fi fi-br-refresh text-xl"></i></button>`;
 
-				return `<div class="flex items-center justify-center gap-2">
-                    ${edit}${deleted}${reactive}
+				return `<div class="flex items-center justify-end gap-2">
+                    ${deleted}${edit}
                 </div>`;
 			},
 		},
