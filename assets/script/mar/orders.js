@@ -15,7 +15,7 @@ $(async function () {
 		await showLoader({ show: true });
 		await initApp();
 		const data = await getInquiry({
-			INQ_DATE: `>= ${dayjs().subtract(3, "month").format("YYYY-MM-DD")}`,
+			INQ_DATE: `>= ${dayjs().subtract(12, "month").format("YYYY-MM-DD")}`,
 			IS_DETAILS: true,
 			IS_ORDERS: true,
 		});
