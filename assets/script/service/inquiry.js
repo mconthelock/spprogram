@@ -416,6 +416,8 @@ export async function dataDetails(data) {
 		const tl = el.timeline || {};
 		const values = details.sort((a, b) => a.INQD_SEQ - b.INQD_SEQ);
 		values.map(async (dt) => {
+			console.log(dt);
+
 			const sh = sheet.filter((s) => s.LINENO === dt.INQD_SEQ);
 			const ord =
 				sh.length > 0
@@ -427,6 +429,7 @@ export async function dataDetails(data) {
 				...(sh.length > 0 ? sh[0] : {}),
 				...(ord.length > 0 ? ord[0] : {}),
 				...(el.pcategory ? el.pcategory[0] : {}),
+				INQD_EXRATE: dt.INQD_EXRATE == null ? 1 : dt.INQD_EXRATE,
 				INQD_UNITPRICE: Math.ceil(dt.INQD_UNIT_PRICE),
 				INQ_ID: el.INQ_ID,
 				INQ_NO: el.INQ_NO,
