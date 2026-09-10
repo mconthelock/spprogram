@@ -446,6 +446,8 @@ export async function importExcel(file) {
 
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
+			console.log(el[6]);
+
 			const variavle = el[6] == "" ? null : validateVariable(el[6]);
 			const strrow = await initRow(el[1], i + 1);
 			const newRow = {
