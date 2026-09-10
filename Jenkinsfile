@@ -40,13 +40,21 @@ pipeline {
                         sh '''
                             git config --global url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf "https://webhub.mitsubishielevatorasia.co.th/"
 
-                            cp ${ENV_DIR} .env
-                            VERSION=$(node -p "require('./package.json').version")
-                            if grep -q '^VERSION=' .env; then
-                                sed -i "s/^VERSION=.*/VERSION=${VERSION}/" .env
-                            else
-                                printf '\nVERSION=%s\n' "${VERSION}" >> .env
+                            CURRENT_VERSION=$(sed -n 's/^VERSION=\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$/\1/p' "${ENV_DIR}")
+                            if [ -z "${CURRENT_VERSION}" ]; then
+                                echo "VERSION must use the format major.minor.patch"
+                                exit 1
                             fi
+
+                            MAJOR_VERSION=${CURRENT_VERSION%%.*}
+                            VERSION_REMAINDER=${CURRENT_VERSION#*.}
+                            MINOR_VERSION=${VERSION_REMAINDER%%.*}
+                            PATCH_VERSION=${VERSION_REMAINDER#*.}
+                            NEW_VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.$((PATCH_VERSION + 1))"
+                            sed -i "s/^VERSION=.*/VERSION=${NEW_VERSION}/" "${ENV_DIR}"
+                            cp "${ENV_DIR}" .env
+                            echo "Version: ${CURRENT_VERSION} -> ${NEW_VERSION}"
+
                             npm install --include=dev
                             npm update @amec/webasset
                             npm run build
