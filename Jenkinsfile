@@ -41,6 +41,12 @@ pipeline {
                             git config --global url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf "https://webhub.mitsubishielevatorasia.co.th/"
 
                             cp ${ENV_DIR} .env
+                            APP_VERSION=$(node -p "require('./package.json').version")
+                            if grep -q '^APP_VERSION=' .env; then
+                                sed -i "s/^APP_VERSION=.*/APP_VERSION=${APP_VERSION}/" .env
+                            else
+                                printf '\nAPP_VERSION=%s\n' "${APP_VERSION}" >> .env
+                            fi
                             npm install --include=dev
                             npm update @amec/webasset
                             npm run build
