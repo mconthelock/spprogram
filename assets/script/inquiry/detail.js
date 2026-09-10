@@ -701,6 +701,7 @@ export async function verifyDetail(data, savelevel = 0) {
 	table.rows().every(function () {
 		const item = this.data();
 		const row = this.node() ? $(this.node()) : $();
+		const mfgOrder = String(item.INQD_MFGORDER ?? "");
 		if (seenKeys.has(item.INQD_SEQ)) {
 			check = false;
 			message.push(`Dupplicate sequence number. (${item.INQD_SEQ})`);
@@ -730,17 +731,14 @@ export async function verifyDetail(data, savelevel = 0) {
 			return;
 		}
 
-		if (
-			!(item.INQD_MFGORDER == "STOCK" || item.INQD_MFGORDER == "-") &&
-			item.INQD_MFGORDER.length != 9
-		) {
+		if (!(mfgOrder == "STOCK" || mfgOrder == "-") && mfgOrder.length != 9) {
 			check = false;
 			message.push(`Please input correct MFG order no.`);
 			errorEl(row.find(".mfgno"));
 			return;
 		}
 
-		if (item.INQD_MFGORDER == "STOCK" && savelevel > 1) {
+		if (mfgOrder == "STOCK" && savelevel > 1) {
 			if (item.INQD_SUPPLIER == "") {
 				check = false;
 				message.push(`Please input Supply By value.`);
