@@ -430,25 +430,24 @@ export async function importExcel(file) {
 	const excelData = await readInput(file, {
 		startRow: 2,
 		endCol: 10,
-		headerName: [
-			"Inquiry No",
-			"Seq. no",
-			"Drawing No",
-			"Part Name",
-			"Qty",
-			"Unit",
-			"Variable",
-			"Original MFG No",
-			"Original Car No",
-			"Item",
-		],
+		// headerName: [
+		// 	"Inquiry No",
+		// 	"Seq. no",
+		// 	"Drawing No",
+		// 	"Part Name",
+		// 	"Qty",
+		// 	"Unit",
+		// 	"Variable",
+		// 	"Original MFG No",
+		// 	"Original Car No",
+		// 	"Item",
+		// ],
 	});
 
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
-			console.log(el);
-			console.log(el[6]);
-
+			// console.log(el);
+			// console.log(el[6]);
 			const variavle = el[6] == "" ? null : validateVariable(el[6]);
 			const strrow = await initRow(el[1], i + 1);
 			const newRow = {
