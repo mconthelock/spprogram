@@ -717,7 +717,11 @@ export async function verifyDetail(data, savelevel = 0) {
 			return;
 		}
 
-		if (intVal(item.INQD_ITEM) < 100 || intVal(item.INQD_ITEM) > 1000) {
+		if (
+			intVal(item.INQD_ITEM) < 100 ||
+			intVal(item.INQD_ITEM) > 1000 ||
+			isNaN(intVal(item.INQD_ITEM))
+		) {
 			check = false;
 			message.push(
 				`Please input item no. or item no should be number in range 100-999`,
