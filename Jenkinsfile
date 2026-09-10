@@ -40,8 +40,8 @@ pipeline {
                         sh '''
                             git config --global url."https://${GIT_USER}:${GIT_PASS}@webhub.mitsubishielevatorasia.co.th/".insteadOf "https://webhub.mitsubishielevatorasia.co.th/"
 
-                            CURRENT_VERSION=$(sed -n 's/^VERSION=\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$/\1/p' "${ENV_DIR}")
-                            if [ -z "${CURRENT_VERSION}" ]; then
+                            CURRENT_VERSION=$(grep "^VERSION=" "${ENV_DIR}" | head -n 1 | cut -d "=" -f 2)
+                            if ! printf '%s\n' "${CURRENT_VERSION}" | grep -Eq "^[0-9]+[.][0-9]+[.][0-9]+$"; then
                                 echo "VERSION must use the format major.minor.patch"
                                 exit 1
                             fi
