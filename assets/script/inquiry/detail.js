@@ -446,7 +446,7 @@ export async function importExcel(file) {
 
 	if (excelData.length > 0) {
 		const readdata = excelData.map(async (el, i) => {
-			const variavle = validateVariable(el[6]);
+			const variavle = el[6] == "" ? null : validateVariable(el[6]);
 			const strrow = await initRow(el[1], i + 1);
 			const newRow = {
 				...strrow,
@@ -455,8 +455,8 @@ export async function importExcel(file) {
 				INQD_ITEM: el[9],
 				INQD_PARTNAME: el[3],
 				INQD_DRAWING: el[2],
-				INQD_VARIABLE: variavle.isValid ? el[6] : "",
-				INQD_MAR_REMARK: variavle.isValid ? "" : el[6],
+				INQD_VARIABLE: variavle && variavle.isValid ? el[6] : "",
+				INQD_MAR_REMARK: variavle && variavle.isValid ? "" : el[6],
 				INQD_QTY: el[4],
 				INQD_UM: el[5],
 				INQD_SUPPLIER: "AMEC",
