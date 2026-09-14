@@ -22,7 +22,7 @@ $(async function () {
 		const app = await initApp({ submenu: ".navmenu-newinq" });
 		if (!app) return;
 		let data = await getInquiry({
-			INQ_DATE: `>= ${dayjs().add(-60, "day").format("YYYY-MM-DD")}`,
+			INQ_DATE: `>= ${dayjs().add(-365, "day").format("YYYY-MM-DD")}`,
 			IS_GROUP: 1,
 		});
 		const opt = await tableInquiryAdminOption(data);
